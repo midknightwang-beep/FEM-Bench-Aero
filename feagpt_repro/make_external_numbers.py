@@ -39,6 +39,7 @@ def main(write=True):
     vf = load('verify_dataset_d36.json')
     ev = load('eval_report_d36.json')
     bl = load('baseline_d36_final.json')
+    g3all = load('gate3_all55_d37.json')   # W4a 纠偏 P1-2：单一数字源读最新关 3 分级报告
 
     s = man['summary']
     fams = fam_counts(man)
@@ -102,12 +103,16 @@ def main(write=True):
         'n_tri3_total': dig(q1, ['n_tri3_total'], 'gates(g1)'),
         'worst_min_jacobian': dig(q1, ['worst_min_jacobian'], 'gates(g1)'),
     }
-    # 关 3 从 JSON 实读（wingbox scope）
-    g3 = g1.get('gate3_dual_solver', {})
-    out['gates']['gate3_wingbox'] = {
-        'scope': g3.get('scope', 'MISSING'),
-        'n_pass': g3.get('n_pass', None),
-        'n_total': g3.get('n_cases', None),
+    # 关 3（W4a：分级口径，来源 gate3_all55_d37）
+    out['gates']['gate3_all55'] = {
+        'evidence_levels': g3all.get('evidence_levels'),
+        'n_gated_pass': g3all.get('n_gated_pass'),
+        'n_reported_only': g3all.get('n_reported_only'),
+        'n_fail': g3all.get('n_fail'),
+        'claim': f"{g3all['evidence_levels']['field']} field + "
+                 f"{g3all['evidence_levels']['scalar_disp']} scalar-disp + "
+                 f"{g3all['n_reported_only']} reported-only（不说 55/55）",
+        'source': 'gate3_all55_d37.json',
     }
     # 自洽 / 划分复算（summary 实读）
     out['selfcheck'] = {
@@ -131,12 +136,24 @@ def main(write=True):
         md.append(f'| — {fam} | {cnt.get("train",0)}-{cnt.get("val",0)}-{cnt.get("test",0)}（共 {sum(cnt.values())}） | manifest.cases 实算 |')
     g1m = out['gates']['gate1_mesh']
     md.append(f'| 关 1 网格 | {g1m["n_measured"]}/{g1m["n_measured"]}（最差 minJ {g1m["worst_min_jacobian"]}、tri3 {g1m["n_tri3_total"]}） | gates_all55_d36 |')
-    md.append(f'| 关 3 双码 | {out["gates"]["gate3_wingbox"]["scope"]}：{out["gates"]["gate3_wingbox"]["n_pass"]} | gates_all55_d36 |')
+    # 关 3（W4a 纠偏 P0-2：分级表述，禁止 55/55）
+    md.append(f'| 关 3 双码 | **{g3all["evidence_levels"]["field"]} field-level + '
+              f'{g3all["evidence_levels"]["scalar_disp"]} scalar-disp-gated + '
+              f'{g3all["n_reported_only"]} reported-only**（不说 55/55） | gate3_all55_d37 |')
     md.append(f'| 关 4 语义 | {out["gates"]["gate4_semantics"]}/{out["gates"]["gate4_semantics"]} | gate4_d36 |')
     sc = out['selfcheck']
     md.append(f'| 自洽 | {sc["n_ok"]}/{sc["n_cases"]}、重复 {sc["n_duplicate_cases"]}、配对 {sc["pairing_ok"]} | verify_dataset_d36 |')
     md.append(f'| 划分复算 | {out["split_recheck"]["n_failures"]} failures | eval_report_d36 |')
     md.append(f'| 基线（已冻结为附录） | max_disp test {out["baseline_frozen"]["max_disp_test_mape"]} %，CI {out["baseline_frozen"]["max_disp_test_ci95"]}，常数地板 {out["baseline_frozen"]["constant_floor"]} | baseline_d36_final |')
+    # M14 三条硬限制（W4a 纠偏 P1-2：对外必读 caveat）
+    md += [
+        '',
+        '## M14 硬限制（对外承诺必读，W4a 纠偏 P1-2）',
+        '',
+        '1. **vM 峰值未收敛**：12→6 mm 仍 +12.9 %，应力真值带 ≥13 % 偏不安全低估（位移良定义 −0.48 %）—— `_probe_m14/h_convergence.json`',
+        '2. **2.63 % 是「组合插值」成绩**，不是「新设计」成绩；对外承诺写 **5–9 %**，不写 3 % —— STAGE_GATE_M14 §4.4',
+        '3. **全体 34 条留一 5.35 %**（中位 2.57 / p90 14.09 / 最大 33.10）—— `_probe_m14/all_loo.json`；报数必须带 p90+max',
+    ]
 
     if write:
         json.dump(out, open(os.path.join(FEA, 'external_numbers.json'), 'w', encoding='utf-8'),

@@ -112,28 +112,38 @@ def main():
         n_pass += bool(row['pass'])
 
     report = {
-        'milestone': 'M14/D37-W3',
-        'note': '关 3 证据机读化：翼盒 34 条 field-level（既有 xval_m8 判据引用）+ 其余 21 条 scalar-level'
-                '（双码标量 <1% + 解析锚点）。场级证据归档于 F:/FEA_Archive_20261024/，需时解包重算。',
-        'n_cases': len(rows), 'n_pass': n_pass,
+        'milestone': 'M14/D37-W4a',
+        'note': '关 3 证据机读化（W4a 状态分级）：禁止把 reported-only 计入 PASS。'
+                '翼盒 34 条 field-level（既有 xval_m8 判据引用）+ 15 条 scalar-disp-gated（<1%）'
+                '+ 6 条柱壳 REPORTED-ONLY（D20 场级判据在归档包 F:/FEA_Archive_20261024/，需时解包重算）。'
+                '对外表述统一为「34 field + 15 scalar + 6 reported-only」，不说 55/55。',
+        'n_cases': len(rows),
+        'n_gated_pass': sum(1 for r in rows if r.get('gate_status') == 'GATED' and r['pass']),
+        'n_reported_only': sum(1 for r in rows if r.get('gate_status', '').startswith('REPORTED')),
+        'n_fail': sum(1 for r in rows if r.get('gate_status') == 'GATED' and not r['pass']),
         'evidence_levels': {
-            'field-level': sum(1 for r in rows if r.get('evidence_level', '').startswith('field')),
-            'scalar-level': sum(1 for r in rows if r.get('evidence_level', '').startswith('scalar')),
+            'field': sum(1 for r in rows if r.get('evidence_level', '').startswith('field')),
+            'scalar_disp': sum(1 for r in rows if r.get('evidence_level', '').startswith('scalar-level')
+                               and r.get('gate_status') == 'GATED'),
+            'reported_only': sum(1 for r in rows if r.get('gate_status', '').startswith('REPORTED')),
         },
         'tolerance': {'disp_pct': TOL_DISP_PCT},
         'cases': rows,
-        'all_ok': n_pass == len(rows),
+        'all_gated_ok': all(r['pass'] for r in rows
+                            if r.get('gate_status') == 'GATED'),
     }
     out = os.path.join(FEA, 'gate3_all55_d37.json')
     json.dump(report, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-    print(f"gate3_all55: {n_pass}/{len(rows)} PASS "
-          f"(field={report['evidence_levels']['field-level']}, "
-          f"scalar={report['evidence_levels']['scalar-level']})")
+    print(f"gate3_all55: gated_pass={report['n_gated_pass']} "
+          f"reported_only={report['n_reported_only']} fail={report['n_fail']} "
+          f"(field={report['evidence_levels']['field']}, "
+          f"scalar_disp={report['evidence_levels']['scalar_disp']})")
+    print('对外表述：34 field + 15 scalar-disp + 6 reported-only（不说 55/55）')
     for r in rows:
         if not r['pass']:
             print('  FAIL', r['case_id'], r.get('error', ''))
     print('report ->', out)
-    return 0 if report['all_ok'] else 2
+    return 0 if report['all_gated_ok'] else 2
 
 if __name__ == '__main__':
     sys.exit(main())

@@ -1,8 +1,30 @@
-# FEM-Bench-Aero — A 建模集（M1 建 / M2 整 / M3 扩形式 / M4 划分 / M5 放量）
+# FEM-Bench-Aero — LLM 驱动飞机结构 FEA 的可信评测与验证基础设施
+
+> **这是什么**：一套飞机结构有限元建模的 benchmark + verifier。数据集（55 条 × 2 棵求解器树，T1–T7 七种结构形式、九道质量闸）是**手段**；
+> 考卷（任务层 `../feagpt_repro/tasks/`）+ 判分器（`../feagpt_repro/evaluate.py`）+ 判据体系（九道闸）才是产品（D37 方向转向，2026-10-24）。
+
+## 从这里开始（当前状态 · 2026-10-24）
+
+| 想做什么 | 去哪里 |
+|---|---|
+| 看当前计划 | [ROADMAP.md](ROADMAP.md)（W1–W3 已收口，W4a 修判分已收口，W4b = LLM 基线） |
+| 拿数据本体 | `../feagpt_repro/fetch_data.py --src <FEM-Bench-Aero-v1.0-data.tar.gz>`（SHA256 校验 + 55 条核对） |
+| 看任务/考卷 | `../feagpt_repro/tasks/tasks.jsonl`（L1 55 + L2 55 + L3 30；split_v2 = train/val/boundary_holdout/extrapolation_test） |
+| 跑评测 | `python ../feagpt_repro/evaluate.py --batch --use-gold`；负控 `python ../feagpt_repro/negative_controls.py`（红线条 R5/R6） |
+| 查对外数字 | [external_numbers.md](external_numbers.md) ← [CLAIMS.md](CLAIMS.md) 主张账本（禁止手抄） |
+| 看 v1.0 已知限制 | [dataset_card.md](dataset_card.md)（8 条，含 vM 峰值未收敛 ≥13 %） |
+| 契约/schema | [schema_truth.json](schema_truth.json)（严格枚举）+ [schema_task.json](schema_task.json)（约束解码用，无答案枚举） |
+| 里程碑决策链 | [BASELINE.md](BASELINE.md)（M1–M14）+ [STAGE_GATE_M14.md](STAGE_GATE_M14.md)（阶段审计） |
+
+**三条硬限制（对外承诺必读）**：① vM 峰值网格未收敛（≥13 % 偏不安全低估）；② 代理基线 2.63 % 是「组合插值」成绩，对外承诺写 **5–9 %**；
+③ 全体留一 5.35 %（p90 14.09 / max 33.10）。详见 [CLAIMS.md](CLAIMS.md) C-006/007/008。
+
+---
+
+# 历史叙事（M1–M5 建设过程）
 
 把飞机结构的**建模任务**变成可执行、可判定的样本：给一个规格（结构族 / 几何参数 / 长桁截面 / 平面形状），
 有一个**跑得通、且被独立验证算得对**的有限元模型作真值。
-
 M1 落四件套与语义判定，M2 落结构族抽象与「建面打标」分类器，
 **M3 落第一批新形式** —— **T5 长桁截面族**（blade → +T 形）与 **T2 加筋平板壁板**
 （**第一个真正的第二个结构族**），两者各带退化自检。

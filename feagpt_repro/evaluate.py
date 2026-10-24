@@ -22,7 +22,70 @@ RUNS = os.path.join(HERE, 'eval_runs')
 PY = sys.executable
 
 MIN_J = 0.30          # 关1 判据（D10）
-FID_TOL_PCT = 1.0     # 保真判据：max_disp 相对偏差 <1%（双码位移口径）
+FID_TOL_PCT = 1.0     # 辅助闸：max_disp 相对偏差（只证"算得像"，不再承担"答案正确"——W4a 纠偏 3.1）
+FLOAT_TOL = 1e-6      # spec_fidelity 浮点相对容差（W4a 纠偏 P0-1）
+
+# 字段级真值表（按族）。整数/枚举/字符串/数组：精确相等；浮点：相对误差 < 1e-6。
+GRADED_FIELDS = {
+    'wingbox': ('airfoil', ['code', 'chord', 'span', 'skin_thickness', 'n_ribs',
+                            'rib_thickness', 'spar_chordwise', 'n_stringers_per_skin',
+                            'stringer_height', 'stringer_thickness', 'stringer_kind',
+                            'stringer_flange_width', 'tip_chord_ratio', 'sweep_deg',
+                            'web_chordwise']),
+    'open_hole_panel': ('params', ['length', 'width', 'thickness', 'hole_d',
+                                   'hole_x', 'hole_y', 'layup']),
+    'fuselage_barrel': ('params', ['diameter', 'length', 'thickness',
+                                   'n_stringers', 'n_frames']),
+    'stiffened_panel': ('params', ['length', 'width', 'thickness', 'n_stringers']),
+}
+GRADED_MATERIAL = ['name', 'youngs_modulus', 'poisson_ratio']          # 必判
+REPORTED_MATERIAL = ['density', 'yield_strength']                      # 只报不判
+
+
+def _field_equal(a, b):
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)) \
+            and not isinstance(a, bool) and not isinstance(b, bool):
+        return abs(float(a) - float(b)) <= FLOAT_TOL * max(1.0, abs(float(b)))
+    return a == b
+
+
+def spec_fidelity(cand_spec, gold_spec, family):
+    """W4a P0-1：字段级真值校验（强制闸）。任一字段 FAIL ⇒ 整体 FAIL。"""
+    fields = []
+    holder_key, keys = GRADED_FIELDS.get(family, ('params', []))
+    cand_holder = (cand_spec.get('airfoil', {}) if holder_key == 'airfoil'
+                   else cand_spec.get('structure', {}).get('params', {}))
+    gold_holder = (gold_spec.get('airfoil', {}) if holder_key == 'airfoil'
+                   else gold_spec.get('structure', {}).get('params', {}))
+    for k in keys:
+        cv, gv = cand_holder.get(k, '<missing>'), gold_holder.get(k, '<missing>')
+        ok = _field_equal(cv, gv) if cv != '<missing>' and gv != '<missing>' else False
+        fields.append({'field': f'{holder_key}.{k}', 'expected': gv, 'actual': cv, 'pass': ok})
+    # 结构族与材料必判项
+    for label, path in (('structure.family', ('structure', 'family')),):
+        cv = cand_spec.get(path[0], {}).get(path[1], '<missing>')
+        gv = gold_spec.get(path[0], {}).get(path[1], '<missing>')
+        fields.append({'field': label, 'expected': gv, 'actual': cv, 'pass': cv == gv})
+    for k in GRADED_MATERIAL:
+        cv = cand_spec.get('material', {}).get(k, '<missing>')
+        gv = gold_spec.get('material', {}).get(k, '<missing>')
+        fields.append({'field': f'material.{k}', 'expected': gv, 'actual': cv,
+                       'pass': _field_equal(cv, gv) if cv != '<missing>' else False})
+    for k in REPORTED_MATERIAL:   # 只报不判（声明）
+        cv = cand_spec.get('material', {}).get(k)
+        gv = gold_spec.get('material', {}).get(k)
+        fields.append({'field': f'material.{k}', 'expected': gv, 'actual': cv,
+                       'pass': True, 'reported_not_gated': True})
+    # 网格与载荷（W4a NC-4/NC-5：任务输入含网格/载荷，candidate 改了就是错答案）
+    for holder in ('mesh', 'load'):
+        ch, gh = cand_spec.get(holder, {}), gold_spec.get(holder, {})
+        for k in sorted(set(ch) | set(gh)):
+            cv, gv = ch.get(k, '<missing>'), gh.get(k, '<missing>')
+            ok = _field_equal(cv, gv) if cv != '<missing>' and gv != '<missing>' else False
+            fields.append({'field': f'{holder}.{k}', 'expected': gv, 'actual': cv, 'pass': ok})
+    fails = [f for f in fields if not f['pass']]
+    return {'pass': not fails, 'n_fields': len(fields), 'n_fail': len(fails),
+            'failed': fails[:15]}
 
 
 def load_tasks(path):
@@ -34,13 +97,36 @@ def gold_spec_path(case_id):
     return os.path.join(FEA, 'modeling', case_id, 'spec.json')
 
 
-def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800):
+def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800, skip_solve=False):
     task_id = task['task_id']
     run_dir = os.path.join(out_root, task_id)
     os.makedirs(run_dir, exist_ok=True)
     result = {'task_id': task_id, 'family': task['family'],
               'split_v2': task['split_v2'], 'input_level': task['input_level'],
               'candidate_spec': cand_spec_path, 'gates': {}, 'overall_pass': False}
+
+    if skip_solve:
+        # 负控快通道：只跑 spec_fidelity（字段级真值），不起求解器
+        case_id = (task['task_id'].replace('L1_', '').replace('L2_', '').replace('L3_', '')
+                   .replace('_final', '').replace('cand_', ''))
+        gold_spec_path = os.path.join(FEA, 'modeling', case_id, 'spec.json')
+        if os.path.exists(gold_spec_path):
+            gold_spec = json.load(open(gold_spec_path, encoding='utf-8'))
+            gold_spec.pop('workdir', None)
+            cand_json = json.load(open(cand_spec_path, encoding='utf-8'))
+            cand_json.pop('workdir', None)
+            sf = spec_fidelity(cand_json, gold_spec, task['family'])
+        else:
+            sf = {'pass': False, 'n_fields': 0, 'n_fail': 1,
+                  'failed': [{'field': 'gold spec', 'expected': gold_spec_path, 'actual': 'missing'}]}
+        sf['field'] = 'spec_fidelity (field-level, mandatory, skip-solve)'
+        sf['expected'] = 'all graded fields equal (float tol 1e-6)'
+        sf['actual'] = f"{sf['n_fields'] - sf['n_fail']}/{sf['n_fields']} fields"
+        result['gates']['spec_fidelity'] = sf
+        result['overall_pass'] = sf['pass']
+        out_path = os.path.join(run_dir, 'evaluation.json')
+        json.dump(result, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+        return result
 
     # ---- 1. 跑 pipeline（ccx 全链）----
     t0 = time.time()
@@ -92,7 +178,7 @@ def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800):
         'failed_checks': [{'key': c['key'], 'expected': c['expected'],
                            'actual': c['actual']} for c in fails][:10]}
 
-    # ---- 4. 物理保真：max_disp vs 数据集真值 ----
+    # ---- 4. 物理保真：max_disp vs 数据集真值（辅助闸，W4a 降级：只证"算得像"）----
     ref = json.load(open(os.path.join(FEA, task['truth_ref']), encoding='utf-8'))
     cand_disp = (truth.get('scalars') or {}).get('max_disp')
     gold_disp = (ref.get('scalars') or {}).get('max_disp')
@@ -106,6 +192,25 @@ def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800):
             'expected': f'{gold_disp:.6f} ±{FID_TOL_PCT}%', 'actual': f'{cand_disp:.6f}',
             'dev_pct': round(dev_pct, 4)}
         result['fidelity_disp_dev_pct'] = round(dev_pct, 4)
+
+    # ---- 4b. spec_fidelity 字段级真值（W4a P0-1 强制闸）----
+    case_id = task['task_id']
+    case_id = case_id.replace('L1_', '').replace('L2_', '').replace('L3_', '') \
+                     .replace('_final', '').replace('cand_', '')
+    gold_spec_path = os.path.join(FEA, 'modeling', case_id, 'spec.json')
+    if os.path.exists(gold_spec_path):
+        gold_spec = json.load(open(gold_spec_path, encoding='utf-8'))
+        gold_spec.pop('workdir', None)
+        cand_json = json.load(open(cand_spec_path, encoding='utf-8'))
+        cand_json.pop('workdir', None)
+        sf = spec_fidelity(cand_json, gold_spec, task['family'])
+        sf['field'] = 'spec_fidelity (field-level, mandatory)'
+        sf['expected'] = 'all graded fields equal (float tol 1e-6)'
+        sf['actual'] = f"{sf['n_fields'] - sf['n_fail']}/{sf['n_fields']} fields"
+        result['gates']['spec_fidelity'] = sf
+    else:
+        result['gates']['spec_fidelity'] = {'pass': False, 'field': 'gold spec',
+                                            'expected': gold_spec_path, 'actual': 'missing'}
 
     # ---- 5. 总判定 ----
     result['overall_pass'] = all(g['pass'] for g in result['gates'].values())

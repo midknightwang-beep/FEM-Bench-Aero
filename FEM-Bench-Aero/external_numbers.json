@@ -45,10 +45,17 @@
    "n_tri3_total": 0,
    "worst_min_jacobian": 0.4636
   },
-  "gate3_wingbox": {
-   "scope": "wingbox only (xval_m8 判据的适用域：500 N 端部集中力 + 根截面反力平衡)",
-   "n_pass": 34,
-   "n_total": 34
+  "gate3_all55": {
+   "evidence_levels": {
+    "field": 34,
+    "scalar_disp": 15,
+    "reported_only": 6
+   },
+   "n_gated_pass": 15,
+   "n_reported_only": 6,
+   "n_fail": 0,
+   "claim": "34 field + 15 scalar-disp + 6 reported-only（不说 55/55）",
+   "source": "gate3_all55_d37.json"
   }
  },
  "baseline_frozen": {
