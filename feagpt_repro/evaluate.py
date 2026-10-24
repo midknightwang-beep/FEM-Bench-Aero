@@ -115,6 +115,68 @@ def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800):
     return result
 
 
+def evaluate_clarification(task, clar_path, out_root=RUNS, timeout=1800):
+    """L2 评测（W3-2）：clarify_then_semantics 闸 + final_spec 三闸。
+
+    clarification.json 协议（candidate 提交）：
+      {"task_id": ..., "questions": [{"field": "rib_thickness", "question": "..."}],
+       "final_spec": {...补全后的完整 spec...}}
+    判分：
+      clarify 闸 —— expected_clarifications 里每个缺字段都必须被【显式提问】；
+                    若 final_spec 静默填了值而没提问 => FAIL（考「追问」不考「猜」）。
+      其余闸    —— 对 final_spec 走 L1 同款三闸（跑 pipeline）。
+    """
+    task_id = task['task_id']
+    clar = json.load(open(clar_path, encoding='utf-8'))
+    run_dir = os.path.join(out_root, task_id)
+    os.makedirs(run_dir, exist_ok=True)
+    result = {'task_id': task_id, 'input_level': 'L2',
+              'split_v2': task['split_v2'], 'gates': {}, 'overall_pass': False}
+
+    expected = task.get('expected_clarifications', [])
+    asked = {q.get('field') for q in clar.get('questions', []) if isinstance(q, dict)}
+    missing_ask = [f for f in expected if f not in asked]
+    final_spec = clar.get('final_spec')
+
+    # clarify 闸：缺字段要么被问、要么 final_spec 里【确实没有】该字段（等待用户给）；
+    # 静默编造默认值 = FAIL。
+    silent = []
+    for f in expected:
+        if f in asked:
+            continue
+        # final_spec 是否偷偷补了值？
+        a = final_spec.get('airfoil', {}) if isinstance(final_spec, dict) else {}
+        p = (final_spec.get('structure', {}) or {}).get('params', {}) if isinstance(final_spec, dict) else {}
+        if f in a or f in p:
+            silent.append(f)
+    result['gates']['clarify'] = {
+        'pass': len(missing_ask) == 0 and len(silent) == 0,
+        'field': 'expected_clarifications',
+        'expected': f'ask about {expected}',
+        'actual': f'asked={sorted(asked)} silent_default={silent}',
+        'missing_ask': missing_ask, 'silent_default': silent}
+    result['clarification_json'] = clar_path
+
+    # final_spec 落盘走 L1 同款三闸；clarify 已 FAIL 则短路（不浪费求解时间）
+    if isinstance(final_spec, dict) and result['gates']['clarify']['pass']:
+        spec_path = os.path.join(run_dir, 'final_spec.json')
+        final_spec.setdefault('name', task['task_id'].replace('L2_', 'cand_', 1))
+        json.dump(final_spec, open(spec_path, 'w', encoding='utf-8'),
+                  ensure_ascii=False, indent=1)
+        sub = evaluate_one({**task, 'input_level': 'L2-final', 'task_id': task_id + '_final'},
+                           spec_path, out_root=out_root, timeout=timeout)
+        result['gates'].update(sub['gates'])
+        result['gates'].pop('pipeline', None) if sub['gates'].get('pipeline', {}).get('pass', True) else None
+        result['fidelity_disp_dev_pct'] = sub.get('fidelity_disp_dev_pct')
+        result['overall_pass'] = all(g['pass'] for g in result['gates'].values())
+    else:
+        result['overall_pass'] = False
+
+    out_path = os.path.join(run_dir, 'evaluation.json')
+    json.dump(result, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    return result
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--task-id')
@@ -132,7 +194,11 @@ def main():
         if not (args.task_id and args.spec):
             ap.error('单任务模式需要 --task-id 与 --spec')
         tasks = {t['task_id']: t for t in load_tasks(args.tasks)}
-        r = evaluate_one(tasks[args.task_id], args.spec)
+        t = tasks[args.task_id]
+        if t['input_level'] == 'L2':
+            r = evaluate_clarification(t, args.spec)   # --spec 传 clarification.json
+        else:
+            r = evaluate_one(t, args.spec)
         print(json.dumps(r, ensure_ascii=False, indent=1)[:2000])
         sys.exit(0 if r['overall_pass'] else 2)
 
@@ -145,15 +211,28 @@ def main():
     print(f'批量评测 {len(sel)} 条（levels={sorted(levels)} splits={sorted(splits)}）')
     n_pass = 0
     for t in sel:
-        cand = args.spec
-        if args.use_gold:
-            cand = os.path.join(HERE, 'tasks', f'_cand_{t["task_id"]}.json')
-            norm = t['input']['spec_normalized']
-            norm.setdefault('name', t['task_id'].split('_', 1)[1] if '_' in t['task_id'] else t['task_id'])
-            json.dump(norm, open(cand, 'w', encoding='utf-8'),
-                      ensure_ascii=False, indent=1)
-        print(f'--- {t["task_id"]} ---')
-        r = evaluate_one(t, cand)
+        if t['input_level'] == 'L2' and args.use_gold:
+            # 理想 candidate：显式提问全部缺字段 + final_spec = 规范化 gold 补全
+            expected = t.get('expected_clarifications', [])
+            clar = {'task_id': t['task_id'],
+                    'questions': [{'field': f, 'question': f'请给出 {f}？'} for f in expected],
+                    'final_spec': t['input']['spec_normalized']}
+            cand = os.path.join(HERE, 'tasks', f'_clar_{t["task_id"]}.json')
+            json.dump(clar, open(cand, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+            r = evaluate_clarification(t, cand)
+        elif args.use_gold:
+            cand = args.spec
+            norm = t['input'].get('spec_normalized') or t['input'].get('spec_normalized_from_nl')
+            if norm:
+                cand = os.path.join(HERE, 'tasks', f'_cand_{t["task_id"]}.json')
+                norm = dict(norm)
+                norm.setdefault('name', t['task_id'])
+                json.dump(norm, open(cand, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+            r = evaluate_one(t, cand)
+        else:
+            cand = args.spec
+            r = evaluate_one(t, cand)
+        print(f'--- {t["task_id"]} ({t["input_level"]}) ---')
         flag = 'PASS' if r['overall_pass'] else 'FAIL'
         n_pass += r['overall_pass']
         gsum = {k: v['pass'] for k, v in r['gates'].items()}

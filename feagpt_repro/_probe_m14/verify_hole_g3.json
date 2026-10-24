@@ -1,0 +1,60 @@
+{
+  "n_pass": 4,
+  "n_fail": 1,
+  "checks": [
+    {
+      "check": "hole.kt-gross-vs-howland",
+      "pass": true,
+      "detail": "lambda=0.1000: Kt_gross 3.0380 vs Howland 3.0245 (+0.45 %, tol 2 %); Kirsch infinite-plate 3.0000 shown for reference only"
+    },
+    {
+      "check": "hole.kt-net-vs-howland",
+      "pass": true,
+      "detail": "same peak in the net convention: Kt_net 2.7342 vs 2.7221 (+0.45 %). The two conventions disagree with each other by 11.1 % - both are right, both are checked"
+    },
+    {
+      "check": "hole.peak-location",
+      "pass": true,
+      "detail": "peak at theta=270.00 deg, 72 edge nodes (half-step 2.50 deg); Kirsch puts the maximum on the load-normal diameter (90 / 270 deg)"
+    },
+    {
+      "check": "hole.equilibrium",
+      "pass": true,
+      "detail": "loaded end carries 4000 N vs applied 4000 N (0.0000 %); clamped end -4000 N (0.0000 %); whole model 0.001 N (0.0000 %)"
+    },
+    {
+      "check": "hole.cross-solver",
+      "pass": false,
+      "detail": "abaqus run failed: ['recombination algorithm 1 (blossom)', 'quality gate passed: min scaled Jacobian 0.608, 0 triangle(s)', 'gate4 semantic PASS (6 checks)', 'deck written (abaqus): 9861 active nodes, 9675 shell elements in 1 group(s)', 'solver failed: pro\\\\feagpt\\\\abaqus_odb.py\", line 337, in <module>\\n    raise SystemExit(main())\\n  File \"F:\\\\AI FEA Modeling DataSets\\\\feagpt_repro\\\\feagpt\\\\abaqus_odb.py\", line 326, in main\\n    meta = extract(odb_path, out_path)\\n  File \"F:\\\\AI FEA Modeling DataSets\\\\feagpt_repro\\\\feagpt\\\\abaqus_odb.py\", line 140, in extract\\n    frame = step.frames[-1]\\n<unknown>.AbaqusException: 0\\n\\n--- Abaqus diagnostics ---\\n(none reported)']"
+    }
+  ],
+  "detail": {
+    "ccx": {
+      "lambda": 0.1,
+      "sigma_max": 30.379912849830227,
+      "peak_angle_deg": 270.0,
+      "Kt_gross": 3.037991284983023,
+      "Kt_net": 2.7341921564847205,
+      "howland_net": 2.72207,
+      "howland_gross": 3.024522222222222,
+      "kirsch": 3.0,
+      "n_edge_nodes": 72,
+      "n_nodes": 9861,
+      "n_elements": 9675,
+      "element_types": {
+        "quad4": 9675
+      },
+      "tri_count": 0,
+      "min_quality": 0.6084,
+      "mesh_size": 4.0,
+      "division": 72,
+      "gate4": true,
+      "equilibrium": {
+        "applied_N": 4000.0013999999996,
+        "reaction_N": -4000.0004,
+        "global_N": 0.0009999997295732537,
+        "force_N": 4000.0
+      }
+    }
+  }
+}

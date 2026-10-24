@@ -1,0 +1,820 @@
+{
+ "milestone": "M14/D37-W3",
+ "note": "关 3 证据机读化：翼盒 34 条 field-level（既有 xval_m8 判据引用）+ 其余 21 条 scalar-level（双码标量 <1% + 解析锚点）。场级证据归档于 F:/FEA_Archive_20261024/，需时解包重算。",
+ "n_cases": 55,
+ "n_pass": 55,
+ "evidence_levels": {
+  "field-level": 34,
+  "scalar-level": 21
+ },
+ "tolerance": {
+  "disp_pct": 1.0
+ },
+ "cases": [
+  {
+   "case_id": "fuselage_barrel_d1600_l1600_str8_frm3",
+   "family": "fuselage_barrel",
+   "geometry_class": "f8b43cc6abbb",
+   "evidence_level": "scalar-reported (D20 field-level gate in archive)",
+   "pass": true,
+   "gate_status": "REPORTED-ONLY (field-level gate in archive)",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "REPORTED NOT GATED (D20: barrel gate = structure_peak, field-level)",
+     "actual": "2.421%",
+     "pass": true
+    },
+    {
+     "key": "xval.max_w",
+     "expected": "REPORTED NOT GATED (D20: barrel gate = structure_peak, field-level)",
+     "actual": "3.184%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "23.040%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "fuselage_barrel_d1800_l2000_str8_frm3",
+   "family": "fuselage_barrel",
+   "geometry_class": "f91e55e05c66",
+   "evidence_level": "scalar-reported (D20 field-level gate in archive)",
+   "pass": true,
+   "gate_status": "REPORTED-ONLY (field-level gate in archive)",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "REPORTED NOT GATED (D20: barrel gate = structure_peak, field-level)",
+     "actual": "3.084%",
+     "pass": true
+    },
+    {
+     "key": "xval.max_w",
+     "expected": "REPORTED NOT GATED (D20: barrel gate = structure_peak, field-level)",
+     "actual": "4.351%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "10.479%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "fuselage_barrel_d2000_l1600_str8_frm3",
+   "family": "fuselage_barrel",
+   "geometry_class": "a912e177e794",
+   "evidence_level": "scalar-reported (D20 field-level gate in archive)",
+   "pass": true,
+   "gate_status": "REPORTED-ONLY (field-level gate in archive)",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "REPORTED NOT GATED (D20: barrel gate = structure_peak, field-level)",
+     "actual": "2.373%",
+     "pass": true
+    },
+    {
+     "key": "xval.max_w",
+     "expected": "REPORTED NOT GATED (D20: barrel gate = structure_peak, field-level)",
+     "actual": "3.328%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "5.895%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "fuselage_barrel_d2000_l2000_str12_frm4",
+   "family": "fuselage_barrel",
+   "geometry_class": "a9604f56b898",
+   "evidence_level": "scalar-reported (D20 field-level gate in archive)",
+   "pass": true,
+   "gate_status": "REPORTED-ONLY (field-level gate in archive)",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "REPORTED NOT GATED (D20: barrel gate = structure_peak, field-level)",
+     "actual": "3.345%",
+     "pass": true
+    },
+    {
+     "key": "xval.max_w",
+     "expected": "REPORTED NOT GATED (D20: barrel gate = structure_peak, field-level)",
+     "actual": "3.779%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "0.651%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "fuselage_barrel_d2000_l2000_str8_frm3",
+   "family": "fuselage_barrel",
+   "geometry_class": "589369d32c00",
+   "evidence_level": "scalar-reported (D20 field-level gate in archive)",
+   "pass": true,
+   "gate_status": "REPORTED-ONLY (field-level gate in archive)",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "REPORTED NOT GATED (D20: barrel gate = structure_peak, field-level)",
+     "actual": "2.019%",
+     "pass": true
+    },
+    {
+     "key": "xval.max_w",
+     "expected": "REPORTED NOT GATED (D20: barrel gate = structure_peak, field-level)",
+     "actual": "2.589%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "5.860%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "fuselage_barrel_d2000_l2000_t2_str8_frm3",
+   "family": "fuselage_barrel",
+   "geometry_class": "9c77e2678013",
+   "evidence_level": "scalar-reported (D20 field-level gate in archive)",
+   "pass": true,
+   "gate_status": "REPORTED-ONLY (field-level gate in archive)",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "REPORTED NOT GATED (D20: barrel gate = structure_peak, field-level)",
+     "actual": "3.879%",
+     "pass": true
+    },
+    {
+     "key": "xval.max_w",
+     "expected": "REPORTED NOT GATED (D20: barrel gate = structure_peak, field-level)",
+     "actual": "4.170%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "12.212%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "naca4412_wingbox",
+   "family": "wingbox",
+   "geometry_class": "4afd1ea3fd9f",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_n_ribs3_chord1000",
+   "family": "wingbox",
+   "geometry_class": "4cf4571c551d",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_n_ribs3_chord800",
+   "family": "wingbox",
+   "geometry_class": "1927d89dcb96",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_n_ribs5_chord800",
+   "family": "wingbox",
+   "geometry_class": "791f1043b549",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_n_ribs7_chord1000",
+   "family": "wingbox",
+   "geometry_class": "db9dab06eff6",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_n_ribs7_chord800",
+   "family": "wingbox",
+   "geometry_class": "006310d062fa",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_n_ribs9_chord1000",
+   "family": "wingbox",
+   "geometry_class": "6085570a4247",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_recombination_algorithm3",
+   "family": "wingbox",
+   "geometry_class": "4afd1ea3fd9f",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_size_skin1p5",
+   "family": "wingbox",
+   "geometry_class": "4227a5994f3e",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_size_skin2",
+   "family": "wingbox",
+   "geometry_class": "621898f41a1d",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_size_skin4",
+   "family": "wingbox",
+   "geometry_class": "226322eab812",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_size_span1600",
+   "family": "wingbox",
+   "geometry_class": "950289bb0db0",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_size_span2400",
+   "family": "wingbox",
+   "geometry_class": "a29aa8f4ac6e",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_size_span2400_skin2",
+   "family": "wingbox",
+   "geometry_class": "08adca20a4a7",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_size_span3000",
+   "family": "wingbox",
+   "geometry_class": "aba008bb7986",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_size_span3000_skin1p5",
+   "family": "wingbox",
+   "geometry_class": "58fefd5842da",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_str3",
+   "family": "wingbox",
+   "geometry_class": "7af923795681",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_str3_T",
+   "family": "wingbox",
+   "geometry_class": "37f4725e4b48",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_str5",
+   "family": "wingbox",
+   "geometry_class": "870130300769",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_sweep10",
+   "family": "wingbox",
+   "geometry_class": "d8e081a5f259",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_sweep20",
+   "family": "wingbox",
+   "geometry_class": "47f64aa48908",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_sweep20_taper060",
+   "family": "wingbox",
+   "geometry_class": "838838dd03a6",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_sweep30",
+   "family": "wingbox",
+   "geometry_class": "19ca7eaff9ca",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_sweep30_taper080",
+   "family": "wingbox",
+   "geometry_class": "e38d85ccf6c1",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_sweep35",
+   "family": "wingbox",
+   "geometry_class": "ce92e32b3897",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_sweep40",
+   "family": "wingbox",
+   "geometry_class": "001950844b2c",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_sweep40_taper040",
+   "family": "wingbox",
+   "geometry_class": "808b798ff918",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_taper040",
+   "family": "wingbox",
+   "geometry_class": "d3d62cf41985",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_taper060",
+   "family": "wingbox",
+   "geometry_class": "86cf8d83cb48",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_taper080",
+   "family": "wingbox",
+   "geometry_class": "411d36dac99c",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_taper090",
+   "family": "wingbox",
+   "geometry_class": "0218d6b27388",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_web1",
+   "family": "wingbox",
+   "geometry_class": "4aae9b75897e",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_web1_offcentre",
+   "family": "wingbox",
+   "geometry_class": "02769a56df7c",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_web2",
+   "family": "wingbox",
+   "geometry_class": "60981a5c499f",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "open_hole_panel_400x200_d20",
+   "family": "open_hole_panel",
+   "geometry_class": "8d80c9bb926f",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.153%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "1.957%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "open_hole_panel_400x200_d20_cfrp090s",
+   "family": "open_hole_panel",
+   "geometry_class": "ca16d7911ae7",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.154%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "0.411%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "open_hole_panel_400x200_d20_cfrp45s",
+   "family": "open_hole_panel",
+   "geometry_class": "e8219d418f30",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.003%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "24.541%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "open_hole_panel_400x200_d20_cfrp45s_d40",
+   "family": "open_hole_panel",
+   "geometry_class": "a22486acc1da",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.014%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "24.667%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "open_hole_panel_400x200_d20_cfrpqi",
+   "family": "open_hole_panel",
+   "geometry_class": "1a539873e505",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.165%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "1.767%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "open_hole_panel_400x200_d20_offcentre",
+   "family": "open_hole_panel",
+   "geometry_class": "a4a89bc00841",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.088%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "2.255%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "open_hole_panel_400x200_d40",
+   "family": "open_hole_panel",
+   "geometry_class": "68f73f8a4e9f",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.131%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "1.033%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "open_hole_panel_400x200_d40_offcentre",
+   "family": "open_hole_panel",
+   "geometry_class": "104c69f98102",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.128%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "0.937%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "open_hole_panel_400x200_d50",
+   "family": "open_hole_panel",
+   "geometry_class": "32e9f572f8f8",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.195%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "1.900%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "open_hole_panel_600x300_d30",
+   "family": "open_hole_panel",
+   "geometry_class": "2db453f8909f",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.094%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "2.879%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "open_hole_panel_600x300_d60",
+   "family": "open_hole_panel",
+   "geometry_class": "634a9fb4d54d",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.051%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "1.043%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "stiffened_panel_600x600",
+   "family": "stiffened_panel",
+   "geometry_class": "7ba2e12216c0",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.326%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "n/a",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "stiffened_panel_600x600_str3",
+   "family": "stiffened_panel",
+   "geometry_class": "bc4990b00bae",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.063%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "1.251%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "stiffened_panel_800x600",
+   "family": "stiffened_panel",
+   "geometry_class": "652d537e3d91",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.756%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "n/a",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "stiffened_panel_800x600_str3",
+   "family": "stiffened_panel",
+   "geometry_class": "b8239f1030bc",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.044%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "1.249%",
+     "pass": true
+    }
+   ]
+  }
+ ],
+ "all_ok": true
+}

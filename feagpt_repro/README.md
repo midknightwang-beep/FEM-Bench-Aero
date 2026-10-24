@@ -107,7 +107,7 @@ python verify_solvers.py --ccx outputs_panel  --abaqus outputs_panel_abaqus  --c
 python make_dataset.py --solver ccx    --cases outputs outputs_str outputs_T outputs_panel           --root ../FEM-Bench-Aero
 python make_dataset.py --solver abaqus --cases outputs_abaqus outputs_str_abaqus outputs_T_abaqus outputs_panel_abaqus --root ../FEM-Bench-Aero
 
-# ★ 重导后必须跟去重（见 §10：源目录里仍留着重复件）
+# ★ 重导后必须跟去重（见 SPEC.md §10：源目录里仍留着重复件）
 python dedup_dataset.py --root ../FEM-Bench-Aero --keep naca4412_wingbox --apply \
     --json ../FEM-Bench-Aero/dedup_report.json
 
@@ -270,10 +270,10 @@ FEASpec (JSON)
    │        └─ stiffened_panel builder：矩形蒙皮 + N 条竖式长桁（M3/T2）
    │        └─ occ.fragment() 让翼肋/长桁与蒙皮共节点，逻辑名经 outDimTagsMap 继承
    ├─ meshing.build_mesh()          曲率自适应尺寸场 + 最小 Jacobian 门禁
-   ├─ meshing.referenced_nodes()    丢掉不被任何单元引用的节点（见 §5.4）
+   ├─ meshing.referenced_nodes()    丢掉不被任何单元引用的节点（见 DECISIONS.md §5.4）
    ├─ inp_writer.write_inp(dialect) *SHELL SECTION / *BOUNDARY / *CLOAD / *STATIC
    │        ├─ 厚度表、约束自由度、压力作用组 **全部由 builder 声明**（见 §4 族契约）
-   │        ├─ dialect="ccx"    → *NODE FILE, OUTPUT=3D（D8：外纤维；见 §5.1）
+   │        ├─ dialect="ccx"    → *NODE FILE, OUTPUT=3D（D8：外纤维；见 DECISIONS.md §5.1）
    │        └─ dialect="abaqus" → *OUTPUT, FIELD / *NODE OUTPUT / *ELEMENT OUTPUT
    ├─ solver.run()
    │        ├─ ccx     → .frd
@@ -313,7 +313,7 @@ def build(gmsh, spec, step_path=None): ...
 
 **默认值就是翼盒**：`bc_nodes=None` 时 `resolve_bc_nodes()` 仍走 z≈0 / z≈span 的老规则，
 `clamp_dofs` 默认 `(1,6)`、`pressure_group` 默认 `"upper_skin"`。所以 9 条翼盒算例的 deck
-**逐字节未变**（M3/T2 用哈希清单证明过，见 §10）。
+**逐字节未变**（M3/T2 用哈希清单证明过，见 SPEC.md §10）。
 
 ### 翼盒的简化
 
@@ -326,13 +326,13 @@ def build(gmsh, spec, step_path=None): ...
 位于 `x = const` 平面、沿展向通长、顶边与蒙皮贴合、底边自由的一片竖板——
 薄壁盒段里长桁的常规理想化。默认 `N = 0`，即不加强（保持既有基线不变）。
 
-三个非显然之处（都踩过，见 §5.5）：
+三个非显然之处（都踩过，见 DECISIONS.md §5.5）：
 
 1. **长桁站位必须是蒙皮样条的控制点**。否则板顶边与蒙皮只是"靠得很近"而非共享边，
    布尔运算会吐出碎片或干脆不连——所以站位被插进截面点列（`_points_on_section(extra=...)`）。
 2. **长桁也是 `dx ≈ 0` 的平面**，与翼梁的判据撞车。分类器改为按**弦向站位**区分两者
    （站位严格取在梁之间，集合不相交）。M2 之后分组由**建面打标**决定，
-   这条判据降为交叉校验（见 §5.6）。
+   这条判据降为交叉校验（见 DECISIONS.md §5.6）。
 3. **上/下长桁不能用 `y > 0` 判**。NACA4412 有弯度，下蒙皮在 0.59c 处 `y = −10.3 mm`，
    20 mm 长桁会伸到 `y = +9.7 mm`——中心在 y=0 之上却明明属于下蒙皮。
    改成与**局部盒段中高线**比较。
@@ -437,247 +437,10 @@ web_stations = [c × chord for c in web_chordwise]
 
 ---
 
-## 5. 踩过的坑（都固化在源码注释里）
 
-### 5.1 CalculiX deck
+## 5. 踩过的坑
 
-1. **`*NODE FILE` 上不要加 `NSET=`** —— CalculiX 2.23 会写出**空的 DISP/FORC 块**，
-   结果文件看着正常、其实一个位移都没有。
-2. **壳结果要 `OUTPUT=3D`（D8 起）** —— 这条在 2026-10-03 被**推翻重写**，原因值得记住。
-   原来的写法是 `OUTPUT=2D`，理由是"否则 CalculiX 把壳扩展成实体，9 个中面节点变 18 个，
-   位移场跟中面理论没法直接比"。前半句对，后半句是**把方便当成了正确**：实测（4 单元板，
-   `diagnostics/` 系列探针）表明 `OUTPUT=2D` 报的是**两个展开层的均值** ——
-   `SXX = 0.24626 = (12.4841 + −11.9915)/2`，位移同样取均值。**纯弯板上下表面等值反号，
-   均值恒为 0**，于是平板报出 `vM ≡ 0`，而真正决定尺寸的弯曲应力根本不在结果里。
-   现在写 `OUTPUT=3D`，把 ±t/2 两层都留下，再由 `post.collapse_expanded_shell`
-   折回中面（力按 **SUM**、位移/应力按**均值**；见 §5.6）。代价是要自己把展开标签映射回
-   中面标签——展开后的节点号会整体偏移，不能靠编号对应，必须读 deck 自己的 `*NODE` 块。
-3. **`*ELEMENT` 块的编号必须全局连续** —— 每个 ELSET 各自从 1 开始会让 CalculiX 报
-   "element N is already defined"。
-
-### 5.2 FRD 解析
-
-- `DISP` 数据行**只写 3 个分量**（声明 4 个，magnitude 省略），按 `ncomp` 硬读会把整段吞掉。
-- 节点号与负号会**粘连**成 `4-6.87068E-10`，必须按定宽字段读。
-
-### 5.3 Abaqus deck / ODB
-
-- **`OUTPUT=2D` / `OUTPUT=3D` 是 CalculiX 专有参数**，写进 Abaqus deck 会直接中止。
-- **`ask_delete=OFF` 不是可选项**：没有它，只要上次留了作业文件，Abaqus 就停在
-  交互式的"是否覆盖？"提示上，直到超时。
-- **残留 `.lck` 会让作业中止，而 Abaqus 仍然返回 0**。原因写在 `<job>.msg` 里
-  （不是 stdout、也不是 `.dat`）："Detected lock file … please confirm that no other
-  applications are attempting to write to the output database"。批量跑几百个构型时，
-  每一个受影响算例都会被"成功-然后-空结果"。适配层在启动前清掉自己输出目录里的锁文件
-  （那个时刻它必然是陈旧的），并记进日志；同时不再只信退出码，而是要求**有可用的 ODB**
-  并回读 `.msg`/`.dat` 报出真实原因。
-- **`odbAccess` 是"像 dict"而不是 dict**，三种错法各不相同：
-  `frame.fieldOutputs` 是 `Repository`（支持 `[]`、`keys()`，**没有** `.get()`）；
-  `instance.elements` 是 `OdbMeshElementArray`（可迭代，没有 `keys()`）；
-  `FieldOutput.getSubset(position=...)` 要**符号常量** `abaqusConstants.ELEMENT_NODAL`，
-  传字符串会报 `position; found string, expecting ...`。
-- **壳应力是 4 分量、不是 6 分量**：Abaqus 2026 实测 `S` 类型为 `TENSOR_3D_PLANAR`，
-  分量为 `(S11, S22, S33, S12)`（壳理论平面应力，`S33≡0`）。而 FRD 的分量序是
-  `(SXX, SYY, SZZ, SXY, SYZ, SZX)`——**两个剪切分量顺序相反**。所以必须**按分量标签**映射，
-  按下标映射会在分量数变化时静默出错。
-- **`ELEMENT_NODAL` 插值只暴露最外侧两个截面点**（默认 5 点 Simplex 截面下是 1 和 5）。
-  取 `sorted(sp)[len//2]` 拿到的是**顶面**而不是中面——这是典型的"安静地给错答案"。
-  正确做法是壳理论的膜应力：`(σ_下表面 + σ_上表面)/2`。
-- **Abaqus 必须在不被沙箱隔离的 shell 里运行**（本机实测）。`pre.exe` 要往
-  `%TEMP%\22207_<job>_<pid>` 写 scratch 目录，工作区之外；写入被拦时它**不报权限错**，
-  而是以「**固定 ~19 s 延迟 + `Analysis Input File Processor exited with an error` +
-  `.dat` 里一条错误都没有 + ODB 只有骨架没有帧**」的形式失败。定位过程：
-  先用 1 个单元的最小卡片复现（与模型无关）→ 再 A/B 掉 `ask_delete`、路径空格、
-  输出块、并行模式（都不是）→ 最后比对"隔离 / 不隔离"两次调用才锁定。
-
-### 5.5 长桁的网格（本轮）
-
-长桁是一片 **20 × 500 mm** 的窄条，gmsh 默认的 blossom 重组算法在这种长宽比上表现很差：
-
-| 重组算法 | 单元 | minJ | 长桁 minJ | 三角 |
-|---|---|---|---|---|
-| 1（blossom，原默认） | 7118 | 0.350 | 0.398 | **444** |
-| **3（blossom 全四边形）** | 7517 | **0.523** | **0.690** | **0** |
-| 2（simple 全四边形） | 8115 | 0.245 ❌ | 0.245 | 0 |
-
-用 `diagnostics/stringer_quality.py` 定位后确认：**坏单元几乎全在长桁上**（432/444），
-蒙皮只是轻微下降（0.52–0.56）。
-
-但全四边形**不是普遍更好**：对无长桁的盒段，blossom 反而给出更高的 minJ
-（0.625 vs 0.573）。所以没有全局改默认值（那会作废所有既有验证数据），
-而是让**网格阶段按模型自适应**（`MeshSpec.recombination_algorithm = 0` 表示自动：
-有薄长桁条用 3，否则用 1），并把选择写进 mesh 报告的 notes。想强制时显式给值即可——
-这也正是做「有无长桁」A/B 对比时保证两边网格策略一致的手段。
-
-**第二道自适应（D10，同日）：数三角。** 上面这条只看**几何**，看不出 `chord800` 盒段的问题
-—— 它在**后梁腹板的四个角**上各留一个三角（腹板高 58.4 mm ÷ 弦向尺寸 12 mm = 4.87 个单元，
-不是整数，blossom 就用三角填掉剩下的角）。所以 `build_mesh` 现在**建完再数**：
-三角数非 0 且 spec 未显式指定算法时，用 blossom 全四边形**重建一次**，并把
-`escalated_from` / `recombination_algorithm` / `tri_count` 三个字段写进网格报告。实测代价：
-
-| 模型 | 第一遍（alg 1） | 升级后（alg 3） |
-|---|---|---|
-| `n_ribs3_chord800` | 8 个三角，minJ 0.5973 | **0 个**，3696 单元（+0.5 %），minJ 0.5950 |
-| `n_ribs5_chord800` | 16 个三角，minJ 0.5950 | **0 个**，4112 单元（+4.8 %），minJ 0.5950 |
-
-被否掉的替代方案（`diagnostics/probe_tri3.py` 实测，五个模型 × 六种配置）：`Mesh.Recombine
-OptimizeTopology` **一个三角都不动**（仍 8 / 16）；simple 全四边形要 +8.4 % / +14.1 %；
-`Mesh.Algorithm = 8` 更糟 —— 18 / 28 个三角且 minJ 掉到 **0.024**，反而会把 **Jacobian**
-那道闸弄挂。
-
-其余 9 条算例第一遍就是 0 三角，**走完全相同的原路径、网格逐字节不变**（基线 5144 单元、
-`n_ribs7_chord800` 4445 单元，均与归档一致；探针还顺带算出基线几何上 alg 3 得 5351 单元，
-与归档里那条显式 `recombination_algorithm=3` 的对照算例**完全相同**）。关 1 的判据同时补上
-`tri3 == 0`（`feagpt/meshing.build_mesh`），并在数据集验收里**直接从发运 deck 数**复核
-（`verify_dataset.py` 第 8 项 `no_tri3` —— 数 `model.inp` 的 `TYPE=S3`，不依赖 gmsh）。
-
-### 5.4 两个会话级别的 bug（本轮发现，已在修复后重跑全部数据）
-
-**Bug 1 — 载荷被静默稀释。** gmsh 为曲面之外的曲线/点也生成节点，旧几何下本算例有
-**396 个节点不连接任何单元**。载荷按"翼尖所有节点（190 个）"平摊，但其中只有 124 个
-真正在模型里，于是实际只施加了 `500/190 × 124 = 326.32 N`。根部反力之和精确等于
-**−326.32 N**——是静力平衡检查把它抓出来的，别的检查都发现不了。
-Abaqus 更狠：它删掉这些节点后直接报 **67 个致命错误**（"集中力施加在未激活节点上"）中止。
-
-> 注：上面 396 / 190 / 124 是**几何修复前**的诊断读数。Bug 2 改了梁腹板位置后几何随之变化，
-> 当前复跑读数为**孤儿节点 408 个、翼尖载荷节点 142 个**，`*CLOAD` 合计 **500 N**（不再稀释）。
-
-修复：`meshing.referenced_nodes()` 只保留被单元引用的节点。未被引用的节点不参与刚度，
-删除是物理等价的，同时让 deck 对两个求解器都自洽。
-
-**Bug 2 — 梁腹板是斜的，导致前后梁整个丢失。**
-`_points_on_section()` 从余弦采样的网格里"挑" `x∈[0.25c, 0.70c]`，但余弦网格上根本没有
-0.25/0.70 这两个点：上表面最近点是 `x=261.38`，下表面最近点是 `x=258.16`。把这两点连起来
-得到的前梁**斜了 3.2 mm**（后梁斜 7.4 mm）。腹板一旦带上了弦向跨度，`dx ≤ tol` 的归类条件
-就判不出来，8 块腹板全被塞进"上蒙皮"组——deck 里**完全没有 `E_FRONT_SPAR` / `E_REAR_SPAR`**，
-上下蒙皮单元数还严重不对称（2471 vs 1694）。修复后两组梁腹板回归，上下蒙皮对称
-（1856 / 1865）。
-
-### 5.6 面分类器：从「事后反推」到「建面打标」（M2）
-
-`build_wingbox` 建面之后要跑一次 `occ.fragment`，让翼肋、长桁与蒙皮共节点。布尔运算会把
-输入面切碎并**重新编号**，所以「切完之后哪个面是什么」曾经是这样恢复的：拿每个输出面的
-包围盒去猜——`dz≈0` 是肋、`dx≈0` 是梁/长桁、其余是蒙皮。
-
-这个判据是**二值**的，实测余量 6 个数量级：
-
-| 逻辑组 | dx 最大 (mm) | dz 最大 (mm) | 命中分支 |
-|---|---|---|---|
-| upper_skin | **450.0000** | 500.0 | else → 蒙皮 |
-| front_spar | **0.0000** | 500.0 | dx ≤ 1e-6 → 梁 |
-| ribs / root | 450.0 | **0.0000** | dz ≤ 1e-6 → 肋 |
-
-在等直翼盒上很稳，但**它只能服务等直几何**：一旦截面沿展向变化（后掠/锥形，M3 的 T1），
-梁腹板的 `dx` 从 0 变成非零中等值，判据立刻翻转，梁面掉进 `else` 被归成蒙皮——
-**模型照样求解，三道数值门禁全过，没有一处会报警**。
-
-改法（M2）：**建面时就打标**，让布尔运算自己把名字带过去。
-
-1. 建每个面时同时记下 `face_tag → 逻辑名`（`named_inputs`）；
-2. `fragment` 现在**保留 `outDimTagsMap`**（旧代码明写「deliberately ignore the map」），
-   第 `i` 个输入变成的输出面继承它的逻辑名——因为 `named_inputs` 就是传给 `fragment`
-   的实体顺序，索引天然对齐；
-3. 映射先做**完整性自检**：`outDimTags` 里每个面必须被**恰好一个**输入认领
-   （漏认领 / 重复认领都上报），再信任它；
-4. 旧包围盒判据**降为交叉校验**（`_cross_check_tagging`），不再决定任何事，只报告分歧。
-
-实测（探针 `diagnostics/fragment_map_probe.py`）：基线 21 个面、加长桁 69 个面，
-`outDimTagsMap` 长度 == 输入数，每个面被认领恰好一次，**与包围盒判据零分歧**。
-
-回归手段是 `regress_groups.py`：比较的不是计数，而是**每个逻辑组内逐面的 bbox 指纹**
-（tag 无关，所以不会拿 gmsh 的重新编号当回归）。M2 改完 9 条种子 **9/9 逐位一致**。
-
-### 5.7 展开壳折回中面：`OUTPUT=3D` 带来的四个坑（D8）
-
-写 `OUTPUT=3D` 之后，FRD 里每个中面节点变成 ±t/2 两个节点，**原来那一套按中面标签做的读法
-全部失效**。`post.collapse_expanded_shell` 把它们折回去，四处都不是显然的：
-
-1. **展开后的节点号会整体偏移，不能靠编号对应。** 实测在一个 9 节点的小板上，1..9 变成了
-   10..36，偏移量取决于节点总数。所以中面标签必须从 **deck 自己的 `*NODE` 块**读回来
-   （`read_deck_nodes`），不能按顺序配。
-2. **归属不能按 `(x, y)` 分列。** 平板上这样分是对的（6 mm 时 11761 列、3 mm 时 46432 列，
-   **全部恰好 2 层、孤儿 0**），翼盒上
-   完全错：上下蒙皮共用同一套 `(x, y)` 采样，而**肋是竖直面**，最坏一"列"住了 81 个节点。
-   改成**最近中面节点**归属后，11296 个展开节点一个不剩、一个不重。
-3. **一个中面节点不总是拥有两层。** 翼盒实测 4520 个节点 2 层、**534 个 4 层、20 个 6 层**
-   （长桁腹板与蒙皮相交处、不同厚度面共边处）。`5074 × 2 = 10148 < 11296` 就是这件事的账。
-4. **力要相加，位移/应力要取平均。** 这一条是**量出来的**，不是推出来的：4 单元板上
-   `FORC(mid 5) = −25.0 = lo(−25.0) + hi(0.0)`，而 `DISP(mid 5) = −0.00300134` = 两层均值。
-   对力用平均会让翼盒的全局合力从 ~0 变成 **−139.8 N**，平衡残差报 **29 %**。
-   代码里由 `_FOLD_SUM = ("FORC", "RF")` 显式标出。
-
-**坐标也要三个分量一起平均。** 第一版只平均了 z（因为"厚度方向是 z"），翼盒坐标就错了
-**1.5 mm** —— 翼盒的**蒙皮法向是 y**（展向才是 z），只动 z 等于没动。改成逐分量均值后
-坐标误差 **0.0**，且沿用 deck 自己的坐标。
-
-**验收口径**：折叠后的中面 von Mises 必须**逐位复现旧的 `OUTPUT=2D` 值**。实测翼盒
-**10.2824 vs 10.28**、3 mm 平板 **1.359 vs 1.35897**，位移 `0.956577` 逐位不变。这不是
-"差不多"——它证明折回是**无损**的，新的外纤维通道是**加**上去的，不是替换掉的。
-
-**外纤维本身有一个独立的解析见证**：`diagnostics/probe_d8_outer_fibre.py` 用 120×120×2 mm
-板对 Navier 闭式解，同时用**两条互不依赖的路**验同一个数——闭式 `6Mx/t²`，以及把中心邻域的
-位移场做二次最小二乘拟合反算 `−D(w,xx + ν w,yy)`。实测 3 mm：外纤维 **−0.15 %**、
-位移拟合 **−0.58 %**，6 mm 分别 −1.03 % / −1.18 %（单调收敛）。日志落在数据集里
-（`probe_d8_outer_fibre.log`）。
-
-> 这个探针存在的**真正理由**是它抓到过我自己的错。闭式解的第一版把形状函数自带
-> `sin(mπ/2)=s_m` 代了一次、又乘了一次 `s_m`，符号被算了两遍，双正弦级数退化成全正项，
-> 参考值虚高 **37 %**（0.0705 → 0.0967），而它看起来**依然像一个平板公式**。是第二条见证
-> （位移拟合）给出 0.0701 才让它暴露。**一条见证只会"验证"错数字，两条才能发现错。**
-
-### 5.8 CalculiX 的壳是"假壳"：方程数 ≈ 14.9 × 节点数，于是有一道机器内存墙
-
-这一条不是 bug，是**选型要知道的账** —— 而且它直接决定了柱壳族尺寸维能往哪个方向走。
-
-**现象**：`fuselage_barrel` 的两个尺寸外推点 `D2000×L3000`（233,815 节点）与
-`D1600×L3000`（188,674 节点）求解直接失败，返回 `0xC0000005`（访问违例），日志停在
-PaStiX 打完 `N / nnz` 那一行。同一族更小的点全部正常。
-
-**先证伪「这是 `OUTPUT=3D` 的代价」**（这是最像的嫌疑 —— D8 的外纤维就是靠它拿的）。
-把 deck 里 `*NODE FILE, OUTPUT=3D` 与 `*EL FILE, OUTPUT=3D` 都改回无 `OUTPUT=3D`，
-其余一字不动，实测：
-
-```
-number of equations       3489495     <- 分毫不变
-nnz (full)              194129961     <- 分毫不变
-<job>.12d 字节数           68750934     <- 分毫不变
-```
-
-而 `.12d` 里躺着一大片 `is expanded into a "C3D8I L" element with topology:` ——
-**壳展开是 CalculiX 的固有行为**（它先期把壳摊成实体再分解），`OUTPUT=3D` 只决定往 `.frd`
-写什么。所以这条路上**没有便宜可捡**。（复现：`_probe_b6/out3d_off/`）
-
-**账本**（三点实测，"方程数 / 节点数" 一致到 3 位有效数字）：
-
-| case | 壳节点 | 方程数 | 结果 |
-|---|---|---|---|
-| 基线 d2000_l2000 t3 | 158,524 | 2,359,690 | ok |
-| d2000_l2000 t2（同网格） | 158,548 | 同量级 | ok，249 s |
-| d1600_l2000 | 128,058 | ~1.91 M | ok，156 s |
-| d1600_l3000 | 188,674 | 2,816,466 | ✗ `0xC0000005` |
-| d2000_l3000 | 233,815 | 3,489,495 | ✗ 提交内存耗尽 |
-
-⇒ **方程数 ≈ 14.9 × 壳节点数**，而 **节点数 ≈ 壳面积 / 85.2 mm²**。
-
-**「提交内存耗尽」是量出来的，不是猜的**：那台机器 `MemTotal 16491000 kB` +
-`SwapTotal 16866936 kB` ≈ 33 GB 提交上限；ccx 咬满时**连 shell 自己的 `ls` 都 fork 不出来**，
-stderr 报 `exit code 0xC000012D`（正是 `STATUS_COMMITMENT_LIMIT`）+
-`fork: Resource temporarily unavailable`。
-
-**这条账怎么用**：想只查规模不必跑完 —— 起 ccx、读到 `number of equations` 就 `taskkill`，
-省十几分钟（`_probe_b6/nread/` 就是这么量出基线的 2,359,690）。给柱壳加尺寸时，
-先按 `节点数 ≈ 面积 / 85.2` 估一遍，再决定这个点值不值得发。
-
-**它改了口径（D27）**：尺寸维改成**只朝收缩方向**外推。柱壳基线自己（158,524 节点）已经
-贴着这道墙，而**长度只放大 20 %** 就触墙（`d2000_l2400` 建出 188,555 节点，与实测失败的
-188,674 几乎重合）。这**不破任何已注册判据** —— 锚点 `D2000×L2000×t3` 只采样一次，
-「比锚点小」与「比锚点大」的外推含量相同，而 D25 只要求"偏离锚点"，从不规定方向。
-缺口记进 `manifest.limitations`，而不是悄悄丢掉。
-
-⚠️ 这道上限**不是常数**：机器在那次崩溃后把页面文件从 16.87 GB 自动扩到 24.98 GB。
-上面记的是**当时**的实测值，扩容后未再复测放大方向。
-
----
+**已拆分 → 见 [DECISIONS.md](DECISIONS.md)**（2026-10-24 W3-3）。
 
 ## 6. 验证
 
@@ -854,7 +617,7 @@ VERDICT: PASS - 7 checks
 同口径比（ccx 逐节点 10.6048 vs abaqus 逐节点 8.6879）差 **18.08 %**，这不是可用判据——
 von Mises 峰值落在梁肋交汇的几何奇异点上，只由各家的平滑/外插选择主导，本身随网格变化。
 所以本工程把**逐节点中位差**（0.31 %）作为应力判据，峰值只作报告。
-**外纤维是中面以外的新通道**：`OUTPUT=2D` 时代它根本不在结果里，见 §5.1 与 §5.6。
+**外纤维是中面以外的新通道**：`OUTPUT=2D` 时代它根本不在结果里，见 DECISIONS.md §5.1 与 §5.6。
 
 ### 7.3 参数化扫描 `--sweep "airfoil.n_ribs=3,5,7" "airfoil.chord=800,1000"`
 
@@ -1195,328 +958,7 @@ diagnostics/           # 探针 + 由 `abaqus python` 执行的 ODB 结构探针
 
 ---
 
-## 10. 导出数据集（M1 建，M2 整）
 
-`make_dataset.py` 把已有算例重导为**规范 case 目录**，供 `FEM-Bench-Aero` 建模集使用。
-**不重跑任何求解**——网格是确定性的，重建出的活跃节点数与归档 FRD 逐条一致。
+## 10–11. 导出数据集 / 判定·索引·划分
 
-```
-<root>/modeling/<case_id>/   发布物：CalculiX（开源）+ 真值
-<root>/_xval/<case_id>/      内部：Abaqus 交叉验证证据（商业许可，禁止发布）
-```
-
-一个 case 六件套：`spec.json` / `model.step` / `model.msh` / `model.inp` /
-`model.results.json` / `truth.json`。导出的 `spec.json` 是**重新序列化的规范形**
-（不是源文件逐字节拷贝），所以 M1 时代手写缺字段的 spec 会被补齐、两棵树归一。
-
-**两道独立闸（抓不同的错）**：
-
-| 闸 | 比什么 | 抓什么错 |
-|---|---|---|
-| 关 4 语义（`check_semantics.py`） | 由 spec 派生的应有几何计数 vs gmsh 实测计数 | 模型**建错**（如肋数不对）但数值门禁全过 |
-| 结果–网格同源（`make_dataset.py` 内建） | 重建网格活跃节点数 vs 归档 `results.json.n_nodes` | spec 与结果**不同源**（字段语义过期） |
-| 退化自检（`check_forms.py`） | 新形式参数取退化值后，逐面 bbox 指纹 vs 旧形式 | 新参数**根本没接上**（扫描出来全一个数），却一路过闸 |
-
-关 4 只看几何自洽，**看不见**「新网格 + 旧结果」这种错配——所以两道闸都要有。
-而**退化自检**是第三种错：模型对、结果对、门禁全过，但新加的参数是个空转字段。
-它比关 4 更早发现这类问题，因为退化值本来就不该改动任何东西。
-
-**去重口径**：`verify_dataset.py` 用 `model.msh` 哈希作模型指纹，**只在同一棵树内**判重复
-（跨树同哈希是交叉验证的前提，不是重复）。M2 起这是**硬闸**（重复即判 CHECK），
-清理用 `dedup_dataset.py`（默认 dry-run）。当前 **40 条/树、0 重复**。
-
-> ⚠️ **重导后必须跟一次去重**：源目录 `outputs/` 保留着重合的 `..._n_ribs5_chord1000`
-> （provenance 不动），所以 `make_dataset.py` 会把它重新导进来。顺序是
-> **`make_dataset.py` → `dedup_dataset.py --apply`**；漏了的话 `verify_dataset.py` 会判 CHECK。
-> M3/T2 又踩了一次，而且这次**多导进来两条探针目录**
-> （`stiffened_panel_600x600_s0` / `_s3`，`.msh` 与描述性命名的两条**逐字节相同**）——
-> 源目录里临时跑出来的算例要先迁到 `_superseded/` 再重导，否则去重闸会连着报两条。
-
-**M2 重导结果**：全 18 条 case 的 `model.msh` / `model.inp` / `model.step` /
-`model.results.json` **逐字节未变**（快照比对见 `m1_to_m2_hash_snapshot.json`），
-只有 `spec.json`（多出 `structure` 块）与 `truth.json`（族标签 + spec 哈希）更新。
-
-**M3/T5 入库结果**：加入 `naca4412_wingbox_str3_T`，两棵树 8 → 9 条；
-去重后关 3 **9/9**、关 4 **18/18**、自洽 **18/18**、退化自检 **4/4**、
-9 条种子分组回归 **9/9 逐位一致**（blade 路径一个字节都没动）。
-
-**M3/T2 入库结果**：加入 `stiffened_panel_600x600`（无长桁）与
-`stiffened_panel_600x600_str3`（3 根 blade 长桁），两棵树 9 → **11 条**；
-关 4 **22/22 PASS**（翼盒 8 项／平板 4 项，两棵树各一遍）、
-`verify_dataset.py` 自洽 **22/22 OK**、跨树网格 **11/11 一致**、树内重复 **0**、
-退化自检 **8/8 PASS**（T2 4/4 + T5 4/4）、9 条种子分组回归 **9/9 逐位一致**。
-
-随库留下三份平板关 3 日志，**按角色分开**：`gate3_panel_coarse6mm.log`（被 D9 取代的 6 mm 两条算例）、
-`gate3_panel_fine.log`（素板 3 mm —— 证明 0.800 % 是离散化的**唯一依据**，必须落盘，不能只留在会话里）、
-`gate3_panel.log`（**3 mm 归档**，2/2 PASS）。
-
-**D8 / D9 重导结果（2026-10-03）**：ccx 侧 11 条全部重解重导；Abaqus 侧 9 条翼盒只重归纳
-（`resummarize.py`，**不花许可**）+ 2 条平板重解重导。两棵树都回到 11 条（导出会把源目录里的
-重复件带回来，所以重导**必须**跟一次 `dedup_dataset.py --apply`）。
-
-- 对面 `_snap_abq_before.json`：**0 added / 0 removed / 30 changed**，**全部落在 `_xval/`**，
-  `modeling/` **零变更**（9 翼盒 ×「结果 + 真值」；2 平板 × 整 6 卡）。
-- 对面 `_snap_d8_before.json`（D8 前，全量）：**78 changed** = 13×`model.inp`
-  （ccx 11 条加了 `*FILE, OUTPUT=3D`，加 Abaqus 2 条平板换了网格）、
-  4×`model.msh`（**只有那两条平板**）、4×`spec.json`、22×`results.json`、22×`truth.json`、
-  13×`model.step`（几何没变，变的是**文件头时间戳**）。
-- **翼盒 `model.msh` 一个字节没动 ⇒ M2 那条「9 条种子逐字节不变」的硬闸活着。**
-
-**D10 重跑重导结果（2026-10-03，同日第三轮）**：只动了两条 `chord800` 的网格 ——
-它们原在后梁腹板四角各留一个三角（两树合计 24 个）。两条 ccx + 两条 abaqus 重解，
-两棵树重导，再跑一次 `dedup_dataset.py --apply`。
-
-- 对面 `_snap_abq_before.json`：**0 added / 0 removed / 46 changed**（132 文件）；
-  按目录 `_xval 36 / modeling 10` —— **`modeling/` 那 10 处正是两条 chord800 × 5 个文件**
-  （inp / msh / results / step / truth），其余 9 条 ccx 归档**一个字节没动**。
-- 两条重解后**零三角**，`verify_solvers` 各 **PASS - 7 checks**：
-  `ribs3_chord800` max|u| 差 0.224 %、逐节点中位差 0.12 %；`ribs5_chord800` 0.355 % / 0.25 %。
-  验收：关 4 **22/22**、自洽 **22/22 OK**（含新第 8 项 `no_tri3`）、跨树网格 **11/11 一致**、
-  关 3 翼盒 **9/9**、退化自检 **8/8**、树内重复 **0**。
-- **分组回归如实报 7/9**：指纹含单元数与质量，两条 DIFF **只差 `mesh` 块** ——
-  `counts` / `topology_geometry` / `groups` 全部 SAME，说明**几何分组零扰动**。
-  **基线已重签**（复验 **9/9 PASS**），旧基线留档 `regress_baseline_groups_pre_d10.json`，
-  7/9 的原始输出留档 `regress_groups_d10_before_resign.log`。
-
-### 10.1 「没动归档」这件事要能被验证，而不是被相信
-
-`inp_writer` / `pipeline` 为了支持第二结构族做了重构（BC 节点、厚度表、约束自由度、
-压力作用组全部改成 builder 声明）。重构前后的正确断言不是「大概没影响」，而是
-**一条老算例的字节都不许变**。`diagnostics/hash_manifest.py` 就是干这个的：
-
-```
-cd feagpt_repro
-python diagnostics/hash_manifest.py write FEM-Bench-Aero/snap_before.json   # 动手前
-#   ... 重构 + 重新导库 ...
-python diagnostics/hash_manifest.py diff  snap_before.json FEM-Bench-Aero \
-       --only modeling --only _xval --gate changed        # 只看算例，0 变更为通过
-```
-
-实测（快照 = T5 后 / T2 前的 116 文件全树）：
-
-```
-$ python diagnostics/hash_manifest.py diff ../_snap_before.json ../FEM-Bench-Aero --quiet
-26 added, 0 removed, 5 changed (116 -> 142 files)
-  added,   by directory: (tree root) 2, _xval 12, modeling 12
-  changed, by directory: (tree root) 5
-  changed, by file name: 1x README.md, 1x dedup_report.json, 1x gate3_panel.log, 1x gate4.json, 1x verify_report.json
-
-$ python diagnostics/hash_manifest.py diff ../_snap_before.json ../FEM-Bench-Aero \
-         --only modeling --only _xval --gate changed --quiet
-24 added, 0 removed, 0 changed (108 -> 132 files)     # exit 0
-```
-
-读法：**108 个已归档模型文件，0 个变更**；新增的 24 个正好是 2 条新算例 ×6 文件 ×2 树；
-全树视图里那 5 个 changed 全部落在**树根的报告文件**上（README / 去重报告 / 两道门禁日志），
-一个都没有落进 `modeling/` 或 `_xval/`。`--gate changed` 让这件事有个退出码，
-而不是靠人数 5 行输出。**重构对老算例是字节级中性的——这条现在是可复跑的，不是口头保证。**
-
-> 诚实说明：`gate3_panel.log` 之所以在 changed 里，是因为 §6.2 ③ 那个「印了没量过的数」的缺陷
-> 修完之后，我把平板日志**重新生成**了一遍。这正是这个视图的用处——它不会让你**忘记**自己动过什么。
-
-> `--gate any`（默认）会在有任何增/删/改时退出 1，适合「本应完全不动」的重构；
-> `--gate changed` 只对**幸存文件的字节变化**报警，增删只作报告——适合「加了新算例、
-> 但不许碰老的」这种场景。`--only` 是作用域选择器，对两份快照同时生效。
-
----
-
-## 11. 判定 / 索引 / 划分（M4）
-
-`truth.json` 回答的是「**这一条**建得对不对」。M4 回答的是只有**跨 case** 才成立的问题：
-哪些 case 是同一个模型、每条是干什么用的、谁进 train/val/test。三件产物，规则与执行分开：
-
-| 产物 | 位置 | 干什么 |
-|---|---|---|
-| `feagpt/manifest.py` | 代码 | **规则层**：等价类、角色、划分表 |
-| `make_manifest.py` | 代码 | 生成 `manifest.json`（机器读）+ `MANIFEST.md`（人读索引） |
-| `eval_dataset.py` | 代码 | **独立复算** manifest 的每一处声明 + 5 道集级闸（带退出码） |
-| `manifest.json` / `MANIFEST.md` / `eval_report.json` | `FEM-Bench-Aero/` | 产物：清单 / 索引 / 校验报告 |
-
-```
-cd feagpt_repro
-python make_manifest.py --root ../FEM-Bench-Aero \
-       --json ../FEM-Bench-Aero/manifest.json --md ../FEM-Bench-Aero/MANIFEST.md
-python eval_dataset.py  --root ../FEM-Bench-Aero --json ../FEM-Bench-Aero/eval_report.json
-```
-
-### 11.1 等价类：什么叫「同一个模型」
-
-划分的**单元是等价类，不是单条 case**。同一个模型的两条 case 若被分到 train 和 test 两边，
-就是把答案递给了模型 —— 而**所有数值门禁一条都不会报警**。这是 M4 存在的首要理由。
-
-等价类用**白名单**定义：结构族 + 几何 + 壁厚。明确排除 `mesh`（网格尺寸/算法）、`load`、
-`bc`、`analysis`、`name`。理由是这些字段描述的是**怎么算**，不是**算什么**：同一条 case
-换个网格尺寸不是另一个零件。而**壁厚算几何**，即使它不改变曲面 —— 两个只在蒙皮厚度上不同的
-盒段是不同的零件，它们的 `model.msh` 却可能逐字节相同（去重闸看不见这个差别，只能用等价类看）。
-
-两条互补规则各推一遍，**必须得到同一个划分**：
-
-| 推导 | 规则 | 作用 |
-|---|---|---|
-| `geometry_class` | 白名单：只取几何字段 | 主口径。spec 以后长出新字段（求解器选项、报告开关）默认**不算**几何，不会把类打散 |
-| `geometry_class_complement` | 黑名单：去掉一切「处理类」字段 | 交叉校验。两者划分不一致 ⇒ 某个字段的归属错了 |
-
-同类成员还额外要求 `truth.json` 的 `design` 与几何读数**完全一致** —— 这是**跨文件佐证**：
-类是从 `spec.json` 推出来的，这条要求它和几何构建实测对得上。
-
-实测：**11 条 → 10 类**。唯一的多成员类是 `naca4412_wingbox` 与它自己的网格算法对照
-（`..._recombination_algorithm3`，只差 `mesh.recombination_algorithm`）—— 两条只能同集。
-
-### 11.2 角色：每条 case 是干什么用的
-
-`infer_role` 是**有序判定**，第一条命中即返回。顺序本身是有意义的：
-
-| 角色 | 判据 | 为什么单独拎出来 |
-|---|---|---|
-| `ablation` | `mesh.recombination_algorithm != 0` | 它研究的是**网格**不是结构；必须和它消融的几何待在同一集 |
-| `degenerate` | 平板族且无长桁 | 退化成有闭式解（Navier）的光板 —— 和「扫描上的一个点」不是一回事 |
-| `feature` | 有长桁 / 引入新截面 | bench 要考的泛化目标 |
-| `baseline` | 族默认参数（各族的**中性值**都在 `manifest.py` 里显式声明：翼盒 5 肋/1000 弦、柱壳 8str/3frm、开孔板 λ=0.1 居中） | 所有定性的参照 |
-| `sweep` | 其余 | 参数扫描点 |
-
-`ablation` 排在最前：一条钉了网格算法的 case 是**网格实验**，叫成别的名字就会藏掉那个唯一
-决定它该在哪边的性质。实测 `baseline 1 / ablation 1 / sweep 5 / feature 3 / degenerate 1`。
-
-### 11.3 划分：声明式留出区域（M5 起由规则取代显式表）
-
-M4 用的是一张**显式表**（case → split + 一句理由）：11 条样本下，划分是「模型该泛化到什么
-形式」的判断，显式表是唯一能在看板上被逐行审阅的形状。到 200 条它就不 scale 了，所以 **M5
-换成规则**。
-
-**规则 = 每族声明「留出区域」**（`feagpt/manifest.py :: HOLDOUT_REGIONS`，声明）+ 一个
-**首个命中即定、未命中默认 `train`** 的机制（`split_of(spec)`，代码）：
-
-| 族 | 顺序 | 谓词 | → | 说明 |
-|---|---|---|---|---|
-| wingbox | 1 | 后掠 > 0 **且** 锥度 ≠ 1（D15） | **test** | 两个平面形状自由度同时动 = 新平面形状 |
-| wingbox | 2 | 含长桁且截面形式 ∉ `FORMS_ANCHORED_IN_TRAIN`（blade） | **test** | 新截面形式 |
-| wingbox | 3 | 肋 > 默认(5) **且** 弦 ≠ 默认(1000) | **test** | 双维外推 |
-| wingbox | 4 | 腹板 > 1 **且** 偏离等分（D24） | **test** | 腹板数 × 位置双维（`_wingbox_web_double_extrapolation`，先于 offcentre——两者对偏心案一致，但双维语义更准） |
-| wingbox | 5 | 有腹板且偏离等分（D24） | **test** | 新形式：闭室不等面积，Bredt-Batho 不再描述该截面 |
-| wingbox | 6 | 腹板 > 1 且位置仍等分（D24） | **val** | 腹板数单维外推（肋规则的直接类比） |
-| wingbox | 7 | 平面形状单维外推：后掠 > 20° 或 锥度 < 0.6（D16） | **val** | 平面形状维单维外推 |
-| wingbox | 8 | 肋 > 默认(5) | **val** | 单维外推 |
-| stiffened_panel | 1 | `(L,W) ≠ (600,600)`（D16 路 A：**任何**新尺寸，不限光板） | **val** | 尺寸维单维外推 |
-| stiffened_panel | 2 | 长桁数 > 0 | **test** | 族内新形式 |
-| fuselage_barrel | 1 | 长桁截面形式 ∉ train 已锚定（D18） | **test** | 新截面形式（今日无匹配 —— blade 已锚定） |
-| fuselage_barrel | 2 | 长桁 > 8 **且** 框 > 3（D18） | **test** | 双维外推 |
-| fuselage_barrel | 3 | 尺寸·壁厚 **≥2 维**同时 ≠ 精确锚点 `D2000×L2000×t3`（D25，含连续 × 计数组合） | **test** | 连续量双维外推 |
-| fuselage_barrel | 4 | 长桁 或 框**之一**越界（D18） | **val** | 柱壳版 ribs 规则：单维外推 |
-| fuselage_barrel | 5 | 尺寸·壁厚**单维**外推：直径 / 长度 / 壳厚之一 ≠ 锚点（D25） | **val** | 尺寸维单维外推 |
-| open_hole_panel | 1 | 孔心偏离形心（D23） | **test** | 孔位置 = 离散形式轴：偏心即 test、任何 λ（Howland 只描述中心孔） |
-| open_hole_panel | 2 | λ 与 (L,W) **同时** ≠ 精确锚点 λ 0.1 / 400×200（D28，两轴都用 `!=`，对齐 D25 读法） | **test** | 双维角点（声明前会先撞 λ val 谓词落 val——入库前补上，见 §7.19 同款缺陷类） |
-| open_hole_panel | 3 | 居中且 λ > 0.1（D23） | **val** | 孔径比单维外推 |
-| open_hole_panel | 4 | 居中且 (L,W) ≠ 400×200（D23 即声明，batch7 首条数据） | **val** | 尺寸维单维外推 |
-
-⚠️ 表序**必须照 `manifest.py :: HOLDOUT_REGIONS` 的实际顺序**（「首个命中即定」——b7 就发现
-本表旧版把柱壳 `single(val)` 排在 `size_double(test)` 之前、开孔板整族缺行：照旧表读，
-「长桁 9 + D1800」会落 val 而代码判 test。改声明/加族时先改代码、再照 `HOLDOUT_REGIONS` 抄表）。
-
-判据可陈述：**超过默认值即视为外推**；外推更深 / 引入新形式 → test，单维外推 → val，
-其余 → train。**首个命中即定**，所以每族的「兼具」谓词都排在它的单维谓词前面 ——
-这就是那条从 11 条里反推出来、又能推广到新 case / 新族的规则。
-
-> ⚠️ 上表是 **D12 锁定的那 11 条**的划分（口径 A）：**train 7 / val 1 / test 3**，10 个等价类、
-> **0 个跨 split**。三条 test 各考一种泛化：
->
-> - `naca4412_wingbox_n_ribs7_chord800` —— **双维参数外推**（肋最多 + 弦最短）
-> - `naca4412_wingbox_str3_T` —— **新截面形式**（T 形翼缘）
-> - `stiffened_panel_600x600_str3` —— **第二族族内新形式**（光板 ⇒ 含长桁）
->
-> **当前全树（40 条）的实测划分 = train 16 / val 13 / test 11**（翼盒 13/5/5、平板 1/2/1、柱壳 1/3/2、
-> 开孔板 1/3/3），**39 个等价类 / 0 个跨 split**。`D12_LOCKED_SPLIT` 仍逐条成立（11/11），
-> 规则新增声明不会改写它。
->
-> **决策 D12（2026-10-04）** 锁定了「11 条怎么切」= 口径 A；**决策 D13** 定了「M4 显式表 → 规则」
-> 的口径 = 声明式留出、未命中默认 train；**D15** 加「兼具平面形状 → test」；**D16** 加
-> 「平面形状单维外推 / 平板尺寸单维外推 → val」；**D18** 加柱壳三条（单维 → val、双维 → test、新截面 → test）；
-> **D23（2026-10-06）** 加开孔板三条：**偏心孔 = 新形式 → test**、λ 单维外推 → val、居中默认孔 → train
-> （常驻闸 `check_forms :: T4.role-and-split` 锁口径）；**D24（2026-10-06）** 加多闭室翼盒三条，
-> **按 D16 类推**：首实例（腹板 1，等分）→ train、腹板数单维外推（腹板 2，仍等分）→ val、
-> **腹板偏心 = 新形式 → test**（常驻闸 `check_forms :: T6.role-and-split` 锁口径）。
-> **D25（2026-10-07）** 加柱壳**尺寸·壁厚维**：判据是**精确锚点** `D2000×L2000×t3` 而不是阈值
-> （计数维有 train 能「覆盖」的区间，连续维没有——锚点只采样了一次，两个方向的外推含量相同）；
-> 单维 → val、≥2 维（含连续 × 计数组合）→ test。**D26** 钉死 T3 的网格 cap
-> `0.4 × min(stringer_height, frame_height)` 与整体尺寸无关（尺寸点不需要改 cap）；
-> **D27** 尺寸维**只朝收缩方向**外推（ccx 壳展开内存墙，见 §5.8），「放大臂」缺口记 `limitations`。
-> **D28（2026-10-08）** 加开孔板**双维角点**谓词：λ 与 (L,W) **同时** ≠ 锚点（λ 0.1 / 400×200）→ test，
-> 插在偏心 test 之后、两个 val 谓词**之前**；两轴都用 `!=`（对齐 D25 的「偏离即算」读法，
-> λ 向下的点不被 `>` 漏接）。声明前这样的点会先撞 λ val 谓词落 val（「首个命中」的宽松读法，
-> D16/D25 同款缺陷类）——b7 的 `600x300_d60` 是它管的第一条数据，入库前谓词已补上。
-> **规则必须逐条复现 D12 的 A**：为杜绝「改声明悄悄改了旧划分」，`manifest.py` 冻结了
-> `D12_LOCKED_SPLIT`，`eval_dataset` 用集级闸 `rule_reproduces_D12` 断言 —— 实测 **11/11 完全一致**，
-> 所以 D12 无需重签。
-
-**缺口如实记账**（写进 `manifest.json` 的 `limitations`，不藏）：
-
-- **柱壳族 val 曾为空，batch6 已补齐（D25）**：batch3 只落了 train + test（`str8_frm3` / `str12_frm4`），
-  柱壳量不到「单维外推」。batch6 用三条尺寸单维外推（d1800 / l1600 / t2 ⇒ **val**）+ 一条双维
-  （d1600+l1600 ⇒ **test**）补上——柱壳的 val 现在量的是**连续尺寸维**的单维外推。
-- **val 绝对数量仍偏少**：全树 13 条，且集中在「单维外推」上；**两个自由度同时外推的 test 只有 6 条**
-  （`n_ribs7_chord800`、`fuselage_..._str12_frm4`、`fuselage_..._d1600_l1600`、`sweep20_taper060`、`sweep40_taper040`、
-  `open_hole_..._600x300_d60`）。
-- **开孔板尺寸维 val 已落地（batch7，D28 载体）**：`600x300_d30` 是尺寸维首条数据，
-  独立证据 = **尺寸不变性探针**（同 λ 必同 Kt：ccx 0.629 % / abaqus 1.539 %，`_probe_b7/_b7_size_invariance.json`）。
-  **开孔板厚度维未声明划分**（拍板：对齐平板族 D16 口径）：厚度 ≠ 2 而居中、λ 不变的点将按默认落 train，
-  数据集暂无此类点；后续放量厚度维须先补声明（`make_manifest` limitations 已记账）。
-- **柱壳尺寸维只有收缩臂（D27）**：放大方向被 ccx 内存墙挡住（§5.8），缺口记 `limitations`，不悄悄丢。
-- **新族未声明 ⇒ `unassigned` ⇒ 失败**：这是「该补声明了」的信号，不是可以糊过去的默认值。
-  （`every_case_assigned` 抓这个；顺带修了一个真 bug —— 早先 `eval_dataset` 遇到 `unassigned`
-  会 `KeyError` 崩溃，即「校验器被它本该报告的情形打死」。）
-- **柱壳的两条工具边界**（D19 长桁数包络拒绝 / D22 非 blade 截面拒绝）也写进 `limitations`，
-  连同 D20 的「交叉判据换位移口径」一起，让下游看得见「这一族与另两族的判据不完全同构」。
-
-### 11.4 闸会咬人（先证明，再算数）
-
-`eval_dataset.py` 复算 **29 项**，每一项都从**磁盘重来一遍**（文件 sha / spec 哈希 / 等价类 /
-角色 / 读数 / 三角数 / minJ），**不读 manifest 里的派生值来验它自己**：
-
-```
-$ python eval_dataset.py --root ../FEM-Bench-Aero
-=== manifest vs recomputation (29 checks)
-  [OK  ] recompute spec_sha256   ...   [OK  ] no_class_spans_splits
-  ...  [OK  ] rule_reproduces_D12
-cases 40  classes 39  splits {test:11, train:16, val:13}
-  fuselage_barrel: {train:1, val:3, test:2}
-  open_hole_panel: {train:1, val:3, test:3}
-  stiffened_panel: {train:1, val:2, test:1}
-  wingbox:        {train:13, val:5, test:5}
-VERDICT: PASS
-```
-
-负向测试（都留了读数）：
-
-1. **改产物**：手改 `manifest.json` 里一条 split ⇒ `recompute split` FAIL +
-   `manifest_summary.splits` FAIL，退出码 2。
-2. **拆等价类**：把基线与它的网格消融对照分到 train/test 两边 ⇒ `no_class_spans_splits` FAIL，
-   点名 `a796c5b1d217` 跨 `["test","train"]`。
-3. **改声明**（M5 新增）：把「单维外推」由 `val` 改判 `test` ⇒ `rule_reproduces_D12` FAIL，
-   点名 `naca4412_wingbox_n_ribs7_chord1000: locked=val rule=test`。
-4. **未声明族**（M5 新增）：清掉某族的声明 ⇒ `every_case_assigned` FAIL（点名那两条 case）
-   + `rule_reproduces_D12` FAIL + `every_family_has_test` FAIL，**不再崩溃**。
-
-**确定性**：`make_manifest` 无时间戳、无主机名，连跑两次（json 与 md）**逐字节一致** ——
-「变没变」是一次 `diff`，不是回忆。看板那边还多一道：`_dash_check.js` 会把看板里的划分表
-**读回 `manifest.json` 逐条比对**（`split` 与 `split_reason` 都比），防止看板印出没落盘的数。
-
-### 11.5 被否掉的方案（也留读数）
-
-最硬的等价类判据本该是「几何相同 ⇔ STEP 文件逐字节相同」——它完全绕开「哪些字段算几何」
-这个人为主张。**实测不成立**：
-
-```
-$ head -3 naca4412_wingbox/model.step
-FILE_NAME('Open CASCADE Shape Model','2026-10-03T09:47:34', ...
-
-$ sha256sum naca4412_wingbox/model.step naca4412_wingbox_recombination_algorithm3/model.step
-66f515b4…  naca4412_wingbox/model.step
-10f8eae7…  naca4412_wingbox_recombination_algorithm3/model.step
-# 剥掉时间戳再对一次，仍然不同：
-25dea842…  vs  c813d6af…
-```
-
-- HEADER 带导出时间戳 ⇒ 裸 sha 必然不同；
-- **剥掉时间戳后仍不同**（差 31 字节）—— 两个文件是**不同次导出**，导出本身有非确定项。
-
-⇒ STEP 不能当几何指纹。改用 spec 字段双推导（§11.1），并把这次否掉的读数留在这里，
-省得下次有人再走一遍。
+**已拆分 → 见 [SPEC.md](SPEC.md)**（2026-10-24 W3-3）。

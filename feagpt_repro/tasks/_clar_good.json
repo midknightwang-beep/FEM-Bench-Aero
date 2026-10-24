@@ -1,0 +1,65 @@
+{
+ "task_id": "L2_stiffened_panel_600x600",
+ "questions": [
+  {
+   "field": "n_stringers",
+   "question": "请给出长桁数量与截面形式？"
+  }
+ ],
+ "final_spec": {
+  "name": "stiffened_panel_600x600",
+  "description": "Stiffened panel 600.0 x 600.0 mm, 0 stringer(s)",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100.0,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-09,
+   "yield_strength": 345.0
+  },
+  "structure": {
+   "family": "stiffened_panel",
+   "params": {
+    "length": 600.0,
+    "width": 600.0,
+    "thickness": 2.0,
+    "n_stringers": 0
+   }
+  },
+  "mesh": {
+   "element_order": 1,
+   "size_chord": 3.0,
+   "size_span": 3.0,
+   "refine_at_leading_edge": true,
+   "leading_edge_threshold": 1.6,
+   "min_jacobian": 0.3,
+   "algorithm_2d": 6,
+   "recombine": true,
+   "recombination_algorithm": 0
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.0001,
+   "direction": [
+    0.0,
+    0.0,
+    -1.0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {
+   "solver": "auto",
+   "step_type": "static",
+   "incremental": true,
+   "initial_increment": 0.25,
+   "total_time": 1.0,
+   "outputs": [
+    "U",
+    "S"
+   ]
+  },
+  "extra": {}
+ }
+}
