@@ -19,6 +19,9 @@
 | C-011 | boundary_holdout 6 条（翼盒 train 边界锚点整类留出 28.6%）；**真内插 ID test = v1.1** | feagpt_repro/tasks/tasks.jsonl | `python make_tasks.py --dry` | 2026-10-24 | GATED | 6/21 | active |
 | C-012 | schema 双份 55/55 过 + 反向探针（死 airfoil 拒 / 越界 55° 拒） | FEM-Bench-Aero/schema_truth.json, schema_task.json | `python validate_schema.py` | 2026-10-24 | GATED | 55/55 | active |
 | C-013 | 数据本体可获取：v1.0-data.tar.gz 86 MB + SHA256SUMS + fetch_data 全链验证 | F:/FEA_Archive_20261024/SHA256SUMS.txt | `python fetch_data.py --src <path>` | 2026-10-24 | GATED | 55/55 | active |
+| C-017 | **L1 spec-copy smoke（W4b，非模型基线）**：考卷 19 条 SFR **0/19**（boundary 0/6、extrap 0/13）；归因 airfoil.chord×12 + bc.clamp×7——无 schema 约束解码时 LLM 指令遵循失败（airfoil 整组缺失/bc 块丢失），非建模能力结论；n=19 UNDERPOWERED | feagpt_repro/eval_runs/baseline_scorecard.json | `python score_baseline.py candidates` | 2026-10-24 | GATED (spec-only) | 19/19 | active |
+| C-018 | 「LLM 基线 TSR 2/2 = 100%」 | eval_runs/baseline_scorecard.json（22:08 旧快照） | — | 2026-10-24 | — | 2 条 | **superseded**（partial + skip_solve + 旧快照，被 C-017 取代；红线 R11/R14） |
+| C-019 | 评测器负控 14/14（PC-1 + NC-1..13，含契约拒绝/L3 删块） | feagpt_repro/eval_runs/negative_controls.json | `python negative_controls.py` | 2026-10-24 | GATED | 14 条 | active |
 | C-014 | 「关 3 55/55 全部双码验证」 | — | — | 2026-10-24 | — | — | **retracted**（被 C-003 取代；reported-only 不得计入 PASS，红线 R2） |
 | C-015 | 「30 条人工 NL」 | tasks/nl_human.jsonl | — | 2026-10-24 | — | 30 | **superseded**（实为 template_human_designed，红线 R4；老王人工抽检后可升级） |
 | C-016 | 「ID test 测内插」 | — | — | 2026-10-24 | — | — | **retracted**（边界留出 ≠ 内插，被 C-011 取代；内插留出 = v1.1） |
