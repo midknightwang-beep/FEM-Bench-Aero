@@ -1,0 +1,505 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fem-bench-aero.local/schema/v1.0/task-spec.json",
+  "title": "FEM-Bench-Aero v1.0 任务层规范 spec（A1 题型候选提交格式）",
+  "description": "考卷输入的规范化 FEASpec。发布数据集本体不动；本 schema 校验【任务层】candidate 提交。范围外参数 = 非法（配合拒答指标，考显式拒绝而非静默建错）。数值范围 = v1.0 发布域（实测值域）。",
+  "type": "object",
+  "required": [
+    "name",
+    "material",
+    "structure",
+    "mesh",
+    "load",
+    "bc",
+    "analysis"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "material": {
+      "type": "object",
+      "required": [
+        "name",
+        "youngs_modulus",
+        "poisson_ratio",
+        "density",
+        "yield_strength"
+      ],
+      "properties": {
+        "name": {
+          "enum": [
+            "Aluminium 2024-T3",
+            "CFRP-LAYUP"
+          ]
+        },
+        "youngs_modulus": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "poisson_ratio": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 0.5
+        },
+        "density": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "yield_strength": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "structure": {
+      "type": "object",
+      "required": [
+        "family",
+        "params"
+      ],
+      "properties": {
+        "family": {
+          "enum": [
+            "wingbox",
+            "open_hole_panel",
+            "fuselage_barrel",
+            "stiffened_panel"
+          ]
+        }
+      }
+    },
+    "mesh": {
+      "type": "object",
+      "properties": {
+        "size_chord": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "size_span": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "order": {
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "refine_le": {
+          "type": "boolean"
+        }
+      }
+    },
+    "load": {
+      "type": "object",
+      "required": [
+        "kind",
+        "magnitude",
+        "direction"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "tip_force",
+            "pressure"
+          ]
+        },
+        "magnitude": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "direction": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        }
+      }
+    },
+    "bc": {
+      "type": "object"
+    },
+    "analysis": {
+      "type": "object"
+    },
+    "extra": {
+      "type": "object"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "structure": {
+            "properties": {
+              "family": {
+                "const": "wingbox"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "airfoil"
+        ],
+        "properties": {
+          "airfoil": {
+            "type": "object",
+            "required": [
+              "code",
+              "chord",
+              "span",
+              "skin_thickness",
+              "n_ribs",
+              "rib_thickness",
+              "spar_chordwise",
+              "n_stringers_per_skin",
+              "stringer_height",
+              "stringer_thickness",
+              "stringer_kind",
+              "stringer_flange_width",
+              "tip_chord_ratio",
+              "sweep_deg",
+              "web_chordwise"
+            ],
+            "properties": {
+              "code": {
+                "enum": [
+                  "4412"
+                ]
+              },
+              "chord": {
+                "type": "number",
+                "enum": [
+                  800.0,
+                  1000.0
+                ]
+              },
+              "span": {
+                "type": "number",
+                "enum": [
+                  1600.0,
+                  2000.0,
+                  2400.0,
+                  3000.0
+                ]
+              },
+              "skin_thickness": {
+                "type": "number",
+                "enum": [
+                  1.5,
+                  2.0,
+                  3.0,
+                  4.0
+                ]
+              },
+              "n_ribs": {
+                "type": "number",
+                "enum": [
+                  3.0,
+                  5.0,
+                  7.0,
+                  9.0
+                ]
+              },
+              "rib_thickness": {
+                "type": "number",
+                "enum": [
+                  4.0
+                ]
+              },
+              "spar_chordwise": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "n_stringers_per_skin": {
+                "type": "number",
+                "enum": [
+                  0.0,
+                  3.0,
+                  5.0
+                ]
+              },
+              "stringer_height": {
+                "type": "number",
+                "enum": [
+                  20.0
+                ]
+              },
+              "stringer_thickness": {
+                "type": "number",
+                "enum": [
+                  2.5
+                ]
+              },
+              "stringer_kind": {
+                "enum": [
+                  "blade",
+                  "T"
+                ]
+              },
+              "stringer_flange_width": {
+                "type": "number",
+                "enum": [
+                  30.0
+                ]
+              },
+              "tip_chord_ratio": {
+                "type": "number",
+                "enum": [
+                  0.4,
+                  0.6,
+                  0.8,
+                  0.9,
+                  1.0
+                ]
+              },
+              "sweep_deg": {
+                "type": "number",
+                "enum": [
+                  0.0,
+                  10.0,
+                  20.0,
+                  30.0,
+                  35.0,
+                  40.0
+                ]
+              },
+              "web_chordwise": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "structure": {
+            "properties": {
+              "family": {
+                "const": "open_hole_panel"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "structure": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "required": [
+                  "length",
+                  "width",
+                  "thickness",
+                  "hole_d"
+                ],
+                "properties": {
+                  "length": {
+                    "type": "number",
+                    "enum": [
+                      400.0,
+                      600.0
+                    ]
+                  },
+                  "width": {
+                    "type": "number",
+                    "enum": [
+                      200.0,
+                      300.0
+                    ]
+                  },
+                  "thickness": {
+                    "type": "number",
+                    "enum": [
+                      2.0
+                    ]
+                  },
+                  "hole_d": {
+                    "type": "number",
+                    "enum": [
+                      20.0,
+                      30.0,
+                      40.0,
+                      50.0,
+                      60.0
+                    ]
+                  },
+                  "layup": {
+                    "type": "object",
+                    "required": [
+                      "plies"
+                    ],
+                    "properties": {
+                      "plies": {
+                        "type": "array",
+                        "minItems": 2
+                      }
+                    }
+                  },
+                  "hole_x": {
+                    "type": "number"
+                  },
+                  "hole_y": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "airfoil": {
+            "not": {}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "structure": {
+            "properties": {
+              "family": {
+                "const": "fuselage_barrel"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "structure": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "required": [
+                  "diameter",
+                  "length",
+                  "thickness",
+                  "n_stringers",
+                  "n_frames"
+                ],
+                "properties": {
+                  "diameter": {
+                    "type": "number",
+                    "enum": [
+                      1600.0,
+                      1800.0,
+                      2000.0
+                    ]
+                  },
+                  "length": {
+                    "type": "number",
+                    "enum": [
+                      1600.0,
+                      2000.0
+                    ]
+                  },
+                  "thickness": {
+                    "type": "number",
+                    "enum": [
+                      2.0,
+                      3.0
+                    ]
+                  },
+                  "n_stringers": {
+                    "type": "number",
+                    "enum": [
+                      8.0,
+                      12.0
+                    ]
+                  },
+                  "n_frames": {
+                    "type": "number",
+                    "enum": [
+                      3.0,
+                      4.0
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "airfoil": {
+            "not": {}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "structure": {
+            "properties": {
+              "family": {
+                "const": "stiffened_panel"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "structure": {
+            "properties": {
+              "params": {
+                "type": "object",
+                "required": [
+                  "length",
+                  "width",
+                  "thickness",
+                  "n_stringers"
+                ],
+                "properties": {
+                  "length": {
+                    "type": "number",
+                    "enum": [
+                      600.0,
+                      800.0
+                    ]
+                  },
+                  "width": {
+                    "type": "number",
+                    "enum": [
+                      600.0
+                    ]
+                  },
+                  "thickness": {
+                    "type": "number",
+                    "enum": [
+                      2.0
+                    ]
+                  },
+                  "n_stringers": {
+                    "type": "number",
+                    "enum": [
+                      0.0,
+                      3.0
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "airfoil": {
+            "not": {}
+          }
+        }
+      }
+    }
+  ]
+}

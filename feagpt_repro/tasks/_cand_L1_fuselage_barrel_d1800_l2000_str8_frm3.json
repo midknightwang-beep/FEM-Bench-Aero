@@ -1,0 +1,70 @@
+{
+ "name": "fuselage_barrel_d1800_l2000_str8_frm3",
+ "description": "柱壳尺寸/壁厚（M5 batch6 / T3，D25）：直径 2000->1800（尺寸维单维外推点；gate3 0.818% 干净，d1600 个例越线后换点；实测 max|u| 2.8907 mm）",
+ "material": {
+  "name": "Aluminium 2024-T3",
+  "youngs_modulus": 73100.0,
+  "poisson_ratio": 0.33,
+  "density": 2.78e-09,
+  "yield_strength": 345.0
+ },
+ "structure": {
+  "family": "fuselage_barrel",
+  "params": {
+   "diameter": 1800.0,
+   "length": 2000.0,
+   "thickness": 3.0,
+   "n_stringers": 8,
+   "n_frames": 3
+  }
+ },
+ "mesh": {
+  "element_order": 1,
+  "size_chord": 25.0,
+  "size_span": 25.0,
+  "refine_at_leading_edge": false,
+  "leading_edge_threshold": 1.6,
+  "min_jacobian": 0.3,
+  "algorithm_2d": 6,
+  "recombine": true,
+  "recombination_algorithm": 0
+ },
+ "load": {
+  "kind": "pressure",
+  "magnitude": 0.05,
+  "direction": [
+   0.0,
+   0.0,
+   1.0
+  ]
+ },
+ "bc": {
+  "root_surface": "root",
+  "clamp": true
+ },
+ "analysis": {
+  "solver": "auto",
+  "step_type": "static",
+  "incremental": true,
+  "initial_increment": 0.25,
+  "total_time": 1.0,
+  "outputs": [
+   "U",
+   "S"
+  ]
+ },
+ "extra": {
+  "end_shear": 50000.0,
+  "end_moment": 50000000.0,
+  "shear_axis": [
+   1.0,
+   0.0,
+   0.0
+  ],
+  "moment_axis": [
+   0.0,
+   1.0,
+   0.0
+  ]
+ }
+}
