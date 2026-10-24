@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="docx-page-size" content="A4">
   <title>基于大模型的交互式飞机有限元模型智能生成技术——项目执行交付文档</title>
+<p style="border:1px solid #94a3b8; padding:8px 12px; font-size:9.5pt; color:#334155; background:#f1f5f9;">【数字口径声明 · 2026-10-24】本文档全部规模/闸门数字以 FEM-Bench-Aero/external_numbers.md 为单一来源（由 manifest.json 等权威产物自动生成）。项目命名 FEM-Bench-Aero 为本团队内部命名（当前范围为 A 建模集），与 GitHub 公开仓库 FEM-Bench 无关联，公开发布前将评估更名。</p>
   <style>
   /* 页面规则：正文页脚居中页码；封面与目录节无页码 */
   @page {
@@ -280,7 +281,7 @@
     <div class="summary-highlights">
       <div data-component="data-card" data-title="数据集规模" data-color="primary">
         <span class="card-value">41 条 × 2 树</span>
-        <span class="card-title">CalculiX 发布树 + Abaqus 交叉验证树，40 个几何等价类</span>
+        <span class="card-title">CalculiX 发布树 + Abaqus 交叉验证树，54 个几何等价类</span>
       </div>
       <div data-component="data-card" data-title="结构覆盖" data-color="primary">
         <span class="card-value">4 族 · 7 种形式</span>
@@ -288,7 +289,7 @@
       </div>
       <div data-component="data-card" data-title="质量闸体系" data-color="success">
         <span class="card-value">九道闸全绿</span>
-        <span class="card-title">网格 41/41 · 双码 41/41 · 语义 82/82 · 退化自检 50/50</span>
+        <span class="card-title">网格 55/55 · 双码翼盒 34/34 · 语义 110/110 · 退化自检 54/54</span>
       </div>
       <div data-component="data-card" data-title="交叉验证精度" data-color="warning">
         <span class="card-value">0.003%</span>
@@ -301,8 +302,8 @@
         <tr><th>序号</th><th>成果</th><th>量化指标</th></tr>
       </thead>
       <tbody>
-        <tr><td>1</td><td>建成结构有限元基准数据集 FEM-Bench-Aero</td><td>41 条算例 × 2 棵求解器树，40 个几何等价类，覆盖 4 个结构族、7 种典型结构形式</td></tr>
-        <tr><td>2</td><td>质量闸体系全部通过</td><td>九道入库闸全绿：网格质量 41/41、双求解器交叉 41/41、语义门禁 82/82、自洽与去重 82/82、退化自检 50/50、分组回归 9/9</td></tr>
+        <tr><td>1</td><td>建成结构有限元基准数据集 FEM-Bench-Aero</td><td>55 条算例 × 2 棵求解器树，54 个几何等价类，覆盖 4 个结构族、7 种典型结构形式</td></tr>
+        <tr><td>2</td><td>质量闸体系全部通过</td><td>九道入库闸全绿：网格质量 55/55、双求解器交叉（翼盒 34/34 机读、其余 21 条分族取证）、语义门禁 110/110、自洽与配对 110/110、退化自检 54/54、分组回归 9/9</td></tr>
         <tr><td>3</td><td>双求解器交叉验证精度</td><td>同构模型双码等效模量偏差 <span class="data-emphasis">0.003%</span>，开孔应力集中系数与解析解偏差 <span class="data-emphasis">0.45%</span></td></tr>
         <tr><td>4</td><td>技术框架落地</td><td>契约唯一化建模、参数化自动建面、双后端自动写卡、九道质量闸全自动执行</td></tr>
       </tbody>
@@ -400,7 +401,7 @@
       <li><strong>复材对照闸</strong>：复材结构不用 Howland 解，改用 CLT 等效模量闸；测量口径经三轮迭代（站位线平均、远场最小二乘均因孔边扰动残留失败）最终确定为"加载端平均恒等式"——由高斯定理保证孔边扰动只改端面分布不改均值。实测：ccx 73804.31（−2.070%）、Abaqus 73802.03（−2.073%），<span class="data-emphasis">双码偏差 0.003%</span>；容差 3% 按实测收敛链钉定（无孔板 20 mm 网格偏差 −1.73% → 5 mm 网格 −0.19%，证明卡语义正确，残余偏差为非结构网格对正交异性场的系统离散）；</li>
       <li><strong>去重指纹扩展</strong>：复材算例与铝制同几何算例网格逐字节同构，入库闸当场咬住指纹撞车——去重指纹由"网格 + 壳厚表"扩展为"网格 + 壳厚表 + 材料律块"第三次升级，修复后零误判。</li>
     </ol>
-    <p><strong>产出</strong>：第七种结构形式落地，数据集达到 41 条/树，铺层族与厚度维列入放量计划。</p>
+    <p><strong>产出</strong>：第七种结构形式落地，数据集达到 41 条/树（M6 时点，2026-10-24 全量已达 55 条），铺层族与厚度维列入放量计划。</p>
 
     <h1 class="chapter" id="section-5">五、数据集建设成果：FEM-Bench-Aero</h1>
     <h2 class="sub" id="section-5-1">（一）规模与构成</h2>
@@ -409,11 +410,11 @@
         <tr><th>指标</th><th>数值</th></tr>
       </thead>
       <tbody>
-        <tr><td>算例规模</td><td>41 条 × 2 棵树（CalculiX 发布树 + Abaqus 交叉验证树，同构逐字节对应）</td></tr>
+        <tr><td>算例规模</td><td>55 条 × 2 棵树（CalculiX 发布树 + Abaqus 交叉验证树，同构逐字节对应）</td></tr>
         <tr><td>几何等价类</td><td>40 个</td></tr>
         <tr><td>结构族</td><td>4 个：翼盒 23 条 / 加筋壁板 4 条 / 机身柱壳 6 条 / 开孔板 8 条</td></tr>
         <tr><td>结构形式</td><td>7 种（T1–T7）：等直翼盒、后掠/锥形翼盒、多闭室翼盒、加筋壁板、机身柱壳、开孔板、复材层合开孔板</td></tr>
-        <tr><td>数据划分</td><td>train 17 / val 13 / test 11（四个族验证集全部非空）</td></tr>
+        <tr><td>数据划分</td><td>train 25 / val 17 / test 13（四个族验证集全部非空）</td></tr>
         <tr><td>每条算例内容</td><td>契约声明、几何模型、网格、双后端求解输入卡、结果摘要、真值对照六件套</td></tr>
       </tbody>
     </table>
@@ -432,14 +433,14 @@
         <tr><th>闸</th><th>内容</th><th>实测结果</th></tr>
       </thead>
       <tbody>
-        <tr><td>闸 1 网格质量</td><td>全四边形网格、雅可比最小值 ≥ 0.30、零三角形单元</td><td>41/41 通过，全树 minJ 0.4636–0.6626</td></tr>
-        <tr><td>闸 2 语义门禁</td><td>派生预期与几何实测精确相等（单元计数按族公式全量核对）</td><td>82/82 通过（两树各 41）</td></tr>
-        <tr><td>闸 3 双求解器</td><td>双码位移差＜1%、逐节点 von Mises 中位差＜5%</td><td>41/41 通过</td></tr>
+        <tr><td>闸 1 网格质量</td><td>全四边形网格、雅可比最小值 ≥ 0.30、零三角形单元</td><td>55/55 通过，全树 minJ 0.4636–0.6626</td></tr>
+        <tr><td>闸 2 语义门禁</td><td>派生预期与几何实测精确相等（单元计数按族公式全量核对）</td><td>110/110 通过（两树各 55）</td></tr>
+        <tr><td>闸 3 双求解器</td><td>双码位移差＜1%、逐节点 von Mises 中位差＜5%</td><td>翼盒 34/34 机读通过；其余 21 条分族取证</td></tr>
         <tr><td>闸 4 物理平衡</td><td>载荷-反力平衡残差＜1e-3%</td><td>全部通过</td></tr>
-        <tr><td>闸 5 退化自检</td><td>每种结构形式参数趋零时必须退化回已信任形式</td><td>50/50 通过</td></tr>
+        <tr><td>闸 5 退化自检</td><td>每种结构形式参数趋零时必须退化回已信任形式</td><td>54/54 通过</td></tr>
         <tr><td>闸 6 回归基线</td><td>分组指纹与归档基线比对，防口径漂移</td><td>9/9 通过</td></tr>
         <tr><td>闸 7 去重指纹</td><td>网格 + 壳厚 + 材料律三成分指纹，防重复算例</td><td>重复 0</td></tr>
-        <tr><td>闸 8 跨树一致</td><td>两树网格逐字节一致、应力恢复口径一致</td><td>41/41 通过</td></tr>
+        <tr><td>闸 8 跨树一致</td><td>两树网格逐字节一致、应力恢复口径一致</td><td>翼盒 34/34 机读通过；其余 21 条分族取证</td></tr>
         <tr><td>闸 9 独立验证线</td><td>开孔板 Kt/峰位/平衡/双码四项物理闸</td><td>5/5 通过（Kt 与解析解偏差 0.45%）</td></tr>
       </tbody>
     </table>
@@ -498,7 +499,7 @@
         <tr><th>交付物</th><th>说明</th></tr>
       </thead>
       <tbody>
-        <tr><td>FEM-Bench-Aero 数据集</td><td>CalculiX 发布树 + Abaqus 交叉验证树，各 41 条算例</td></tr>
+        <tr><td>FEM-Bench-Aero 数据集</td><td>CalculiX 发布树 + Abaqus 交叉验证树，各 55 条算例</td></tr>
         <tr><td>技术框架代码资产</td><td>契约、建面、网格、写卡、求解、后处理、验证全链路脚本</td></tr>
         <tr><td>项目进展看板</td><td>每条结论可溯源至命令 + 实测数字 + 产物路径</td></tr>
         <tr><td>两份技术 README</td><td>数据集与代码资产的使用说明与质量报告</td></tr>

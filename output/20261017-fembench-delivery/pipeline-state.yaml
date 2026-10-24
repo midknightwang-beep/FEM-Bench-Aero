@@ -43,6 +43,8 @@ stages:
     status: completed
     started_at: 2026-10-17T15:33:00+08:00
     completed_at: 2026-10-17T15:40:00+08:00
+    rerun_at: 2026-10-17T15:52:00+08:00
+    rerun_reason: 数据口径更新重转（41→55 条等），HTML 版式保持原样
     executor: doc-converter
     input_format: html
     output_path: "F:\\AI FEA Modeling DataSets\\output\\20261017-fembench-delivery\\stage3\\FEM-Bench-Aero项目执行交付文档.docx"

@@ -45,11 +45,13 @@ stages:
     status: completed
     started_at: 2026-10-17T17:51:00+08:00
     completed_at: 2026-10-17T17:52:00+08:00
+    reconverted_at: 2026-10-17T17:58:00+08:00
+    reconvert_note: 数字口径更新（41→55 条）后的重转，HTML 版式不变，快通道直转
     executor: doc-converter
     input_format: html
     output_path: stage3/项目实施计划-数据集初步构建完成后.docx
-    skill_used: []
-    present_files_opened: false
+    skill_used: ["html-to-doc"]
+    present_files_opened: true
     fallback: false
     fallback_reason: null
 

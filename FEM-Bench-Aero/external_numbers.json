@@ -1,0 +1,84 @@
+{
+ "generated_from": "manifest.json + gates_all55_d36 + gate4_d36 + verify_dataset_d36 + eval_report_d36 + baseline_d36_final",
+ "naming_note": "FEM-Bench-Aero（本仓库内部命名，A 建模集；与 GitHub 公开仓库 FEM-Bench 无关联，公开发布前将评估更名）",
+ "scale": {
+  "cases_total": 55,
+  "solver_trees": 2,
+  "case_dirs": 110,
+  "geometry_classes": 54,
+  "duplicate_models": 0,
+  "leaky_classes": 0,
+  "splits": {
+   "train": 25,
+   "val": 17,
+   "test": 13
+  },
+  "families": {
+   "fuselage_barrel": {
+    "test": 2,
+    "val": 3,
+    "train": 1
+   },
+   "wingbox": {
+    "train": 21,
+    "val": 7,
+    "test": 6
+   },
+   "open_hole_panel": {
+    "train": 2,
+    "val": 5,
+    "test": 4
+   },
+   "stiffened_panel": {
+    "train": 1,
+    "test": 1,
+    "val": 2
+   }
+  },
+  "n_limitations": 16
+ },
+ "gates": {
+  "gate4_semantics": 110,
+  "gate1_mesh": {
+   "n_measured": 55,
+   "n_below_threshold": 0,
+   "n_tri3_total": 0,
+   "worst_min_jacobian": 0.4636
+  },
+  "gate3_wingbox": {
+   "scope": "wingbox only (xval_m8 判据的适用域：500 N 端部集中力 + 根截面反力平衡)",
+   "n_pass": 34,
+   "n_total": 34
+  }
+ },
+ "baseline_frozen": {
+  "status": "附录（可学性证明），非产品 KPI。D37 起项目 KPI = TSR/FPR/修复/拒答/澄清",
+  "max_disp_test_mape": 2.631,
+  "max_disp_test_ci95": [
+   0.89,
+   4.51
+  ],
+  "constant_floor": 49.439,
+  "known_limits": [
+   "vM 峰值网格未收敛（12→6 mm 仍 +12.9 %），应力真值带 ≥13 % 偏不安全低估",
+   "机器可读双码 PASS 仅翼盒 34 条；其余 21 条分族取证（关 3 机读化 = W3 任务）",
+   "test 13 条全部为外推/新形式（无 ID 内插点；ID test = W3 任务）",
+   "recombination_algorithm3 为同几何网格鲁棒性对照样本，不参与样本量统计"
+  ]
+ },
+ "excluded_from_external_docs": [
+  "B 解读集 / C 更新集（近期不做，2026-10-24 拍板移出对外承诺）"
+ ],
+ "selfcheck": {
+  "n_cases": 110,
+  "n_ok": 110,
+  "n_duplicate_cases": 0,
+  "pairing_ok": true,
+  "all_ok": true
+ },
+ "split_recheck": {
+  "n_cases": 55,
+  "n_geometry_classes": 54,
+  "n_failures": 0
+ }
+}

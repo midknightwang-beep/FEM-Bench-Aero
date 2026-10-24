@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="docx-page-size" content="A4">
   <title>基于大模型的交互式飞机有限元模型智能生成技术——项目执行交付文档</title>
+<p style="border:1px solid #94a3b8; padding:8px 12px; font-size:9.5pt; color:#334155; background:#f1f5f9;">【数字口径声明 · 2026-10-24】本文档全部规模/闸门数字以 FEM-Bench-Aero/external_numbers.md 为单一来源（由 manifest.json 等权威产物自动生成）。项目命名 FEM-Bench-Aero 为本团队内部命名（当前范围为 A 建模集），与 GitHub 公开仓库 FEM-Bench 无关联，公开发布前将评估更名。</p>
   <style>
   /* 页面规则：正文页脚居中页码；封面与目录节无页码 */
   @page {
@@ -259,7 +260,7 @@
       <p>一句话总纲</p>
       <p>数据集建成的意义是为整个项目立起了"考卷与标尺"；后续工作按"先定怎么考 → 再教怎么生成 → 自动与专家双重验收 → 集成落地 → 数据闭环迭代"五个阶段推进，每阶段均有可验收交付物，便于按里程碑考核。</p>
     </div>
-    <p>本项目已完成数据集（FEM-Bench-Aero）的初步构建：形成 <span class="data-emphasis">41 条算例 × 2 棵求解器树</span>（CalculiX 发布树 + Abaqus 交叉验证树）、覆盖 4 个结构族 <span class="data-emphasis">7 种典型飞机结构形式</span>、按物理维度划分为 <span class="data-emphasis">40 个几何等价类</span>（train 17 / val 13 / test 11），全部数据通过九道质量闸验证，并实测取得双求解器等效模量偏差 <span class="data-emphasis">0.003%</span> 的标签可信度背书。</p>
+    <p>本项目已完成数据集（FEM-Bench-Aero）的初步构建：形成 <span class="data-emphasis">55 条算例 × 2 棵求解器树</span>（CalculiX 发布树 + Abaqus 交叉验证树）、覆盖 4 个结构族 <span class="data-emphasis">7 种典型飞机结构形式</span>、按物理维度划分为 <span class="data-emphasis">54 个几何等价类</span>（train 25 / val 17 / test 13），全部数据通过九道质量闸验证，并实测取得双求解器等效模量偏差 <span class="data-emphasis">0.003%</span> 的标签可信度背书。</p>
     <p>本计划回答"数据集初步构建完成之后接下来做什么"，按五个阶段展开：</p>
     <table class="data"><thead><tr><th style="width:14%">阶段</th><th style="width:30%">定位</th><th style="width:34%">标志性交付</th><th style="width:22%">验收方式</th></tr></thead><tbody><tr><td>P1 评测基线</td><td>先定"怎么考"——评测协议与基线系统</td><td>评测协议、基线成绩单</td><td>评测可一键复跑</td></tr><tr><td>P2 算法开发</td><td>教"怎么生成"——检索、约束、自修复</td><td>生成算法模块、消融报告</td><td>冻结考卷上量化提升</td></tr><tr><td>P3 验证评估</td><td>自动评测 + 专家盲评双重验收</td><td>评测报告、典型案例集</td><td>指标达标 + 盲评认可</td></tr><tr><td>P4 集成部署</td><td>从脚本到交互式原型系统</td><td>原型系统 V1、现场演示</td><td>端到端演示跑通</td></tr><tr><td>P5 迭代推广</td><td>失败回流、数据放量、真实试点</td><td>系统 V2、试点报告</td><td>效率收益可量化</td></tr></tbody></table>
     <p>该路线与当前本领域国际主流工作（ALL-FEM、AbaqusAgent、ModiGen 等）的成熟路径一致，且本项目在数据质量体系（九道闸、双求解器交叉验证）上比多数公开工作更严格。</p>
@@ -268,8 +269,8 @@
   <section>
     <h1 class="chapter" id="section-2">二、现状与起点</h1>
     <h2 class="sub" id="section-2-1">（一）已完成的核心资产</h2>
-    <p><b>（1）数据集 FEM-Bench-Aero（主要成果）。</b>规模：41 条算例 × 2 棵树，跨树模型逐字节同构；覆盖：翼盒（含后掠/锥形平面形状、多闭室）、加筋平板壁板、机身柱壳（含尺寸·壁厚维）、开孔板（含材料维复材层合），7 种典型飞机结构形式全部落地；划分：train 17 / val 13 / test 11，按"规则化谓词 + 几何等价类"划分，物理维度外推式评测，杜绝随机抽样的信息泄漏。</p>
-    <p><b>（2）质量体系。</b>九道闸全绿：网格质量（min Jacobian ≥ 0.30 且零三角形）、双求解器交叉（位移差＜1%、应力中位差＜5%）、语义门禁（派生预期与几何实测精确相等）、载荷-反力平衡（残差＜1e-3%）、退化自检 50/50、去重指纹、分组回归 9/9 等。</p>
+    <p><b>（1）数据集 FEM-Bench-Aero（主要成果）。</b>规模：55 条算例 × 2 棵树，跨树模型逐字节同构；覆盖：翼盒（含后掠/锥形平面形状、多闭室）、加筋平板壁板、机身柱壳（含尺寸·壁厚维）、开孔板（含材料维复材层合），7 种典型飞机结构形式全部落地；划分：train 25 / val 17 / test 13，按"规则化谓词 + 几何等价类"划分，物理维度外推式评测，杜绝随机抽样的信息泄漏。</p>
+    <p><b>（2）质量体系。</b>九道闸全绿：网格质量（min Jacobian ≥ 0.30 且零三角形）、双求解器交叉（位移差＜1%、应力中位差＜5%）、语义门禁（派生预期与几何实测精确相等）、载荷-反力平衡（残差＜1e-3%）、退化自检 54/54、去重指纹、分组回归 9/9 等。</p>
     <p><b>（3）生成与求解链路（配套资产）。</b>自然语言契约（FEASpec）→ 参数化建面 → 全四边形网格 → 双后端求解器 deck 自动写卡 → 结果提取与闸验收；独立验证线含解析解对标（Howland 开孔应力集中、CLT 复材等效模量等）与双求解器互证，标签可信度有实测背书（双码等效模量偏差 0.003%）。</p>
     <h2 class="sub" id="section-2-2">（二）数据集在项目中的定位</h2>
     <p>数据集不是附属产物，而是整个技术框架的标尺与地基，在后续每个阶段都承担明确角色：</p>
