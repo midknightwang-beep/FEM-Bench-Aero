@@ -1662,7 +1662,18 @@ const REVIEW = [
     '<b>新 KPI</b>：TSR / FPR / 修复成功率 ≥70 % / 修复收敛 ≤3 轮 / 拒答准确率 ≥95 % / 澄清 ≤2 轮 / OOD−ID 泛化差；统计纪律（预注册/CI/配对）转用于 agent 版本对比',
     '<b>0–30 天关键判据</b>：第三方按 README 能在 1 天内跑出自己的成绩。W1 = git + 瘦身（9.7 GB outputs 归档）+ 对外材料单一数字源；W2–W3 = 任务 JSONL + evaluate()（A1+A3 先行）+ 30 条人工 NL + ID test + schema 统一（死 airfoil / chord float / 关 3 机读化 55/55）'
    ],
-   files:['FEM-Bench-Aero项目评估与下一步建议_2026-10-24.md','FEM-Bench-Aero/ROADMAP.md','FEM-Bench-Aero/STAGE_GATE_M14.md']}
+   files:['FEM-Bench-Aero项目评估与下一步建议_2026-10-24.md','FEM-Bench-Aero/ROADMAP.md','FEM-Bench-Aero/STAGE_GATE_M14.md']},
+  {id:'r55', g:'W1–W3/工程周', c:'ROADMAP 落地：<b>git v1.0-rc + 考卷接口 + 关3机读化 55/55 + README 拆分</b>',
+   q:'D37 转向后的前三周工程（ROADMAP 0–30 天）：W1 治理（git/瘦身/单一数字源）→ W2 考卷（任务层/评测器/ID test/schema/NL）→ W3 证据完备（关3机读化/澄清闸/文档拆分）。',
+   cmd:'git log --oneline   # 894dbd0 W1-1 首批 -> 5e214c5 W1-3 数字源 -> 3c7f1d6 W2 -> 2cd0381 W3\npython make_tasks.py && python make_nl_human.py\npython evaluate.py --batch --levels L1 --limit 3 --use-gold\npython gate3_all55.py   # -> gate3_all55_d37.json',
+   ev:[
+    '<b>W1</b>：git init + tag <code>v1.0-rc</code>（584 文件，代码/文档/JSON 证据入库，求解产物与数据集本体排除）；<b>feagpt_repro 9.7 GB → 412 MB</b>（33 目录归档 tar.gz 2.8 GB，验证 1873=1873 + md5 抽验）；对外材料单一数字源 <code>external_numbers.json/.md</code>（41→55 口径，docx 重转 + pptx 修正 + 命名声明）',
+    '<b>W2 冒烟 TSR = 3/3 PASS</b>（barrel×3，minJ 0.46/0.52、语义 6/6、保真 0.0%）。tasks.jsonl 110 行 = L1 55 + L2 55；<b>id_test 6 条 = 翼盒 train 包络整类留出 28.6%</b>（5 轴锚点谓词，泄漏 0）；<b>考卷规范化、答案册不动</b>（死 airfoil/chord float 只在任务层，避免 110 truth 重导）；schema.json 55/55 过 + 反向探针（死 airfoil 拒 / 越界 55° 拒）；30 条人工 NL（8 条澄清型）待抽检',
+    '<b>W3 关 3 机读化 55/55，out_of_scope 清零</b>：翼盒 34 field-level（引用既有报告）+ 21 条 scalar-level（双码标量 + 证据层级明示）。<b>★ 自犯修正（D34 教训重演）</b>：首版把翼盒 &lt;1% 口径跨族套柱壳 → 6 条假 FAIL；柱壳登记判据 = D20 structure_peak（场级），修正后 55/55',
+    '<b>★ 澄清闸双向验证</b>：L2 协议 clarification.json{questions, final_spec 补全后完整 spec}。坏例（静默默认 3.0 不提问）clarify FAIL 精准抓 silent_default；好例第一版暴露<b>分层闸兜底</b>——clarify PASS 但 final_spec 缺字段 → pipeline 静默默认 ≠ gold → 保真闸 FAIL（98.4%）。修后好例 4 闸全 PASS 保真 0.0%',
+    '<b>README 1523 → 965 行</b> + DECISIONS.md(247) + SPEC.md(331)；§7 实测留原地（被看板/BASELINE 引用），7 处断链清零'
+   ],
+   files:['FEM-Bench-Aero/gate3_all55_d37.json','FEM-Bench-Aero/schema.json','FEM-Bench-Aero/dataset_card.md','FEM-Bench-Aero/external_numbers.md','feagpt_repro/tasks/tasks.jsonl','feagpt_repro/tasks/nl_human.jsonl','feagpt_repro/evaluate.py','feagpt_repro/make_tasks.py','feagpt_repro/DECISIONS.md','feagpt_repro/SPEC.md']}
  ];
 
 /* ============ 渲染 ============ */
