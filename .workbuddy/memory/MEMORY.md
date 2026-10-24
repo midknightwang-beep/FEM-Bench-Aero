@@ -82,7 +82,12 @@
      位移原低估而 max_w/vM 原高估 ⇒ 抬系数同号三者一起上移。**test 只有 6 条时，平均 MAPE 会把「5 条不动+1 条崩」讲成整体变差**；
   ④ ★ **三次基判据对撞不换**：LOO@35 选 cubic 但双重外推考点 +1.09→+16.08 % ⇒ **挑战者两侧判据互斥即视为未证明**，现役不动；
   ⑤ 条件数口径：标准化 → 贪心 Gram-Schmidt 按秩剔除 → 再报 cond（lin 1.7 / quad 9.6 / cubic 70.5，剔 `is_T`+`n_web`）。
-- **★★ D37 方向转向（2026-10-24 老王拍板，当前最高优先口径）**：外部专家评估（`FEM-Bench-Aero项目评估与下一步建议_2026-10-24.md`，其事实主张经蜗子逐项实测复核成立：六件套无输入 ✅、死 airfoil 块 21/21 ✅、chord int 实测 5 条、对外文档停留 41 条 ✅）指出**没有考卷接口**（无任务输入 L2/L3、无 evaluate(candidate)、无榜单协议）。拍板：① **代理模型线完全冻结**（held-out 撤销，baseline_d36_final.json 降级可学性附录，KPI 换 TSR/FPR/修复/拒答/澄清）② B/C 子集移出对外文档 ③ 暂不改名加后缀标注。M14 准入②③④撤销（R1/R2/R3 随拍板吸收），R5/R7 保留。**新计划 = `FEM-Bench-Aero/ROADMAP.md`**：0–30 天冻结 v1.0 + git + 瘦身 + 对外材料单一数字源 + 任务 JSONL/evaluate() + 30 条人工 NL + ID test + schema 统一（死 airfoil/chord float/关 3 机读化 55/55）；30–90 天 agent 基线 + 约束解码 + 闸反馈修复（A1+A3 先行）+ v1.1 扩族；90–180 天 RAG + 盲评 + 原型。0–30 天关键判据：**第三方按 README 1 天内跑出自己的成绩**。
+- **★★ D37 方向转向（2026-10-24 老王拍板）**：外部专家评估指出**没有考卷接口**（无任务输入 L2/L3、无 evaluate(candidate)、无榜单协议）。拍板：① **代理模型线完全冻结**（held-out 撤销，baseline_d36_final.json 降级可学性附录，KPI 换 TSR/FPR/修复/拒答/澄清）② B/C 子集移出对外文档 ③ 暂不改名加后缀标注。M14 准入②③④撤销（R1/R2/R3 随拍板吸收），R5/R7 保留。**新计划 = `FEM-Bench-Aero/ROADMAP.md`**。W1–W3 已收口（详见当日日志 21–23 节）。
+- **★★★ W4c 修契约与口径（专家第三轮纠偏，2026-10-24 深夜，commit efa2b6f）——当前进行到 W4c 收尾/W4d 待跑**：
+  专家第三轮（FEM-Bench-Aero第三轮复评与执行纠偏_2026-10-24.md）实锤：① 全链路径包装候选静默解成默认翼盒（skip_solve 修了全链没修）② bc/analysis/extra 漏判（柱壳候选 extra={} 端剪端弯全丢仍 23/23 PASS）③ L3 任务 mesh/load 键空完全不判 ④「冒烟 2/2」是旧快照（全量 2/5 SFR、全链 0/5 MSR）⑤ key 硬编码/无 response_format/model=auto 不可引用。评分卡 22/30 No-Go。
+  **W4c 已落地**：FEASpec.from_dict 严格化（缺 structure/family 未知 => raise）；evaluate 全链解包+contract 闸（bc 空/柱壳缺 end_shear 不求解）；spec_fidelity 补 bc/analysis/extra（gold 权威全键判，L3 也判）；**负控 14/14**（新增 NC-9..13）；score_baseline partial 警告+underpowered（R12）；gen_candidates prompt 补 bc/extra+response_format+key 入 env；gate3 n_gated_pass 15→49；L3 boundary_holdout 统一（id_test 清零）；fetch_data tarfile；validate_schema UTF-8。
+  **红线新增 R9–R14**（SFR≠MSR≠TSR / 候选契约校验 / 成绩单全覆盖 / n<20 不判 value_added / 模型 id 必录 / skip_solve 不得称基线）。
+  **待办**：GqaWxI（19 条 L1 全考卷生成）完成后用新判据打分出正式成绩单 + CLAIMS C-017/C-018 + 评分卡重评 → W4d（L3 主基线 + schema 约束解码，n≥20）。老王 8 项待拍板全按「整改完善」授权执行。
 - 下一步候选（待老王拍板，按 ROADMAP 顺序）：
   ① **W1：git init + .gitignore**（10 分钟，R7，专家 P0）+ outputs 瘦身归档（9.7 GB）+ 对外材料单一数字源（41→55 口径 + B/C 移出）。
   ② **W2–W3：任务 JSONL + evaluate(candidate)**（复用闸判据代码）+ 30 条人工 NL + ID test（等价类整类留出）+ schema 统一。
