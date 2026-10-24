@@ -43,13 +43,15 @@ REPORTED_MATERIAL = ['density', 'yield_strength']                      # 只报�
 
 
 def _field_equal(a, b):
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(_field_equal(x, y) for x, y in zip(a, b))
     if isinstance(a, (int, float)) and isinstance(b, (int, float)) \
             and not isinstance(a, bool) and not isinstance(b, bool):
         return abs(float(a) - float(b)) <= FLOAT_TOL * max(1.0, abs(float(b)))
     return a == b
 
 
-def spec_fidelity(cand_spec, gold_spec, family):
+def spec_fidelity(cand_spec, gold_spec, family, input_mesh_keys=None, input_load_keys=None):
     """W4a P0-1：字段级真值校验（强制闸）。任一字段 FAIL ⇒ 整体 FAIL。"""
     fields = []
     holder_key, keys = GRADED_FIELDS.get(family, ('params', []))
@@ -81,12 +83,25 @@ def spec_fidelity(cand_spec, gold_spec, family):
         gv = gold_spec.get('material', {}).get(k)
         fields.append({'field': f'material.{k}', 'expected': gv, 'actual': cv,
                        'pass': True, 'reported_not_gated': True})
-    # 网格与载荷（W4a NC-4/NC-5：任务输入含网格/载荷，candidate 改了就是错答案）
-    for holder in ('mesh', 'load'):
+    # 网格与载荷（W4a NC-4/NC-5）。W4b 修正：mesh 双键名问题——任务输入给了什么键就考什么键
+    # （gold 的 pipeline 内部键如 algorithm_2d/min_jacobian 任务没给 LLM，考了就是考「猜内部默认值」）。
+    for holder, input_keys in (('mesh', input_mesh_keys), ('load', input_load_keys)):
         ch, gh = cand_spec.get(holder, {}), gold_spec.get(holder, {})
-        for k in sorted(set(ch) | set(gh)):
-            cv, gv = ch.get(k, '<missing>'), gh.get(k, '<missing>')
-            ok = _field_equal(cv, gv) if cv != '<missing>' and gv != '<missing>' else False
+        # 键名别名归一（任务输入键 vs gold 内部键）
+        MESH_ALIASES = {'order': 'element_order', 'refine_le': 'refine_at_leading_edge',
+                        'size_chord': 'size_chord', 'size_span': 'size_span'}
+        judge_keys = input_keys if input_keys else sorted(set(ch) & set(gh))
+        for k in judge_keys:
+            gk = MESH_ALIASES.get(k, k) if holder == 'mesh' else k
+            ck = k if k in ch else (MESH_ALIASES.get(k) if MESH_ALIASES.get(k) in ch else k)
+            cv = ch.get(ck, ch.get(gk, '<missing>'))
+            gv = gh.get(gk, gh.get(k, '<missing>'))
+            if cv == '<missing>' and gv == '<missing>':
+                ok = True
+            elif cv == '<missing>' or gv == '<missing>':
+                ok = False
+            else:
+                ok = _field_equal(cv, gv)
             fields.append({'field': f'{holder}.{k}', 'expected': gv, 'actual': cv, 'pass': ok})
     fails = [f for f in fields if not f['pass']]
     return {'pass': not fails, 'n_fields': len(fields), 'n_fail': len(fails),
@@ -100,6 +115,12 @@ def load_tasks(path):
 
 def gold_spec_path(case_id):
     return os.path.join(FEA, 'modeling', case_id, 'spec.json')
+
+
+def _input_mesh_load_keys(task):
+    """任务输入里 mesh/load 出现过的键（考什么判什么；gold 内部默认键不考）。"""
+    norm = task.get('input', {}).get('spec_normalized', {})
+    return (sorted(norm.get('mesh', {}).keys()), sorted(norm.get('load', {}).keys()))
 
 
 def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800, skip_solve=False):
@@ -119,8 +140,11 @@ def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800, skip_solve=F
             gold_spec = json.load(open(gold_spec_path, encoding='utf-8'))
             gold_spec.pop('workdir', None)
             cand_json = json.load(open(cand_spec_path, encoding='utf-8'))
+            if 'spec' in cand_json and 'structure' not in cand_json:
+                cand_json = cand_json['spec'] or {}   # gen_candidates 包装结构解包
             cand_json.pop('workdir', None)
-            sf = spec_fidelity(cand_json, gold_spec, task['family'])
+            mk, lk = _input_mesh_load_keys(task)
+            sf = spec_fidelity(cand_json, gold_spec, task['family'], input_mesh_keys=mk, input_load_keys=lk)
         else:
             sf = {'pass': False, 'n_fields': 0, 'n_fail': 1,
                   'failed': [{'field': 'gold spec', 'expected': gold_spec_path, 'actual': 'missing'}]}
@@ -207,8 +231,11 @@ def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800, skip_solve=F
         gold_spec = json.load(open(gold_spec_path, encoding='utf-8'))
         gold_spec.pop('workdir', None)
         cand_json = json.load(open(cand_spec_path, encoding='utf-8'))
+        if 'spec' in cand_json and 'structure' not in cand_json:
+            cand_json = cand_json['spec'] or {}   # gen_candidates 包装结构解包
         cand_json.pop('workdir', None)
-        sf = spec_fidelity(cand_json, gold_spec, task['family'])
+        mk, lk = _input_mesh_load_keys(task)
+        sf = spec_fidelity(cand_json, gold_spec, task['family'], input_mesh_keys=mk, input_load_keys=lk)
         sf['field'] = 'spec_fidelity (field-level, mandatory)'
         sf['expected'] = 'all graded fields equal (float tol 1e-6)'
         sf['actual'] = f"{sf['n_fields'] - sf['n_fail']}/{sf['n_fields']} fields"
