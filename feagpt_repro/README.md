@@ -219,6 +219,16 @@ python _probe_m13/d36_assess.py              # 同 6 条 test 集 A/B -> d36_ab.
 python _probe_m13/sweep_form_d36.py          # 三次基可辨识性 -> 两侧判据对撞，不换形式
 python _probe_m13/xval_d36.py                # -> _xval_d36.json（mesh 5687/5687 坐标差 0、平衡 2.6e-4 %、vM 中位差 0.20 %）
 
+# W2（D37 转向后）：任务层 + 评测器。发布数据集本体不动，考卷在任务层
+python make_tasks.py                          # -> tasks/tasks.jsonl（L1 55 + L2 55；split_v2 = train/val/id_test/extrapolation_test）
+python make_nl_human.py                       # -> tasks/nl_human.jsonl（30 条人工 NL 初稿，参数全 spec 实读；8 条缺字段澄清型）
+python evaluate.py --batch --tasks tasks/tasks.jsonl --levels L1 --limit 3 --use-gold
+#   冒烟实测：3/3 PASS（minJ 0.46/0.52/…、语义 6/6、保真 0.0%、wall 170–288 s）
+#   单任务：python evaluate.py --task-id <id> --spec candidate.json
+#   判据复用：关4 = feagpt.topology.compare（零逻辑复制）；关1 = minJ >= 0.30；保真 = max_disp <1%（双码位移口径）
+#   schema：../FEM-Bench-Aero/schema.json（任务层校验，55/55 过；死 airfoil / 越界参数 = 拒）
+#   ⚠️ eval_runs/ 是求解产物，已 gitignore
+
 # 关 1 的证据：从**归档 .msh** 读回 minJ 与单元类型（不靠重建，也就不会「重建出对的、归档是错的」）
 python diagnostics/msh_quality.py --tree ../FEM-Bench-Aero/modeling
 # 三角长在哪个面上、那个面多窄（D10 定位：24 个全在后梁腹板四角）
