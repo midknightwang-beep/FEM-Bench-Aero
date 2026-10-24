@@ -118,7 +118,7 @@ def main():
                 '+ 6 条柱壳 REPORTED-ONLY（D20 场级判据在归档包 F:/FEA_Archive_20261024/，需时解包重算）。'
                 '对外表述统一为「34 field + 15 scalar + 6 reported-only」，不说 55/55。',
         'n_cases': len(rows),
-        'n_gated_pass': sum(1 for r in rows if r.get('gate_status') == 'GATED' and r['pass']),
+        'n_gated_pass': sum(1 for r in rows if r['pass'] and r.get('gate_status', 'field-level') in ('GATED', 'field-level')),  # field-level 34 条也是 GATED（W4c P1-1：15->49）
         'n_reported_only': sum(1 for r in rows if r.get('gate_status', '').startswith('REPORTED')),
         'n_fail': sum(1 for r in rows if r.get('gate_status') == 'GATED' and not r['pass']),
         'evidence_levels': {
@@ -130,7 +130,7 @@ def main():
         'tolerance': {'disp_pct': TOL_DISP_PCT},
         'cases': rows,
         'all_gated_ok': all(r['pass'] for r in rows
-                            if r.get('gate_status') == 'GATED'),
+                            if r.get('gate_status', 'field-level') in ('GATED', 'field-level')),
     }
     out = os.path.join(FEA, 'gate3_all55_d37.json')
     json.dump(report, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)

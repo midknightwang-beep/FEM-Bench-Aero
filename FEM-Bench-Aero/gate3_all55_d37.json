@@ -2,7 +2,7 @@
  "milestone": "M14/D37-W4a",
  "note": "关 3 证据机读化（W4a 状态分级）：禁止把 reported-only 计入 PASS。翼盒 34 条 field-level（既有 xval_m8 判据引用）+ 15 条 scalar-disp-gated（<1%）+ 6 条柱壳 REPORTED-ONLY（D20 场级判据在归档包 F:/FEA_Archive_20261024/，需时解包重算）。对外表述统一为「34 field + 15 scalar + 6 reported-only」，不说 55/55。",
  "n_cases": 55,
- "n_gated_pass": 15,
+ "n_gated_pass": 49,
  "n_reported_only": 6,
  "n_fail": 0,
  "evidence_levels": {

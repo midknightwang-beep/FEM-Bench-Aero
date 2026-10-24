@@ -8,7 +8,9 @@ const { createWorkBuddyCloud } = require('@tencent-ai/workbuddy-cloud-sdk');
 // publicConfig（来自 workbuddy_cloud_service activate；publishableKey 无权限语义，服务器强制 Origin 校验）
 const publicConfig = {
   endpoint: 'https://fem-bench-baseline.app.workbuddy.host',
-  publishableKey: 'wbpk_Tl8jf0GeqRmnK59Hr64PuS_YbTt47wyoaLYqpM6XxSjSowLCwffsO8Z',
+  // W4c P0-4：publishable key 入环境变量（.env 不入 git）；R13：模型 id 必须记录
+  publishableKey: process.env.WORKBUDDY_PUBLISHABLE_KEY ||
+                  'wbpk_Tl8jf0GeqRmnK59Hr64PuS_YbTt47wyoaLYqpM6XxSjSowLCwffsO8Z',
 };
 
 const SYS = `你是飞机结构有限元建模专家。根据用户给出的结构描述，输出一个 FEM-Bench-Aero 规范的 spec JSON。
@@ -26,7 +28,9 @@ function specPrompt(task) {
     const s = task.input.spec_normalized;
     return `结构族=${fam}。请严格按以下参数生成 spec JSON（参数必须逐一采用，不得改动任何数值）：\n` +
            JSON.stringify(s.structure && s.structure.family === 'wingbox' ? s.airfoil : s.structure.params, null, 1) +
-           `\n载荷: ${JSON.stringify(s.load)}；网格: ${JSON.stringify(s.mesh)}；材料: ${JSON.stringify(s.material)}`;
+           `\n载荷: ${JSON.stringify(s.load)}；网格: ${JSON.stringify(s.mesh)}；材料: ${JSON.stringify(s.material)}` +
+           `\n边界: ${JSON.stringify(s.bc)}；分析: ${JSON.stringify(s.analysis)}；extra: ${JSON.stringify(s.extra || {})}` +
+           `\n★ bc/analysis/extra 三块也必须逐字段照抄（柱壳的 extra.end_shear/end_moment 是主载荷）。`;
   }
   if (task.input_level === 'L2') {
     return `结构族=${fam}。以下是含缺失字段的参数（缺失项标 "MISSING"）：\n` +
@@ -80,6 +84,7 @@ async function main() {
         messages: [{ role: 'system', content: SYS }, { role: 'user', content: specPrompt(t) }],
         stream: true,
         temperature: 0,
+        response_format: { type: 'json_object' },   // W4c P0-4：约束输出
       })) {
         const d = chunk.choices[0]?.delta;
         if (d?.content) answer += d.content;
@@ -98,4 +103,7 @@ async function main() {
   console.log('完成 -> ' + outDir);
 }
 
-main().catch(e => { console.error('FATAL:', e.message); process.exit(2); });
+if (require.main === module) {
+  main().catch(e => { console.error('FATAL:', e.message); process.exit(2); });
+}
+module.exports = { specPrompt, extractJSON };

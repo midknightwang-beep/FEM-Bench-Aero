@@ -8,6 +8,8 @@ validate_schema.py — schema 校验（W4a P1-1：让「55/55 过校验」一条
 用法：python validate_schema.py    # 退出码 0 = 全过
 """
 import json, os, sys
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')  # W4c P1-4：GBK 控制台 emoji 崩溃
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)

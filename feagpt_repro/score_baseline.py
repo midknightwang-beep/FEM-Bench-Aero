@@ -54,8 +54,13 @@ def main(cand_dir):
         return {'tsr': f'{p}/{len(s)}', 'pct': round(100 * p / max(1, len(s)), 1), 'n': len(s)}
 
     splits_present = sorted({r['split_v2'] for r in rows})
-    scorecard = {'note': 'W4b-2 LLM 基线（spec_fidelity 判分）。FPR 需一次性生成协议，另行实现。',
-                 'n_candidates': len(rows),
+    n_tasks_l1 = 19
+    partial = len(rows) < n_tasks_l1
+    scorecard = {'note': 'W4c：SFR（spec_fidelity，skip_solve）口径。MSR（全链）未跑时不得到处宣称模型基线（红线 R9/R14）。',
+                 'n_candidates': len(rows), 'n_tasks_exam': n_tasks_l1,
+                 'partial': partial,
+                 'partial_warning': f'WARNING: partial candidate set ({len(rows)}/{n_tasks_l1})' if partial else None,
+                 'underpowered': len(rows) < 20,
                  'by_split': {s: tsr([s]) for s in splits_present},
                  'exam': tsr(('boundary_holdout', 'extrapolation_test')),
                  'outcome_counts': dict(collections.Counter(r['outcome'] for r in rows)),
@@ -70,7 +75,8 @@ def main(cand_dir):
         'TSR_LLM_pct': scorecard['exam']['pct'],
         'delta_pp': round(scorecard['exam']['pct'] - t1, 1),
         'criterion': '≥ 10 pp 才算 LLM 真有增量（专家 6.3.1）',
-        'verdict': 'PASS' if scorecard['exam']['pct'] - t1 >= 10 else 'BELOW',
+        'verdict': ('UNDERPOWERED (n<20, 红线 R12)' if len(rows) < 20 else
+                        ('PASS' if scorecard['exam']['pct'] - t1 >= 10 else 'BELOW')),
     }
     out = os.path.join(RUNS, 'baseline_scorecard.json')
     json.dump(scorecard, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)

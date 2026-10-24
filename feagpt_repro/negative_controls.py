@@ -126,6 +126,74 @@ def main():
     print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-8  L3 已接入任务层                           "
           f"expect=30 actual={len(l3)}")
 
+    # ---- W4c 扩展（专家第三轮附录 C）：NC-9..13 ----
+    from evaluate import spec_fidelity
+    barrel_task = tasks.get('L1_fuselage_barrel_d1600_l1600_str8_frm3') or next(
+        t for t in tasks.values() if t['family'] == 'fuselage_barrel')
+    barrel_cid = barrel_task['task_id'].replace('L1_', '')
+    barrel_gold = json.load(open(os.path.join(FEA, 'modeling', barrel_cid, 'spec.json'),
+                                 encoding='utf-8'))
+    barrel_gold.pop('workdir', None)
+
+    def sf_run(task, cand):
+        cid = task['task_id'].replace('L1_', '')
+        g = json.load(open(os.path.join(FEA, 'modeling', cid, 'spec.json'), encoding='utf-8'))
+        g.pop('workdir', None)
+        return spec_fidelity(cand, g, task['family'])
+
+    # NC-9：删 bc
+    c9 = json.loads(json.dumps(barrel_gold)); c9['bc'] = {}
+    r9 = sf_run(barrel_task, c9)
+    ok = not r9['pass']
+    results.append({'id': 'NC-9', 'desc': '删 bc', 'expect': 'FAIL',
+                    'actual': 'PASS' if r9['pass'] else 'FAIL', 'ok': ok})
+    print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-9  删 bc                                    "
+          f"expect=FAIL actual={'PASS' if r9['pass'] else 'FAIL'}")
+
+    # NC-10：删 extra.end_shear（柱壳主载荷）
+    c10 = json.loads(json.dumps(barrel_gold)); del c10['extra']['end_shear']
+    r10 = sf_run(barrel_task, c10)
+    ok = not r10['pass']
+    results.append({'id': 'NC-10', 'desc': '删 extra.end_shear', 'expect': 'FAIL',
+                    'actual': 'PASS' if r10['pass'] else 'FAIL', 'ok': ok})
+    print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-10 删 extra.end_shear                      "
+          f"expect=FAIL actual={'PASS' if r10['pass'] else 'FAIL'}")
+
+    # NC-11：包装候选 => FEASpec.from_dict 必须 raise（R10 拒绝静默降级）
+    from feagpt.spec import FEASpec
+    packaged = {'task_id': 'x', 'spec': barrel_gold}
+    try:
+        FEASpec.from_dict(packaged)
+        ok = False; why = '未拒绝（静默降级仍存在）'
+    except ValueError:
+        ok = True; why = 'raise ✅'
+    results.append({'id': 'NC-11', 'desc': '包装候选拒绝契约', 'expect': 'raise', 'actual': why, 'ok': ok})
+    print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-11 包装候选拒绝契约                         expect=raise {why}")
+
+    # NC-12：structure.family 未知 => raise
+    try:
+        FEASpec.from_dict({'structure': {'family': 'unknown'}, 'name': 'x'})
+        ok = False; why = '未拒绝'
+    except ValueError:
+        ok = True; why = 'raise ✅'
+    results.append({'id': 'NC-12', 'desc': 'family=unknown 拒绝', 'expect': 'raise', 'actual': why, 'ok': ok})
+    print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-12 family=unknown 拒绝                      expect=raise {why}")
+
+    # NC-13：L3 候选删 mesh/load/bc/extra => spec_fidelity FAIL（L3 gold 权威判定）
+    l3t = l3[0]
+    l3_cid = l3t['task_id'].replace('L3_', '')
+    l3_gold = json.load(open(os.path.join(FEA, 'modeling', l3_cid, 'spec.json'), encoding='utf-8'))
+    l3_gold.pop('workdir', None)
+    l3_bad = json.loads(json.dumps(l3_gold))
+    for blk in ('mesh', 'load', 'bc', 'analysis', 'extra'):
+        l3_bad.pop(blk, None)
+    r13 = spec_fidelity(l3_bad, l3_gold, l3t['family'])
+    ok = not r13['pass']
+    results.append({'id': 'NC-13', 'desc': 'L3 删 mesh/load/bc/extra', 'expect': 'FAIL',
+                    'actual': 'PASS' if r13['pass'] else 'FAIL', 'ok': ok})
+    print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-13 L3 候选删 mesh/load/bc/extra             "
+          f"expect=FAIL actual={'PASS' if r13['pass'] else 'FAIL'}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'results': results}

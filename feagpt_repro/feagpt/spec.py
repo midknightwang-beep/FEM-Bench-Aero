@@ -304,6 +304,17 @@ class FEASpec:
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> "FEASpec":
+        # W4c 纠偏（专家第三轮 P0-1/R10）：静默降级禁令——顶层缺 structure/airfoil
+        # 或 family 缺失/未知时必须 raise，绝不默认 wingbox（曾把包装候选解成默认翼盒）。
+        if not isinstance(d, dict) or ("structure" not in d and "airfoil" not in d):
+            raise ValueError(
+                "not a FEASpec: top level must carry 'structure' (or legacy 'airfoil'); "
+                f"got keys {sorted(d) if isinstance(d, dict) else type(d).__name__}")
+        fam = (d.get("structure") or {}).get("family")
+        from .geometry import BUILDERS  # 延迟导入避免环
+        if fam not in BUILDERS:
+            raise ValueError(
+                f"structure.family missing or unknown: {fam!r}; registered: {sorted(BUILDERS)}")
         return cls(
             name=d.get("name", "fea_case"),
             description=d.get("description", ""),

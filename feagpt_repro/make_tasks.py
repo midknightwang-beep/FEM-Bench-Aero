@@ -216,6 +216,8 @@ def main():
         for ln in open(nl_path, encoding='utf-8'):
             r = json.loads(ln)
             r['input_source'] = 'template_human_designed'   # 纠偏 3.4d：如实标签
+            if r.get('split_v2') == 'id_test':               # W4c P1-2：L3 也统一改名
+                r['split_v2'] = ID_TEST_RENAME
             tasks.append(r)
         print(f"L3 并入: +{sum(1 for t in tasks if t['input_level'] == 'L3')} 条 L3")
     if not args.dry:

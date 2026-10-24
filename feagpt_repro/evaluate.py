@@ -83,26 +83,26 @@ def spec_fidelity(cand_spec, gold_spec, family, input_mesh_keys=None, input_load
         gv = gold_spec.get('material', {}).get(k)
         fields.append({'field': f'material.{k}', 'expected': gv, 'actual': cv,
                        'pass': True, 'reported_not_gated': True})
-    # 网格与载荷（W4a NC-4/NC-5）。W4b 修正：mesh 双键名问题——任务输入给了什么键就考什么键
-    # （gold 的 pipeline 内部键如 algorithm_2d/min_jacobian 任务没给 LLM，考了就是考「猜内部默认值」）。
-    for holder, input_keys in (('mesh', input_mesh_keys), ('load', input_load_keys)):
-        ch, gh = cand_spec.get(holder, {}), gold_spec.get(holder, {})
-        # 键名别名归一（任务输入键 vs gold 内部键）
-        MESH_ALIASES = {'order': 'element_order', 'refine_le': 'refine_at_leading_edge',
-                        'size_chord': 'size_chord', 'size_span': 'size_span'}
-        judge_keys = input_keys if input_keys else sorted(set(ch) & set(gh))
-        for k in judge_keys:
-            gk = MESH_ALIASES.get(k, k) if holder == 'mesh' else k
-            ck = k if k in ch else (MESH_ALIASES.get(k) if MESH_ALIASES.get(k) in ch else k)
-            cv = ch.get(ck, ch.get(gk, '<missing>'))
-            gv = gh.get(gk, gh.get(k, '<missing>'))
-            if cv == '<missing>' and gv == '<missing>':
-                ok = True
-            elif cv == '<missing>' or gv == '<missing>':
-                ok = False
-            else:
-                ok = _field_equal(cv, gv)
+    # 网格/载荷/边界/分析/extra（W4c 纠偏 P0-2：gold 权威判定，不再按任务输入键集——
+    # L3 只有 nl 时旧逻辑完全不判；柱壳 extra={}（端剪/端弯是主载荷）曾 23/23 PASS）。
+    # analysis.solver 是执行选择，不作真值（专家 3.2）。
+    for holder in ('mesh', 'load', 'bc', 'analysis', 'extra'):
+        gh = gold_spec.get(holder, {})
+        ch = cand_spec.get(holder, {})
+        for k in sorted(gh.keys()):
+            if holder == 'analysis' and k == 'solver':
+                continue
+            gv = gh[k]
+            cv = ch.get(k, '<missing>')
+            ok = _field_equal(cv, gv)
             fields.append({'field': f'{holder}.{k}', 'expected': gv, 'actual': cv, 'pass': ok})
+    # 候选自创键（gold 没有、candidate 写了的非空键）也算错答案
+    for holder in ('mesh', 'load', 'bc', 'analysis', 'extra'):
+        gh, ch = gold_spec.get(holder, {}), cand_spec.get(holder, {})
+        for k in sorted(set(ch) - set(gh)):
+            if ch[k] not in ('', {}, None, []):
+                fields.append({'field': f'{holder}.{k} (not in gold)',
+                               'expected': '<absent>', 'actual': ch[k], 'pass': False})
     fails = [f for f in fields if not f['pass']]
     return {'pass': not fails, 'n_fields': len(fields), 'n_fail': len(fails),
             'failed': fails[:15]}
@@ -156,6 +156,33 @@ def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800, skip_solve=F
         out_path = os.path.join(run_dir, 'evaluation.json')
         json.dump(result, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
         return result
+
+    # ---- 0. W4c P0-1/R10：候选契约校验 + 解包（全链路径不再静默降级）----
+    raw_cand = json.load(open(cand_spec_path, encoding='utf-8'))
+    if 'spec' in raw_cand and 'structure' not in raw_cand:
+        raw_cand = raw_cand['spec'] or {}          # gen_candidates 包装结构解包
+    raw_cand.pop('workdir', None)
+    contract_fail = None
+    fam = (raw_cand.get('structure') or {}).get('family')
+    if not fam:
+        contract_fail = 'structure.family missing (packaged or incomplete candidate)'
+    elif not raw_cand.get('bc'):
+        contract_fail = 'bc empty (boundary conditions required)'
+    elif fam == 'fuselage_barrel' and not (raw_cand.get('extra') or {}).get('end_shear'):
+        contract_fail = 'fuselage_barrel extra.end_shear missing (main load case)'
+    if contract_fail:
+        result['gates']['pipeline'] = {
+            'pass': False, 'field': 'contract_ok', 'expected': 'runnable FEASpec',
+            'actual': contract_fail,
+            'detail': 'W4c R10: 拒绝静默降级——不进入求解'}
+        result['overall_pass'] = False
+        out_path = os.path.join(run_dir, 'evaluation.json')
+        json.dump(result, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+        return result
+    # 解包后的 spec 落盘，run_pipeline 只见纯 FEASpec
+    cand_spec_path = os.path.join(run_dir, 'candidate.spec.json')
+    json.dump(raw_cand, open(cand_spec_path, 'w', encoding='utf-8'),
+              ensure_ascii=False, indent=1)
 
     # ---- 1. 跑 pipeline（ccx 全链）----
     t0 = time.time()

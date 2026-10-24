@@ -10,7 +10,7 @@ v1.0-rc 标签只含代码+清单+任务层；数据集本体（modeling/，236 
   python fetch_data.py --src <path> --dest ../FEM-Bench-Aero   # 默认解包到 ../FEM-Bench-Aero/
 校验：SHA256 对比 SHA256SUMS.txt（同目录）；解包后核对 modeling/ 目录条数 = manifest.n_cases。
 """
-import argparse, hashlib, json, os, subprocess, sys
+import argparse, hashlib, json, os, sys, tarfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -52,10 +52,10 @@ def main():
             return 2
         print(f'[OK] SHA256 校验通过: {got[:16]}…')
 
-    # 解包（tar 到 dest；归档内是 modeling/ 前缀）
-    cmd = ['tar', 'xzf', src, '-C', args.dest]
-    print('解包:', ' '.join(cmd))
-    subprocess.run(cmd, check=True)
+    # 解包（W4c P1-3：Python tarfile——GNU tar 把 F: 当远程主机）
+    print(f'解包 {src} -> {args.dest}')
+    with tarfile.open(src, 'r:gz') as tf:
+        tf.extractall(args.dest)
 
     # 条数核对
     man = json.load(open(os.path.join(args.dest, 'manifest.json'), encoding='utf-8'))
