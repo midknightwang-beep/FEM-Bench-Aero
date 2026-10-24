@@ -59,7 +59,12 @@ def spec_fidelity(cand_spec, gold_spec, family):
                    else gold_spec.get('structure', {}).get('params', {}))
     for k in keys:
         cv, gv = cand_holder.get(k, '<missing>'), gold_holder.get(k, '<missing>')
-        ok = _field_equal(cv, gv) if cv != '<missing>' and gv != '<missing>' else False
+        if cv == '<missing>' and gv == '<missing>':
+            ok = True          # 双方一致缺省（可选字段，如 hole_x 仅偏心孔有）= 一致
+        elif cv == '<missing>' or gv == '<missing>':
+            ok = False         # 单边缺 = 不一致
+        else:
+            ok = _field_equal(cv, gv)
         fields.append({'field': f'{holder_key}.{k}', 'expected': gv, 'actual': cv, 'pass': ok})
     # 结构族与材料必判项
     for label, path in (('structure.family', ('structure', 'family')),):
