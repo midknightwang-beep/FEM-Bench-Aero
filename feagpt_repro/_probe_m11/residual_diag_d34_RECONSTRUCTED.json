@@ -1,0 +1,26 @@
+{
+ "generated": "2026-10-24",
+ "milestone": "M11 / D34 residual diagnosis",
+ "_provenance": {
+  "status": "RECONSTRUCTED -- not an original solver/script artifact",
+  "why": "原始 residual_diag.json 在 D35 重跑同一脚本时被覆盖（脚本当时把输出路径写死）。D35 已把脚本改为默认输出 residual_diag_rerun.json 且支持 --out，防止再犯。",
+  "sources": [
+   "FEM-Bench-Aero/README.md §5.3 (D34 段) 与 §5.2 (D34 段) 记录的读数",
+   ".workbuddy/memory/MEMORY.md 判据索引 D34 条",
+   ".workbuddy/memory/2026-10-24.md D34 收口段",
+   "_probe_m11/residual_diag_d35.json（同脚本在 D35 数据集上的实跑，结构一致，可对照）"
+  ],
+  "what_is_verbatim_vs_recalled": "计数（0/1/2 行）与残差（-3.17 / +13.31 / +15.70 %）在 README 与 MEMORY 中逐字记录，此处照抄；其余字段结构借用 D35 实跑的同名脚本输出。"
+ },
+ "claim": "the residual at the taper-off sweep corners is a sweep x taper interaction, and that interaction, not the sweep basis, is what remains -- it is structurally unestimable on this train set",
+ "interaction_columns": {
+  "train": {"n": 18, "sweep_gt0": 3, "sweep_gt0_and_taper_off": 0},
+  "val": {"n": 7, "sweep_gt0": 1, "sweep_gt0_and_taper_off": 0},
+  "test": {"n": 7, "sweep_gt0": 2, "sweep_gt0_and_taper_off": 2}
+ },
+ "interaction_identifiable": false,
+ "held_out_taper_neutral_abs_pct": [3.17],
+ "held_out_taper_off_abs_pct": [13.31, 15.70],
+ "verdict": "PASS",
+ "note_on_verdict": "D34 的 PASS 含义是「确认不可估」；D35 之后同一脚本会报 CHECK / ESTIMABLE，那不是回归，是数据集变了。"
+}

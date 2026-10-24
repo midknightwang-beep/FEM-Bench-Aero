@@ -1,0 +1,68 @@
+{
+ "target": "max_disp",
+ "A_published_train21": {
+  "n_train": 21,
+  "n_test": 6,
+  "alpha": 0.1778279410038923,
+  "train_loo": 3.684,
+  "mape": 2.6306129251440438,
+  "median": 1.9107861614832513,
+  "max": 5.922208798697192,
+  "per_case": {
+   "n_ribs7_chord800": 0.081,
+   "size_span2400_skin2": -0.47,
+   "size_span3000_skin1p5": -2.731,
+   "str3_T": 5.489,
+   "sweep40_taper040": 1.09,
+   "web1_offcentre": -5.922
+  }
+ },
+ "B_train28_incl_val": {
+  "n_train": 28,
+  "n_test": 6,
+  "alpha": 0.1,
+  "train_loo": 3.661,
+  "mape": 5.814051805718198,
+  "median": 3.541493325258656,
+  "max": 18.349913046708856,
+  "per_case": {
+   "n_ribs7_chord800": -0.595,
+   "size_span2400_skin2": -0.157,
+   "size_span3000_skin1p5": -1.719,
+   "str3_T": 5.364,
+   "sweep40_taper040": 18.35,
+   "web1_offcentre": -8.699
+  }
+ },
+ "D_loo_trainvalonly": {
+  "n_train": 27,
+  "n_test": 6,
+  "mape": 5.81405180571812,
+  "median": 3.54149332525862,
+  "max": 18.349913046709236,
+  "per_case": {
+   "n_ribs7_chord800": -0.595,
+   "size_span2400_skin2": -0.157,
+   "size_span3000_skin1p5": -1.719,
+   "str3_T": 5.364,
+   "sweep40_taper040": 18.35,
+   "web1_offcentre": -8.699
+  }
+ },
+ "C_loo_all33": {
+  "n_train": 33,
+  "n_test": 6,
+  "mape": 5.878042783037688,
+  "median": 5.004169333537485,
+  "max": 14.476870837235234,
+  "per_case": {
+   "n_ribs7_chord800": -1.992,
+   "size_span2400_skin2": -0.119,
+   "size_span3000_skin1p5": -4.205,
+   "str3_T": 5.803,
+   "sweep40_taper040": 14.477,
+   "web1_offcentre": -8.672
+  }
+ },
+ "reading": "A is the published protocol; B adds val without touching the test cases; D/C hold the test case out entirely."
+}

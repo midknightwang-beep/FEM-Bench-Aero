@@ -1,0 +1,130 @@
+{
+ "stations_deg": [
+  0.0,
+  10.0,
+  20.0,
+  30.0,
+  40.0
+ ],
+ "cases": {
+  "0": "naca4412_wingbox",
+  "10": "naca4412_wingbox_sweep10",
+  "20": "naca4412_wingbox_sweep20",
+  "30": "naca4412_wingbox_sweep30",
+  "40": "naca4412_wingbox_sweep40"
+ },
+ "values": {
+  "0": {
+   "max_disp": 2.365439,
+   "max_w": 0.109671
+  },
+  "10": {
+   "max_disp": 2.587602,
+   "max_w": 0.109603
+  },
+  "20": {
+   "max_disp": 3.169341,
+   "max_w": 0.12635
+  },
+  "30": {
+   "max_disp": 4.384339,
+   "max_w": 0.160237
+  },
+  "40": {
+   "max_disp": 7.014338,
+   "max_w": 0.229475
+  }
+ },
+ "findings": {
+  "curvature": {
+   "max_disp": {
+    "relative_to_0": [
+     1.0,
+     1.0939,
+     1.3399,
+     1.8535,
+     2.9653
+    ],
+    "increments": [
+     0.0939,
+     0.2459,
+     0.5136,
+     1.1118
+    ],
+    "monotone_increasing_increment": true
+   },
+   "max_w": {
+    "relative_to_0": [
+     1.0,
+     0.9994,
+     1.1521,
+     1.4611,
+     2.0924
+    ],
+    "increments": [
+     -0.0006,
+     0.1527,
+     0.309,
+     0.6313
+    ],
+    "monotone_increasing_increment": true
+   }
+  },
+  "linear_extrapolation": {
+   "max_disp": {
+    "predicted": 3.973243,
+    "actual": 7.014338,
+    "ape_pct": -43.36
+   },
+   "max_w": {
+    "predicted": 0.143028,
+    "actual": 0.229475,
+    "ape_pct": -37.67
+   }
+  },
+  "station_30_vs_old_trend": {
+   "max_disp": {
+    "predicted": 4.110656,
+    "actual": 4.384339,
+    "ape_pct": -6.24
+   },
+   "max_w": {
+    "predicted": 0.159912,
+    "actual": 0.160237,
+    "ape_pct": -0.2
+   }
+  },
+  "extrapolation_to_40": {
+   "max_disp": {
+    "quad {0,10,20}": {
+     "predicted": 5.411547,
+     "ape_pct": -22.85
+    },
+    "quad {0,10,20,30}": {
+     "predicted": 6.027334,
+     "ape_pct": -14.07
+    },
+    "cubic {0,10,20,30}": {
+     "predicted": 6.50628,
+     "ape_pct": -7.24
+    }
+   },
+   "max_w": {
+    "quad {0,10,20}": {
+     "predicted": 0.21029,
+     "ape_pct": -8.36
+    },
+    "quad {0,10,20,30}": {
+     "predicted": 0.211021,
+     "ape_pct": -8.04
+    },
+    "cubic {0,10,20,30}": {
+     "predicted": 0.211589,
+     "ape_pct": -7.79
+    }
+   }
+  }
+ },
+ "fails": [],
+ "verdict": "PASS"
+}

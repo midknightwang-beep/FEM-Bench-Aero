@@ -1,0 +1,68 @@
+{
+ "levels": [
+  {
+   "size_chord": 12.0,
+   "size_span": 24.0,
+   "case_id": "naca4412_wingbox_h12x24",
+   "n_nodes": 5569,
+   "max_disp": 2.3658043182839936,
+   "max_w": 0.10969,
+   "max_vm_mid": 10.412984421946645,
+   "max_vm_out": 10.726245554803974,
+   "max_disp_node": 745,
+   "max_vm_node": 792
+  },
+  {
+   "size_chord": 8.0,
+   "size_span": 16.0,
+   "case_id": "naca4412_wingbox_h8x16",
+   "n_nodes": 12017,
+   "max_disp": 2.36808184499499,
+   "max_w": 0.109877,
+   "max_vm_mid": 11.032843199753579,
+   "max_vm_out": 11.495767130644479,
+   "max_disp_node": 903,
+   "max_vm_node": 974
+  },
+  {
+   "size_chord": 6.0,
+   "size_span": 12.0,
+   "case_id": "naca4412_wingbox_h6x12",
+   "n_nodes": 19958,
+   "max_disp": 2.369785015651855,
+   "max_w": 0.10991466666666667,
+   "max_vm_mid": 11.59058653735441,
+   "max_vm_out": 12.110934862440828,
+   "max_disp_node": 1047,
+   "max_vm_node": 1138
+  }
+ ],
+ "metric": "max_disp",
+ "successive_changes": [
+  {
+   "from": 12.0,
+   "to": 8.0,
+   "rel_change_pct": 0.09626860063593229,
+   "n_nodes_ratio": 2.1578380319626502
+  },
+  {
+   "from": 8.0,
+   "to": 6.0,
+   "rel_change_pct": 0.07192195069037816,
+   "n_nodes_ratio": 1.6608138470500124
+  }
+ ],
+ "observed_order": {
+  "e_coarse_mid": 0.002277526710996458,
+  "e_mid_fine": 0.001703170656865094,
+  "error_ratio": 1.3372275419472883,
+  "h_ratio": 1.5,
+  "p_est": 0.7167040178562647
+ },
+ "monotone": true,
+ "richardson_limit": {
+  "u_inf": 2.377223157979753,
+  "baseline_12mm_error_pct": -0.4803436167710753,
+  "finest_error_pct": -0.3128920523481338
+ }
+}

@@ -1,0 +1,17 @@
+start 22:22:03
+--- ccx ---
+        - quality gate passed: min scaled Jacobian 0.516, 0 triangle(s)
+        - gate4 semantic PASS (6 checks)
+        - dropped 24 unreferenced mesh node(s) (143426 -> 143402); they carry no stiffness but would dilute nodal loads and abort Abaqus
+        - deck written (ccx): 143402 active nodes, 142914 shell elements in 3 group(s)
+
+1/1 case(s) completed. Summary -> outputs_b6_probe\batch_summary.json
+ccx rc=0  22:24:42
+--- abaqus ---
+<unknown>.AbaqusException: 0
+
+--- Abaqus diagnostics ---
+(none reported)
+
+0/1 case(s) completed. Summary -> outputs_b6_probe_abaqus\batch_summary.json
+abaqus rc=1  22:25:51

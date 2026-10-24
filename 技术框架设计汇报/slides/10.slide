@@ -1,0 +1,36 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 48, right: 80 }}>
+    <Text style={{ fontSize: 15, color: '#1565C0', letterSpacing: 2 }}>05 具体方案</Text>
+    <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#1A1A1A', marginTop: 6 }}>端到端：从一句话到一份可信的模型</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 156, right: 80, flexDirection: 'column', gap: 8 }}>
+    {[
+      { n: '①', t: '工程师口语描述结构与工况', w: '工程师' },
+      { n: '②', t: '缺壁厚，系统追问一次（默认值不静默生效）', w: '交互层' },
+      { n: '③', t: '契约规范化 + 三层校验（Schema / 谓词 / 试建）', w: '契约层' },
+      { n: '④', t: '建面打标 → 全四边形网格 → 质量统计', w: '生成层' },
+      { n: '⑤', t: '双方言写卡 → 串行求解（同一网格、同一契约）', w: '生成+求解' },
+      { n: '⑥', t: '结果归一（单位制与符号约定在此校验）', w: '求解层' },
+      { n: '⑦', t: '九道闸判定，逐闸输出判据/阈值/实测值/结论', w: '验证层' },
+      { n: '⑧', t: '交付模型 + 云图 + 报告 + 契约指纹；拒绝则走修复回路', w: '交付' },
+    ].map((x, i) => (
+      <Box key={i} style={{ flexDirection: 'row', height: 52, alignItems: 'center' }}>
+        <Box style={{ width: 44, height: 44, borderRadius: 22, background: i < 7 ? '#1565C0' : '#00897B', justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#FFFFFF' }}>{x.n}</Text>
+        </Box>
+        <Text style={{ fontSize: 16, color: '#1A1A1A', marginLeft: 16, flex: 1 }}>{x.t}</Text>
+        <Text style={{ fontSize: 12, color: '#94A3B8', width: 110, textAlign: 'right' }}>{x.w}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 600, right: 80, background: '#F0F9F7', borderRadius: 10, padding: '14px 20px', borderLeft: '4px solid #00897B' }}>
+    <Text style={{ fontSize: 14, color: '#00695C', lineHeight: 1.65 }}>
+      调试时能拆开（只生成 / 只求解 / 全链双码），交付时必须合上——不用调试模式产出正式结果
+    </Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>技术框架设计报告</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>10 / 12</Text>
+  </Box>
+</Slide>

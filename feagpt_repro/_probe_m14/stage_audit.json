@@ -1,0 +1,1460 @@
+{
+ "n_cases": 55,
+ "axis_coverage": {
+  "fuselage_barrel::diameter": {
+   "n_train_values": 1,
+   "train_values": [
+    2000.0
+   ],
+   "n_val_values": 2,
+   "n_test_values": 2,
+   "train_min": 2000.0,
+   "train_max": 2000.0,
+   "val_outside_envelope": [
+    1800.0
+   ],
+   "test_outside_envelope": [
+    1600.0
+   ]
+  },
+  "fuselage_barrel::length": {
+   "n_train_values": 1,
+   "train_values": [
+    2000.0
+   ],
+   "n_val_values": 2,
+   "n_test_values": 2,
+   "train_min": 2000.0,
+   "train_max": 2000.0,
+   "val_outside_envelope": [
+    1600.0
+   ],
+   "test_outside_envelope": [
+    1600.0
+   ]
+  },
+  "fuselage_barrel::n_frames": {
+   "n_train_values": 1,
+   "train_values": [
+    3
+   ],
+   "n_val_values": 1,
+   "n_test_values": 2,
+   "train_min": 3,
+   "train_max": 3,
+   "val_outside_envelope": [],
+   "test_outside_envelope": [
+    4
+   ]
+  },
+  "fuselage_barrel::n_stringers": {
+   "n_train_values": 1,
+   "train_values": [
+    8
+   ],
+   "n_val_values": 1,
+   "n_test_values": 2,
+   "train_min": 8,
+   "train_max": 8,
+   "val_outside_envelope": [],
+   "test_outside_envelope": [
+    12
+   ]
+  },
+  "fuselage_barrel::thickness": {
+   "n_train_values": 1,
+   "train_values": [
+    3.0
+   ],
+   "n_val_values": 2,
+   "n_test_values": 1,
+   "train_min": 3.0,
+   "train_max": 3.0,
+   "val_outside_envelope": [
+    2.0
+   ],
+   "test_outside_envelope": []
+  },
+  "open_hole_panel::hole_d": {
+   "n_train_values": 1,
+   "train_values": [
+    20.0
+   ],
+   "n_val_values": 4,
+   "n_test_values": 3,
+   "train_min": 20.0,
+   "train_max": 20.0,
+   "val_outside_envelope": [
+    30.0,
+    40.0,
+    50.0
+   ],
+   "test_outside_envelope": [
+    40.0,
+    60.0
+   ]
+  },
+  "open_hole_panel::hole_x": {
+   "n_train_values": 0,
+   "train_values": [],
+   "n_val_values": 0,
+   "n_test_values": 1,
+   "val_unseen": [],
+   "test_unseen": [
+    "120.0"
+   ]
+  },
+  "open_hole_panel::hole_y": {
+   "n_train_values": 0,
+   "train_values": [],
+   "n_val_values": 0,
+   "n_test_values": 1,
+   "val_unseen": [],
+   "test_unseen": [
+    "60.0"
+   ]
+  },
+  "open_hole_panel::length": {
+   "n_train_values": 1,
+   "train_values": [
+    400.0
+   ],
+   "n_val_values": 2,
+   "n_test_values": 2,
+   "train_min": 400.0,
+   "train_max": 400.0,
+   "val_outside_envelope": [
+    600.0
+   ],
+   "test_outside_envelope": [
+    600.0
+   ]
+  },
+  "open_hole_panel::thickness": {
+   "n_train_values": 1,
+   "train_values": [
+    2.0
+   ],
+   "n_val_values": 1,
+   "n_test_values": 1,
+   "train_min": 2.0,
+   "train_max": 2.0,
+   "val_outside_envelope": [],
+   "test_outside_envelope": []
+  },
+  "open_hole_panel::width": {
+   "n_train_values": 1,
+   "train_values": [
+    200.0
+   ],
+   "n_val_values": 2,
+   "n_test_values": 2,
+   "train_min": 200.0,
+   "train_max": 200.0,
+   "val_outside_envelope": [
+    300.0
+   ],
+   "test_outside_envelope": [
+    300.0
+   ]
+  },
+  "stiffened_panel::length": {
+   "n_train_values": 1,
+   "train_values": [
+    600.0
+   ],
+   "n_val_values": 1,
+   "n_test_values": 1,
+   "train_min": 600.0,
+   "train_max": 600.0,
+   "val_outside_envelope": [
+    800.0
+   ],
+   "test_outside_envelope": []
+  },
+  "stiffened_panel::n_stringers": {
+   "n_train_values": 1,
+   "train_values": [
+    0
+   ],
+   "n_val_values": 2,
+   "n_test_values": 1,
+   "train_min": 0,
+   "train_max": 0,
+   "val_outside_envelope": [
+    3
+   ],
+   "test_outside_envelope": [
+    3
+   ]
+  },
+  "stiffened_panel::thickness": {
+   "n_train_values": 1,
+   "train_values": [
+    2.0
+   ],
+   "n_val_values": 1,
+   "n_test_values": 1,
+   "train_min": 2.0,
+   "train_max": 2.0,
+   "val_outside_envelope": [],
+   "test_outside_envelope": []
+  },
+  "stiffened_panel::width": {
+   "n_train_values": 1,
+   "train_values": [
+    600.0
+   ],
+   "n_val_values": 1,
+   "n_test_values": 1,
+   "train_min": 600.0,
+   "train_max": 600.0,
+   "val_outside_envelope": [],
+   "test_outside_envelope": []
+  },
+  "wingbox::chord": {
+   "n_train_values": 2,
+   "train_values": [
+    800,
+    1000.0
+   ],
+   "n_val_values": 1,
+   "n_test_values": 2,
+   "train_min": 800,
+   "train_max": 1000.0,
+   "val_outside_envelope": [],
+   "test_outside_envelope": []
+  },
+  "wingbox::code": {
+   "n_train_values": 1,
+   "train_values": [
+    "4412"
+   ],
+   "n_val_values": 1,
+   "n_test_values": 1,
+   "val_unseen": [],
+   "test_unseen": []
+  },
+  "wingbox::is_T": {
+   "n_train_values": 1,
+   "train_values": [
+    0
+   ],
+   "n_val_values": 1,
+   "n_test_values": 2,
+   "train_min": 0,
+   "train_max": 0,
+   "val_outside_envelope": [],
+   "test_outside_envelope": [
+    1
+   ]
+  },
+  "wingbox::n_ribs": {
+   "n_train_values": 2,
+   "train_values": [
+    3,
+    5
+   ],
+   "n_val_values": 3,
+   "n_test_values": 2,
+   "train_min": 3,
+   "train_max": 5,
+   "val_outside_envelope": [
+    7,
+    9
+   ],
+   "test_outside_envelope": [
+    7
+   ]
+  },
+  "wingbox::n_stringers_per_skin": {
+   "n_train_values": 3,
+   "train_values": [
+    0,
+    3,
+    5
+   ],
+   "n_val_values": 1,
+   "n_test_values": 2,
+   "train_min": 0,
+   "train_max": 5,
+   "val_outside_envelope": [],
+   "test_outside_envelope": []
+  },
+  "wingbox::n_web": {
+   "n_train_values": 2,
+   "train_values": [
+    0,
+    1
+   ],
+   "n_val_values": 2,
+   "n_test_values": 2,
+   "train_min": 0,
+   "train_max": 1,
+   "val_outside_envelope": [
+    2
+   ],
+   "test_outside_envelope": []
+  },
+  "wingbox::rib_thickness": {
+   "n_train_values": 1,
+   "train_values": [
+    4.0
+   ],
+   "n_val_values": 1,
+   "n_test_values": 1,
+   "train_min": 4.0,
+   "train_max": 4.0,
+   "val_outside_envelope": [],
+   "test_outside_envelope": []
+  },
+  "wingbox::skin_thickness": {
+   "n_train_values": 3,
+   "train_values": [
+    2.0,
+    3.0,
+    4.0
+   ],
+   "n_val_values": 2,
+   "n_test_values": 3,
+   "train_min": 2.0,
+   "train_max": 4.0,
+   "val_outside_envelope": [
+    1.5
+   ],
+   "test_outside_envelope": [
+    1.5
+   ]
+  },
+  "wingbox::span": {
+   "n_train_values": 3,
+   "train_values": [
+    1600.0,
+    2000.0,
+    2400.0
+   ],
+   "n_val_values": 2,
+   "n_test_values": 3,
+   "train_min": 1600.0,
+   "train_max": 2400.0,
+   "val_outside_envelope": [
+    3000.0
+   ],
+   "test_outside_envelope": [
+    3000.0
+   ]
+  },
+  "wingbox::spar_chordwise": {
+   "n_train_values": 1,
+   "train_values": [
+    [
+     0.25,
+     0.7
+    ]
+   ],
+   "n_val_values": 1,
+   "n_test_values": 1,
+   "val_unseen": [],
+   "test_unseen": []
+  },
+  "wingbox::stringer_flange_width": {
+   "n_train_values": 1,
+   "train_values": [
+    30.0
+   ],
+   "n_val_values": 1,
+   "n_test_values": 1,
+   "train_min": 30.0,
+   "train_max": 30.0,
+   "val_outside_envelope": [],
+   "test_outside_envelope": []
+  },
+  "wingbox::stringer_height": {
+   "n_train_values": 1,
+   "train_values": [
+    20.0
+   ],
+   "n_val_values": 1,
+   "n_test_values": 1,
+   "train_min": 20.0,
+   "train_max": 20.0,
+   "val_outside_envelope": [],
+   "test_outside_envelope": []
+  },
+  "wingbox::stringer_kind": {
+   "n_train_values": 1,
+   "train_values": [
+    "blade"
+   ],
+   "n_val_values": 1,
+   "n_test_values": 2,
+   "val_unseen": [],
+   "test_unseen": [
+    "T"
+   ]
+  },
+  "wingbox::stringer_thickness": {
+   "n_train_values": 1,
+   "train_values": [
+    2.5
+   ],
+   "n_val_values": 1,
+   "n_test_values": 1,
+   "train_min": 2.5,
+   "train_max": 2.5,
+   "val_outside_envelope": [],
+   "test_outside_envelope": []
+  },
+  "wingbox::sweep_deg": {
+   "n_train_values": 5,
+   "train_values": [
+    0.0,
+    10.0,
+    20.0,
+    30.0,
+    35.0
+   ],
+   "n_val_values": 2,
+   "n_test_values": 2,
+   "train_min": 0.0,
+   "train_max": 35.0,
+   "val_outside_envelope": [
+    40.0
+   ],
+   "test_outside_envelope": [
+    40.0
+   ]
+  },
+  "wingbox::tip_chord_ratio": {
+   "n_train_values": 4,
+   "train_values": [
+    0.6,
+    0.8,
+    0.9,
+    1.0
+   ],
+   "n_val_values": 2,
+   "n_test_values": 2,
+   "train_min": 0.6,
+   "train_max": 1.0,
+   "val_outside_envelope": [
+    0.4
+   ],
+   "test_outside_envelope": [
+    0.4
+   ]
+  },
+  "wingbox::web_chordwise": {
+   "n_train_values": 2,
+   "train_values": [
+    [],
+    [
+     0.475
+    ]
+   ],
+   "n_val_values": 2,
+   "n_test_values": 2,
+   "val_unseen": [
+    "(0.4, 0.55)"
+   ],
+   "test_unseen": [
+    "(0.35,)"
+   ]
+  }
+ },
+ "constant_axes_per_family": {
+  "fuselage_barrel": {
+   "n_cases_in_family": 6,
+   "constant": []
+  },
+  "open_hole_panel": {
+   "n_cases_in_family": 11,
+   "constant": [
+    {
+     "axis": "thickness",
+     "value": 2.0
+    }
+   ]
+  },
+  "stiffened_panel": {
+   "n_cases_in_family": 4,
+   "constant": [
+    {
+     "axis": "thickness",
+     "value": 2.0
+    },
+    {
+     "axis": "width",
+     "value": 600.0
+    }
+   ]
+  },
+  "wingbox": {
+   "n_cases_in_family": 34,
+   "constant": [
+    {
+     "axis": "code",
+     "value": "4412"
+    },
+    {
+     "axis": "rib_thickness",
+     "value": 4.0
+    },
+    {
+     "axis": "spar_chordwise",
+     "value": [
+      0.25,
+      0.7
+     ]
+    },
+    {
+     "axis": "stringer_flange_width",
+     "value": 30.0
+    },
+    {
+     "axis": "stringer_height",
+     "value": 20.0
+    },
+    {
+     "axis": "stringer_thickness",
+     "value": 2.5
+    }
+   ]
+  }
+ },
+ "load_cases": [
+  {
+   "family": "fuselage_barrel",
+   "kind": "pressure",
+   "magnitude": 0.05,
+   "n": 6
+  },
+  {
+   "family": "open_hole_panel",
+   "kind": "tip_force",
+   "magnitude": 4000.0,
+   "n": 9
+  },
+  {
+   "family": "open_hole_panel",
+   "kind": "tip_force",
+   "magnitude": 6000.0,
+   "n": 2
+  },
+  {
+   "family": "stiffened_panel",
+   "kind": "pressure",
+   "magnitude": 0.0001,
+   "n": 4
+  },
+  {
+   "family": "wingbox",
+   "kind": "tip_force",
+   "magnitude": 500.0,
+   "n": 34
+  }
+ ],
+ "materials": [
+  {
+   "name": "Aluminium 2024-T3",
+   "n": 51
+  },
+  {
+   "name": "CFRP[0,45,-45,90,90,-45,45,0]",
+   "n": 1
+  },
+  {
+   "name": "CFRP[0,90,90,0]",
+   "n": 1
+  },
+  {
+   "name": "CFRP[45,-45,-45,45]",
+   "n": 2
+  }
+ ],
+ "mesh_settings": [
+  {
+   "size_chord": 3.0,
+   "size_span": 3.0,
+   "order": 1,
+   "refine_le": true,
+   "n": 4
+  },
+  {
+   "size_chord": 4.0,
+   "size_span": 4.0,
+   "order": 1,
+   "refine_le": true,
+   "n": 11
+  },
+  {
+   "size_chord": 12.0,
+   "size_span": 25.0,
+   "order": 1,
+   "refine_le": true,
+   "n": 34
+  },
+  {
+   "size_chord": 25.0,
+   "size_span": 25.0,
+   "order": 1,
+   "refine_le": false,
+   "n": 6
+  }
+ ],
+ "class_size_hist": {
+  "1": 53,
+  "2": 1
+ },
+ "mesh_scale": {
+  "n_cases_measured": 0,
+  "min_nodes": null,
+  "max_nodes": null,
+  "median_nodes": null,
+  "by_family_max": {}
+ },
+ "baseline": {
+  "n": {
+   "total": 34,
+   "train": 21,
+   "val": 7,
+   "test": 6
+  },
+  "n_classes": 33,
+  "targets": {
+   "max_disp": {
+    "tiers": [
+     {
+      "tier": "M0 constant(geomean)",
+      "val": 35.422,
+      "test": 46.295,
+      "ci95": [
+       25.16,
+       65.41
+      ],
+      "med": 46.006,
+      "max": 80.62
+     },
+     {
+      "tier": "M0m constant(MAPE-opt)",
+      "val": 35.355,
+      "test": 49.439,
+      "ci95": [
+       29.29,
+       69.42
+      ],
+      "med": 50.84,
+      "max": 83.61
+     },
+     {
+      "tier": "M1 beam(1p)",
+      "val": 25.672,
+      "test": 29.724,
+      "ci95": [
+       16.97,
+       46.81
+      ],
+      "med": 22.311,
+      "max": 71.47
+     },
+     {
+      "tier": "M2 beam+shape^c(3p)",
+      "val": 5.138,
+      "test": 10.602,
+      "ci95": [
+       4.9,
+       16.9
+      ],
+      "med": 8.549,
+      "max": 21.97
+     },
+     {
+      "tier": "M2L size-pow(4p)",
+      "val": 25.372,
+      "test": 24.606,
+      "ci95": [
+       8.3,
+       44.55
+      ],
+      "med": 17.156,
+      "max": 70.87
+     },
+     {
+      "tier": "M2X full-pow(7p)",
+      "val": 3.335,
+      "test": 11.475,
+      "ci95": [
+       2.77,
+       21.82
+      ],
+      "med": 7.156,
+      "max": 31.79
+     },
+     {
+      "tier": "M3 ridge(10f)",
+      "val": 9.565,
+      "test": 6.481,
+      "ci95": [
+       1.48,
+       14.09
+      ],
+      "med": 3.75,
+      "max": 24.42
+     },
+     {
+      "tier": "M3q ridge+sweep^2",
+      "val": 6.302,
+      "test": 2.631,
+      "ci95": [
+       0.89,
+       4.51
+      ],
+      "med": 1.911,
+      "max": 5.92
+     },
+     {
+      "tier": "M4 GP-RBF(10f)",
+      "val": 19.329,
+      "test": 29.796,
+      "ci95": [
+       10.43,
+       51.75
+      ],
+      "med": 19.885,
+      "max": 77.09
+     },
+     {
+      "tier": "M5 hybrid(10f+phys)",
+      "val": 9.688,
+      "test": 6.531,
+      "ci95": [
+       1.4,
+       14.62
+      ],
+      "med": 3.532,
+      "max": 25.35
+     },
+     {
+      "tier": "M5q hybrid+sweep^2",
+      "val": 6.351,
+      "test": 2.513,
+      "ci95": [
+       0.83,
+       4.27
+      ],
+      "med": 1.207,
+      "max": 5.93
+     }
+    ],
+    "summary": {
+     "best_physics": "M2X full-pow(7p)",
+     "best_learner": "M3q ridge+sweep^2",
+     "paired_diff_pp": -8.829,
+     "paired_ci95": [
+      -18.98,
+      -0.865
+     ],
+     "significant": true,
+     "floor_m0m_test_mape": 49.439,
+     "learner_over_floor_pct": 5.32
+    },
+    "test_groups": {
+     "ribs_new": {
+      "M1": 21.83,
+      "M2X": 0.47,
+      "M3": 0.18,
+      "M3q": 0.08,
+      "M5": 0.37,
+      "M5q": 1.01
+     },
+     "combo": {
+      "M1": 21.13,
+      "M2X": 0.67,
+      "M3": 0.78,
+      "M3q": 0.47,
+      "M5": 0.33,
+      "M5q": 0.26
+     },
+     "size_out": {
+      "M1": 22.79,
+      "M2X": 0.86,
+      "M3": 2.39,
+      "M3q": 2.73,
+      "M5": 1.77,
+      "M5q": 1.23
+     },
+     "section_new": {
+      "M1": 33.08,
+      "M2X": 13.46,
+      "M3": 5.11,
+      "M3q": 5.49,
+      "M5": 5.29,
+      "M5q": 5.46
+     },
+     "planform_out": {
+      "M1": 71.47,
+      "M2X": 31.79,
+      "M3": 24.42,
+      "M3q": 1.09,
+      "M5": 25.35,
+      "M5q": 1.18
+     },
+     "webpos_new": {
+      "M1": 8.04,
+      "M2X": 21.6,
+      "M3": 6.0,
+      "M3q": 5.92,
+      "M5": 6.07,
+      "M5q": 5.93
+     }
+    }
+   },
+   "max_w": {
+    "tiers": [
+     {
+      "tier": "M0 constant(geomean)",
+      "val": 32.311,
+      "test": 39.866,
+      "ci95": [
+       28.49,
+       55.06
+      ],
+      "med": 32.681,
+      "max": 74.52
+     },
+     {
+      "tier": "M0m constant(MAPE-opt)",
+      "val": 30.347,
+      "test": 39.154,
+      "ci95": [
+       22.09,
+       58.12
+      ],
+      "med": 38.3,
+      "max": 77.29
+     },
+     {
+      "tier": "M1 beam(1p)",
+      "val": 26.61,
+      "test": 33.664,
+      "ci95": [
+       23.59,
+       45.72
+      ],
+      "med": 30.961,
+      "max": 61.43
+     },
+     {
+      "tier": "M2 beam+shape^c(3p)",
+      "val": 17.53,
+      "test": 21.373,
+      "ci95": [
+       10.63,
+       34.73
+      ],
+      "med": 18.205,
+      "max": 52.09
+     },
+     {
+      "tier": "M2L size-pow(4p)",
+      "val": 20.053,
+      "test": 16.196,
+      "ci95": [
+       6.49,
+       26.63
+      ],
+      "med": 13.945,
+      "max": 36.77
+     },
+     {
+      "tier": "M2X full-pow(7p)",
+      "val": 5.505,
+      "test": 16.555,
+      "ci95": [
+       2.7,
+       38.88
+      ],
+      "med": 6.072,
+      "max": 70.57
+     },
+     {
+      "tier": "M3 ridge(10f)",
+      "val": 8.136,
+      "test": 1.736,
+      "ci95": [
+       0.5,
+       3.25
+      ],
+      "med": 0.704,
+      "max": 4.91
+     },
+     {
+      "tier": "M3q ridge+sweep^2",
+      "val": 5.268,
+      "test": 7.455,
+      "ci95": [
+       1.23,
+       17.98
+      ],
+      "med": 2.377,
+      "max": 33.37
+     },
+     {
+      "tier": "M4 GP-RBF(10f)",
+      "val": 24.282,
+      "test": 30.157,
+      "ci95": [
+       13.41,
+       50.1
+      ],
+      "med": 27.077,
+      "max": 74.49
+     },
+     {
+      "tier": "M5 hybrid(10f+phys)",
+      "val": 8.347,
+      "test": 1.922,
+      "ci95": [
+       0.61,
+       3.46
+      ],
+      "med": 1.203,
+      "max": 5.04
+     },
+     {
+      "tier": "M5q hybrid+sweep^2",
+      "val": 6.476,
+      "test": 5.847,
+      "ci95": [
+       1.67,
+       12.52
+      ],
+      "med": 2.938,
+      "max": 21.89
+     }
+    ],
+    "summary": {
+     "best_physics": "M2X full-pow(7p)",
+     "best_learner": "M3q ridge+sweep^2",
+     "paired_diff_pp": -9.071,
+     "paired_ci95": [
+      -20.982,
+      -1.217
+     ],
+     "significant": true,
+     "floor_m0m_test_mape": 39.154,
+     "learner_over_floor_pct": 19.04
+    },
+    "test_groups": {
+     "ribs_new": {
+      "M1": 33.79,
+      "M2X": 0.25,
+      "M3": 0.64,
+      "M3q": 1.25,
+      "M5": 1.38,
+      "M5q": 2.29
+     },
+     "combo": {
+      "M1": 28.13,
+      "M2X": 1.78,
+      "M3": 0.23,
+      "M3q": 0.74,
+      "M5": 0.61,
+      "M5q": 1.23
+     },
+     "size_out": {
+      "M1": 61.43,
+      "M2X": 2.7,
+      "M3": 0.77,
+      "M3q": 0.62,
+      "M5": 0.03,
+      "M5q": 0.84
+     },
+     "section_new": {
+      "M1": 17.3,
+      "M2X": 9.45,
+      "M3": 4.91,
+      "M3q": 5.24,
+      "M5": 5.04,
+      "M5q": 5.25
+     },
+     "planform_out": {
+      "M1": 38.54,
+      "M2X": 70.57,
+      "M3": 0.52,
+      "M3q": 33.37,
+      "M5": 1.03,
+      "M5q": 21.89
+     },
+     "webpos_new": {
+      "M1": 22.8,
+      "M2X": 14.58,
+      "M3": 3.35,
+      "M3q": 3.51,
+      "M5": 3.45,
+      "M5q": 3.59
+     }
+    }
+   },
+   "max_von_mises": {
+    "tiers": [
+     {
+      "tier": "M0 constant(geomean)",
+      "val": 18.728,
+      "test": 29.76,
+      "ci95": [
+       15.4,
+       45.45
+      ],
+      "med": 27.971,
+      "max": 62.72
+     },
+     {
+      "tier": "M0m constant(MAPE-opt)",
+      "val": 21.113,
+      "test": 34.21,
+      "ci95": [
+       19.56,
+       49.47
+      ],
+      "med": 33.284,
+      "max": 65.47
+     },
+     {
+      "tier": "M1 beam(1p)",
+      "val": 10.199,
+      "test": 12.591,
+      "ci95": [
+       4.98,
+       21.69
+      ],
+      "med": 7.281,
+      "max": 31.42
+     },
+     {
+      "tier": "M2 beam+shape^c(3p)",
+      "val": 7.734,
+      "test": 8.674,
+      "ci95": [
+       3.42,
+       15.93
+      ],
+      "med": 4.849,
+      "max": 24.82
+     },
+     {
+      "tier": "M2L size-pow(4p)",
+      "val": 9.671,
+      "test": 10.007,
+      "ci95": [
+       1.5,
+       20.04
+      ],
+      "med": 2.963,
+      "max": 30.88
+     },
+     {
+      "tier": "M2X full-pow(7p)",
+      "val": 8.376,
+      "test": 8.717,
+      "ci95": [
+       1.25,
+       16.93
+      ],
+      "med": 3.271,
+      "max": 24.87
+     },
+     {
+      "tier": "M3 ridge(10f)",
+      "val": 10.162,
+      "test": 7.924,
+      "ci95": [
+       2.38,
+       14.87
+      ],
+      "med": 5.82,
+      "max": 22.6
+     },
+     {
+      "tier": "M3q ridge+sweep^2",
+      "val": 5.388,
+      "test": 6.295,
+      "ci95": [
+       2.23,
+       10.83
+      ],
+      "med": 5.275,
+      "max": 14.53
+     },
+     {
+      "tier": "M4 GP-RBF(10f)",
+      "val": 12.962,
+      "test": 28.935,
+      "ci95": [
+       15.51,
+       44.17
+      ],
+      "med": 26.816,
+      "max": 62.69
+     },
+     {
+      "tier": "M5 hybrid(10f+phys)",
+      "val": 9.609,
+      "test": 7.856,
+      "ci95": [
+       2.11,
+       15.26
+      ],
+      "med": 5.332,
+      "max": 23.38
+     },
+     {
+      "tier": "M5q hybrid+sweep^2",
+      "val": 5.432,
+      "test": 6.327,
+      "ci95": [
+       2.15,
+       10.87
+      ],
+      "med": 5.456,
+      "max": 14.58
+     }
+    ],
+    "summary": {
+     "best_physics": "M2 beam+shape^c(3p)",
+     "best_learner": "M3q ridge+sweep^2",
+     "paired_diff_pp": -2.402,
+     "paired_ci95": [
+      -7.083,
+      1.182
+     ],
+     "significant": false,
+     "floor_m0m_test_mape": 34.21,
+     "learner_over_floor_pct": 18.4
+    },
+    "test_groups": {
+     "ribs_new": {
+      "M1": 7.77,
+      "M2X": 0.06,
+      "M3": 0.22,
+      "M3q": 1.59,
+      "M5": 2.0,
+      "M5q": 1.94
+     },
+     "combo": {
+      "M1": 5.01,
+      "M2X": 0.43,
+      "M3": 1.1,
+      "M3q": 0.41,
+      "M5": 0.33,
+      "M5q": 0.66
+     },
+     "size_out": {
+      "M1": 6.79,
+      "M2X": 1.05,
+      "M3": 2.43,
+      "M3q": 0.48,
+      "M5": 0.01,
+      "M5q": 0.01
+     },
+     "section_new": {
+      "M1": 2.25,
+      "M2X": 5.49,
+      "M3": 9.21,
+      "M3q": 8.96,
+      "M5": 8.67,
+      "M5q": 8.97
+     },
+     "planform_out": {
+      "M1": 31.41,
+      "M2X": 20.39,
+      "M3": 22.6,
+      "M3q": 14.53,
+      "M5": 23.38,
+      "M5q": 14.58
+     },
+     "webpos_new": {
+      "M1": 22.3,
+      "M2X": 24.87,
+      "M3": 11.99,
+      "M3q": 11.79,
+      "M5": 12.75,
+      "M5q": 11.8
+     }
+    }
+   },
+   "max_von_mises_midsurface": {
+    "tiers": [
+     {
+      "tier": "M0 constant(geomean)",
+      "val": 18.913,
+      "test": 28.681,
+      "ci95": [
+       13.84,
+       45.42
+      ],
+      "med": 27.583,
+      "max": 63.28
+     },
+     {
+      "tier": "M0m constant(MAPE-opt)",
+      "val": 19.566,
+      "test": 32.498,
+      "ci95": [
+       17.28,
+       49.03
+      ],
+      "med": 32.504,
+      "max": 65.78
+     },
+     {
+      "tier": "M1 beam(1p)",
+      "val": 8.586,
+      "test": 10.319,
+      "ci95": [
+       3.78,
+       18.9
+      ],
+      "med": 6.062,
+      "max": 30.14
+     },
+     {
+      "tier": "M2 beam+shape^c(3p)",
+      "val": 6.627,
+      "test": 6.514,
+      "ci95": [
+       2.26,
+       11.84
+      ],
+      "med": 4.013,
+      "max": 17.36
+     },
+     {
+      "tier": "M2L size-pow(4p)",
+      "val": 8.409,
+      "test": 8.258,
+      "ci95": [
+       1.15,
+       17.62
+      ],
+      "med": 2.432,
+      "max": 29.63
+     },
+     {
+      "tier": "M2X full-pow(7p)",
+      "val": 7.8,
+      "test": 8.053,
+      "ci95": [
+       1.49,
+       15.58
+      ],
+      "med": 3.062,
+      "max": 23.28
+     },
+     {
+      "tier": "M3 ridge(10f)",
+      "val": 8.757,
+      "test": 7.304,
+      "ci95": [
+       2.2,
+       13.91
+      ],
+      "med": 4.851,
+      "max": 22.09
+     },
+     {
+      "tier": "M3q ridge+sweep^2",
+      "val": 4.623,
+      "test": 5.558,
+      "ci95": [
+       1.69,
+       10.04
+      ],
+      "med": 4.14,
+      "max": 14.21
+     },
+     {
+      "tier": "M4 GP-RBF(10f)",
+      "val": 13.322,
+      "test": 28.47,
+      "ci95": [
+       14.54,
+       44.46
+      ],
+      "med": 27.336,
+      "max": 63.25
+     },
+     {
+      "tier": "M5 hybrid(10f+phys)",
+      "val": 8.558,
+      "test": 7.731,
+      "ci95": [
+       2.51,
+       14.85
+      ],
+      "med": 4.52,
+      "max": 23.93
+     },
+     {
+      "tier": "M5q hybrid+sweep^2",
+      "val": 4.723,
+      "test": 5.661,
+      "ci95": [
+       1.84,
+       10.06
+      ],
+      "med": 4.32,
+      "max": 14.26
+     }
+    ],
+    "summary": {
+     "best_physics": "M2 beam+shape^c(3p)",
+     "best_learner": "M3q ridge+sweep^2",
+     "paired_diff_pp": -0.973,
+     "paired_ci95": [
+      -3.848,
+      1.579
+     ],
+     "significant": false,
+     "floor_m0m_test_mape": 32.498,
+     "learner_over_floor_pct": 17.1
+    },
+    "test_groups": {
+     "ribs_new": {
+      "M1": 6.94,
+      "M2X": 0.38,
+      "M3": 0.73,
+      "M3q": 1.04,
+      "M5": 3.02,
+      "M5q": 1.39
+     },
+     "combo": {
+      "M1": 3.64,
+      "M2X": 1.02,
+      "M3": 1.03,
+      "M3q": 0.48,
+      "M5": 1.01,
+      "M5q": 0.72
+     },
+     "size_out": {
+      "M1": 5.18,
+      "M2X": 1.46,
+      "M3": 2.21,
+      "M3q": 0.26,
+      "M5": 1.15,
+      "M5q": 0.23
+     },
+     "section_new": {
+      "M1": 1.35,
+      "M2X": 4.66,
+      "M3": 7.49,
+      "M3q": 7.24,
+      "M5": 6.02,
+      "M5q": 7.25
+     },
+     "planform_out": {
+      "M1": 30.14,
+      "M2X": 23.28,
+      "M3": 22.09,
+      "M3q": 14.21,
+      "M5": 23.93,
+      "M5q": 14.26
+     },
+     "webpos_new": {
+      "M1": 14.66,
+      "M2X": 17.52,
+      "M3": 10.27,
+      "M3q": 10.12,
+      "M5": 11.25,
+      "M5q": 10.12
+     }
+    }
+   }
+  },
+  "test_groups": {
+   "ribs_new": [
+    "naca4412_wingbox_n_ribs7_chord800"
+   ],
+   "combo": [
+    "naca4412_wingbox_size_span2400_skin2"
+   ],
+   "size_out": [
+    "naca4412_wingbox_size_span3000_skin1p5"
+   ],
+   "section_new": [
+    "naca4412_wingbox_str3_T"
+   ],
+   "planform_out": [
+    "naca4412_wingbox_sweep40_taper040"
+   ],
+   "webpos_new": [
+    "naca4412_wingbox_web1_offcentre"
+   ]
+  },
+  "val_test_disagreement": {
+   "max_disp": {
+    "best_learn_val": "M3q ridge+sweep^2",
+    "best_test": "M5q hybrid+sweep^2",
+    "agree": false
+   },
+   "max_w": {
+    "best_learn_val": "M3q ridge+sweep^2",
+    "best_test": "M3 ridge(10f)",
+    "agree": false
+   },
+   "max_von_mises_midsurface": {
+    "best_learn_val": "M3q ridge+sweep^2",
+    "best_test": "M3q ridge+sweep^2",
+    "agree": true
+   },
+   "max_von_mises": {
+    "best_learn_val": "M3q ridge+sweep^2",
+    "best_test": "M3q ridge+sweep^2",
+    "agree": true
+   }
+  }
+ },
+ "test_power": {
+  "n_test_wingbox": 6,
+  "max_disp_M5q_test": 2.513,
+  "ci95": [
+   0.83,
+   4.27
+  ],
+  "ci_width_pp": 3.4399999999999995,
+  "ci_width_relative_to_point": 1.3688818145642656
+ },
+ "xval_files": {
+  "_xval_d30.json": {},
+  "_xval_d33.json": {
+   "milestone": "D33 sweep 30 deg intermediate station",
+   "verdict": "PASS"
+  },
+  "_xval_d35.json": {
+   "milestone": "D35 sweep x taper interaction anchor (sweep 30 deg x tip ratio 0.8)",
+   "verdict": "PASS"
+  },
+  "_xval_d36.json": {
+   "milestone": "D36 pure-sweep station (sweep 35 deg, taper neutral)",
+   "verdict": "PASS"
+  },
+  "_xval_m8.json": {
+   "milestone": "D31 wing-box size dimension",
+   "verdict": "PASS"
+  }
+ },
+ "n_xval_cases": 55,
+ "xval_families": {
+  "fuselage_barrel": 6,
+  "wingbox": 34,
+  "open_hole_panel": 11,
+  "stiffened_panel": 4
+ },
+ "contract": {
+  "spec_sha_present": true,
+  "mesh_sha_present": true,
+  "n_distinct_spec_sha": 55,
+  "schema_version": 1,
+  "split_rule_unit": "geometry equivalence class (feagpt.manifest.geometry_class)"
+ }
+}

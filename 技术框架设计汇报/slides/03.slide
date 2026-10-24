@@ -1,0 +1,62 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 48, right: 80 }}>
+    <Text style={{ fontSize: 15, color: '#1565C0', letterSpacing: 2 }}>01 需求背景</Text>
+    <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#1A1A1A', marginTop: 6 }}>建模占了大部分工时，却高度依赖个人经验</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <svg width='560' height='330' viewBox='0 0 560 330' style={{ position: 'absolute', left: 80, top: 180 }}>
+    <text x='0' y='18' fontSize='14' fill='#64748B' fontFamily='Microsoft YaHei'>传统人工流程</text>
+    {[
+      { w: 92, t: '几何简化', v: '18%', f: '#90CAF9', c: '#0D47A1' },
+      { w: 164, t: '网格与属性', v: '32%', f: '#1565C0', c: '#FFFFFF' },
+      { w: 102, t: '载荷边界', v: '20%', f: '#1E88E5', c: '#FFFFFF' },
+      { w: 102, t: '求解后处理', v: '20%', f: '#B0BEC5', c: '#1A1A1A' },
+      { w: 51, t: '报告', v: '10%', f: '#CFD8DC', c: '#1A1A1A' },
+    ].map((s, i, arr) => {
+      const x = arr.slice(0, i).reduce((a, b) => a + b.w, 0);
+      return (
+        <g key={i}>
+          <rect x={x} y='30' width={s.w} height='58' fill={s.f} stroke='#FFFFFF' strokeWidth='2' />
+          <text x={x + s.w / 2} y='56' textAnchor='middle' fontSize='12' fill={s.c} fontFamily='Microsoft YaHei'>{s.t}</text>
+          <text x={x + s.w / 2} y='76' textAnchor='middle' fontSize='13' fontWeight='bold' fill={s.c} fontFamily='Microsoft YaHei'>{s.v}</text>
+        </g>
+      );
+    })}
+    <text x='0' y='138' fontSize='14' fill='#64748B' fontFamily='Microsoft YaHei'>智能生成后（目标）</text>
+    {[
+      { w: 255, t: '规则化劳动 → 自动', v: '50%', f: '#00897B', c: '#FFFFFF' },
+      { w: 77, t: '工程师判断', v: '15%', f: '#4DB6AC', c: '#004D40' },
+      { w: 102, t: '求解后处理', v: '20%', f: '#B0BEC5', c: '#1A1A1A' },
+      { w: 77, t: '报告', v: '15%', f: '#CFD8DC', c: '#1A1A1A' },
+    ].map((s, i, arr) => {
+      const x = arr.slice(0, i).reduce((a, b) => a + b.w, 0);
+      return (
+        <g key={i}>
+          <rect x={x} y='150' width={s.w} height='58' fill={s.f} stroke='#FFFFFF' strokeWidth='2' />
+          <text x={x + s.w / 2} y='176' textAnchor='middle' fontSize='12' fill={s.c} fontFamily='Microsoft YaHei'>{s.t}</text>
+          <text x={x + s.w / 2} y='196' textAnchor='middle' fontSize='13' fontWeight='bold' fill={s.c} fontFamily='Microsoft YaHei'>{s.v}</text>
+        </g>
+      );
+    })}
+    <line x1='0' y1='250' x2='511' y2='250' stroke='#E2E8F0' strokeWidth='1' />
+    <text x='0' y='282' fontSize='14' fill='#B91C1C' fontWeight='bold' fontFamily='Microsoft YaHei'>建模约占 60%–80% 工时，其中过半是可规则化的重复劳动</text>
+    <text x='0' y='308' fontSize='13' fill='#64748B' fontFamily='Microsoft YaHei'>切入点不是替代工程师判断，而是把七成劳动自动化</text>
+  </svg>
+  <Box style={{ position: 'absolute', left: 690, top: 180, width: 510, flexDirection: 'column', gap: 12 }}>
+    {[
+      { t: '周期不匹配', d: '一套模型数小时至数天，方案迭代要当天出几个' },
+      { t: '质量靠经验', d: '两人建同一结构，应力峰值常差 10%–30%' },
+      { t: '过程不可复现', d: '无结构化记录，三个月后无法复核' },
+      { t: '多求解器多套模型', d: '网格、属性、边界口径不一致，结果无共同基准' },
+    ].map((x, i) => (
+      <Box key={i} style={{ background: '#F8FAFC', borderRadius: 8, padding: '12px 16px', borderLeft: '4px solid #1565C0' }}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#0D47A1' }}>{x.t}</Text>
+        <Text style={{ fontSize: 13, color: '#475569', marginTop: 4 }}>{x.d}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>技术框架设计报告</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>03 / 12</Text>
+  </Box>
+</Slide>

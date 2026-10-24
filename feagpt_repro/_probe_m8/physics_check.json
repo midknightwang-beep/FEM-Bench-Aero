@@ -1,0 +1,86 @@
+{
+ "anchor_u": 2.3654390542892276,
+ "thickness": {
+  "points": [
+   {
+    "skin": 1.5,
+    "u": 4.71648044981905,
+    "ratio": 1.9939133249984615,
+    "pred_1_over_t": 2.0,
+    "dev_pct": -0.304,
+    "vm": 21.22633996196808
+   },
+   {
+    "skin": 2.0,
+    "u": 3.5423036675019084,
+    "ratio": 1.497524808799738,
+    "pred_1_over_t": 1.5,
+    "dev_pct": -0.165,
+    "vm": 15.894491983742514
+   },
+   {
+    "skin": 4.0,
+    "u": 1.7756731515795983,
+    "ratio": 0.7506738118489197,
+    "pred_1_over_t": 0.75,
+    "dev_pct": 0.09,
+    "vm": 7.984641324415028
+   }
+  ],
+  "max_dev_from_1_over_t_pct": 0.304
+ },
+ "span": {
+  "points": [
+   {
+    "span": 1600.0,
+    "u": 1.25061528854017,
+    "ratio": 0.5287032385266666,
+    "pred_cube": 0.5120000000000001,
+    "dev_pct": 3.262
+   },
+   {
+    "span": 2400.0,
+    "u": 4.019721212740458,
+    "ratio": 1.6993552234844251,
+    "pred_cube": 1.7279999999999998,
+    "dev_pct": -1.658
+   },
+   {
+    "span": 3000.0,
+    "u": 7.747476698568881,
+    "ratio": 3.275280622648238,
+    "pred_cube": 3.375,
+    "dev_pct": -2.955
+   }
+  ],
+  "fitted_exponent": 2.8986,
+  "beam_theory_exponent": 3.0
+ },
+ "multiplicative": {
+  "points": [
+   {
+    "tag": "size_span2400_skin2",
+    "u_meas": 6.023137269431674,
+    "u_pred_multiplicative": 6.019632240537405,
+    "span_eff_measured": 1.69936,
+    "skin_eff_measured": 1.49752,
+    "dev_pct": 0.058
+   },
+   {
+    "tag": "size_span3000_skin1p5",
+    "u_meas": 15.473331702048627,
+    "u_pred_multiplicative": 15.447797024391578,
+    "span_eff_measured": 3.27528,
+    "skin_eff_measured": 1.99391,
+    "dev_pct": 0.165
+   }
+  ],
+  "max_dev_pct": 0.165
+ },
+ "verdict": {
+  "thickness_observable": true,
+  "span_law_holds": true,
+  "interaction_negligible": true,
+  "pass": true
+ }
+}

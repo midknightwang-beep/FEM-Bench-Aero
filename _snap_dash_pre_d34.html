@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>FEM-Bench-Aero · 项目进展看板</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --card:#ffffff; --ink:#1b2130; --ink2:#4a5568; --ink3:#7b8794;
+    --line:#e2e7ef; --line2:#eef1f6;
+    --blue:#2563eb; --blue-bg:#eff4ff;
+    --green:#0f9d58; --green-bg:#e9f7ef;
+    --amber:#c77700; --amber-bg:#fdf5e6;
+    --red:#d64545; --red-bg:#fdecec;
+    --grey:#8b95a5; --grey-bg:#f2f4f7;
+    --mono:"Cascadia Mono","Consolas","SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+       font-size:14px;line-height:1.62;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1140px;margin:0 auto;padding:28px 20px 120px}
+
+  header.top{background:linear-gradient(135deg,#1e2a44 0%,#2c3e63 100%);
+    border-radius:14px;padding:24px 26px;color:#fff;position:relative;overflow:hidden}
+  header.top::after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;
+    border-radius:50%;background:rgba(255,255,255,.05)}
+  header.top h1{margin:0 0 6px;font-size:22px;letter-spacing:.3px}
+  header.top .sub{color:#b9c6de;font-size:13.5px}
+  header.top .stamp{position:absolute;right:26px;top:24px;text-align:right;font-size:12.5px;color:#9fb0d0;line-height:1.7}
+  header.top .stamp b{color:#fff;font-weight:600}
+
+  .howto{margin-top:14px;background:var(--blue-bg);border:1px solid #cddffb;border-radius:12px;
+    padding:14px 18px;color:#1e3a68;font-size:13.5px}
+  .howto b{color:#12305e}
+  .howto ol{margin:8px 0 0;padding-left:20px}
+  .howto li{margin:3px 0}
+
+  .statrow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .stat .k{font-size:12px;color:var(--ink3);letter-spacing:.4px}
+  .stat .v{font-size:23px;font-weight:650;margin-top:3px;line-height:1.25}
+  .stat .n{font-size:12px;color:var(--ink3);margin-top:2px}
+  .stat.g .v{color:var(--green)} .stat.b .v{color:var(--blue)}
+  .stat.a .v{color:var(--amber)} .stat.k .v{color:var(--ink)}
+
+  section{margin-top:26px}
+  h2.sec{font-size:16.5px;margin:0 0 12px;padding-left:11px;border-left:4px solid var(--blue);
+    display:flex;align-items:baseline;gap:10px}
+  h2.sec .hint{font-size:12.5px;color:var(--ink3);font-weight:400}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+  .card + .card{margin-top:12px}
+
+  /* ---- milestone track ---- */
+  .track{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:4px}
+  .ms{position:relative;padding:0 8px}
+  .ms .dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:700;margin:0 auto 8px;border:2px solid var(--line);background:#fff;color:var(--ink3)}
+  .ms .bar{position:absolute;top:15px;height:2px;background:var(--line);z-index:0}
+  .ms .bar.l{left:0;width:50%} .ms .bar.r{right:0;width:50%}
+  .ms.done .dot{background:var(--green);border-color:var(--green);color:#fff}
+  .ms.done .bar{background:var(--green)}
+  .ms.next .dot{background:#fff;border-color:var(--blue);color:var(--blue);box-shadow:0 0 0 4px var(--blue-bg)}
+  .ms .t{text-align:center;font-size:12.5px;font-weight:600;position:relative;z-index:1}
+  .ms .s{text-align:center;font-size:11.5px;color:var(--ink3);margin-top:2px}
+  .ms .d{text-align:center;font-size:11px;color:var(--ink3);margin-top:1px}
+
+  /* ---- now ---- */
+  .nowgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .nowcard{border-radius:12px;padding:14px 16px;border:1px solid var(--line);background:var(--card)}
+  .nowcard h4{margin:0 0 7px;font-size:13px;display:flex;align-items:center;gap:7px}
+  .nowcard h4 .tag{font-size:11px;padding:1px 7px;border-radius:20px;font-weight:600}
+  .nowcard p{margin:0;font-size:13px;color:var(--ink2)}
+  .nowcard.done{border-left:4px solid var(--green)} .nowcard.done .tag{background:var(--green-bg);color:var(--green)}
+  .nowcard.doing{border-left:4px solid var(--blue)} .nowcard.doing .tag{background:var(--blue-bg);color:var(--blue)}
+  .nowcard.block{border-left:4px solid var(--amber)} .nowcard.block .tag{background:var(--amber-bg);color:var(--amber)}
+
+  /* ---- tables ---- */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line2);vertical-align:top}
+  th{font-size:12px;color:var(--ink3);font-weight:600;background:#fafbfd;
+     position:sticky;top:0;border-bottom:1px solid var(--line)}
+  tbody tr:hover{background:#fafcff}
+  td.num{font-family:var(--mono);font-size:12.5px;text-align:right;white-space:nowrap}
+  td.mid{font-family:var(--mono);font-size:12.3px}
+  .pill{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:20px;font-weight:600;white-space:nowrap}
+  .pill.ok{background:var(--green-bg);color:var(--green)}
+  .pill.warn{background:var(--amber-bg);color:var(--amber)}
+  .pill.no{background:var(--grey-bg);color:var(--grey)}
+  .pill.bad{background:var(--red-bg);color:var(--red)}
+  .pill.b{background:var(--blue-bg);color:var(--blue)}
+
+  table.cases td:first-child{font-family:var(--mono);font-size:12.2px}
+  .expander{cursor:pointer;user-select:none}
+  .expander .caret{display:inline-block;transition:transform .15s;color:var(--ink3);margin-right:5px}
+  tr.open .caret{transform:rotate(90deg)}
+  .detail{background:#f8fafd}
+  .detail .box{padding:10px 12px;font-size:12.5px;color:var(--ink2)}
+  .detail .box b{color:var(--ink)}
+  .detail code{font-family:var(--mono);font-size:12px;background:#eef2f8;padding:1px 5px;border-radius:4px}
+
+  /* ---- gates ---- */
+  .gategrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:12px}
+  .gate{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:14px 15px}
+  .gate .gh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .gate .gn{font-size:13px;font-weight:650}
+  .gate .gv{font-size:19px;font-weight:700;color:var(--green);margin:7px 0 3px;font-family:var(--mono)}
+  .gate .gd{font-size:12px;color:var(--ink3);line-height:1.55}
+  .gate .gbar{height:5px;border-radius:3px;background:var(--green);margin-top:9px;opacity:.85}
+
+  /* ---- modules ---- */
+  .mod{display:grid;grid-template-columns:190px 1fr 92px;gap:12px;align-items:center;
+    padding:9px 2px;border-bottom:1px solid var(--line2)}
+  .mod:last-child{border-bottom:0}
+  .mod .mn{font-size:13px;font-weight:600}
+  .mod .mn span{display:block;font-size:11.5px;color:var(--ink3);font-weight:400;font-family:var(--mono)}
+  .mod .mtrack{height:8px;background:#eef1f6;border-radius:4px;overflow:hidden}
+  .mod .mfill{height:100%;border-radius:4px}
+  .mod .ms{font-size:12px;color:var(--ink3);text-align:right}
+
+  /* ---- gaps ---- */
+  .gap{display:flex;gap:11px;padding:11px 0;border-bottom:1px dashed var(--line2)}
+  .gap:last-child{border-bottom:0}
+  .gap .sev{flex:0 0 62px;font-size:11px;font-weight:700;padding-top:2px}
+  .gap .sev.hi{color:var(--red)} .gap .sev.mid{color:var(--amber)} .gap .sev.lo{color:var(--ink3)}
+  .gap .gt{font-size:13px;font-weight:600;margin-bottom:2px}
+  .gap .gd{font-size:12.5px;color:var(--ink2)}
+  .gap .gd code{font-family:var(--mono);font-size:11.8px;background:#eef2f8;padding:1px 5px;border-radius:4px}
+
+  /* ---- decisions ---- */
+  .dec{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:16px 18px;margin-bottom:12px}
+  .dec .dh{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+  .dec .dq{font-size:14px;font-weight:650}
+  .dec .dc{font-size:12.5px;color:var(--ink2);margin:0 0 11px}
+  .opt{display:flex;gap:10px;padding:8px 11px;border-radius:9px;margin-bottom:7px;font-size:12.8px;
+    border:1px solid var(--line2);background:#fcfdff}
+  .opt.rec{border-color:#bcd6fb;background:var(--blue-bg)}
+  .opt .ol{flex:0 0 26px;font-weight:700;color:var(--blue)}
+  .opt .ob{flex:1}
+  .opt .ob b{display:block;margin-bottom:1px}
+  .opt .ob span{color:var(--ink2)}
+  .opt .orr{flex:0 0 auto;font-size:11px;font-weight:700;color:var(--blue);padding-top:1px}
+  .dec .mine{font-size:12.5px;color:#1e3a68;background:var(--blue-bg);border-radius:8px;padding:8px 11px;margin-top:7px}
+
+  /* ---- review ---- */
+  .rvhead{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .rvgrid{margin-top:12px}
+  .rv{border:1px solid var(--line);border-radius:11px;background:var(--card);padding:12px 15px;margin-bottom:9px;
+      transition:border-color .15s,background .15s}
+  .rv.ok{border-color:#a9dcbf;background:#f6fdf9}
+  .rv.doubt{border-color:#f0cf9a;background:#fffaf0}
+  .rv .rvt{display:flex;gap:11px;align-items:flex-start}
+  .rv .rvtag{flex:0 0 52px;font-size:11px;font-weight:700;color:var(--ink3);padding-top:2px}
+  .rv .rvbody{flex:1}
+  .rv .rvc{font-size:13.2px;font-weight:600;margin-bottom:3px}
+  .rv .rvq{font-size:12.3px;color:var(--ink2)}
+  .rv .rva{flex:0 0 auto;display:flex;gap:6px}
+  .rbtn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 11px;font-size:12.3px;
+    cursor:pointer;color:var(--ink2);font-family:inherit;transition:all .13s;white-space:nowrap}
+  .rbtn:hover{border-color:#c3cedd}
+  .rbtn.on.ok{background:var(--green);border-color:var(--green);color:#fff}
+  .rbtn.on.doubt{background:var(--amber);border-color:var(--amber);color:#fff}
+  .rv .evbtn{background:none;border:0;color:var(--blue);cursor:pointer;font-size:12.3px;padding:0;
+    font-family:inherit;margin-top:4px}
+  .rv .ev{display:none;margin-top:9px;border-top:1px dashed var(--line);padding-top:9px}
+  .rv .ev.show{display:block}
+  .rv .ev .row{display:flex;gap:9px;margin-bottom:6px;font-size:12.3px}
+  .rv .ev .row .lab{flex:0 0 74px;color:var(--ink3)}
+  .rv .ev .row .val{flex:1;color:var(--ink2)}
+  .rv .ev pre{margin:0;background:#1e2431;color:#dbe4f0;border-radius:8px;padding:9px 11px;
+    font-family:var(--mono);font-size:11.8px;overflow-x:auto;line-height:1.6;white-space:pre-wrap;word-break:break-all}
+  .rv .ev pre .c{color:#7d8ba6}
+
+  /* ---- dock ---- */
+  .dock{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);
+    border-top:1px solid var(--line);backdrop-filter:blur(8px);padding:11px 20px;z-index:40;
+    box-shadow:0 -3px 14px rgba(20,30,50,.06)}
+  .dockin{max-width:1140px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .dock .prog{flex:1;min-width:180px}
+  .dock .prog .txt{font-size:12.5px;color:var(--ink2);margin-bottom:5px}
+  .dock .prog .txt b{color:var(--ink)}
+  .dock .pbar{height:7px;background:#eef1f6;border-radius:4px;overflow:hidden;display:flex}
+  .dock .pbar i{display:block;height:100%}
+  .dock .pbar i.a{background:var(--green)} .dock .pbar i.b{background:var(--amber)}
+  .dbig{border:0;border-radius:9px;padding:9px 17px;font-size:13px;font-weight:600;cursor:pointer;
+    font-family:inherit;background:var(--blue);color:#fff}
+  .dbig.ghost{background:#fff;color:var(--ink2);border:1px solid var(--line)}
+  .dbig:hover{filter:brightness(.96)}
+
+  /* ---- modal ---- */
+  .modal{position:fixed;inset:0;background:rgba(18,24,36,.5);display:none;z-index:60;
+    align-items:center;justify-content:center;padding:24px}
+  .modal.show{display:flex}
+  .mbox{background:#fff;border-radius:14px;max-width:720px;width:100%;max-height:82vh;display:flex;flex-direction:column}
+  .mbox h3{margin:0;padding:16px 20px;font-size:15px;border-bottom:1px solid var(--line)}
+  .mbox .mb{padding:16px 20px;overflow:auto}
+  .mbox textarea{width:100%;height:330px;font-family:var(--mono);font-size:12px;line-height:1.65;
+    border:1px solid var(--line);border-radius:9px;padding:11px;resize:vertical;background:#fafbfd;color:var(--ink)}
+  .mbox .mf{padding:12px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:9px}
+  .mbox .mf .dbig{font-size:12.5px;padding:8px 15px}
+
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:12.3px;color:var(--ink3);line-height:1.75}
+  footer code{font-family:var(--mono);font-size:11.8px;background:#eef2f8;padding:1px 5px;border-radius:4px}
+
+  @media(max-width:900px){
+    .statrow{grid-template-columns:repeat(2,1fr)}
+    .nowgrid{grid-template-columns:1fr}
+    .gategrid{grid-template-columns:repeat(2,1fr)}
+    .mod{grid-template-columns:130px 1fr 70px}
+    header.top .stamp{position:static;text-align:left;margin-top:10px}
+  }
+  /* ---- M4：划分区块 ---- */
+  .splitbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .splitbar .sb{flex:1;min-width:148px;border:1px solid var(--line);border-radius:9px;padding:9px 12px;background:#fff}
+  .splitbar .sb .k{font-size:11.5px;color:var(--ink3)}
+  .splitbar .sb .v{font-size:17px;font-weight:700;font-family:var(--mono);margin-top:2px}
+  .leakbadge{font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;
+    background:#e6f6ec;color:#0f7a45;border:1px solid #c6ecd6;display:inline-block;margin-bottom:11px}
+  .splitgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:920px){.splitgrid{grid-template-columns:1fr}}
+  .splitcol{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+  .splitcol h4{margin:0;padding:9px 12px;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+  .splitcol.train h4{background:#eef4ff;color:#1d4ed8;border-bottom:1px solid #dbe6ff}
+  .splitcol.val h4{background:#fff7e6;color:#a16207;border-bottom:1px solid #fde9bf}
+  .splitcol.test h4{background:#eefbf3;color:#0f7a45;border-bottom:1px solid #d3f0e0}
+  .splitcol ul{list-style:none;margin:0;padding:6px}
+  .splitcol li{padding:7px 8px;border-radius:7px;font-size:12.4px}
+  .splitcol li+li{margin-top:3px}
+  .splitcol li:nth-child(odd){background:#fafbfd}
+  .splitcol .cid{font-family:var(--mono);font-size:12px;display:block;word-break:break-all}
+  .splitcol .meta{display:flex;gap:6px;align-items:center;margin-top:3px;font-size:11.6px;color:var(--ink3);flex-wrap:wrap}
+  .rl{font-size:10.8px;padding:1px 7px;border-radius:20px;font-weight:700;background:#eef1f6;color:var(--ink2)}
+  .rl.feature{background:#fde8f3;color:#a3196b}
+  .rl.sweep{background:#e8f0fe;color:#1d4ed8}
+  .rl.baseline{background:#e6f6ec;color:#0f7a45}
+  .rl.ablation{background:#f1e9fd;color:#6d28d9}
+  .rl.degenerate{background:#fff3e0;color:#a16207}
+  .clsmark{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+  .clsmark.multi{color:#a3196b;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <h1>FEM-Bench-Aero · 项目进展看板</h1>
+    <div class="sub">给老王做检查用的那一页 —— 每条结论都能点开看命令和数字，你可以自己跑一遍</div>
+    <div class="stamp">
+      更新于 <b>2026-10-24 14:30</b><br>
+      当前里程碑 <b>M9（D32 目标口径）· M10（D33 后掠中间档）全部收口</b><br>
+      数据集规模 <b>53 条 / 树 × 2 树（52 等价类，train 22 / val 17 / test 14）</b>
+    </div>
+  </header>
+
+  <div class="howto">
+    <b>这一页怎么用（三步）</b>
+    <ol>
+      <li><b>扫一眼</b>下面的数字卡和里程碑轨道，看在哪儿、做到几成。</li>
+      <li><b>点「查看证据」</b>——每条验收后面都挂着复现命令、实测数字、产物路径。你不信我，就自己跑那条命令。</li>
+      <li><b>在最后一节逐条点「我确认 / 有疑问」</b>，点「生成回执」把结果复制贴回给我。<b>这就是咱俩的对齐动作。</b></li>
+    </ol>
+  </div>
+
+  <div class="statrow" id="statrow"></div>
+
+  <section id="track">
+    <h2 class="sec">里程碑轨道 <span class="hint">灰色=未开始 ｜ 蓝圈=当前 ｜ 绿勾=已完成</span></h2>
+    <div class="card">
+      <div class="track" id="trackBody"></div>
+      <div style="margin-top:16px;font-size:12.5px;color:var(--ink2);border-top:1px solid var(--line2);padding-top:12px">
+        <b>一句话说清为什么是这个顺序：</b>先让机制对（M1 判定 / M2 分类器），再让它多（M3 加结构形式）。
+        若反过来先加形式再换分类器，新形式会「跑通但分组错」，而三道数值门禁<b>全都不会发现</b>——
+        会攒下一批看起来合格、实际语义错的数据。<b>M3 这次直接把这条预言的代价量出来了</b>：
+        为了让第二个结构族跑通，链路里有 4 处写死翼盒必须改成按族声明，而这些改动
+        <b>三道数值门禁一条都不会报警</b>。
+      </div>
+    </div>
+  </section>
+
+  <section id="now">
+    <h2 class="sec">此刻状态</h2>
+    <div class="nowgrid">
+      <div class="nowcard" style="border-color:#cfe0ff;background:#f4f8ff">
+        <h4>刚做完 <span class="tag">M5 · ⑧ T4 放量 batch7</span></h4>
+        <p><b>开孔板放量 4 条入库</b>（600×300_d30 / 400×200_d50 / 600×300_d60 / 400×200_d40 偏心），
+        一箭三雕：λ 维（d50）、<b>尺寸维</b>（600×300_d30 —— train 锚点是 400×200）、双维角点与偏心新形式各进 test
+        —— 数据集 <b>36 → 40 条 / 树</b>，划分 <b>train 16 / val 13 / test 11</b>，
+        <b>39 个等价类 / 0 个跨 split</b>。</p>
+        <p style="margin-top:7px"><b>最关键的三处证据</b>：① <b>尺寸不变性探针</b>（D28 的灵魂）：Howland 只看 λ 不看绝对尺寸，
+        同 λ=0.1 的 d30 与基线 d20 的 Kt 理论上必须相同 —— 实测同码 Kt_gross 差 <b>ccx 0.629 % / abaqus 1.539 %</b>（容差 2 %），
+        尺寸点对 Howland <b>+0.182 %</b>；② 入库哈希 diff = <b>48 added / 0 removed / 6 changed</b>（48 = 4 条 × 2 树 × 6 文件，6 = 根报告刷新），
+        <b>老 36 条一个字节没动</b>；③ 全链九道闸全绿 —— verify <b>80/80</b>、eval <b>29 项 + 6 道闸</b>、gate4 <b>80/80</b>、
+        check_forms <b>44/44</b>、regress <b>9/9</b>。</p>
+      </div>
+      <div class="nowcard doing">
+        <h4>下一步 <span class="tag">M5 · 剩余</span></h4>
+        <p>两条候选：① <b>T7 复材层合</b>（唯一没动的形式，要动双求解器的壳截面卡，工作量最大，定第 3 批小幅打样）；
+        ② <b>T6 再加腹板 / 放量</b>（多闭室目前 3 条）。T4 放量（本批）与 T3 尺寸·壁厚（batch6）已完成，这里要你挑下一个。</p>
+      </div>
+      <div class="nowcard ok" style="border-color:#cfe8d6;background:#f4fbf6">
+        <h4>暂无待你拍板 <span class="tag">全部生效</span></h4>
+        <p>D1–D28 <b>全部拍板并已落地</b>。本批新增 <b>D28</b>（T4 放量口径：双维角点谓词两轴用 <b>!=</b> 对齐 D25 的读法；
+        Howland 闸<b>只打 ccx 侧</b>、真闸 = 同码跨 coupon Kt 差；开孔板厚度维<b>暂不声明</b>划分，放量前须补）。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="gates">
+    <h2 class="sec">六道关 · 当前全绿 <span class="hint">覆盖 44 个模型 × 2 个求解器</span></h2>
+    <div class="gategrid" id="gateBody"></div>
+  </section>
+
+  <section id="cases">
+    <h2 class="sec">数据集实例清单 · 翼盒族 <span class="hint">点任意一行展开：关 3 交叉验证的逐项读数</span></h2>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="cases">
+        <thead><tr>
+          <th style="width:34%">case_id</th>
+          <th>肋</th><th>弦<br>(mm)</th><th>平面<br>形状</th><th>长桁</th><th>腹板<br>/闭室</th>
+          <th>壳面</th><th>活跃<br>节点</th><th>单元</th>
+          <th>max|u|<br>ccx (mm)</th><th>max|u|<br>abaqus</th><th>差<br>(%)</th>
+          <th>外纤维<br>vM ccx</th>
+        </tr></thead>
+        <tbody id="caseBody"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:9px;font-size:12.2px;color:var(--ink3)">
+      发布物在 <code style="font-family:var(--mono)">FEM-Bench-Aero/modeling/</code>（CalculiX，开源）；
+      Abaqus 结果在 <code style="font-family:var(--mono)">_xval/</code>，<b>商业许可，永不进发布包</b>。
+      每个 case 六件套：<code style="font-family:var(--mono)">spec.json / model.step / model.msh / model.inp / model.results.json / truth.json</code>。
+    </div>
+    <div style="margin-top:9px;font-size:12.2px;color:var(--ink3)">
+      <b>T1 平面形状（后掠 / 锥形）· 9 条</b>：口径见 <b>D14</b> —— <b>前缘为参考线</b>，翼尖截面 =
+      根截面绕前缘缩放 <code style="font-family:var(--mono)">tip_chord_ratio</code>，再后移
+      <code style="font-family:var(--mono)">span·tan(sweep)</code>；肋仍垂直于展向。
+      退化值（<code style="font-family:var(--mono)">sweep=0 ∧ ratio=1</code>）走 M1 旧 <code style="font-family:var(--mono)">extrude</code> 路径，
+      与 9 条归档<b>逐字节一致</b>。锥形箱的后梁是梯形，最窄处只有 43.79 mm（锥 0.6），
+      默认尺寸会挤出针状四边形 ⇒ builder 只对非等直声明 <code style="font-family:var(--mono)">mesh_size_cap = 0.4 × 最窄腹板</code>。
+    </div>
+    <div style="margin-top:9px;font-size:12.2px;color:var(--ink3)">
+      <b>T6 多闭室（M5 新落，3 条）· 口径见 D24</b>：往剖面加<b>中间腹板</b>——腹板<b>贯穿</b>上下蒙皮，
+      每加一道多一个闭室（<code style="font-family:var(--mono)">n_cells = n_webs + 1</code>）；
+      长桁贴单侧蒙皮、<b>不贯穿</b>，所以不新增闭室（这也是「腹板」与「长桁」在语义上必须分开的理由）。
+      载荷 = <b>弯曲（翼尖 500 N 上举）+ 端部扭矩</b>，因为<b>闭室数只在扭转下可观测</b>。
+      这是全库<b>第四个有解析对照</b>的对象：<b>Bredt-Batho 多闭室扭转</b>
+      （<code style="font-family:var(--mono)">M q = 2 G θ a</code>，<code style="font-family:var(--mono)">GJ = 4 G aᵀ M⁻¹ a</code>），
+      独立验证线 <code style="font-family:var(--mono)">verify_multi_cell.py</code> 实测 <b>20 PASS / 0 FAIL</b>。
+      ⚠️ <b>「腹板抬高 GJ」是弱判据</b>：薄翼型上加同厚度腹板解析只涨 <b>+0.42 %（2 闭室）/ +1.76 %（3 闭室）</b>，
+      矩形箱恒等不变 —— 所以判据挂在<b>剪流</b>上：各闭室 |q| 相差 10–25 %，腹板承 |qᵢ−qᵢ₊₁|。
+    </div>
+  </section>
+
+  <section id="panels">
+    <h2 class="sec">数据集实例清单 · 加筋平板壁板族（M3/T2） <span class="hint">第二结构族，列与翼盒不同，单列一张表</span></h2>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="cases">
+        <thead><tr>
+          <th style="width:30%">case_id</th>
+          <th>长桁数</th><th>壳面</th><th>活跃<br>节点</th><th>单元</th>
+          <th>minJ</th>
+          <th>max|u|<br>ccx (mm)</th><th>max|u|<br>abaqus</th><th>差<br>(%)</th>
+          <th>vs 解析解</th>
+        </tr></thead>
+        <tbody id="panelBody"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:9px;font-size:12.2px;color:var(--ink3)">
+      矩形铝板 2 mm 厚，四边简支（边线节点约束三向平动、转动自由），
+      横向均布压 <code style="font-family:var(--mono)">q = 1e-4 MPa</code> 沿 −z，<b>3 mm 网格（D9 起）</b>；
+      尺寸 <b>600×600</b>（光板 / 含 3 长桁）+ <b>800×600</b>（光板，M5 放量新增的 val）。
+      「vs 解析解」= 与 Navier 双正弦解 <code style="font-family:var(--mono)">w_max</code> 的偏差——
+      <b>每块板各有自己的闭式值</b>（600×600 是 0.96268 mm，800×600 是 1.57088 mm），行内展开可见。
+      <b>应力口径已按 D8 统一</b>：展开行里三个数各自带归约方式 —— 它们<b>不可裸比</b>，
+      因为归约方式不同（模型最大值还落在支承边剪切层上）。判据是逐节点中位差，不是峰值。
+      素板的中面场在 Abaqus 侧恒为 0 ⇒ 逐节点对照<b>如实报「不可比」</b>，不假装通过。
+    </div>
+  </section>
+
+  <section id="fuselage">
+    <h2 class="sec">数据集实例清单 · 机身加筋柱壳段族（M5/T3） <span class="hint">第三结构族，载荷 = 内压 + 端弯 + 端剪</span></h2>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="cases">
+        <thead><tr>
+          <th style="width:30%">case_id</th>
+          <th>长桁</th><th>框</th><th>壳面</th><th>活跃<br>节点</th><th>单元</th>
+          <th>minJ</th>
+          <th>max|u|<br>ccx (mm)</th><th>max|u|<br>abaqus</th>
+          <th>全域差<br>(%)</th>
+          <th>D20<br>结构峰值差</th>
+        </tr></thead>
+        <tbody id="fuselageBody"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:9px;font-size:12.2px;color:var(--ink3)">
+      薄壁圆筒 <code style="font-family:var(--mono)">R=1000 / L=2000 / t=3 mm</code>（轴沿 z），周向均布 <b>blade</b> 径向腹板长桁 + 环向框，
+      一端固支、自由端承受 <b>内压 0.05 MPa + 端剪力 50000 N + 端弯矩 5e7 N·mm</b>。
+      <b>「全域差」那列超 1 % 是预期行为</b>：模型的 max|u| 落在端载作用的那圈自由边上——自由壳边上打集中力是两码各自离散的局部伪峰，
+      不是结构量。<b>D20 把判据换成「剔除端载环后的结构峰值 + 沿轴 20 站截面形心挠度剖面」</b>，
+      后者对尖端挠度归一（近零截面不会把相对误差放大）。全域值仍如实印出，但<b>不判绿/红</b>。
+      行内展开可见闭式解与逐项实测。
+    </div>
+  </section>
+
+  <section id="t4">
+    <h2 class="sec">数据集实例清单 · 开孔板族（M5/T4） <span class="hint">第四结构族，全库<b>唯一带闭式解析对照</b>的族（Kirsch / Howland）</span></h2>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="cases">
+        <thead><tr>
+          <th style="width:29%">case_id</th>
+          <th>孔 d<br>(mm)</th><th>λ=d/W</th><th>位置</th>
+          <th>面/<br>曲线</th><th>活跃<br>节点</th><th>单元</th>
+          <th>minJ</th>
+          <th>max|u|<br>ccx (mm)</th><th>max|u|<br>abaqus</th><th>差<br>(%)</th>
+          <th>Kt_gross<br>(ccx)</th>
+        </tr></thead>
+        <tbody id="t4Body"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:9px;font-size:12.2px;color:var(--ink3)">
+      400×200×2 mm 铝板（z=0 平面），<code style="font-family:var(--mono)">occ.cut</code> 挖圆孔，
+      一端固支、另一端 x 向均布拉伸 <code style="font-family:var(--mono)">F=4000 N</code>；
+      放量（batch7 · D28）另有 <b>600×300×2</b> 板（F=6000 N）—— 两档总力都让 <b>σ_gross 恒为 10 MPa</b>，Kt 不随试件绝对尺寸定义漂移。
+      几何是<b>单个面 + 5 条曲线</b> —— <b>孔是特征，不是第二个零件</b>（若误用 fragment 会得到两个面，关 4 的 5 项计数会立刻咬人）。
+      <b>这是全库唯一有闭式解的族</b>：无限板 → Kirsch（1898）<code style="font-family:var(--mono)">Kt=3</code>；
+      有限宽修正 → Howland（1930）<code style="font-family:var(--mono)">Kt_net = 3 − 3.13λ + 3.66λ² − 1.53λ³</code>。
+      <b>Kt 必须带口径</b>：gross（<code>F/(W·t)</code>，远场可测）与 net（<code>F/((W−d)·t)</code>）在 λ=0.1 时相差 <b>11.1 %</b>，
+      两个都对，缺口径就不是数。「Kt_gross」列 = CalculiX 实测孔边峰值 ÷ 名义应力。
+      偏心孔那条<b>不列 Howland 对照</b>——Howland 只解中心孔，偏心后无解析解，这正是它进 test 的理由（D23）。
+      <b>放量如何证明「尺寸外推没坏」（尺寸不变性探针）</b>：Howland 只看 λ 不看绝对尺寸，同 λ=0.1 的
+      <code style="font-family:var(--mono)">600x300_d30</code> 与基线 <code style="font-family:var(--mono)">400x200_d20</code> 的 Kt 理论上必须相同；
+      Howland 闸<b>只打 ccx 侧</b>（verify_hole 既有口径——abaqus 峰值是恢复统计量不是不变量，D8），
+      真闸 = <b>同码跨 coupon Kt 差</b>，实测 ccx <b>0.629 %</b> / abaqus <b>1.539 %</b>（容差 2 %）。
+      行内展开可见收敛表、双码交叉与「孔小到建不出来」的活包络。
+    </div>
+  </section>
+
+  <section id="splits">
+    <h2 class="sec">数据集划分 · train / val / test <span class="hint">划分单元是「几何等价类」——同一等价类的成员不得跨集（M4）</span></h2>
+    <div class="card" id="splitBody"></div>
+  </section>
+
+  <section id="modules">
+    <h2 class="sec">能力清单 · 模块成熟度 <span class="hint">这是我这边的自评，你可以对着挑刺</span></h2>
+    <div class="card" id="modBody"></div>
+  </section>
+
+  <section id="gaps">
+    <h2 class="sec">诚实的缺口与风险 <span class="hint">红色的那两条是会真出事的，别跳过</span></h2>
+    <div class="card" id="gapBody"></div>
+  </section>
+
+  <section id="decisions">
+    <h2 class="sec">待你拍板 <span class="hint">暂无待决项 —— D1–D28 全部已拍板，见下方「已拍板」</span></h2>
+    <div id="decDone"></div>
+    <div id="decBody"></div>
+  </section>
+
+  <section id="review">
+    <h2 class="sec">交互确认区 <span class="hint">逐条点确认或疑问，最后生成回执贴给我</span></h2>
+    <div class="rvhead">
+      <div style="font-size:12.8px;color:var(--ink2)">
+        这些是已经做完的事。<b>你不用全信我</b>——点「查看证据」能看到命令，跑一遍最快。
+      </div>
+      <button class="rbtn" id="rvClear">清空所有标记</button>
+    </div>
+    <div class="rvgrid" id="rvBody"></div>
+  </section>
+
+  <footer>
+    <b>产物落点</b><br>
+    数据集：<code>FEM-Bench-Aero/</code>（44 条/树 × 2 树，4 个结构族）<br>
+    生成链路：<code>feagpt_repro/</code> ｜ 方案与判定口径：<code>FEM-Bench-Aero数据集生成方案.html</code><br><br>
+    <b>复现全套验收（任何一条结论你都能自己重跑）</b><br>
+    <code>cd feagpt_repro</code> →
+    <code>python regress_groups.py --check regress_baseline_groups.json</code>（9 条种子分组回归）｜
+    <code>python check_forms.py</code>（退化自检 44 项）｜
+    <code>python check_semantics.py --root ../FEM-Bench-Aero</code>（关 4）｜
+    <code>python verify_dataset.py --root ../FEM-Bench-Aero</code>（自洽 + 去重）｜
+    <code>python make_manifest.py --root ../FEM-Bench-Aero</code>（清单/索引）｜
+    <code>python eval_dataset.py --root ../FEM-Bench-Aero</code>（划分独立复算 + 泄漏闸）｜
+    <code>python verify_panel.py</code>（平板 Navier 独立验证，600×600）｜
+    <code>python _m5_probe/panel800_probe.py</code>（800×600 平板独立验证）｜
+    <code>python diagnostics/hash_manifest.py diff ../_snap_before.json ../FEM-Bench-Aero --only modeling --only _xval --gate changed</code>（没动归档）<br>
+    关 3 单条：<code>python verify_solvers.py --ccx outputs_T --abaqus outputs_T_abaqus --case naca4412_wingbox_str3_T</code>（翼盒 T 形）｜
+    <code>python verify_solvers.py --ccx outputs_panel --abaqus outputs_panel_abaqus --case stiffened_panel_600x600 --spec _t2_probe/stiffened_panel_600x600.spec.json --force 36 --reaction-set all</code>（平板）<br><br>
+    <b>注意</b>：本机跑 Abaqus 一律需要非隔离 shell；<code>outputs/</code> 里那条 <code>naca4412_wingbox.msh</code> 是 10-01 的旧 <code>--mesh-only</code> 陈货，别拿它判回归（真值看数据集里的 <code>model.msh</code>）。
+  </footer>
+
+</div>
+
+<div class="dock">
+  <div class="dockin">
+    <div class="prog">
+      <div class="txt" id="dockTxt">已确认 <b>0</b> / 共 39 项 ｜ 标记疑问 <b>0</b> 项</div>
+      <div class="pbar"><i class="a" id="pbA" style="width:0%"></i><i class="b" id="pbB" style="width:0%"></i></div>
+    </div>
+    <button class="dbig" id="btnReceipt">生成回执</button>
+    <button class="dbig ghost" id="btnTop">回顶部</button>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="mbox">
+    <h3>确认回执 —— 复制后贴回给蜗子</h3>
+    <div class="mb"><textarea id="rcpt" readonly></textarea></div>
+    <div class="mf">
+      <button class="dbig ghost" id="btnClose">关闭</button>
+      <button class="dbig" id="btnCopy">复制到剪贴板</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   数据区：全部取自 2026-10-03 实测产物（M3/T2 收尾）
+   - 数据集验收：FEM-Bench-Aero/verify_report.json
+   - 关 4 逐项：FEM-Bench-Aero/gate4.json
+   - 关 3 读数：FEM-Bench-Aero/gate3_xval.log（翼盒）+ gate3_panel.log（平板）
+   - 平板独立验证：FEM-Bench-Aero/panel_verify.json
+   - 退化自检：FEM-Bench-Aero/check_forms.json
+   - 去重：FEM-Bench-Aero/dedup_report.json
+   下次更新只需改这一块。改完必须跑 node _dash_check.js 复核。
+   ============================================================ */
+
+const CASES = [
+ {id:'naca4412_wingbox', ribs:5, chord:1000, shape:'等直', str:'0', faces:21, nodes:5074, elems:5144,
+  u:2.36544, ua:2.37390, du:0.356, med:0.31, eqc:0.000485, eqa:0.000091,
+  vm:10.6048, vmm:11.7809, vmf:8.6879, vmc:10.2824, vma:8.4541,
+  srcc:'outputs', srca:'outputs_abaqus',
+  tag:'基线 · M2 回归基准'},
+
+ {id:'naca4412_wingbox_n_ribs3_chord1000', ribs:3, chord:1000, shape:'等直', str:'0', faces:11, nodes:4668, elems:4690,
+  u:2.37234, ua:2.37856, du:0.261, med:0.17, eqc:0.000754, eqa:0.000093,
+  vm:10.4393, vmm:11.7737, vmf:8.5432, vmc:10.1615, vma:8.2693,
+  srcc:'outputs', srca:'outputs_abaqus', tag:''},
+
+ {id:'naca4412_wingbox_n_ribs3_chord800', ribs:3, chord:800, shape:'等直', str:'0', faces:11, nodes:3679, elems:3696,
+  u:4.54015, ua:4.55035, du:0.224, med:0.12, eqc:0.001092, eqa:0.000102,
+  vm:15.9584, vmm:17.3320, vmf:13.0965, vmc:15.3944, vma:12.7275,
+  srcc:'outputs', srca:'outputs_abaqus',
+  tag:'D10 后重建 · 零三角（原 8 个 S3 在后梁腹板四角）'},
+
+ {id:'naca4412_wingbox_n_ribs5_chord800', ribs:5, chord:800, shape:'等直', str:'0', faces:21, nodes:4057, elems:4112,
+  u:4.52673, ua:4.54285, du:0.355, med:0.25, eqc:0.000725, eqa:0.000101,
+  vm:15.7618, vmm:17.5717, vmf:12.8913, vmc:15.2726, vma:12.5256,
+  srcc:'outputs', srca:'outputs_abaqus',
+  tag:'D10 后重建 · 零三角（原 16 个 S3 在后梁腹板四角）'},
+
+ {id:'naca4412_wingbox_n_ribs7_chord1000', ribs:7, chord:1000, shape:'等直', str:'0', faces:31, nodes:5593, elems:5711,
+  u:2.35805, ua:2.36882, du:0.455, med:0.59, eqc:0.000274, eqa:0.000092,
+  vm:10.7432, vmm:12.0032, vmf:8.7152, vmc:10.4278, vma:8.4513,
+  srcc:'outputs', srca:'outputs_abaqus', tag:''},
+
+ {id:'naca4412_wingbox_n_ribs7_chord800', ribs:7, chord:800, shape:'等直', str:'0', faces:31, nodes:4352, elems:4445,
+  u:4.51233, ua:4.53521, du:0.505, med:0.52, eqc:0.000623, eqa:0.000016,
+  vm:15.8507, vmm:18.0389, vmf:13.0045, vmc:15.3919, vma:12.7268,
+  srcc:'outputs', srca:'outputs_abaqus', tag:''},
+
+ {id:'naca4412_wingbox_recombination_algorithm3', ribs:5, chord:1000, shape:'等直', str:'0', faces:21, nodes:5281, elems:5351,
+  u:2.36487, ua:2.37242, du:0.318, med:0.22, eqc:0.000517, eqa:0.000119,
+  vm:10.6097, vmm:11.8011, vmf:8.6997, vmc:10.3156, vma:8.4192,
+  srcc:'outputs_str', srca:'outputs_abaqus',
+  tag:'网格算法对照'},
+
+ {id:'naca4412_wingbox_str3', ribs:5, chord:1000, shape:'等直', str:'3 blade', faces:69, nodes:7387, elems:7517,
+  u:2.21940, ua:2.22557, du:0.277, med:0.48, eqc:0.000093, eqa:0.000281,
+  vm:10.1406, vmm:11.2819, vmf:8.5757, vmc:9.8255, vma:8.2077,
+  srcc:'outputs_str', srca:'outputs_str_abaqus',
+  tag:'含竖式长桁'},
+
+ {id:'naca4412_wingbox_str3_T', ribs:5, chord:1000, shape:'等直', str:'3 T·fw30', faces:117, nodes:29447, elems:29733,
+  u:2.11507, ua:2.11812, du:0.144, med:0.12, eqc:0.000135, eqa:0.000031,
+  vm:11.1847, vmm:12.8892, vmf:9.1920, vmc:10.6785, vma:8.5878,
+  srcc:'outputs_T', srca:'outputs_T_abaqus',
+  tag:'M3/T5 新形式 · 截面族首个成员对照'},
+
+ /* ---- M5/T1 首轮：后掠 / 锥形翼盒（平面形状首批；D14 前缘为参考线） ---- */
+ {id:'naca4412_wingbox_sweep20', ribs:5, chord:1000, shape:'后掠20°', str:'0', faces:21, nodes:5222, elems:5292,
+  u:3.16934, ua:3.17763, du:0.261, med:0.24, eqc:0.000550, eqa:0.000091,
+  vm:10.4759, vmm:10.9411, vmf:8.7188, vmc:10.1171, vma:8.2190,
+  srcc:'outputs_t1', srca:'outputs_t1_abaqus',
+  tag:'T1 · 前缘后移 span·tan20° = 727.9 mm · cap 29.20 mm'},
+
+ {id:'naca4412_wingbox_taper060', ribs:5, chord:1000, shape:'锥0.6', str:'0', faces:21, nodes:7950, elems:8026,
+  u:3.38415, ua:3.39146, du:0.216, med:0.13, eqc:0.000760, eqa:0.000015,
+  vm:11.4068, vmm:12.6958, vmf:9.4014, vmc:10.9565, vma:9.1127,
+  srcc:'outputs_t1', srca:'outputs_t1_abaqus',
+  tag:'T1 · 翼尖弦 270 mm（450×0.6）· cap 17.52 mm · 后梁最窄 43.79 mm'},
+
+ {id:'naca4412_wingbox_taper080', ribs:5, chord:1000, shape:'锥0.8', str:'0', faces:21, nodes:5125, elems:5191,
+  u:2.75209, ua:2.76101, du:0.323, med:0.24, eqc:0.000128, eqa:0.000016,
+  vm:10.7650, vmm:11.9545, vmf:8.7686, vmc:10.4392, vma:8.5991,
+  srcc:'outputs_t1', srca:'outputs_t1_abaqus',
+  tag:'T1 · 轻锥（翼尖弦 360 mm）· 证明 cap 不只在极端锥度下才生效'},
+
+ {id:'naca4412_wingbox_sweep20_taper060', ribs:5, chord:1000, shape:'后掠20°+锥0.6', str:'0', faces:21, nodes:7771, elems:7847,
+  u:3.96104, ua:3.96873, du:0.194, med:0.14, eqc:0.000129, eqa:0.000016,
+  vm:9.4148, vmm:10.3095, vmf:8.6540, vmc:9.0509, vma:7.8509,
+  srcc:'outputs_t1', srca:'outputs_t1_abaqus',
+  tag:'T1 · 两个自由度同时动 · D15 判为「新平面形状」⇒ test'},
+
+ /* ---- M5/T1 放量（batch2，8 条）：给 val 补样本 + 补训练覆盖（D16 / D17） ---- */
+ {id:'naca4412_wingbox_sweep10', ribs:5, chord:1000, shape:'后掠10°', str:'0', faces:21, nodes:5484, elems:5554,
+  u:2.58760, ua:2.59506, du:0.287, med:0.22, eqc:0.000350, eqa:0.000091,
+  vm:9.8297, vmm:10.6958, vmf:8.2217, vmc:9.5607, vma:7.9602,
+  srcc:'outputs_b2', srca:'outputs_b2_abaqus',
+  tag:'放量 · 后掠 10°（单维，仍在 train 包络）⇒ train（D16）'},
+
+ {id:'naca4412_wingbox_taper090', ribs:5, chord:1000, shape:'锥0.9', str:'0', faces:21, nodes:4871, elems:4935,
+  u:2.53636, ua:2.54514, du:0.345, med:0.27, eqc:0.000280, eqa:0.000016,
+  vm:10.5802, vmm:11.7297, vmf:8.7060, vmc:10.2713, vma:8.4858,
+  srcc:'outputs_b2', srca:'outputs_b2_abaqus',
+  tag:'放量 · 轻锥 0.9（单维，仍在 train 包络）⇒ train（D16）'},
+
+ {id:'naca4412_wingbox_str5', ribs:5, chord:1000, shape:'等直', str:'5 blade', faces:101, nodes:8205, elems:8367,
+  u:2.13545, ua:2.14114, du:0.266, med:0.64, eqc:0.001406, eqa:0.000223,
+  vm:9.8692, vmm:11.2503, vmf:8.2027, vmc:9.6418, vma:7.8919,
+  srcc:'outputs_b2', srca:'outputs_b2_abaqus',
+  tag:'放量 · 长桁 5 根（族内加密，非外推）⇒ train'},
+
+ {id:'naca4412_wingbox_n_ribs9_chord1000', ribs:9, chord:1000, shape:'等直', str:'0', faces:41, nodes:5706, elems:5872,
+  u:2.35033, ua:2.36344, du:0.554, med:1.00, eqc:0.000075, eqa:0.000091,
+  vm:10.6934, vmm:11.9432, vmf:8.7484, vmc:10.3803, vma:8.4447,
+  srcc:'outputs_b2', srca:'outputs_b2_abaqus',
+  tag:'放量 · 肋 9（单维外推）⇒ val（D16）'},
+
+ {id:'naca4412_wingbox_sweep40', ribs:5, chord:1000, shape:'后掠40°', str:'0', faces:21, nodes:5697, elems:5767,
+  u:7.01434, ua:7.02672, du:0.176, med:0.26, eqc:0.000972, eqa:0.000092,
+  vm:18.6518, vmm:18.9655, vmf:14.1868, vmc:17.3217, vma:13.7371,
+  srcc:'outputs_b2', srca:'outputs_b2_abaqus',
+  tag:'放量 · 强后掠 40°（> 20°，单维外推）⇒ val（D16）· cap 29.20 mm'},
+
+ {id:'naca4412_wingbox_taper040', ribs:5, chord:1000, shape:'锥0.4', str:'0', faces:21, nodes:14937, elems:15036,
+  u:4.48886, ua:4.49509, du:0.139, med:0.08, eqc:0.000019, eqa:0.000016,
+  vm:12.2254, vmm:13.8605, vmf:10.1628, vmc:11.6294, vma:9.7603,
+  srcc:'outputs_b2', srca:'outputs_b2_abaqus',
+  tag:'放量 · 强锥 0.4（< 0.6，单维外推）⇒ val（D16）· cap 11.68 mm'},
+
+ {id:'naca4412_wingbox_sweep40_taper040', ribs:5, chord:1000, shape:'后掠40°+锥0.4', str:'0', faces:21, nodes:15681, elems:15780,
+  u:9.86735, ua:9.87436, du:0.071, med:0.07, eqc:0.000175, eqa:0.000015,
+  vm:15.9405, vmm:16.9396, vmf:13.7211, vmc:15.0795, vma:13.2440,
+  srcc:'outputs_b2', srca:'outputs_b2_abaqus',
+  tag:'放量 · 两个自由度同时动 ⇒ 新平面形状 ⇒ test'},
+
+ /* ---- M5/T6（batch5，D24）：多闭室翼盒首三条。载荷 = 弯曲 + 端部扭矩（闭室数只在扭转下可观测）。
+     `web` 列 = 腹板数 / 闭室数（n_cells = n_webs + 1）；无腹板的箱段自动落到 '0 / 1'。 ---- */
+ {id:'naca4412_wingbox_web1', ribs:5, chord:1000, shape:'等直', str:'0', web:'1 / 2', faces:38, nodes:5369, elems:5539,
+  u:2.96458, ua:2.97279, du:0.276, med:0.16, eqc:0.000056, eqa:0.000103,
+  vm:12.6971, vmm:13.1167, vmf:9.8619, vmc:11.2086, vma:9.6507,
+  srcc:'outputs_b5', srca:'outputs_b5_abaqus',
+  tag:'T6 · 1 道等分腹板（x=0.475c）⇒ 2 闭室 · train'},
+
+ {id:'naca4412_wingbox_web2', ribs:5, chord:1000, shape:'等直', str:'0', web:'2 / 3', faces:55, nodes:5653, elems:5915,
+  u:2.85579, ua:2.86447, du:0.303, med:0.23, eqc:0.000157, eqa:0.000168,
+  vm:11.5722, vmm:12.1058, vmf:9.6364, vmc:10.3914, vma:9.3301,
+  srcc:'outputs_b5', srca:'outputs_b5_abaqus',
+  tag:'T6 · 2 道等分腹板（0.4c / 0.55c）⇒ 3 闭室 · 单维外推 ⇒ val（D24）'},
+
+ {id:'naca4412_wingbox_web1_offcentre', ribs:5, chord:1000, shape:'等直', str:'0', web:'1 / 2', faces:38, nodes:5574, elems:5744,
+  u:3.06080, ua:3.06884, du:0.262, med:0.16, eqc:0.000595, eqa:0.000025,
+  vm:14.0702, vmm:14.6688, vmf:11.2804, vmc:12.3436, vma:11.1382,
+  srcc:'outputs_b5', srca:'outputs_b5_abaqus',
+  tag:'T6 · 腹板偏 0.35c（≠ 等分 0.475）⇒ 闭室不等面积 · 新形式 ⇒ test（D24）'}
+];
+
+/* ---- 第二结构族：加筋平板壁板（M3/T2 + M5 放量）。列与翼盒不同，单独一张表。
+   平板 detail 里的「独立验证①–⑥」全部来自 verify_panel.py 的实测，逐板不同 ⇒
+   每行自带一个 `v` 对象（不再把 600×600 的数写死在模板里）。 ---- */
+const PANELS = [
+ {id:'stiffened_panel_600x600', n_str:0, faces:1, nodes:46432, elems:46031, minj:0.6167,
+  u:0.96175, ua:0.96490, du:0.326, navier:-0.097, med:null,
+  eqc:0.000005, eqa:0.000000, vm:2.9682, vmm:3.5066, vmf:3.0742, vmc:1.3590, vma:0.0000,
+  srcc:'outputs_panel', srca:'outputs_panel_abaqus',
+  specpath:'_t2_probe/stiffened_panel_600x600.spec.json', force:36,
+  v:{navier:'Navier 0.96268 mm ｜ 本模型偏差 −0.097 %',
+     area:'网格积分受载面积 360000.0000 mm² = 板面积 → 偏差 0.00 %（长桁<b>未被加压</b>：否则 +36000 mm² = +10 %）',
+     sumz:'Σ FORC_z = +0.000002 N vs 外载 36 N → 0.00001 %（不自平衡就说明载荷或约束错了；<b>不含任何集中质量近似</b>）',
+     react:'800 个约束边节点反力，加上落在它们身上的压力集总，= 35.99985 / 36.00000 N → <b>0.0004 %</b>（集总项按 q·A_elem/节点数 由<b>网格预测</b>，不是拟合）',
+     sym:'x 对边 0.983 % ｜ y 对边 0.582 %（网格非镜像对称，故有残差）',
+     outer:'6 Mx/t² = 2.64554 MPa；离板中心最近节点（13221 @ 298.62,299.4,0.0）实测 2.63984 → <b>−0.22 %</b><br><span style="color:var(--ink3);font-size:11.8px">刻意<b>不取模型最大值</b>：最大值 2.9682 落在支承边剪切边界层，比闭式高 +12.2 %，只作报告</span>',
+     stiff:'w 素板 0.96175 / 加筋 0.01526 = <b>63.0×</b>（一根<b>脱粘</b>的长桁只给 ~1×，而且照样解得出）'},
+  tag:'T2 退化基准 · 无长桁（长桁数=0）· 3 mm'},
+
+ {id:'stiffened_panel_600x600_str3', n_str:3, faces:7, nodes:51401, elems:50976, minj:0.5367,
+  u:0.01526, ua:0.01527, du:0.063, navier:null, med:0.26,
+  eqc:0.000028, eqa:0.000000, vm:1.7744, vmm:1.9055, vmf:1.7539, vmc:1.7689, vma:1.7471,
+  srcc:'outputs_panel', srca:'outputs_panel_abaqus',
+  specpath:'_t2_probe/stiffened_panel_600x600_str3.spec.json', force:36,
+  v:{navier:'本条不做（有长桁，无闭式解）',
+     area:'网格积分受载面积 360000.0000 mm² = 板面积 → 偏差 0.00 %（长桁<b>未被加压</b>：否则 +36000 mm² = +10 %）',
+     sumz:'Σ FORC_z = −0.000002 N vs 外载 36 N → 0.00001 %（不自平衡就说明载荷或约束错了；<b>不含任何集中质量近似</b>）',
+     react:'848 个约束边节点反力，加上落在它们身上的压力集总，= 35.99916 / 36.00000 N → <b>0.0023 %</b>（集总项按 q·A_elem/节点数 由<b>网格预测</b>，不是拟合）',
+     sym:'x 对边 0.209 % ｜ y 对边 0.028 %',
+     outer:null,
+     stiff:'w 素板 0.96175 / 加筋 0.01526 = <b>63.0×</b>（一根<b>脱粘</b>的长桁只给 ~1×，而且照样解得出）'},
+  tag:'3 根 blade 长桁 · 比无长桁刚度 ×63.0 · 3 mm'},
+
+ {id:'stiffened_panel_800x600', n_str:0, faces:1, nodes:61834, elems:61365, minj:0.6183,
+  u:1.56189, ua:1.57378, du:0.756, navier:-0.573, med:null,
+  eqc:0.000001, eqa:0.000000, vm:4.3026, vmm:4.2018, vmf:3.8700, vmc:2.2930, vma:0.0000,
+  srcc:'outputs_b2', srca:'outputs_b2_abaqus',
+  specpath:'_m5_probe/_batch2_specs/stiffened_panel_800x600.spec.json', force:48,
+  v:{navier:'Navier 1.57088 mm ｜ 本模型偏差 −0.573 %（ccx 1.56189 / abaqus 1.57378，<b>两码把解析值夹在中间</b>）',
+     area:'网格积分受载面积 480000.0000 mm² = 板面积 → 偏差 0.00 %（本条<b>无长桁</b>，不存在「长桁被加压」的假设项）',
+     sumz:'Σ FORC_z = −0.000000 N vs 外载 48 N → 0.000000 %（不自平衡就说明载荷或约束错了；<b>不含任何集中质量近似</b>）',
+     react:'936 个约束边节点反力，加上落在它们身上的压力集总，= 47.99912 / 48.00000 N → <b>0.0018 %</b>（集总项按 q·A_elem/节点数 由<b>网格预测</b>，不是拟合）',
+     sym:'x 对边 1.740 % ｜ y 对边 0.055 %（网格非镜像对称，故有残差）',
+     outer:'本模型是<b>矩形板</b>（800×600），中心 Mx ≠ My，故闭式对照用 <b>von Mises = √(σx²−σxσy+σy²)</b>：σx 2.81845 ｜ σy 3.91249 → <b>3.49629 MPa</b>；离板中心最近节点（47835 @ 400.97,300.54,0.0）实测 3.48773 →　<b>−0.245 %</b><br><span style="color:var(--ink3);font-size:11.8px">刻意<b>不取模型最大值</b>：最大值 4.3026 落在支承边剪切边界层，比闭式高 +23.1 %，只作报告</span>',
+     stiff:null},
+  tag:'放量 · 尺寸单维外推（800×600 ≠ train 已学 600×600，光板）⇒ val（D16）· 3 mm'}
+];
+
+/* ---- 第三结构族：机身加筋柱壳段（M5/T3）。载荷与其他两族不同（内压 + 端弯 + 端剪），
+   所以列单开一张表。`du` 是**全域** max|u| 差（D20 明确印出但不判门槛）；
+   `d20s`/`d20p` 才是族自己的判据：剔除端载环后的结构峰值差、沿轴剖面差（对尖端归一）。
+   逐条数字来自 verify_barrel.py（族默认 8str/3frm）与 _m5_probe/t3_d20_batch3.py
+   （batch3 两条），无一取自未实测的推断。 ---- */
+const FUSELAGE = [
+ {id:'fuselage_barrel_d2000_l2000_str8_frm3', n_str:8, n_frm:3, faces:16, nsrfc:56,
+  nodes:158524, elems:157972, minj:0.5159,
+  u:2.63103, ua:2.68523, du:2.0186,
+  d20s:0.4015, d20p:0.1980, ustc:1.38962, usta:1.39522, ustn:155525,
+  vm:249.3983, vma:281.0579,
+  srcc:'outputs_b3', srca:'outputs_b3_abaqus',
+  specpath:'_m5_probe/_batch3_specs/fuselage_barrel_d2000_l2000_str8_frm3.spec.json',
+  tag:'T3 族默认柱壳（D2000×L2000）· train（落在训练包络内）',
+  v:{eq:'Σ FORC 全域 = (+0.00939, −0.00026, +0.02266) N，最差分量 <b>0.00005 %</b> of 端剪 50000 N（施加与反力按构造相消）',
+     hoop:'中长外纤维 vM 16.68845 MPa vs pR/t = 16.66667 → <b>+0.131 %</b>；该处轴向应力 0.01823 MPa——筒无端盖，内压不产生轴向合力',
+     w:'中长径向位移 <b>+0.22725 mm</b> vs pR²/(Et) = 0.22800 → <b>−0.329 %</b>（符号已由 D21 修正：此前 deck 写成外压，实测 −0.22725）',
+     bend:'中长外纤维 vM 3.72575 MPa vs Mx/I = 3.75132 → <b>−0.681 %</b>（I = πR³t，采样经线离自由蒙皮缝半格）',
+     d20:'结构峰值（剔除端载环）ccx 1.38962（node 155525）vs abaqus 1.39522（node 155576）→ <b>0.4015 %</b>；剖面最差 0.1980 % of 尖端挠度（严格逐站 0.3814 %）。<b>全域 2.0186 %</b> 如实印出、不判门槛',
+     mesh:'158548 网格节点 / <b>157972 个 S4</b>（全部四边形）· minJ 0.5159 · 0 个 tri3 · 关 4 语义 6/6'}},
+
+ {id:'fuselage_barrel_d2000_l2000_str12_frm4', n_str:12, n_frm:4, faces:36, nsrfc:120,
+  nodes:169606, elems:169150, minj:0.5211,
+  u:2.56923, ua:2.65814, du:3.3448,
+  d20s:0.7816, d20p:0.1529, ustc:1.42733, usta:1.43857, ustn:164743,
+  vm:258.4794, vma:265.3806,
+  srcc:'outputs_b3', srca:'outputs_b3_abaqus',
+  specpath:'_m5_probe/_batch3_specs/fuselage_barrel_d2000_l2000_str12_frm4.spec.json',
+  tag:'T3 test 伴侣 · 长桁 12 > 8 且 框 4 > 3 ⇒ 双维外推 ⇒ test（D18）',
+     v:{eq:'与 8str 同族同一套载荷/约束，只有两个计数变了；平衡由 pipeline 与关 4 兜（本行不重复印 8str 的数）',
+        hoop:'同 pR/t = 16.66667 MPa（R、t 不变）',
+        w:'同 pR²/(Et) = 0.22800 mm（R、t 不变）',
+        bend:'同 Mx/I（截面惯性只由 R、t 决定）',
+        d20:'结构峰值（剔除端载环）ccx 1.42733 vs abaqus 1.43857（<b>同一 node 164743</b>）→ <b>0.7816 %</b>；剖面最差 0.1529 % of 尖端挠度（严格逐站 0.4324 %）。<b>全域 3.3448 %</b> 不判门槛',
+        mesh:'169654 网格节点 / <b>169150 个 S4</b> · minJ 0.5211 · 0 个 tri3 · 关 4 语义 6/6（120 面 = 36 蒙皮 + 36 长桁 + 48 框）'}},
+
+ {id:'fuselage_barrel_d1800_l2000_str8_frm3', n_str:8, n_frm:3, faces:16, nsrfc:56,
+  nodes:143402, elems:142914, minj:0.5159,
+  u:2.80159, ua:2.89073, du:3.1810,
+  d20s:0.8180, d20p:0.1939, ustc:1.40884, usta:1.42046, ustn:140455,
+  vm:286.7960, vma:323.7578,
+  srcc:'outputs_b6', srca:'outputs_b6_abaqus',
+  specpath:'_m5_probe/_batch6_specs/fuselage_barrel_d1800_l2000_str8_frm3.spec.json',
+  tag:'T3 尺寸维 val · 直径 2000→1800 单维外推（D25/D27）· <b>换点案</b>：原 d1600 的 gate3 1.1349 % 越线，d1800 近邻判决 0.8180 % 干净 ⇒ 换点入库，判据一字未动（2026-10-07）',
+  v:{eq:'几何同构 8str/3frm（16 蒙皮 + 16 长桁 + 24 框 = 56 面），载荷/约束与族默认完全同一套；平衡由 pipeline 与关 4 兜',
+     d20:'结构峰值（剔除端载环）ccx 1.40884 vs abaqus 1.42046（<b>同一 node 140455</b>）→ <b>0.8180 %</b>；剖面最差 0.1939 % of 尖端挠度。全域 3.1810 % 如实印出、不判门槛。<br><b>独立解析线</b>（<code>verify_barrel_size.py</code>，同尺寸退化柱壳）：hoop 14.98335 vs pR/t = 15.000（<b>−0.111 %</b>）｜ 径向 0.18531 vs pR²/(Et) = 0.18468（<b>+0.340 %</b>）｜ 比值律 σ ×0.8978 vs ×0.9000（−0.241 %）、w ×0.8154 vs ×0.8100（+0.671 %），全在 1 % 内',
+     mesh:'143402 活跃节点 / <b>142914 个 S4</b>（全部四边形）· minJ 0.5159 · 0 个 tri3 · 关 4 语义 6/6'}},
+
+ {id:'fuselage_barrel_d2000_l1600_str8_frm3', n_str:8, n_frm:3, faces:16, nsrfc:56,
+  nodes:129632, elems:129080, minj:0.5159,
+  u:2.55112, ua:2.61312, du:2.4304,
+  d20s:0.1890, d20p:0.1783, ustc:1.26810, usta:1.27050, ustn:127262,
+  vm:249.3506, vma:281.0628,
+  srcc:'outputs_b6', srca:'outputs_b6_abaqus',
+  specpath:'_m5_probe/_batch6_specs/fuselage_barrel_d2000_l1600_str8_frm3.spec.json',
+  tag:'T3 尺寸维 val · 长度 2000→1600 单维外推（D25/D27）',
+  v:{eq:'几何同构 8str/3frm（56 面），载荷/约束同族；平衡由 pipeline 与关 4 兜',
+     d20:'结构峰值（剔除端载环）ccx 1.26810 vs abaqus 1.27050（<b>同一 node 127262</b>）→ <b>0.1890 %</b>；剖面最差 0.1783 %。全域 2.4304 % 不判门槛。<br><b>独立解析线</b>（R、t 不变 ⇒ pR/t = 16.667 同族默认）：hoop 16.69570（<b>+0.174 %</b>）｜ 径向 0.22815 vs 0.22800（<b>+0.067 %</b>）',
+     mesh:'129632 活跃节点 / <b>129080 个 S4</b> · minJ 0.5159 · 0 个 tri3 · 关 4 语义 6/6'}},
+
+ {id:'fuselage_barrel_d2000_l2000_t2_str8_frm3', n_str:8, n_frm:3, faces:16, nsrfc:56,
+  nodes:158524, elems:157972, minj:0.5159,
+  u:4.67870, ua:4.86750, du:4.0352,
+  d20s:0.3804, d20p:0.2957, ustc:1.82172, usta:1.82868, ustn:155525,
+  vm:372.5256, vma:433.9118,
+  srcc:'outputs_b6', srca:'outputs_b6_abaqus',
+  specpath:'_m5_probe/_batch6_specs/fuselage_barrel_d2000_l2000_t2_str8_frm3.spec.json',
+  tag:'T3 壁厚维 val · 壳厚 3→2 单维外推（D25/D27）',
+  v:{eq:'几何同构 8str/3frm（56 面），载荷/约束同族；平衡由 pipeline 与关 4 兜',
+     d20:'结构峰值（剔除端载环）ccx 1.82172 vs abaqus 1.82868（<b>同一 node 155525</b>，与族默认峰值同位）→ <b>0.3804 %</b>；剖面最差 0.2957 %。全域 4.0352 % 不判门槛。<br><b>独立解析线</b>（pR/t = 0.05×1000/2 = 25.000）：hoop 25.02095（<b>+0.084 %</b>）｜ 径向 0.34057 vs pR²/(Et) = 0.34200（<b>−0.416 %</b>）—— 壁厚是尺寸维里闭式最锐的一档（hoop、w 都 ∝ 1/t）',
+     mesh:'158524 活跃节点 / <b>157972 个 S4</b> · minJ 0.5159 · 0 个 tri3 · 关 4 语义 6/6'}},
+
+ {id:'fuselage_barrel_d1600_l1600_str8_frm3', n_str:8, n_frm:3, faces:16, nsrfc:56,
+  nodes:103715, elems:103291, minj:0.4636,
+  u:3.00697, ua:3.08159, du:2.4816,
+  d20s:0.7143, d20p:0.2396, ustc:1.24653, usta:1.25550, ustn:101346,
+  vm:343.6255, vma:386.0377,
+  srcc:'outputs_b6', srca:'outputs_b6_abaqus',
+  specpath:'_m5_probe/_batch6_specs/fuselage_barrel_d1600_l1600_str8_frm3.spec.json',
+  tag:'T3 双维 test · 直径 1600 + 长度 1600 同时外推（D25：≥2 维 ⇒ test）· 本树最差 minJ 0.4636',
+  v:{eq:'几何同构 8str/3frm（56 面），载荷/约束同族；平衡由 pipeline 与关 4 兜',
+     d20:'结构峰值（剔除端载环）ccx 1.24653 vs abaqus 1.25550（<b>同一 node 101346</b>）→ <b>0.7143 %</b>；剖面最差 0.2396 %。全域 2.4816 % 不判门槛。<br><b>独立解析线</b>（pR/t = 0.05×800/3 = 13.333）：hoop 13.35209（<b>+0.141 %</b>）｜ 径向 0.14595 vs 0.14592（<b>+0.022 %</b>）｜ 弯曲 5.82977 vs Mx/I = 5.86143（<b>−0.540 %</b>，I = πR³t 随 R³ 收缩）｜ 比值律 σ ×0.8001 vs ×0.8000（+0.010 %）、w ×0.6423 vs ×0.6400（+0.352 %）',
+     mesh:'103715 活跃节点 / <b>103291 个 S4</b> · minJ 0.4636（<b>全树最差</b>，仍高于 0.30 闸）· 0 个 tri3 · 关 4 语义 6/6'}}
+];
+
+/* ---- 第四结构族：开孔板（M5/T4）。全库唯一带闭式解析对照的族（Kirsch / Howland）。
+   逐条数字来源：verify_hole.py（默认 coupon 的 Kt / 收敛 / 平衡 / λ 趋势）、
+   _t4_probe/open_hole_readings.py（三条 Kt 落盘 json）、manifest.json（读数）。
+   `ktg`/`ktn` = ccx 实测 Kt（gross / net），`how` = Howland gross，`err` = ccx 对其偏差。
+   偏心件无 Howland 对照（`how`/`err` 为 null），故 detail 里改印实测值与「为何不判」。 ---- */
+const OPENHOLE = [
+ {id:'open_hole_panel_400x200_d20', d:20, lam:0.100, pos:'中心', faces:1, curves:5,
+  nodes:9861, elems:9675, minj:0.6084,
+  u:0.057496858, ua:0.057585217, du:0.154,
+  ktg:3.0380, ktn:2.7342, how:3.0245, err:0.445, edge:72,
+  vmC:30.37999, vmA:30.0516,
+  srcc:'outputs_hole', srca:'outputs_hole_abaqus',
+  specpath:'_m5_probe/_batch4_specs/open_hole_panel_400x200_d20.spec.json',
+  tag:'T4 族默认孔 λ=0.1 · train（落在训练包络内）',
+  v:{kt:'ccx Kt_gross <b>3.0380</b> vs Howland <b>3.0245</b> → <b>+0.445 %</b>（容差 2 %）；同口径 Kt_net 2.7342 vs 2.7221（+0.445 %）。Kirsch 无限板 3.0000 <b>仅作参考、绝不作断言</b>——λ=0.1 时两种口径相差 11.1 %，拿它当判据是拿口径当模型',
+     conv:'孔边分段收敛（ccx Kt_gross）：12 段 2.7545 ｜ 24 段 2.9897 ｜ 36 段 2.9887 ｜ 48 段 2.9709 ｜ <b>72 段 3.0373</b> ｜ 96 段 3.0291 —— <b>非单调，散布 ±1 %</b>。这正是容差取 2 %（必须大于散布）的实测依据',
+     eq:'Σ FORC_x：加载端 +4000.0000 N vs 外载 4000 N（<b>0.0000 %</b>）｜ 固支端 −4000.0000 N（<b>0.0000 %</b>）｜ 全模型 0.001 N（0.0000 %）。孔边峰值两码差 1.92 % 而位移只差 0.15 % ⇒ <b>模型是对的，差在应力恢复</b>',
+     trend:'λ=0.1 → Kt_gross <b>3.0380</b>（+0.45 %）｜ λ=0.2 → 3.1323（−0.09 %）｜ λ=0.3 → 3.3591（+0.10 %）—— gross 口径必须<b>随 λ 单调升</b>（净截面被压得比孔折减增长更快）：命中一个值是运气，复现排序才是模型',
+     cross:'max|u| ccx 0.0574969 vs abaqus 0.0575852 mm（<b>0.154 %</b>，容差 1 %）；孔边<b>逐节点 vM 中位差 2.318 %</b>（72 节点，容差 5 %）。峰值 Kt_gross 3.0380 vs 2.9797（1.920 %）<b>仅作参考</b>——峰值是最敏感于离散的统计量，两码恢复路径不同（ccx 折叠 OUTPUT=3D 层平均 ｜ abaqus 最外两积分点均值再跨单元平均）⇒ <b>峰值禁裸比（D8）</b>',
+     mesh:'9861 活跃节点 / <b>9675 个 S4</b>（全部四边形）· minJ 0.6084 · <b>0 个 tri3</b> · 关 4 语义 6/6（1 面 / 5 曲线 / 孔 d 实测 20.000 mm @ [200,100]）· 孔边 72 节点（5° 一段）',
+     env:'<b>可建包络</b>：孔边目标尺寸 π·d/n 必须高于尺寸场地板 <code>max(size_chord/6, 0.5)</code> mm；builder 宁可 <code>raise</code> 也不静默粗化。族默认（size 4 / n=72）⇒ <b>d &gt; 15.279 mm</b>；因 0.5 mm 是<b>绝对硬地板</b>，任何远场下 <b>d 都不能小于 11.46 mm</b>。实测 d=14.973 被拒、d=17.571 建成（check_forms :: T4.edge-floor-envelope）'}},
+
+ {id:'open_hole_panel_400x200_d40', d:40, lam:0.200, pos:'中心', faces:1, curves:5,
+  nodes:8682, elems:8496, minj:0.6213,
+  u:0.059401802, ua:0.059479967, du:0.132,
+  ktg:3.1323, ktn:2.5058, how:3.1352, err:-0.093, edge:72,
+  vmC:31.32274, vmA:31.2771,
+  srcc:'outputs_hole', srca:'outputs_hole_abaqus',
+  specpath:'_m5_probe/_batch4_specs/open_hole_panel_400x200_d40.spec.json',
+  tag:'放量 · 尺寸外推（λ 0.2 &gt; train 已学 0.1，孔仍居中）⇒ val（D23）',
+  v:{kt:'ccx Kt_gross <b>3.1323</b> vs Howland <b>3.1352</b> → <b>−0.093 %</b>；Kt_net 2.5058 vs 2.5082。λ 从 0.1 升到 0.2，净截面被压得更狠，gross 系数随之上扬——与 Howland 的方向一致',
+     conv:'同族同一套网格策略（size 4 / 孔边 72 段）；孔变大 ⇒ 孔边单元变长（d=40 时 5° 弧长 1.745 mm）',
+     eq:'同一条载荷路径（4000 N 拉伸），孔大小不改变平衡结构；全模型残差 0.001 N 量级',
+     trend:'落在 λ 趋势的中间点：0.1 → 3.0380 ｜ <b>0.2 → 3.1323</b> ｜ 0.3 → 3.3591',
+     cross:'max|u| ccx 0.0594018 vs abaqus 0.0594800 mm（<b>0.132 %</b>）；峰值 Kt_gross 3.1323 vs 3.1002（1.024 %）仅作参考',
+     mesh:'8682 活跃节点 / <b>8496 个 S4</b> · minJ 0.6213 · 0 tri3 · 关 4 语义 6/6 · 孔边 72 节点',
+     env:'孔越大越好建——包络是<b>下界</b>约束：λ=0.2 离地板很远（孔边 1.745 mm vs 地板 0.6667 mm，<b>余量 162 %</b>）'}},
+
+ {id:'open_hole_panel_400x200_d20_offcentre', d:20, lam:0.100, pos:'偏心 (120,60)', faces:1, curves:5,
+  nodes:9349, elems:9163, minj:0.6562,
+  u:0.058630346, ua:0.058681743, du:0.088,
+  ktg:3.0693, ktn:2.7624, how:null, err:null, edge:72,
+  vmC:30.69322, vmA:30.3518,
+  srcc:'outputs_hole', srca:'outputs_hole_abaqus',
+  specpath:'_m5_probe/_batch4_specs/open_hole_panel_400x200_d20_offcentre.spec.json',
+  tag:'新形式 · 偏心孔 ⇒ test（D23「新形式 → test」）',
+  v:{kt:'<b>不判 Howland</b>：Howland 只解中心孔，孔移到 (120, 60) 后无解析对照——这正是它进 test 的理由（D23）。实测 ccx Kt_gross <b>3.0693</b>（Kt_net 2.7624），比中心孔高 1.03 %：净宽同为 180 mm，但合力线偏离孔心，孔边应力分布不再对称',
+     conv:'同族网格策略；偏心把孔推进更密的远场梯度，minJ 0.6562 是三条里最好的',
+     eq:'同一条载荷路径；孔位不改变平衡结构',
+     trend:'<b>不在 λ 趋势序列里</b>——趋势只用中心孔，保证与 Howland 同口径（把偏心件放进趋势会把几何效应误读成 λ 效应）',
+     cross:'max|u| ccx 0.0586303 vs abaqus 0.0586817 mm（<b>0.088 %</b>，三条里最紧）；峰值 Kt_gross 3.0693 vs 3.0016（2.205 %）仅作参考',
+     mesh:'9349 活跃节点 / <b>9163 个 S4</b> · minJ 0.6562 · 0 tri3 · 关 4 语义 6/6 · 孔心实测 [120.000, 60.000]',
+     env:'孔 d 与中心孔相同 ⇒ 可建性完全相同（包络只看 d，不看位置）'}},
+
+ /* ---- M5 batch7（D28）：T4 放量 4 条 —— λ 维 + 尺寸维 + 双维角点 + 偏心新形式。
+    尺寸不变性探针：Howland 闸只打 ccx 侧，真闸 = 同码跨 coupon Kt 差 ---- */
+
+ {id:'open_hole_panel_600x300_d30', d:30, lam:0.100, pos:'中心', faces:1, curves:5,
+  nodes:20736, elems:20474, minj:0.5808,
+  u:0.085283, ua:0.085363, du:0.094,
+  ktg:3.0190, ktn:2.7171, how:3.0245, err:-0.182, edge:72,
+  vmC:30.19005, vmA:30.02977,
+  srcc:'outputs_b7', srca:'outputs_b7_abaqus',
+  specpath:'_probe_b7/_batch7_specs/open_hole_panel_600x300_d30.spec.json',
+  tag:'放量 · 尺寸单维外推（板 600x300 ≠ train 已学 400x200，λ 仍 0.1）⇒ val（D28 尺寸维首条）',
+  v:{kt:'<b>尺寸不变性探针就是这条 case 的灵魂</b>：Howland 只看 λ 不看绝对尺寸，同 λ=0.1 的它与基线 d20 的 Kt <b>理论上必须相同</b>——「解析标尺不随试件移动」是尺寸外推唯一能实际失败的比较（柱壳比值律的开孔板类比）。实测 ccx Kt_gross <b>3.0190</b> vs 基线 3.0380 → 同码差 <b>0.629 %</b>（容差 2 %）；vs Howland <b>3.0245</b> → <b>+0.182 %</b>。abaqus 同码差 1.539 % 也在容差内',
+     conv:'同一套网格策略（size 4 / 孔边 72 段）；板大了一倍面积 ⇒ 节点 20736（基线 d20 的 9861 的 2.1 倍），孔边 5° 弧长 1.309 mm',
+     eq:'600×300 条总力 <b>6000 N</b>（σ_gross 恒 10 MPa 的声明实测兑现：applied 5999.994 / reaction −6000.0016 / 全模型 −0.0076 N）—— <b>载荷随截面升而总力升，Kt 分子分母同倍率</b>',
+     trend:'<b>不在 λ 趋势序列里</b>（λ=0.1 与 train 锚点同值）——它考的是<b>尺寸维</b>：同 λ 跨 coupon 的 Kt 复现，不是新 λ 点',
+     cross:'max|u| ccx 0.085283 vs abaqus 0.085363 mm（<b>0.094 %</b>，容差 1 %）；孔边逐节点 vM 中位差 <b>3.142 %</b>（72 节点，容差 5 %）。⚠️ abaqus 峰值对 Howland −2.98 % <b>只印不判</b>（D8：峰值是恢复统计量——基线自身就 −1.48 %，d30 孔边单元绝对尺寸更大 1.31 vs 0.87 mm、平均化路径读得更低；载荷/面积若真错，位移差 0.094 % 会先报警）',
+     mesh:'20736 活跃节点 / <b>20474 个 S4</b>（全部四边形）· minJ 0.5808 · <b>0 个 tri3</b> · 关 4 语义 6/6（1 面 / 5 曲线 / 孔 d 实测 30.000 mm @ [300,150]）· 孔边 72 节点',
+     env:'板变大不触碰可建包络：孔边目标尺寸 π·d/n = 1.309 mm 远高于绝对硬地板 0.5 mm（包络只看 d，板尺寸不进公式）'}},
+
+ {id:'open_hole_panel_400x200_d50', d:50, lam:0.250, pos:'中心', faces:1, curves:5,
+  nodes:7918, elems:7732, minj:0.6266,
+  u:0.060918, ua:0.061037, du:0.195,
+  ktg:3.2313, ktn:2.4235, how:3.2298, err:0.048, edge:72,
+  vmC:32.31347, vmA:32.07023,
+  srcc:'outputs_b7', srca:'outputs_b7_abaqus',
+  specpath:'_probe_b7/_batch7_specs/open_hole_panel_400x200_d50.spec.json',
+  tag:'放量 · λ 单维外推（0.25 &gt; train 已学 0.1，板仍 400x200）⇒ val（D28）',
+  v:{kt:'ccx Kt_gross <b>3.2313</b> vs Howland <b>3.2298</b> → <b>+0.048 %</b>（四条 b7 里最贴）；Kt_net 2.4235 vs 2.4223。λ 从 0.2 升到 0.25，净截面压得更狠，gross 系数继续上扬——与 Howland 三次多项式的走向一致',
+     conv:'同族同一套网格策略；孔边 5° 弧长 2.182 mm（λ 变大弧变长，绝对离散反而更松）',
+     eq:'同一条载荷路径（4000 N 拉伸）：applied 4000.0014 / reaction −4000.0020 / 全模型 −0.0006 N',
+     trend:'<b>λ 趋势的中间新点</b>：0.1 → 3.0380 ｜ 0.2 → 3.1323 ｜ <b>0.25 → 3.2313</b> ｜ 0.3 → 3.3591 —— <b>单调升保持</b>，放量把 train 学到的排序又外推验证了一格',
+     cross:'max|u| ccx 0.060918 vs abaqus 0.061037 mm（<b>0.195 %</b>，四条 b7 里最大、仍远低于 1 %）；孔边逐节点 vM 中位差 <b>2.554 %</b>（容差 5 %）',
+     mesh:'7918 活跃节点 / <b>7732 个 S4</b> · minJ 0.6266 · 0 tri3 · 关 4 语义 6/6 · 孔 d 实测 50.000 mm @ [200,100] · 孔边 72 节点',
+     env:'孔边目标尺寸 π·d/n = 2.182 mm 远高于硬地板（λ 越大越好建）；d50 &lt; 0.3·W=60，λ=0.25 仍在族定义 λ&lt;1/3 内'}},
+
+ {id:'open_hole_panel_600x300_d60', d:60, lam:0.200, pos:'中心', faces:1, curves:5,
+  nodes:16151, elems:15889, minj:0.602,
+  u:0.088147, ua:0.088191, du:0.051,
+  ktg:3.1350, ktn:2.5080, how:3.1352, err:-0.006, edge:72,
+  vmC:31.35007, vmA:31.15887,
+  srcc:'outputs_b7', srca:'outputs_b7_abaqus',
+  specpath:'_probe_b7/_batch7_specs/open_hole_panel_600x300_d60.spec.json',
+  tag:'放量 · 双维角点（λ 0.2 与 600x300 同时 ≠ 锚点 λ 0.1 / 400x200）⇒ test（D28 新谓词管的第一条数据）',
+  v:{kt:'ccx Kt_gross <b>3.1350</b> vs Howland(λ=0.2) <b>3.1352</b> → <b>−0.006 %</b>——双维点对解析标尺的独立抽查照样命中：尺寸换了、λ 也换了，Howland 的「只看 λ」性质意味着它仍然适用，实测不辜负',
+     conv:'同族网格策略；孔边 5° 弧长 2.618 mm，600 板远场网格更松（全局 size 不变、面积更大）',
+     eq:'600×300 条总力 6000 N：applied 5999.994 / reaction −6000.0018 / 全模型 −0.0078 N',
+     trend:'<b>双维点不进任何单变量趋势</b>——它与 d30（同板不同 λ）、d40（同 λ 不同板）共同构成 2×2 里的三个角，锚点 400x200_d20 是第四角；<b>这正是「两轴都用 !=」（D25 读法）要管的角点</b>。声明前它会先撞 λ val 谓词落 val（「首个命中」的宽松读法，D16/D25 同款缺陷类）——入库前谓词已补上',
+     cross:'max|u| ccx 0.088147 vs abaqus 0.088191 mm（<b>0.051 %</b>，四条里最紧）；孔边逐节点 vM 中位差 <b>2.397 %</b>（容差 5 %）',
+     mesh:'16151 活跃节点 / <b>15889 个 S4</b> · minJ 0.6020 · 0 tri3 · 关 4 语义 6/6 · 孔 d 实测 60.000 mm @ [300,150] · 孔边 72 节点',
+     env:'d60 = 0.2·W，离 λ&lt;1/3 族定义与硬地板都很远；板尺寸不进包络公式，可建性只由 d 决定'}},
+
+ {id:'open_hole_panel_400x200_d40_offcentre', d:40, lam:0.200, pos:'偏心 (120,60)', faces:1, curves:5,
+  nodes:8082, elems:7896, minj:0.6626,
+  u:0.064794, ua:0.064877, du:0.128,
+  ktg:3.3773, ktn:2.7018, how:null, err:null, edge:72,
+  vmC:33.77269, vmA:33.72340,
+  srcc:'outputs_b7', srca:'outputs_b7_abaqus',
+  specpath:'_probe_b7/_batch7_specs/open_hole_panel_400x200_d40_offcentre.spec.json',
+  tag:'放量 · 新形式：偏心孔 + 更大孔（d40，λ 0.2）⇒ test（D28 沿用 D23 偏心先例）',
+  v:{kt:'<b>不判 Howland</b>：Howland 只解中心孔——D23 的纪律原样沿用。实测 ccx Kt_gross <b>3.3773</b>（Kt_net 2.7018），比 batch4 的 d20 偏心（3.0693）高 <b>10.0 %</b>：孔更大（λ 0.2 vs 0.1）净宽被压得更狠（净宽 160 vs 180 mm），两条偏心数据互为印证——偏心 + 大孔都往「应力集中更狠」的方向推',
+     conv:'同族网格策略；偏心把孔推进更密的远场梯度，<b>minJ 0.6626 是全树 40 条里最好的</b>（上一任最好 0.6562 = batch4 d20 偏心——同族同位置，网格策略完全一致）',
+     eq:'同一条载荷路径（4000 N）：applied 4000.0014 / reaction −4000.0010 / 全模型 +0.0004 N',
+     trend:'<b>不在任何趋势序列里</b>——趋势只用中心孔（与 batch4 偏心件同一条纪律：把几何效应误读成 λ 效应才是错）',
+     cross:'max|u| ccx 0.064794 vs abaqus 0.064877 mm（<b>0.128 %</b>）；孔边逐节点 vM 中位差 <b>1.697 %</b>（四条 b7 里最小，容差 5 %）',
+     mesh:'8082 活跃节点 / <b>7896 个 S4</b> · minJ 0.6626 · 0 tri3 · 关 4 语义 6/6 · 孔 d 实测 40.000 mm @ [120.000, 60.000] · 孔边 72 节点',
+     env:'d40 与 batch4 中心 d40 相同 ⇒ 可建性完全相同（包络只看 d，不看位置）；孔心 (120,60) 距左边缘 100 mm、距下边缘 80 mm，孔缘不出板（check_forms 非法孔位闸覆盖）'}},
+
+ {id:'open_hole_panel_400x200_d20_cfrp090s', d:20, lam:0.100, pos:'中心 · 复材 [0/90]s', faces:1, curves:5,
+  nodes:9861, elems:9675, minj:0.6084,
+  u:0.0573452, ua:0.0574300, du:0.148,
+  ktg:4.9019, ktn:4.4117, how:null, err:null, edge:72,
+  vmC:49.01943, vmA:50.2941,
+  srcc:'outputs_t7', srca:'outputs_t7_abaqus',
+  specpath:'_probe_t7/open_hole_panel_400x200_d20_cfrp090s.spec.json',
+  tag:'T7 打样 · 材料维：复材 [0/90]s（CLT 等效单层）⇒ sweep/train（D29，T6 web1 先例：形式首实例模型必须见得着）',
+  v:{kt:'<b>没有解析 Kt 对照——Howland / Kirsch 是各向同性专用</b>，复材的对照换成 <b>CLT 等效模量闸</b>（右侧 cross 列）。实测正交异性 Kt_gross <b>4.9019</b>（孔边 vM 峰 49.0194 ÷ σ_gross 10 MPa）：各向同性同 λ 是 3.04，正交异性 E2 只有 E1 的 1/14、横向软化把孔边集中推高 <b>61 %</b>——方向与量级符合「横向刚度主导孔边响应」的物理预期',
+     conv:'铺层 [0/90]s（4 × 0.5 mm，t=2.0 与铝 coupon 同厚）→ CLT 闭式：EX=EY=(Q11+Q22)/2 − Q12²/((Q11+Q22)/2) = <b>75364.486</b> MPa、νxy=A12/A11 = <b>0.04</b>、GXY=Q66 = <b>5000</b> MPa。deck 材料卡 <code>*ELASTIC, TYPE=ENGINEERING CONSTANTS</code> 9 常数与闭式<b>逐位一致</b>（check_forms :: T7.deck-card 钉死）',
+     eq:'gate3 口径 = <b>加载端平均恒等式</b>（高斯定理：mean εx = [mean u(loaded) − mean u(fixed)]/L——孔扰动只改端面分布不改均值，这是站位线/远场拟合法两轮实测失败后选中的不变量口径）',
+     trend:'<b>不在 λ 趋势序列里</b>——趋势线是各向同性的；复材维的「序列」是铺层族（[±45]s / [0/±45/90]s），打样只落第一点',
+     cross:'<b>E_eff 双码：ccx 73804.31（−2.070 %）vs abaqus 73802.03（−2.073 %）</b>——两码差 <b>0.003 %</b>，同构模型独立求解互相印证：−2.07 % 是 4 mm 非结构 S4 对正交异性的系统离散（无孔收敛链：20 mm 网格 −1.73 % → 5 mm −0.19 % 证明卡语义正确；铝同网格只 −0.54 %），<b>TOL_EFF=3 % 按实测链钉</b>（verify_laminate.py 常量注释全链留档）。max|u| 0.057345 vs 0.057430 mm（0.148 %，容差 1 %）',
+     mesh:'9861 活跃节点 / <b>9675 个 S4</b> · minJ 0.6084 · 0 tri3 · 关 4 语义 6/6 —— 网格与铝 d20 基准<b>逐字节同构</b>（打样刻意为之）：正是这让 D25 指纹（网格+壳厚）撞车，D29 遂把 deck 材料律加进指纹第三成分',
+     env:'老王三项拍板（2026-10-11）：① 架构 B 等效单层（S4 不动；ccx COMPOSITE 卡只支持 S6/S8R，真层合要动全链网格——不干）② 族归属 = 开孔板的<b>材料维</b>（复用 open_hole builder + 关 4 语义）③ 首批铺层 [0/90]s。layup 走 <code>params["layup"]</code> dict 键级，<b>不加 dataclass 字段</b> ⇒ 老 40 条 spec_sha256 零扰动；非对称/非平衡/两真相厚度全部 <code>raise</code>（check_forms :: T7 六项常驻闸）'}},
+ {id:'open_hole_panel_400x200_d20_cfrp45s', d:20, lam:0.100, pos:'中心 · 复材 [45/-45]s', faces:1, curves:5,
+  nodes:9861, elems:9675, minj:0.6084,
+  u:0.2258500, ua:0.2258570, du:0.0031,
+  ktg:4.2822, ktn:3.8540, how:null, err:null, edge:72,
+  vmC:42.82243, vmA:56.7347,
+  srcc:'_probe_t7b/outputs_cfrp45s', srca:'_probe_t7b/outputs_abaqus_cfrp45s',
+  specpath:'_probe_t7b/open_hole_panel_400x200_d20_cfrp45s.spec.json',
+  tag:'D30 材料维放量 · [45/-45]s 角铺层 ⇒ sweep/val（标量轴计数 1：M 铺层）',
+  v:{kt:'<b>没有解析 Kt 对照</b>——Howland / Kirsch 只对各向同性成立。名义 Kt_gross <b>4.2822</b>（孔边 vM 42.8224 ÷ σ_gross 10 MPa），比同 λ 各向同性 3.04 高 41 %；但 [±45]s 的面内模量只有铝的 1/4，"Kt 与材料无关"的前提根本不成立 ⇒ 该值只作记录、不作判据',
+     conv:'铺层 [45/-45]s（4 × 0.5 mm）→ CLT：EX=EY=<b>17740.232</b> MPa、νxy=<b>0.7740</b>、GXY=<b>36232.926</b> MPa。手推闭式 A11/t=(Q11+Q22)/4+Q12/2+Q66 与代码<b>逐位一致</b>（check_forms :: T7.clt-angle-ply）；A16=A26 = <b>0.00e+00</b> 由 ±45 配对保证——而 `a_matrix` 现在是<b>真算</b>这两项（原为硬写 0），簿记与物理互相验',
+     eq:'无闭式解析解（各向异性孔边问题没有）。验收靠<b>恒定名义应力口径 + 双码交叉</b>：载荷 F = σ·w·t 构造性精确，两码同一网格同一材料卡',
+     trend:'<b>铺层族第 2 点</b>：[0/90]s 0.0573 → [±45]s <b>0.2258</b> mm（3.94 ×），与等效模量比 4.25 × 同量级——差异来自孔边剪切重分布（GXY 36233 vs 5000，剪切刚度高 7 倍）',
+     cross:'双码：max|u| 0.225850 vs 0.225857（<b>0.0033 %</b>，容差 1 %）；孔边 72 节点 vM <b>中位差 1.63 %</b>（闸 5 %）；但<b>峰值差 24.5 %</b>（ccx 42.81 / abaqus 56.73，<b>同一个 node 4</b>）——D8「峰值禁裸比」的教科书案例：<b>[±45]s 孔边梯度最陡，两码从积分点外推到节点的做法不同，最热那一点就分家，而场本身是一致的</b>',
+     mesh:'9861 活跃节点 / <b>9675 个 S4</b> · minJ 0.6084 · 0 tri3 · 关 4 语义 6/6 —— 与 [0/90]s 锚点<b>逐字节同构网格</b>，只有 `*ELASTIC` 块不同，正是 D25 指纹第三成分存在的理由',
+     env:'D30 拍板（2026-10-24）：开口板四条标量轴 <b>M</b> 铺层 / <b>T</b> 壁厚 / <b>L</b> λ / <b>S</b> 尺寸，0 轴 train、1 轴 val、≥2 轴 test。本点 M 单轴 ⇒ <b>val</b>。厚度维 T 经实测<b>判定退化、未入库</b>（载荷∝t 与膜刚度∝t 精确抵消，t=2.0 与 1.0 的 max|u| 逐位相同 0.05734516），改立常设自检 check_forms :: T7.thickness-invariance'}},
+ {id:'open_hole_panel_400x200_d20_cfrpqi', d:20, lam:0.100, pos:'中心 · 复材 [0/±45/90]s', faces:1, curves:5,
+  nodes:9861, elems:9675, minj:0.6084,
+  u:0.0777640, ua:0.0778920, du:0.1647,
+  ktg:3.0310, ktn:2.7279, how:null, err:null, edge:72,
+  vmC:30.31047, vmA:30.0369,
+  srcc:'_probe_t7b/outputs_cfrpqi', srca:'_probe_t7b/outputs_abaqus_cfrpqi',
+  specpath:'_probe_t7b/open_hole_panel_400x200_d20_cfrpqi.spec.json',
+  tag:'D30 材料维放量 · 准各向同性 [0/±45/90]s ⇒ sweep/val（标量轴计数 1：M 铺层）',
+  v:{kt:'<b>没有解析对照</b>（Howland 各向同性专用）。名义 Kt_gross <b>3.0310</b>（孔边 vM 30.3105 ÷ 10 MPa）——<b>三种铺层里最低</b>，且只比各向同性 3.04 低 0.3 %：准各向同性铺层的面内响应本就接近各向同性，孔边最不集中，<b>方向与量级都符合物理预期</b>',
+     conv:'铺层 [0/45/-45/90]s（8 × 0.25 mm）→ CLT：EX=EY=<b>54067.852</b> MPa、νxy=<b>0.3113</b>、GXY=<b>20616.463</b> MPa。手推闭式 A11/t=(1.5(Q11+Q22)+Q12+2Q66)/4 逐位一致；<b>独立不变量</b>：准各向同性必须满足各向同性恒等式 G=E/(2(1+ν)) = 54067.852/(2×1.3113) = <b>20616.463</b>，与 GXY <b>逐位相同</b>——CLT 路线从未被告知这条关系（check_forms :: T7.clt-quasi-isotropic 钉死）',
+     eq:'无解析解。这条的验收价值在<b>「准各向同性 ≈ 各向同性」这个物理极限</b>：ν 落到 0.3113（接近铝的 0.33）、Kt 落到 3.03（接近 Howland 3.02），两者都是独立收敛点',
+     trend:'<b>铺层族第 3 点</b>，落在 [0/90]s（0.0573）与 [±45]s（0.2258）之间：<b>0.0778 mm</b>——三种铺层给出三个清晰分离的读数，材料维确实可观测（对比厚度维的零信息量）',
+     cross:'双码：max|u| 0.077764 vs 0.077892（<b>0.1647 %</b>，容差 1 %）；孔边 72 节点 vM <b>中位差 2.33 %</b>（闸 5 %）；<b>峰值差仅 1.8 %</b>——与 [±45]s 的 24.5 % 形成鲜明对照，恰好证明那个 24.5 % 是<b>梯度陡度</b>问题而不是模型错误：场越平滑，两码峰值越贴合',
+     mesh:'9861 活跃节点 / <b>9675 个 S4</b> · minJ 0.6084 · 0 tri3 · 关 4 语义 6/6 —— 与锚点同构网格，只有材料律块不同',
+     env:'D30 拍板（2026-10-24）：M 单轴 ⇒ <b>val</b>。选准各向同性作第 3 点是有意的——它给出一个<b>可独立核验的物理极限</b>（ν≈1/3、Kt≈Howland），比再加一个任意角铺层更有信息量'}},
+ {id:'open_hole_panel_400x200_d20_cfrp45s_d40', d:40, lam:0.200, pos:'中心 · 复材 [45/-45]s', faces:1, curves:5,
+  nodes:8682, elems:8496, minj:0.6213,
+  u:0.2327020, ua:0.2327340, du:0.0136,
+  ktg:4.1425, ktn:3.3140, how:null, err:null, edge:72,
+  vmC:41.42456, vmA:54.9737,
+  srcc:'_probe_t7b/outputs_cfrp45s_d40', srca:'_probe_t7b/outputs_abaqus_cfrp45s_d40',
+  specpath:'_probe_t7b/open_hole_panel_400x200_d20_cfrp45s_d40.spec.json',
+  tag:'D30 双维角点 · [45/-45]s + λ 0.2 ⇒ sweep/test（标量轴计数 2：M + L）',
+  v:{kt:'名义 Kt_gross <b>4.1425</b>（孔边 vM 41.4246 ÷ 10 MPa），名义 Kt_net <b>3.3140</b>（÷ σ_net 12.5 MPa）——<b>无解析对照</b>，复材 Kt 只作记录',
+     conv:'同 [45/-45]s（EX=EY=17740.232、ν=0.7740、GXY=36232.926），只把孔从 d20 放到 d40（λ 0.1 → 0.2）；网格随孔变化（8682 节点 / 8496 S4），minJ 0.6213 反而更好',
+     eq:'无解析解。这条的作用是<b>测「材料外推 + 几何外推」同时发生</b>——模型在 train 里只见过铝的 λ 变化和 [0/90]s 一种铺层，这条要它同时跨两轴',
+     trend:'相对 [±45]s λ0.1（0.2258 mm）→ λ0.2 <b>0.2327 mm</b>（+3.0 %）：孔变大净截面减小，位移上升，方向正确；vM 从 42.82 降到 41.42（孔越大应力集中区越缓）',
+     cross:'双码：max|u| 0.232702 vs 0.232734（<b>0.0136 %</b>，容差 1 %）；孔边 72 节点 vM <b>中位差 2.42 %</b>（闸 5 %）；<b>峰值差 24.7 %</b>（ccx 41.41 / abaqus 54.97，同一个 node 2）——与 [±45]s 同源，同样是梯度问题',
+     mesh:'8682 活跃节点 / <b>8496 个 S4</b> · minJ 0.6213 · 0 tri3 · 关 4 语义 6/6',
+     env:'D30 拍板（2026-10-24）：M + L 两轴 ⇒ <b>test</b>。谓词<b>先于</b>铝的双维角点规则声明，理由与 D29 一致——复材角点应由<b>点名材料维</b>的谓词描述，那正是模型数据最少的一维'}}
+];
+
+/* ---- M4/M5：划分（单元 = 几何等价类，规则 = 声明式留出区域）。
+   数据源：FEM-Bench-Aero/manifest.json + FEM-Bench-Aero/eval_report.json（29 项独立复算 + 6 道集级闸全绿）。
+   `cls` 是等价类 id 前 8 位；`clsN>1` 表示该类有多个成员，必须同集。
+   `why` 是规则产出（manifest 的 split_reason），由 _dash_check.js 逐条回读比对。
+   改完必须跑 node _dash_check.js 复核（条数硬编码）。 ---- */
+const SPLITS = {
+  target:{train:0.6, val:0.2, test:0.2},
+  n_cases:53, n_classes:52, n_leaky:0, n_dup:0, xval:53,
+  rows:[
+   {id:"naca4412_wingbox", fam:"wingbox", role:"baseline", cls:"4afd1ea3fd9f", clsN:2,
+    nodes:5074, u:2.365439, vm:10.60479, minj:0.6249, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_n_ribs3_chord1000", fam:"wingbox", role:"sweep", cls:"4cf4571c551d", clsN:1,
+    nodes:4668, u:2.372344, vm:10.43927, minj:0.5965, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_n_ribs3_chord800", fam:"wingbox", role:"sweep", cls:"1927d89dcb96", clsN:1,
+    nodes:3679, u:4.540154, vm:15.95839, minj:0.595, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_n_ribs5_chord800", fam:"wingbox", role:"sweep", cls:"791f1043b549", clsN:1,
+    nodes:4057, u:4.526728, vm:15.76183, minj:0.595, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_recombination_algorithm3", fam:"wingbox", role:"ablation", cls:"4afd1ea3fd9f", clsN:2,
+    nodes:5281, u:2.364867, vm:10.60967, minj:0.5725, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_size_skin2", fam:"wingbox", role:"sweep", cls:"621898f41a1d", clsN:1,
+    nodes:5074, u:3.542304, vm:15.89449, minj:0.6249, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_size_skin4", fam:"wingbox", role:"sweep", cls:"226322eab812", clsN:1,
+    nodes:5074, u:1.775673, vm:7.98464, minj:0.6249, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_size_span1600", fam:"wingbox", role:"sweep", cls:"950289bb0db0", clsN:1,
+    nodes:4273, u:1.250615, vm:8.66862, minj:0.6204, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_size_span2400", fam:"wingbox", role:"sweep", cls:"a29aa8f4ac6e", clsN:1,
+    nodes:5836, u:4.019721, vm:12.50656, minj:0.5966, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_str3", fam:"wingbox", role:"feature", cls:"7af923795681", clsN:1,
+    nodes:7387, u:2.219397, vm:10.1406, minj:0.5228, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_str5", fam:"wingbox", role:"feature", cls:"870130300769", clsN:1,
+    nodes:8205, u:2.135447, vm:9.86918, minj:0.5351, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_sweep10", fam:"wingbox", role:"sweep", cls:"d8e081a5f259", clsN:1,
+    nodes:5484, u:2.587602, vm:9.82971, minj:0.6266, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_sweep20", fam:"wingbox", role:"sweep", cls:"47f64aa48908", clsN:1,
+    nodes:5222, u:3.169341, vm:10.47593, minj:0.4902, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_sweep30", fam:"wingbox", role:"sweep", cls:"19ca7eaff9ca", clsN:1,
+    nodes:5347, u:4.384339, vm:13.42513, minj:0.6353, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_taper060", fam:"wingbox", role:"sweep", cls:"86cf8d83cb48", clsN:1,
+    nodes:7950, u:3.384152, vm:11.40679, minj:0.5593, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_taper080", fam:"wingbox", role:"sweep", cls:"411d36dac99c", clsN:1,
+    nodes:5125, u:2.752089, vm:10.76496, minj:0.5484, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_taper090", fam:"wingbox", role:"sweep", cls:"0218d6b27388", clsN:1,
+    nodes:4871, u:2.536356, vm:10.58019, minj:0.5492, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_web1", fam:"wingbox", role:"sweep", cls:"4aae9b75897e", clsN:1,
+    nodes:5369, u:2.964576, vm:12.6971, minj:0.5532, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"naca4412_wingbox_n_ribs7_chord1000", fam:"wingbox", role:"sweep", cls:"db9dab06eff6", clsN:1,
+    nodes:5593, u:2.358054, vm:10.74317, minj:0.6083, split:"val",
+    why:"单维外推（肋 7 > 5，弦保持默认）"},
+   {id:"naca4412_wingbox_n_ribs9_chord1000", fam:"wingbox", role:"sweep", cls:"6085570a4247", clsN:1,
+    nodes:5706, u:2.350334, vm:10.69337, minj:0.6337, split:"val",
+    why:"单维外推（肋 9 > 5，弦保持默认）"},
+   {id:"naca4412_wingbox_size_skin1p5", fam:"wingbox", role:"sweep", cls:"4227a5994f3e", clsN:1,
+    nodes:5074, u:4.71648, vm:21.22634, minj:0.6249, split:"val",
+    why:"尺寸单维外推（壁厚 1.5 出 train 区间 [2, 4]）"},
+   {id:"naca4412_wingbox_size_span3000", fam:"wingbox", role:"sweep", cls:"aba008bb7986", clsN:1,
+    nodes:7116, u:7.747477, vm:15.34115, minj:0.5047, split:"val",
+    why:"尺寸单维外推（展长 3000 出 train 区间 [1600, 2400]）"},
+   {id:"naca4412_wingbox_sweep40", fam:"wingbox", role:"sweep", cls:"001950844b2c", clsN:1,
+    nodes:5697, u:7.014338, vm:18.65176, minj:0.4861, split:"val",
+    why:"平面形状单维外推（后掠 40° > train 已学 30°，锥度中性）"},
+   {id:"naca4412_wingbox_taper040", fam:"wingbox", role:"sweep", cls:"d3d62cf41985", clsN:1,
+    nodes:14937, u:4.488858, vm:12.22537, minj:0.5064, split:"val",
+    why:"平面形状单维外推（锥度 0.4 < train 已学 0.6，后掠中性）"},
+   {id:"naca4412_wingbox_web2", fam:"wingbox", role:"sweep", cls:"60981a5c499f", clsN:1,
+    nodes:5653, u:2.855791, vm:11.57225, minj:0.5784, split:"val",
+    why:"单维外推（腹板 2 > train 已学 1，位置仍等分）"},
+   {id:"naca4412_wingbox_n_ribs7_chord800", fam:"wingbox", role:"sweep", cls:"006310d062fa", clsN:1,
+    nodes:4352, u:4.512321, vm:15.85067, minj:0.5099, split:"test",
+    why:"双维外推（肋 7 > 5 且 弦 800 ≠ 1000）"},
+   {id:"naca4412_wingbox_size_span2400_skin2", fam:"wingbox", role:"sweep", cls:"08adca20a4a7", clsN:1,
+    nodes:5836, u:6.023137, vm:18.73915, minj:0.5966, split:"test",
+    why:"尺寸双轴组合外推（展长 2400 ≠ 2000 且 壁厚 2 ≠ 3；train 各站只动单轴，交互项未见过）"},
+   {id:"naca4412_wingbox_size_span3000_skin1p5", fam:"wingbox", role:"sweep", cls:"58fefd5842da", clsN:1,
+    nodes:7116, u:15.473332, vm:30.71246, minj:0.5047, split:"test",
+    why:"尺寸双维外推（展长 3000 出 train 区间 [1600, 2400] 且 壁厚 1.5 出 train 区间 [2, 4]）"},
+   {id:"naca4412_wingbox_str3_T", fam:"wingbox", role:"feature", cls:"37f4725e4b48", clsN:1,
+    nodes:29447, u:2.115067, vm:11.18467, minj:0.5332, split:"test",
+    why:"新截面形式（train 里没有锚定 'T' 形式）"},
+   {id:"naca4412_wingbox_sweep20_taper060", fam:"wingbox", role:"sweep", cls:"838838dd03a6", clsN:1,
+    nodes:7771, u:3.96104, vm:9.41478, minj:0.5523, split:"test",
+    why:"新平面形状组合（后掠 20° × 锥度 0.6 兼具；train 中两个自由度各只有单变量）"},
+   {id:"naca4412_wingbox_sweep40_taper040", fam:"wingbox", role:"sweep", cls:"808b798ff918", clsN:1,
+    nodes:15681, u:9.867346, vm:15.9405, minj:0.5448, split:"test",
+    why:"新平面形状组合（后掠 40° × 锥度 0.4 兼具；train 中两个自由度各只有单变量）"},
+   {id:"naca4412_wingbox_web1_offcentre", fam:"wingbox", role:"feature", cls:"02769a56df7c", clsN:1,
+    nodes:5574, u:3.060804, vm:14.07024, minj:0.5467, split:"test",
+    why:"新形式：腹板偏离等分（给定 [0.35] ≠ 等分 [0.475]；闭室不再等面积，Bredt-Batho 不再描述该截面）"},
+   {id:"stiffened_panel_600x600", fam:"stiffened_panel", role:"degenerate", cls:"7ba2e12216c0", clsN:1,
+    nodes:46432, u:0.961753, vm:2.9682, minj:0.6167, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"stiffened_panel_800x600", fam:"stiffened_panel", role:"degenerate", cls:"652d537e3d91", clsN:1,
+    nodes:61834, u:1.56189, vm:4.30259, minj:0.6183, split:"val",
+    why:"平板尺寸单维外推（800x600 ≠ train 已学 600x600）"},
+   {id:"stiffened_panel_800x600_str3", fam:"stiffened_panel", role:"feature", cls:"b8239f1030bc", clsN:1,
+    nodes:67797, u:0.028976, vm:2.40466, minj:0.5978, split:"val",
+    why:"平板尺寸单维外推（800x600 ≠ train 已学 600x600）"},
+   {id:"stiffened_panel_600x600_str3", fam:"stiffened_panel", role:"feature", cls:"bc4990b00bae", clsN:1,
+    nodes:51401, u:0.015262, vm:1.77436, minj:0.5367, split:"test",
+    why:"族内新形式（光板 ⇒ 3 根长桁）"},
+   {id:"fuselage_barrel_d2000_l2000_str8_frm3", fam:"fuselage_barrel", role:"baseline", cls:"589369d32c00", clsN:1,
+    nodes:158524, u:2.631031, vm:249.3983, minj:0.5159, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"fuselage_barrel_d1800_l2000_str8_frm3", fam:"fuselage_barrel", role:"sweep", cls:"f91e55e05c66", clsN:1,
+    nodes:143402, u:2.801588, vm:286.79595, minj:0.5159, split:"val",
+    why:"尺寸单维外推（直径 1800 ≠ 2000）"},
+   {id:"fuselage_barrel_d2000_l1600_str8_frm3", fam:"fuselage_barrel", role:"sweep", cls:"a912e177e794", clsN:1,
+    nodes:129632, u:2.55112, vm:249.35056, minj:0.5159, split:"val",
+    why:"尺寸单维外推（长度 1600 ≠ 2000）"},
+   {id:"fuselage_barrel_d2000_l2000_t2_str8_frm3", fam:"fuselage_barrel", role:"sweep", cls:"9c77e2678013", clsN:1,
+    nodes:158524, u:4.678703, vm:372.5256, minj:0.5159, split:"val",
+    why:"尺寸单维外推（壁厚 2 ≠ 3）"},
+   {id:"fuselage_barrel_d1600_l1600_str8_frm3", fam:"fuselage_barrel", role:"sweep", cls:"f8b43cc6abbb", clsN:1,
+    nodes:103715, u:3.006972, vm:343.62549, minj:0.4636, split:"test",
+    why:"尺寸双维外推（直径 1600 ≠ 2000 且 长度 1600 ≠ 2000）"},
+   {id:"fuselage_barrel_d2000_l2000_str12_frm4", fam:"fuselage_barrel", role:"sweep", cls:"a9604f56b898", clsN:1,
+    nodes:169606, u:2.569232, vm:258.47943, minj:0.5211, split:"test",
+    why:"双维外推（长桁 12 与框 4 同时超出 train 包络）"},
+   {id:"open_hole_panel_400x200_d20", fam:"open_hole_panel", role:"baseline", cls:"8d80c9bb926f", clsN:1,
+    nodes:9861, u:0.057497, vm:30.37999, minj:0.6084, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"open_hole_panel_400x200_d20_cfrp090s", fam:"open_hole_panel", role:"sweep", cls:"ca16d7911ae7", clsN:1,
+    nodes:9861, u:0.057345, vm:49.01943, minj:0.6084, split:"train",
+    why:"落在训练包络内（未命中任何留出区域）"},
+   {id:"open_hole_panel_400x200_d20_cfrp45s", fam:"open_hole_panel", role:"sweep", cls:"e8219d418f30", clsN:1,
+    nodes:9861, u:0.22585, vm:42.82243, minj:0.6084, split:"val",
+    why:"复材单维外推（铺层 [45/-45]s≠[0/90]s；D30 标量轴计数 =1）"},
+   {id:"open_hole_panel_400x200_d20_cfrpqi", fam:"open_hole_panel", role:"sweep", cls:"1a539873e505", clsN:1,
+    nodes:9861, u:0.077764, vm:30.31047, minj:0.6084, split:"val",
+    why:"复材单维外推（铺层 [0/45/-45/90]s≠[0/90]s；D30 标量轴计数 =1）"},
+   {id:"open_hole_panel_400x200_d40", fam:"open_hole_panel", role:"sweep", cls:"68f73f8a4e9f", clsN:1,
+    nodes:8682, u:0.059402, vm:31.32274, minj:0.6213, split:"val",
+    why:"单维外推（孔径比 λ 0.200 > train 已学 0.1，孔仍居中）"},
+   {id:"open_hole_panel_400x200_d50", fam:"open_hole_panel", role:"sweep", cls:"32e9f572f8f8", clsN:1,
+    nodes:7918, u:0.060918, vm:32.31347, minj:0.6266, split:"val",
+    why:"单维外推（孔径比 λ 0.250 > train 已学 0.1，孔仍居中）"},
+   {id:"open_hole_panel_600x300_d30", fam:"open_hole_panel", role:"sweep", cls:"2db453f8909f", clsN:1,
+    nodes:20736, u:0.085283, vm:30.19005, minj:0.5808, split:"val",
+    why:"尺寸单维外推（600x300 ≠ train 已学 400x200）"},
+   {id:"open_hole_panel_400x200_d20_cfrp45s_d40", fam:"open_hole_panel", role:"sweep", cls:"a22486acc1da", clsN:1,
+    nodes:8682, u:0.232702, vm:41.42456, minj:0.6213, split:"test",
+    why:"复材多维外推（铺层 [45/-45]s≠[0/90]s + λ=0.2≠0.1；D30 标量轴计数 ≥2）"},
+   {id:"open_hole_panel_400x200_d20_offcentre", fam:"open_hole_panel", role:"feature", cls:"a4a89bc00841", clsN:1,
+    nodes:9349, u:0.05863, vm:30.69322, minj:0.6562, split:"test",
+    why:"新形式：偏心孔（(120, 60) 偏离形心 (200, 100)；train 只有中心孔，偏心后 Howland 无解析对照）"},
+   {id:"open_hole_panel_400x200_d40_offcentre", fam:"open_hole_panel", role:"feature", cls:"104c69f98102", clsN:1,
+    nodes:8082, u:0.064794, vm:33.77269, minj:0.6626, split:"test",
+    why:"新形式：偏心孔（(120, 60) 偏离形心 (200, 100)；train 只有中心孔，偏心后 Howland 无解析对照）"},
+   {id:"open_hole_panel_600x300_d60", fam:"open_hole_panel", role:"sweep", cls:"634a9fb4d54d", clsN:1,
+    nodes:16151, u:0.088147, vm:31.35007, minj:0.602, split:"test",
+    why:"双维外推（λ 0.200 与 600x300 同时 ≠ 锚点 λ 0.1 / 400x200）"}
+  ]
+};
+
+const MILESTONES = [
+ {id:'M1', name:'四件套 + 语义判定', state:'done', date:'2026-10-02',
+  detail:'补 .msh、落 truth.json、新增关 4'},
+ {id:'M2', name:'结构族抽象 + 打标分类器', state:'done', date:'2026-10-02',
+  detail:'换分类机制 + 去重'},
+ {id:'M3', name:'第一批结构形式', state:'done', date:'2026-10-03',
+  detail:'T5 截面族 ✅ ／ T2 加筋壁板 ✅'},
+ {id:'M4', name:'判定脚本 + 索引 + 划分', state:'done', date:'2026-10-04',
+  detail:'eval / manifest / split · 11 条 / 10 类'},
+ {id:'M5', name:'放量与第二批', state:'done', date:'2026-10-08',
+  detail:'① 划分规则化 ✅ ／ ② T1 后掠锥形翼盒 4 条 ✅ ／ ③ 放量 8 条 ✅ ／ ④ T3 机身柱壳 2 条 + 平板含长桁 val ✅ ／ ⑤ T4 开孔板 3 条 ✅ ／ ⑥ T6 多闭室翼盒 3 条 ✅ ／ ⑦ T3 尺寸·壁厚 batch6 4 条 ✅（含 d1600→d1800 换点判决）／ ⑧ <b>T4 放量 batch7 4 条 ✅（尺寸不变性探针 + 双维角点谓词，40 条/树）</b>'},
+ {id:'M6', name:'材料维（T7 复材层合）', state:'done', date:'放量收口 · 2026-10-24',
+  detail:'① <b>CLT 等效单层落地 ✅</b>（老王拍板架构 B：S4 不动，<code>laminate.py</code> 折减→变换→A 矩阵→等效工程常数，自测 24 项）／ ② <b>D29 划分 + 指纹扩展 ✅</b>（复材首实例 sweep/train；去重指纹加 <code>*ELASTIC</code> 块——实测铝 d20 vs 复材 d20 同网格同厚度撞车，修后 0 重复）／ ③ <b>打样入库 41 条 ✅</b>（gate3 双码 E_eff −2.070/−2.073%，两码差 0.003%）／ ④ <b>D30 放量 3 条 ✅</b>（<code>[45/-45]s</code> val、准各向同性 <code>[0/45/-45/90]s</code> val、<code>[45/-45]s</code>+λ0.2 test ⇒ <b>44 条/树、17-15-12、43 类</b>；划分升级为标量轴计数并实测复现 D12 8/8）／ ⑤ <b>厚度维判定退化、不入库 ✅</b>（t=2.0 与 1.0 的 max|u| 逐位相同 ⇒ 零信息量，改立常驻自检 <code>T7.thickness-invariance</code>）'},
+ {id:'M7', name:'可学习性验证 + 尺寸维补点（D31）', state:'done', date:'2026-10-24',
+  detail:'① <b>数据集画像 ✅</b>：按 D12/D30「只有锚点算 train」⇒ wingbox train 13 / open_hole 2 / barrel 1 / stiffened 1，<b>当前是外推评测集、不是训练集</b>，只有翼盒够做代理建模 ② <b>六档对照 ✅</b>（wingbox max_disp MAPE）：常数 <b>34.95 %</b> ／ 纯梁标度律 <b>31.60 %</b> ／ 梁+形状 3 参 <b>14.84 %</b> ／ 岭回归 10 特征 <b>10.72 %</b>（内插 LOO 3.97 %）／ GP <b>13.95 %</b> ／ 物理+岭残差 10.63 % ⇒ <b>n=13 时线性胜非线性</b> ③ <b>逐轴外推风险分级 ✅</b>：ribs −1.9/−2.8 %（安全）｜is_T +4.8 %｜n_web +14.5 %｜taper −11.1 %｜<b>sweep 20→40 −41.5 %（危险，超线性）</b> ④ <b>学习曲线 ✅</b>：加两条同质 chord800 test 14.1→14.2 %（<b>零收益</b>），加唯一带腹板的 <code>web1</code> 14.2→<b>10.7 %</b> ⇒ <b>补覆盖点 ≫ 补同质样本</b> ⑤ <b>D31 尺寸维 8 条 ✅</b>：span/skin 从精确锚点扩为 train 区间 [1600,2400]/[2,4] ⇒ <b>52 条 / 51 类 / 21-17-14</b>，M3 test <b>8.32 %</b>（相对常数基线 18.7 %）'},
+ {id:'M8', name:'算法侧 baseline 正式化', state:'done', date:'2026-10-24',
+  detail:'<b>把 M7 探针升级为可引用的报告</b>（<code>feagpt_repro/baseline.py</code> → <code>BASELINE.md</code> + <code>baseline_d31.json</code>）：9 档 × 4 目标，超参<b>一次选定</b>、全部 log 空间拟合、模型选择在 <b>val</b> 上做 test 只报一次、每档 4000 次 bootstrap 95 % CI。<br>结论：<b>位移可学、应力不可学</b> —— <code>max_w</code> test <b>4.17 %</b>（相对 MAPE 最优常数基线 <b>11.6 %</b>），<code>max_disp</code> 7.96 %；两个 <code>vM</code> 目标都停在 9.5–10.7 %，且与 <b>1 参数</b>梁标度律的差 <b>&lt; 1.6 pp、CI 跨 0</b>。<b>GP 在 n=17 上全面输给岭回归</b>（11.91 vs 4.17），<b>M5≈M3</b>（差 0.36 pp）。<br><b>三条可写进文档的机制</b>：① <code>max_w/max_disp</code> 比在 0.0191–0.0571 浮动 ⇒ <code>max_disp</code> 不是纯弯曲量，<code>max_w</code> 才是 ② 误差几乎全部落在 <code>planform_out</code>（sweep 40°，25–33 %），其余机制 0–12 % ③ <code>vM</code> 峰值位置 31 条里 25 个不同节点 ⇒ 目标是离散选择而非光滑泛函。<br><b>对项目的判断</b>：翼盒位移够做趋势筛查，不够强度校核；<b>应力不要再补样本</b>；<code>sweep</code> 补 30° 中间档是当前性价比最高的一次补点；另外三族（train 1–2 条）仍不可建模，价值在求解器验证。'},
+ {id:'M9', name:'标量代理目标口径定案（D32）', state:'done', date:'2026-10-24',
+  detail:'<b>先查坐标系，再定目标。</b>M8 里 <code>max_w</code> 4.17 % 更低，直觉是「换个更纯的目标」；实测本 deck <b>z 是展向</b>、载荷 <code>*CLOAD, DOF 2</code>=y ⇒ <code>max_w = max|DISP[2]|</code> 是展向位移，而 <code>max|v|/max_disp</code>=<b>0.99899–0.99973</b>（15 条，浮动 0.07 %）⇒ <code>max_disp</code> 本身就是弯曲挠度。<b>D32 拍板</b>：主 <code>max_disp</code>、副 <code>max_w</code>（<b>只报不判</b>）、应力峰值不设为可学目标。四条理由（绕开崩溃轴 · 量级仅 1.9–5.7 % · 跨族不可用 · 与双码闸门口径分家）+ 一条后来新增的铁证（D33 里 <code>max_w</code> 因一个 train 点就从 4.17 % 翻到 8.33 %）。<b>全档自我更正</b>：初版把 <code>max_w</code> 叫「法向挠度」并建议定为代理目标，四处文档已改（<code>BASELINE.md</code> / 两份 README / 本看板 / 记忆）'},
+ {id:'M10', name:'后掠轴补中间档（D33）', state:'done', date:'2026-10-24',
+  detail:'<b>把唯一的外推机制变成可内插。</b><code>WINGBOX_TRAIN_MAX_SWEEP</code> 20°→<b>30°</b>，新增 train 站 <code>sweep30</code>（仅 sweep 动，锥度中性、其余全锚定）。<b>先探针后落地</b>（52 条存量 0 换边 / D12 11/11 / 新点落 train）、<b>物理先测</b>（超线性：1.000/1.094/1.340/1.853/2.965；0–20° 割线外推 40° 差 −43.4 %；30° 偏旧趋势 −6.2 % ⇒ 确含新信息）。<b>结果混合，如实记</b>：<code>planform_out</code> 32.9 %→<b>25.7 %</b>、主目标 7.96 %→<b>7.74 %</b>、物理档 M2X 16.58 %→14.35 %；代价 <code>combo</code> 组 4.6→7.0 %、1 参数梁 24.84→26.07 %、副目标 <code>max_w</code> 4.17→8.33 %。<b>净收益 0.22 pp 落在 n=7 噪声里 ⇒ 方向对、剂量不足</b>；sweep 40° 的 25.7 % 仍是全表最大误差项，要再进一步只能补 35° 或改模型形式'}
+ ];
+
+const GATES = [
+ {n:'关 1 · 网格质量', v:'52 / 52', d:'<b>min Jacobian ≥ 0.30 与「零三角」两条缺一不可</b>（D10，2026-10-03 补上后半句）。<b>（2026-10-24 已按 52 条重测，全绿；下面的过程记录保留 41 条时代的原始数字。）</b>实测<b>最差 minJ 0.4636</b>（batch6 双维外推 <code>d1600_l1600</code>——直径收缩让周向 bay 变窄，仍高于闸 55 %）、此前最差 <b>0.4861</b>（放量 <code>sweep40</code>）、最好 <b>0.6626</b>（batch7 偏心孔 <code>open_hole_panel_400x200_d40_offcentre</code>——上一任最好 0.6562 是 batch4 同位置偏心件）；<b>41 条全部 0 个 S3</b>。三角曾经真的存在：两条 chord=800 盒段在<b>后梁腹板四角</b>各留一个（腹板高 58.4 mm ÷ 弦向 12 mm = 4.87 个单元，不是整数）。现由「建完再数、非零则升 blossom 全四边形」按模型自动清除。闸不只信内存里的构建报告，<b>还直接数发运 deck 的 <code>TYPE=S3</code></b>（verify_dataset 第 8 项 no_tri3）。<br><b>T1 带来的新触点</b>：锥形箱的后梁是<b>梯形</b>，锥度 0.6 时最窄处只剩 43.79 mm，默认 <code>size_span=25</code> 是它的 57 %，blossom 会挤出针状四边形（实测 minJ <b>0.0437</b>）。解法沿用 T5：builder 声明 <code>mesh_size_cap = 0.4 × 最窄腹板</code>，<b>只对非等直声明</b>（等直腹板是矩形，默认尺寸本就干净，声明会重网已发布案例）。12 组扫描：无 cap <b>6/12</b> 过，有 cap <b>12/12</b> 过。<b>放量把 cap 压到 11.68 mm</b>（<code>taper040</code> 强锥，最窄腹板 29.2 mm），仍然 0 三角。<br><b>T3 的新触点（D19，2026-10-05）</b>：<b>1–4 根长桁的柱壳管不住三角</b>（实测 3str/2frm <b>20 个</b>、4str/2frm 16、4str/3frm 22，<b>全部落在框外弧 r≈998</b>）。近因：长桁腹板在 <code>r = R − h_str</code> 处切断框扇区的径向边，留一条 <code>h_frm − h_str = 5 mm</code> 的半单元残条 × 90°/120° 扇区。五种修法（简单重组 / 只细分框经线 / 蒙皮与框一起细分 / 框专用尺寸场 / 逐面 2-D 算法）<b>全部实测否决</b>，于是<b>认下包络</b>：<code>n_stringers ∈ {0} ∪ [5, ∞)</code> 干净，<b>1–4 直接 <code>raise</code></b>。不是注释，是活闸——<code>check_forms :: T3.stringer-envelope</code> 逐个试 1..5，要求 1–4 全拒、5 收。柱壳两条实测 minJ 0.5159 / 0.5211，0 三角。<br><b>T4 的新触点（2026-10-06）</b>：挖孔把一圈曲边带进网格——圆孔是<b>曲率驱动</b>的尺寸场。builder 用 <code>Mesh.MeshSizeFromCurvature</code>（每 2π 目标 72 段），因为逐曲线 <code>setSize</code> <b>实测被静默忽略</b>；生成尺寸被夹在 <code>MeshSizeMin = max(size_chord/6, 0.5)</code> 与 <code>MeshSizeMax = size_span</code> 之间，<b>0.5 mm 是绝对硬地板</b>。孔小到孔边目标尺寸（π·d/n）低于地板时 builder <b>直接 <code>raise</code></b>，不静默粗化——族默认下 <code>d &gt; 15.279 mm</code> 才可建（<code>check_forms :: T4.edge-floor-envelope</code> 用 0.98·d_min 必拒、1.15·d_min 必建钉死它）。三条实测 0 三角、minJ 0.6084–0.6562。<br><b>T6 的新触点（2026-10-06）</b>：腹板是<b>贯穿</b>上下蒙皮的内壁，被肋平面切成 4 片/道（1 道腹板 ⇒ 4 个 <code>n_web_faces</code>，2 道 ⇒ 8），它在弦向很薄、展向很长，是又一个「窄条带」——但<b>位置落在等分弦比上（0.4c/0.475c/0.55c），离前后梁都远</b>，默认尺寸本就干净，所以 T6 <b>没有</b>再加 cap（沿用 T1/T5 的同一条规矩：只对窄到默认尺寸撑不住的条带声明）。三条实测 minJ <b>0.5467–0.5784</b>、0 三角、关 4 语义 10/10。<br><b>T7 的新触点（2026-10-11）</b>：复材打样<b>刻意复用铝 d20 的网格策略</b>——9861 节点 / 9675 S4 逐字节同构、minJ 0.6084、0 三角。这既是「材料维单独可归因」的对照设计，也正是 D29 指纹撞车的直接原因（见自洽闸）。', pct:100},
+ {n:'关 3 · 双求解器', v:'52 / 52', d:'CalculiX 与 Abaqus 跑同一模型（<b>2026-10-24 按 52 条重测 52/52，含 D31 尺寸维 8 条 8/8</b>）：max|u| 差 <b>0.05–0.78 %</b>（容差 1 %），平衡残差 < 0.0015 %。逐节点 vM 中位差 0.07–1.00 %（容差 5 %）—— 但<b>素板那两条是空转</b>：纯弯平板的中面场在 Abaqus 侧恒为 0，无从比对；工具<b>如实报告不适用</b>，而不是让它假装通过。<br><b>放量 8 条</b>：max|u| 差 <b>0.07–0.76 %</b>、逐节点 vM 中位差 0.07–1.00 %、平衡残差 0.000015–0.001406 %，<b>7 项全过</b>。最弱的一条是 <code>n_ribs9</code>（差 0.554 % / 中位 1.00 %）—— 肋密到 9 道，网格最细，离散化差被放大，但仍在容差内。<b>后掠/锥形不引入任何新的数值脆弱点</b>——它只改几何，不改载荷/约束/单元类型。<br><b>柱壳的新触点（D20，2026-10-05）</b>：第 3 族一开始就<b>过不了 1 %</b>——实测全域 max|u| 差 <b>1.79 %</b>。逐层剥离定位：剔除加载环后 0.42 %、纯内压 0.25 %、加载环 3226 节点独占 2.25 % ⇒ 真凶是<b>自由端框内缘的自由边</b>，在那里打集中力是两码各自离散的局部伪峰，<b>不是结构量</b>。<b>A 路（改载荷落点）实测无效</b>：band25 仍 1.72 %、band5 1.11 %，峰值始终钉在 <code>r=970</code>。于是<b>换判据</b>而非改几何／放容差：判据改为 ① <b>剔除端载环后的结构 max|u|</b>（环由族自己的 <code>fuselage.barrel_nodes</code> 圈定，不是写死坐标）② <b>沿轴 20 站截面形心挠度剖面</b>，偏差对<b>尖端挠度</b>归一。实测 8str <b>0.4015 % / 0.1980 %</b>、12str <b>0.7816 % / 0.1529 %</b>，全过。全域差（2.02 % / 3.34 %）仍<b>如实印出但不判绿/红</b>。<br><b>T4 的新触点（D8 的又一次应验）</b>：开孔板一开始<b>过不了 1 %</b>——孔边峰值两码差 <b>1.92 %</b>。但同一条命脉上位移只差 <b>0.154 %</b>、逐节点位移中位差 <b>0.0014 %</b> ⇒ 模型/网格/载荷完全一致，差只在<b>应力恢复路径</b>（ccx 折叠 <code>OUTPUT=3D</code> 层平均 ｜ abaqus 最外两积分点均值再跨单元平均；两码自己的 meta 就记着平坦区中位差 1.6 %）。于是<b>判据改成位移 1 % + 孔边逐节点 vM 中位差 5 %</b>（后者正是数据集既有口径），峰值<b>照印不判</b>——把闸从最敏感于离散的统计量挪到不变量上。实测 T4 三条 max|u| 差 <b>0.088–0.154 %</b>、孔边中位差 2.318 %，全过。<br><b>T6 的新触点（2026-10-06）</b>：多闭室<b>不引入新的脆弱点</b>——腹板只是又一片壳面，载荷仍是「翼尖集中力 + 端部扭矩」，两码走同一条路径。实测三条 max|u| 差 <b>0.262 / 0.303 / 0.276 %</b>、逐节点 vM 中位差 <b>0.16 / 0.23 / 0.16 %</b>、平衡残差 <b>0.000056–0.000595 %</b>，全部 PASS。⚠️ <b>顺带修的一条陈货</b>：本表 <code>eqc</code>（ccx 平衡残差）列 23 行翼盒原是从<b>更早一版</b> <code>verify_solvers.py</code> 抄来的（基线那条写 0.000034 % 而现工具报 0.000485 %）——同列混两种口径正是本页禁止的静默漂移，已用现工具<b>整列重测</b>（<code>_m5_probe/refresh_eq.py</code> → <code>_dash_eq.json</code>，7 行数字随之更新）。<b>batch7（T4 放量，2026-10-08）</b>：4 条 max|u| 差 <b>0.051–0.195 %</b>、孔边逐节点 vM 中位差 <b>1.697–3.142 %</b>（容差 5 %）、平衡残差 ≤ 0.00013 %，全部 PASS——与 batch4 同一套判据（位移 1 % + 孔边中位差 5 %）<b>一字未动</b>照用全过，这本身就是「放量没引入新脆弱点」的证据。<br><b>T7 打样（2026-10-11）</b>：复材的交叉判据<b>不是位移/应力差，而是 CLT 等效模量闸</b>——Howland/Kirsch 是各向同性专用，复材的闭式对照 = CLT 等效 EX。口径 = <b>加载端平均恒等式</b>（mean εx = [mean u(loaded) − mean u(fixed)]/L，孔扰动不改端面均值；站位线/远场 LSQ 两轮实测失败后选中的不变量）。实测 E_eff ccx <b>73804.31（−2.070 %）</b>/ abaqus <b>73802.03（−2.073 %）</b>，两码差 <b>0.003 %</b>；max|u| 差 0.148 %。−2.07 % 的偏差归因链：无孔同卡 20 mm 网格 −1.73 % → 5 mm −0.19 % ⇒ 卡语义正确；4 mm 非结构 S4 对正交异性场梯度更敏感（铝同网格 −0.54 %）⇒ 系统离散，<b>TOL_EFF=3 % 按实测链钉</b>而非宽放（verify_laminate.py 常量注释全链留档）。<br>平板 / 柱壳 / 开孔板三族载荷类型不同（分布压 / 内压），<code>clamp</code> 反力集口径对它们不成立，故未纳入本轮重测。', pct:100},
+ {n:'关 4 · 语义门禁', v:'52 / 52', d:'「派生预期 == 几何实测」，精确相等无容差。<b>（2026-10-24 已按 52 条 × 2 树重测 = 104/104。）</b>公式按族重推：翼盒 8 项（<b>多闭室 10 项</b>：多出 <code>n_web_faces</code> 与 <code>web_stations</code>）、加筋平板 4 项、<b>机身柱壳 6 项</b>、<b>开孔板 6 项</b>，两棵树各判一遍（41 条 × 2 树 = <b>82/82</b>）。放量 8 条<b>全部命中</b>——包括 40° 后掠、0.4 锥度这类极端平面形状，说明族感知的计数公式没有随平面形状漂移。<br><b>T6 的新键咬人吗？</b>咬 —— <code>check_forms :: T6.gate-sees-cells</code> 实测把 <code>n_webs</code> 从 1 改成 0，预期值在 <code>[n_rib_faces, n_skin_faces_lower, n_skin_faces_upper, n_surfaces, n_web_faces]</code> 五项上同时变（腹板把上下蒙皮各切成两段、肋面从 5 变 4、壳面总数从 38 变 21），所以「腹板在几何里存在但没进 deck」不可能静默通过。三条实测 <b>10/10 PASS</b>。<br><b>柱壳 6 项</b>（蒙皮 / 长桁 / 框 / 框所在 z 平面数 / 壳面总数 / 长桁角度数）：8str/3frm 得 <b>56 面 = 16+16+24</b>（3 个 z 平面 / 8 个角度），12str/4frm 得 <b>120 面 = 36+36+48</b>（4 个 z 平面 / 12 个角度），与按 <code>n_spars·(n_frm−1)</code> / <code>n-str·(n_frm−1)</code> 等族公式推得的预期精确相等。<br><b>T4 六项</b>（1 面 / 5 曲线 / 1 圈孔 / 孔 d 实测 / 孔心坐标 / 壳面总数）：三条全中。<b>挖孔必须用 <code>occ.cut</code>（得 1 面 5 曲线）而不是 fragment（会得 2 面）</b>——这恰是关 4 能咬住的地方：<code>check_forms :: T4.gate-teeth</code> 拿<b>未挖孔</b>的板反证（读 4 曲线 / 0 孔 ⇒ gate4 必须 FAIL），证明这条闸不是装饰。', pct:100},
+ {n:'自洽 + 去重', v:'104 / 104', d:'六件套齐全 / spec↔truth 哈希 / scalars↔results /（<b>2026-10-24 按 52 条重测：104/104、跨树 52/52、配对 52/52</b>）/ <b>跨树网格 41/41 逐字节一致</b> / 树内重复 0（硬闸）。41 条 × 2 树 = 82 项全过，另有跨树配对 41/41 与 D8 应力定义一致性（两树都是 outer fibre）。<br><b>D25 的去重指纹教训（batch6 落地前实测）</b>：只按 mesh 判重会把<b>纯壁厚变体</b>误删——t2 与族默认的 <code>model.msh</code> 逐字节相同（网格与厚度无关），唯一区别在 <code>*SHELL SECTION</code> 厚度表。指纹已扩成 <b>mesh + 壳厚表</b>（<code>verify_dataset.model_sha256</code>），实测 40 条 39 类、0 误删。<br><b>D29 的第三次扩展（T7 打样入库实测，2026-10-11）</b>：材料维进来后 mesh+壳厚也<b>不再唯一</b>——复材 [0/90]s d20 与铝 d20 网格逐字节同构、厚度同 2.0，闸当场报警 <code>80695b4c759e</code> 同模型（must-be-0 被打破——<b>闸是真闸的又一实测</b>）。指纹第三成分 = deck <code>*ELASTIC</code> 块（材料律，白名单风格读卡）：修后 duplicate <b>0</b>、老 40 条内部<b>零新增重复</b>、跨树 41/41 仍一致。指纹值整体变化是口径扩展的预期代价，判定结果只多不少。', pct:100},
+ {n:'关 4b · 退化自检', v:'54 / 54', d:'新形式必须能退回旧形式，且新参数不许空转（<b>2026-10-24 已按 54 项重测，含 T7 十项</b>）：T5 翼缘宽→0 还原 blade；T2 长桁数→0 还原平板，连「所有长桁参数一起改」都要求模型逐面不变。<br><b>T3 新增三项（batch6，2026-10-07）</b>：⑩ <code>size-degeneration</code>（尺寸维改动不破坏族退化定义）⑪ <code>size-sensitivity</code>（直径/长度/壁厚三轴变体必须真的动到网格与 <code>*SHELL SECTION</code> 表——防「空转字段」）⑫ <code>role-and-split</code>——把 <b>D25 划分口径钉成常驻闸</b>：default→train、d1800/L1600/t2 单维→val、D1600+L1600 双维→test，另读规则另一方向（L3000、D1600+L3000、D1600+t2、10str+D1600）与混合角（单计数→train），划分规则再改也必须先过它。前九项同前（D19/D21/D22）。<br><b>T1 七项</b>：① <code>is_prismatic</code> 派发定义 ② 中性箱<b>逐面还原 M1</b> ③ 后掠<b>命中 D14 闭式</b>（tip 前缘 x = 977.9405 = 500·tan20°）④ 锥形命中（tip 弦 270 = 450×0.6）⑤ 灵敏度 ⑥ <b>role/split</b>（后掠箱一度被判成 baseline 的修复闸）⑦ <b>T1.D16-val-regions</b>：断言 <code>sweep40→val</code> / <code>sweep10→train</code> / <code>taper040→val</code> / <code>taper090→train</code> / <code>both40x040→test</code> / <code>plain800x600→val</code> —— 把 D16 的口径钉成常驻闸，划分规则再改也必须先过它。<br><b>T3 九项</b>（D19/D21/D22 全在此）：定义退化（n_str=0 → 无角度、n_frm=2 → z=(0,2000)、bay 1）／<b>长桁包络拒绝</b>（1–4 必 raise、5 必收）／<b>内压符号</b>（族声明 +1、deck 写 <code>P=+0.05</code>；符号默认 −1）／<b>截面形式拒绝</b>（注册表里所有非 blade 必 raise、blade 必收）／派生预期 1/0/2 ／退化模型逐面 + 关 4 自认／<b>builder 真的声明了符号</b>（读建面结果，防「常量对、deck 错」）／参数不变性（高度/厚度/翼缘宽一起改，无长桁柱壳逐面不动）／布局灵敏度四档（0/2、5/2、8/3、12/4 面数与角度数全中）。<br>⚠️ <b>一处连带修补</b>：D22 让「<code>blade→T</code>」不可构造，而 <code>T3.parameter-invariance</code> 原来拿 T 截面做变体 → <b>整个 T3 检查抛异常、前 8 项也一起丢失</b>（只报一条 FAIL）。已把该轴移出（它本属「拒绝」范畴，由 <code>section-kind-envelope</code> 断言），参数不变性保留高度/厚度/翼缘宽三轴。<br><b>T4 八项（2026-10-06）</b>：① <code>gate-teeth</code>（未挖孔 ⇒ gate4 必 FAIL）② 定义与非法拒绝（λ≥1/3、孔出边、短试件、d≤0）③ 建成模型（1 面 / 5 曲线 / 孔 d 实测 20 mm）④ 孔尺寸灵敏度（λ=0.15 / 0.25 实测曲线数与实测 d）⑤ <b><code>edge-floor-envelope</code></b>（0.98·d_min 必 raise、1.15·d_min 必建）⑥ 孔位（偏心 (120,60) 实测孔心）⑦ <code>default-centre</code>（<code>hole_x/y=None</code> 与显式 (200,100) 逐位一致）⑧ <b><code>role-and-split</code></b>——把 D23 钉成常驻闸：default→baseline/train、λ0.2→sweep/val、λ0.3→sweep/val、offcentre→feature/test、800×200→sweep/val，划分规则再改也必须先过它。<br><b>T6 九项（2026-10-06）</b>：① <code>cell-definition</code>（0 腹板→1 闭室且 <code>even=False</code>／1 道→2 闭室 <code>even=True</code>／2 道→3 闭室／偏心 <code>even=False</code>）② <b><code>neutral-reproduces-M1</code></b>——<b>无腹板的箱逐面还原 M1 归档</b>（5482 节点 / 5144 壳面 / minJ 0.6249 / 10 组），这是「加腹板」这条路的回家路 ③④⑤ <code>cells-one</code>/<code>cells-two</code>/<code>cells-off</code> 三条分别验闭室数、<code>n_web_faces</code>（1×4 / 2×4 / 1×4）与关 4 10/10 ⑥ <b><code>gate-sees-cells</code></b>（改 <code>n_webs</code> ⇒ 关 4 预期值必须在 5 个键上同时变 —— 证明腹板真的进了派生公式）⑦ <b><code>refuses-outside-spars</code></b>（腹板放在前梁之前的 0.1c 必 raise —— 跑到盒段外面就不是闭室了）⑧ <b><code>refuses-on-stringer</code></b>（腹板站位与长桁站位重合必 raise —— 两者是不同的结构件，重合会让关 4 数不清面）⑨ <b><code>role-and-split</code></b>——把 <b>D24</b> 钉成常驻闸：<code>web1→sweep/train</code>、<code>web2→sweep/val</code>、<code>offcentre→feature/test</code>，并断言「一道腹板的箱 <b>不</b> 等于 <code>WINGBOX_BASELINE</code>」（这条正是 T1 那次 <code>all()</code> 白名单陷阱的同型防复发）。<br><b>T4.role-and-split 本批补 shipped 点（batch7 · D28，2026-10-08）</b>：断言表 5 行 → <b>11 行</b>——加 b7 四条（<code>size600x300d30→sweep/val</code>、<code>lambda0.25→sweep/val</code>、<code>D28 corner→sweep/test</code>、<code>offcentre d40→feature/test</code>）与<b>两条方向探针</b>（λ 向下 + 尺寸同时变 ⇒ test、仅 λ 向下 ⇒ train——钉死 D28 角点谓词用 <code>!=</code> 而非 <code>&gt;</code> 的读法）。划分规则再改也必须先过它。<br><b>T7 六项（2026-10-11，新形式自带退化自检的规矩不变）</b>：① <code>clt-anchor</code>——[0/90]s 等效对<b>手推闭式</b>（EX=EY=75364.486、νxy=0.04、GXY=Q66=5000，一个变换回归在求解器开跑前就会现形）② <code>isotropic-degeneration</code>——各向同性单层还原铝的 <code>MaterialSpec</code>（EX 73100 / ν 0.33 / G 27481.2，材料维的回家路）③ <code>contract-refusals</code>——非对称 / 非平衡 / 两真相厚度 / 坏 ply 全部 raise ④ <code>deck-card</code>——正交 deck 带 9 常数卡（EX=75364.5 在卡上）而铝 deck <b>无该卡</b>（老 40 张 deck 不漂移）⑤ <code>layup-key-plumbing</code>——layup 键活着进 description、几何消费者看不到它 ⑥ <b><code>role-and-split</code></b>——D29 钉成常驻闸（6 行：alu anchor baseline/train、laminate anchor sweep/train、λ/size 单维 val、双维 test、偏心 feature/test）。<b>过程中闸咬过两口</b>：闭包 <code>lay = layup_to_params(lay)</code> 的 UnboundLocalError（赋值遮蔽外层绑定），以及 size 测试点没随 width 缩放 hole_d（λ=20/300≠0.1 偷动了第二轴）——两处都修在测试点/闭包上，<b>谓词零改动</b>。', pct:100},
+ {n:'无静默漂移', v:'0 变更', d:'为接第二结构族重构了 inp_writer / pipeline。哈希快照实测：108 个已归档模型文件 <b>0 变更</b>。<br><b>D10 再验</b>：<code>0 added / 0 removed / 46 changed</code>（132 文件）—— <code>modeling/</code> 只有那两条 chord800 变了，其余 9 条一个字节没动。<br><b>T1 首轮重导</b>：132 → 132 文件，<b>0 added / 0 removed / 44 changed</b>（= 22×spec.json + 22×truth.json，新字段进契约正是<b>目的</b>）；<b>88 个四件套文件逐字节不变</b>。<br><b>放量 batch2 重导</b>：205 → 301 文件，<b>96 added / 0 removed / 0 changed</b>（96 = 8 条 × 2 树 × 6 文件）—— <b>老 15 条一个字节没动</b>（本轮无 spec 字段变更，故老 case 无需重导）。<br><b>batch3 入库</b>：301 → 337 文件，<b>36 added / 0 removed / 0 changed</b>（36 = 3 条 × 2 树 × 6 文件）—— <b>老 23 条一个字节没动</b>。D21（压力方向）虽改了 deck 写卡路径，但实测<b>只有 3 条含 <code>*DLOAD</code>（面板），且逐字节不变</b>；其余 20 条翼盒根本不走压力分支（走 <code>*CLOAD</code>），改动路径不可达。<br><b>batch4 入库（2026-10-06）</b>：本轮写入 <b>36 个文件</b>（= 3 条 × 2 树 × 6，<b>mtime 实测</b>：全树只有这 36 个写于 11:00 之后，且全部落在 <code>open_hole_panel_*</code> 六个目录）——<b>老 26 条一个文件都没被写</b>（modeling 侧未写入的最新 mtime 停在 10-04 21:02；batch3 的 36 个写于今早 09:12，属上一轮「T3 abaqus 补跑成功后重导」，已在 10-06 log 留档）。<b>跨批 hash 核对</b>（<code>diagnostics/hash_manifest.py diff _snap_b2_before.json</code> → 现在）：<b>168 added / 0 removed / 0 changed</b>（180 → 348 文件）—— batch2 之前的 <b>180 个文件跨三批逐字节未变</b>（这是最强的一档证据）；batch2 / batch3 的 132 个文件由 mtime 证明本轮未被写。已补拍 <code>_snap_b4_after.json</code> 供下一轮做 before。<br><b>batch5 入库（T6，2026-10-06）</b>：<code>373 → 409</code> 文件，<b>36 added / 0 removed / 0 changed</b>（= 3 条 × 2 树 × 6 文件）——<b>老 29 条一个字节没动</b>。<br><b>全档重导（本轮关键）</b>：新增 <code>web_chordwise</code> 字段进 <code>asdict(airfoil)</code> ⇒ 老 case 的 <code>spec_sha256</code> 全失效 ⇒ <b>32 条 × 2 树必须全部重导</b>（与 T1 那次同一条规矩）。diff = <b>0 added / 0 removed / 116 changed</b>，<b>116 全部是 <code>spec.json</code>+<code>truth.json</code></b>（= 29 老 case × 2 树 × 2 文件；T6 三条入库时已是最新，故不在其中）——<b>四件套 <code>model.msh / model.inp / model.step / model.results.json</code> 共 256 个文件，本轮 <code>changed = 0</code></b>（逐文件枚举核对，不是抽样）。⚠️ <b>连带动作</b>：<code>regress_groups</code> 由 <b>9/9 → 0/9</b> —— 既有 9 条分组（<code>front_spar</code> / <code>upper_skin</code> / … / <code>ribs</code>）的<b>逐面 bbox 指纹一条都没动</b>，差异<b>全部</b>来自 <code>_GROUP_ORDER</code> 新增的 <code>webs</code> 键（<code>counts</code>/<code>topology_geometry</code> 各多一项、组名多一个）。这是<b>有意的指纹定义变更</b>，按 D10 立的规矩<b>重签基线</b>，旧基线留档 <code>regress_baseline_groups_pre_t6.json</code>，重签后 <b>9/9 PASS</b>。<br><b>batch6 入库（2026-10-07）</b>：416 → 465 文件，<b>48 added / 0 removed / 0 changed</b>（48 = 4 条 × 2 树 × 6 文件，另 +1 根目录 <code>verify_barrel_size.json</code>）——<b>老 32 条一个字节没动</b>；唯一 CHANGED 是 <code>manifest.json</code> + <code>MANIFEST.md</code>（36 条新清单，预期）。<b>本轮的特殊点</b>：d1600 被 gate3 越线判退（1.1349 %），其 case 目录搬去 <code>outputs_b6_retired(_abaqus)</code> 隔离——搬家后重跑 gate3 <b>数值逐位一致</b>，退役产物自身也零扰动。<br><b>batch7 入库（T4 放量，2026-10-08）</b>：<code>465 → 513</code> 文件，<b>48 added / 0 removed / 6 changed</b>（48 = 4 条 × 2 树 × 6 文件；6 changed = 根目录 manifest / MANIFEST / gate4 / verify_report / eval_report / check_forms 六份报告刷新，预期）——<b>老 36 条一个字节没动</b>。<b>过程教训</b>：手工 bat 求解路径只产 <code>.odb.json</code> 不产 <code>.results.json</code>（后者是 pipeline 求解后归纳步的产物）——首轮 verify <b>76/80</b> 抓住缺口，<code>resummarize.py --roots outputs_b7_abaqus</code> 从 odb.json 补齐归纳（<b>不花 Abaqus 许可</b>）后重导过闸：入库九道闸里 verify 是真闸的又一实测。<br><b>T7 打样入库（2026-10-11）</b>：本轮 <b>12 added</b>（= 1 条 × 2 树 × 6 文件）+ 根目录报告刷新（manifest / MANIFEST / verify / eval / check_forms 等，同 batch7 模式）——<b>老 40 条四件套一个字节没动</b>（spec 走 <code>params["layup"]</code> dict 键级，asdict 往返不添键 ⇒ spec_sha256 零扰动，check_forms 50/50 与 regress 9/9 双证）。<b>过闸路径</b>：手工 bat 解 abaqus（`outputs_t7_abaqus`）→ <code>resummarize</code> 补 results.json → 两树 make_dataset 重导；<b>中途 duplicate 闸报警抓出指纹撞车</b>（D29 指纹扩展的由来，见自洽闸），修指纹后 <code>duplicate 0 / 82 项全过</code>。⚠️ 教训两条入档：<code>make_manifest</code> 不传 <code>--json</code> 只打印不写盘（manifest 时间戳骗人一次）；agent 内现场跑 abaqus 的验证线（verify_hole cross-solver）会把真 odb.json 当 stale 删掉——已给 run_case 加「盘上产物直读」路径（spec 逐字段比对剔 workdir 后才信任，网格统计从归档 msh 重算，缺货/陈货一律回退原 solve 路径）。<br><b>T7 放量入库（2026-10-24）</b>：本轮 <b>36 added</b>（= 3 条 × 2 树 × 6 文件），<code>find -newermt</code> 实测<b>全部落在 6 个新 case 目录</b>；过滤掉 <code>cfrp45s</code>/<code>cfrpqi</code> 后<b>今日写入 = 0 个文件</b> —— <b>老 41 条 case 目录零字节写入</b>（本轮无 spec 字段新增，layup 走 dict 键级，老档 spec_sha256 不变）。<b>过程三条教训入档</b>：① <code>check_forms.py</code> <b>不传 <code>--json</code> 只打印不写盘</b>——首轮 10 分钟白跑，<code>check_forms.json</code> 还停在 50 项旧档（与 <code>make_manifest</code> 同一类坑，第二次犯）；② <code>verify_dataset</code> 的 pairing <b>只打印不参与总判</b>（41 vs 44 仍报 PASS），已并入 <code>all_ok</code>；③ 手工 bat 只产 <code>odb.json</code>，须 <code>resummarize.py</code> 补 <code>results.json</code> 才能入库。', pct:100}
+];
+
+const MODULES = [
+ {n:'几何参数化', f:'geometry.build / BUILDERS', s:'已落地 · 3 族 + 平面形状（T1）+ 多闭室（T6）', pct:50, c:'#2563eb'},
+ {n:'结构族抽象', f:'spec.StructureSpec + BUILDERS', s:'M2 落地 · 3 族接入', pct:100, c:'#0f9d58'},
+ {n:'加筋平板壁板', f:'feagpt.panel（第二结构族）', s:'M3/T2 落地', pct:100, c:'#0f9d58'},
+ {n:'机身加筋柱壳段', f:'feagpt.fuselage（第三结构族）', s:'M5/T3 落地 · 内压 + 端弯 + 端剪', pct:100, c:'#0f9d58'},
+ {n:'长桁截面族', f:'feagpt.sections + SECTIONS', s:'M3/T5 落地 · blade+T（柱壳 blade-only，D22）', pct:100, c:'#0f9d58'},
+ {n:'平面形状（后掠 / 锥形）', f:'geometry._loft_pair + is_prismatic 派发', s:'M5/T1 落地 · 共 9 条（首轮 4 + 放量 5）· 2 树', pct:100, c:'#0f9d58'},
+ {n:'多闭室（中间腹板）', f:'geometry._build_webs + AirfoilSpec.web_chordwise', s:'M5/T6 落地 · 3 条（1 / 2 / 偏心腹板）· 弯曲 + 端部扭矩', pct:100, c:'#0f9d58'},
+ {n:'退化自检', f:'check_forms.py', s:'T1 + T5 + T2 + T3 + T4 + T6 · 44 项', pct:100, c:'#0f9d58'},
+ {n:'面分类器（打标）', f:'geometry._assign_from_map', s:'M2 换机制', pct:100, c:'#0f9d58'},
+ {n:'网格与质量门禁', f:'meshing.build_mesh', s:'已落地 · 尺寸上限 + 零三角自适应', pct:100, c:'#0f9d58'},
+ {n:'双方言 deck', f:'inp_writer.write_inp', s:'ccx / abaqus · 族感知', pct:100, c:'#0f9d58'},
+ {n:'求解器适配', f:'solver.run', s:'含 ODB→JSON', pct:95, c:'#0f9d58'},
+ {n:'结果归纳', f:'post.summarize_data', s:'求解器无关 · D8 起带应力定义', pct:100, c:'#0f9d58'},
+ {n:'壳应力口径（D8）', f:'OUTPUT=3D + post.collapse_expanded_shell', s:'2026-10-03 落地 · 外纤维', pct:100, c:'#0f9d58'},
+ {n:'语义真值', f:'topology.collect / compare', s:'M1+M3 · 族感知', pct:100, c:'#0f9d58'},
+ {n:'数据集导出与验收', f:'make_dataset / verify_dataset', s:'M1+M2+M3', pct:100, c:'#0f9d58'},
+ {n:'族无关 BC / 载荷', f:'bc_nodes / shell_thickness / clamp_dofs / pressure_group / pressure_dload_sign', s:'M5 落地 · 5 项声明（D21 加压力符号）', pct:100, c:'#0f9d58'},
+ {n:'无静默漂移证据', f:'diagnostics/hash_manifest.py', s:'M3/T2 落地 · 带退出码', pct:100, c:'#0f9d58'},
+ {n:'屈曲 / 特征值分析', f:'（新分析类型）', s:'未做', pct:0, c:'#8b95a5'},
+ {n:'场量导出 / 云图（B 类）', f:'—', s:'未做', pct:0, c:'#8b95a5'},
+ {n:'划分 / manifest', f:'eval_dataset / make_manifest', s:'M4+M5 · 规则化 + 40 项复算', pct:100, c:'#0f9d58'},
+ {n:'复材层合（材料维）', f:'feagpt.laminate + CLT 等效单层', s:'M6/T7 打样落地 · [0/90]s 一点入库 · 铺层族/厚度维待放量（D29）', pct:50, c:'#f59e0b'}
+];
+
+const GAPS = [
+ {sev:'高', title:'应力口径已统一为「外表面峰值」（D8，2026-10-03 已落地）',
+  d:'原缺口：<b>两棵树里同名同路径的 <code>scalars.max_von_mises</code> 指的不是同一个量</b>——平板算例上 <code>modeling/</code>（ccx）记 1.2135（节点全张量，纯弯时 <b>100 % 是横向剪切</b>），<code>_xval/</code>（abaqus）记 <b>0.0</b>（膜值）。<b>下游按同名取数会得出「abaqus 侧零应力」。</b><br><b>D8 落地后的状态</b>：归档口径 = <b>外纤维</b>。ccx 走 <code>OUTPUT=3D</code>（展开壳）再由 <code>post.collapse_expanded_shell</code> 折回中面，外纤维留在 <code>STRESS_PEAK</code>；中面值另存 <code>max_von_mises_midsurface</code>，并带 <code>max_von_mises_definition: "outer fibre"</code>。两棵树现在<b>同名同定义</b>，<code>verify_dataset.py</code> 把「定义存在且是外纤维」当硬闸。<br><b>仍要记住</b>：<b>归约方式</b>仍是两码各自的选择（ccx 展开壳逐节点平均 / abaqus 截面点外插逐节点平均 + 另一个逐单元最大值），所以<b>峰值跨码不可裸比</b>——翼盒同口径逐节点差 18.08 %，落在梁肋交汇的奇异点上。判据仍是逐节点中位差 0.31 %。'},
+ {sev:'高', title:'结构族现有 4 种，真实机翼没有等直的（T1 已补「后掠 / 锥形」，T3 已补机身柱壳，T4 已补开孔并放量，T6 已补多闭室，T7 已补复材材料维）',
+  d:'41 条里 <b>23 条是 NACA4412 翼盒</b>（其中 <b>9 条带平面形状</b>：后掠 10/20/40°、锥度 0.4/0.6/0.8/0.9、以及兼具；<b>2 条加长桁</b>；<b>3 条多闭室</b>），<b>4 条是平板</b>（600×600 光板 / 含 3 长桁 / 800×600 光板 / 800×600 含 3 长桁），<b>8 条是开孔板</b>（batch4 三条 + batch7 放量四条 + T7 复材打样一条），<b>6 条是机身柱壳</b>（train 1 + 尺寸壁厚维 val 3 + test 2）。M3 补上了<b>第一个真正的第二族</b>（加筋平板壁板），<b>M5/T1 补上平面形状这一维</b>，<b>M5/T3 补上第三个结构族</b>（机身加筋柱壳段，且是首个<b>多载荷组合</b>工况：内压 + 端弯 + 端剪），<b>M5/T4 补上第四个结构族</b>（开孔板，唯一带闭式解析对照），<b>M5/T6 补上翼盒族的新形式维</b>（多闭室，首个<b>扭转</b>工况），<b>M5/batch6 给柱壳补上尺寸·壁厚维</b>（直径/长度/壳厚，首个<b>物理参数维</b>外推线），<b>M5/batch7 给开孔板补上尺寸维 + 双维角点</b>（600×300 板 + λ/d 组合，探针证同 λ 跨 coupon Kt 复现），<b>M6/T7 补上材料维</b>（CLT 等效单层，D29——七种结构形式 T1–T7 <b>全部落地</b>）。<br>剩余的形式缺口：「平面形状」目前只覆盖<b>线性</b>后掠与线性锥度，折线前缘 / 翼梢小翼等非线性外形不在 T1 范围内；柱壳的长桁<b>只有 blade</b>（T 截面建面器未做，D22 明确拒绝而非静默降级）；柱壳尺寸维<b>只朝收缩方向外推</b>（D27 内存墙）；<b>多闭室目前只覆盖等厚度腹板、且腹板垂直于弦线</b>（斜腹板 / 加厚腹板不在 T6 首轮范围内）；<b>复材只有 [0/90]s 一个铺层点</b>——铺层族（[±45]s / [0/±45/90]s）与厚度维待放量，且等效单层<b>不含层间/逐层应力</b>（manifest limitations 已记账）。'},
+ {sev:'中', title:'后掠箱一度被判成 baseline —— 修的是判据，补的是闸（D14，2026-10-04 已修复）',
+  d:'原缺口：<code>_is_wingbox_baseline</code> 的实现是 <code>all(got[k] == v for k, v in WINGBOX_BASELINE.items())</code> —— 它<b>只检查白名单里列出的键</b>。新加的两个平面形状字段不在名单里，于是一个 <b>sweep = 20° 的箱段</b>只要 chord / span / 肋数仍是默认值，就会被判成 <code>baseline</code>、和真正的基线<b>并列</b>（实测：<code>sweep_deg=20</code> → <code>_is_wingbox_baseline = True</code>，role <code>baseline</code>）。<br><b>已修复</b>：把两个字段以<b>中性值</b>（1.0 / 0.0）加进白名单。对现有 11 条<b>零影响</b>（它们两个字段本就是中性），只把后掠 / 锥形箱正确踢出 baseline。同时补了一道<b>常驻闸</b> <code>check_forms.py :: T1.role-and-split</code>：要求 neutral→<code>baseline/train</code>、sweep→<code>sweep/train</code>、taper→<code>sweep/train</code>、兼具→<code>sweep/test</code> —— 这类缺陷以后<b>不可能静默溜过</b>。<br>代价说清：<b>翼盒等价类指纹全部重算</b>（新字段进了 <code>asdict(airfoil)</code>），但不变量「基线 + 网格消融同类」在重算后依旧成立，泄漏闸仍是 <b>0 个类跨 split</b>。'},
+ {sev:'中', title:'关 1 的「零三角」曾是没量过的说法（D10，2026-10-03 已修复）',
+  d:'原缺口：关 1 从 M1 起就写成「minJ ≥ 0.30 <b>且零 tri3</b>」，但闸<b>只查 minJ 与单元数、从不数 tri3</b>。实测归档（<code>diagnostics/msh_quality.py</code> 数出来、<code>tri3_map.py</code> 定位到面）发现两条 chord=800 盒段含 <b>8 / 16 个 S3</b>，<b>全部落在后梁腹板四角</b>；而<b>两棵树各自的 <code>model.inp</code> 里数字完全相同</b>，所以旧记录里「abaqus 的 S3R 是两码读法不同」<b>已证伪</b> —— 是网格本身如此。<br><b>已修复</b>：<code>meshing.build_mesh</code> 改成<b>建完再数</b>，三角非零且 spec 未钉死算法时用 blossom 全四边形<b>重建一次</b>（实测 8→0 / 16→0，代价 +0.5 % / +4.8 % 单元，minJ 0.5973/0.5950 → 0.5950；被否掉的替代方案见 <code>probe_tri3.py</code>）。两条已重跑重导，<code>tri3 = 0</code> 同时进入关 1 判据与 <code>verify_dataset</code> 硬闸（<b>直接数发运 deck</b>，不依赖 gmsh）。<br><b>代价要说清</b>：这两条归档算例的网格变化是本次变更的<b>目的</b>，但它们属于 M2 的 9 条种子，而 <code>regress_groups</code> 的指纹含单元数/质量 —— 所以那条回归由 <b>9/9 → 7/9</b>，基线已重签，旧基线留档为 <code>regress_baseline_groups_pre_d10.json</code>。'},
+ {sev:'中', title:'平板族默认网格已收到 3 mm（D9 已落地）',
+  d:'原缺口：无长桁平板的 max|u| 跨求解器差 <b>0.800 %</b>，容差 1 %，只剩 0.2 个百分点的余量。已证明是离散化：6 mm → 3 mm，差值 <b>0.800 % → 0.326 %</b>，且解析解 0.96268 mm 被 ccx 0.96175（−0.097 %）与 abaqus 0.96490（+0.230 %）<b>从两侧夹住</b>。<br><b>D9 落地</b>：平板族默认尺寸 = 3 mm，<b>容差 1 % 一个字没动</b>（一不方便就放宽的闸就不是闸）。代价：节点 11761 → 46432（×3.95），平板是秒级算例，可接受。'},
+ {sev:'中', title:'T 形算例体量是基线的 6 倍',
+  d:'<code>naca4412_wingbox_str3_T</code> 有 29447 节点 / 29733 单元（基线 5074 / 5144）。原因是 T 形翼缘被腹板切成两条 15 mm 窄条，被迫把全局网格尺寸压到 12 mm。M5 放量时这类算例不能按「条数」估成本，要按节点数估。'},
+ {sev:'中', title:'载荷工况：翼盒 / 平板仍是单工况，柱壳是首个多载荷组合，T6 是首个扭转',
+  d:'翼盒 20 条都是翼尖 500 N 上举，平板 4 条都是横向均布压 <code>q=1e-4 MPa</code>。<b>M5/T3 的柱壳是第一个多载荷组合工况</b>（内压 0.05 MPa + 端剪力 50000 N + 端弯矩 5e7 N·mm，落在自由端框上）。<b>M5/T6 给翼盒加了第二个载荷——端部扭矩</b>（<code>T = 1e6 N·mm</code>），因为<b>闭室数只在扭转下可观测</b>：弯曲下各闭室几乎同向受载，剪流分布体现不出腹板的存在。真实使用还要覆盖压缩 / 剪切 / 多工况包线，这属于族内参数扩展，尚未做。'},
+ {sev:'中', title:'val 13 条、覆盖四族 —— 缺口收窄到「绝对样本量」',
+  d:'<b>M4 把「等价类不得跨集」从口号变成硬闸</b>：<code>make_manifest</code> 把 40 条归成 <b>39 个几何等价类</b>，<code>eval_dataset</code> 独立复算后给出「<b>0 个等价类跨 split</b>」。闸会咬人是测过的 —— 把基线与它自己的网格消融对照分到两边，立刻报 <code>no_class_spans_splits</code> 并点名那个类。<br><b>M5-① 已把「显式表」换成「规则」</b>（<code>HOLDOUT_REGIONS</code> 声明式留出；<code>rule_reproduces_D12</code> 闸保证 11/11 复现 D12 的口径 A），「表不 scale」这条<b>已消解</b>。<br><b>M5-②/③/④/⑤/⑥ 把 val 补到 8 条</b>：按 D16（单维外推 → val）新增 <code>ribs9</code> / <code>sweep40</code> / <code>taper040</code> / <code>plain800x600</code>，补了<b>平板族第一条含长桁的 val</b>（<code>800x600_str3</code>），T4 的 <code>d40</code>，T6 的 <code>web2</code>（腹板 2 > 1，位置仍等分）。<br><b>batch6（2026-10-07）把 val 补到 11 条</b>：柱壳族一次落 3 条（<code>d1800</code> / <code>l1600</code> / <code>t2</code>，走 D25 尺寸单维外推谓词）。<br><b>batch7（2026-10-08）把 val 补到 13 条</b>：开孔板族落 2 条（<code>600x300_d30</code> 走 D28 尺寸单维谓词、<code>400x200_d50</code> 走 λ 单维谓词）。<b>M6/T7 打样（2026-10-11）把 train 补到 17 条</b>：复材 [0/90]s 锚点几何进 train（D29：形式首实例模型必须见得着）。现在实测 <b>train 17 / val 13 / test 11</b>（翼盒 13/5/5、平板 1/2/1、<b>开孔板 2/3/3</b>、柱壳 1/3/2）。<br><b>仍未解决的</b>：① val 的<b>绝对数量</b>——13 条对模型选择仍偏少；② val 集中在「单维外推」这一种泛化上，<b>双维外推只考了 6 条 test</b>（<code>n_ribs7_chord800</code> / <code>sweep40_taper040</code> / <code>str12_frm4</code> / <code>d1600_l1600</code> / <code>600x300_d60</code> / <code>sweep20_taper060</code>）。<b>继续补依赖放量</b>，而不是在同一个族里加同质样本。'},
+ {sev:'中', title:'柱壳 val 缺口已由 batch6 补上（2026-10-07）—— 留档当时的处置逻辑',
+  d:'第三批时柱壳族只有 <code>str8_frm3</code>（train）+ <code>str12_frm4</code>（test），量不到「单维外推」的泛化。batch6 用<b>尺寸·壁厚维</b>一次补齐（3 val + 1 test），走的不是 <code>12str/3frm</code> 长桁计数那条路，而是 D25 的新谓词（直径 / 长度 / 壳厚）。<b>过程中的真实插曲</b>：直径维第一版取 d1600，gate3 实测 <b>1.1349 % > 1 %</b> 越线（六条柱壳唯一）；定性实验（近邻点 d1800 实测 <b>0.8180 %</b> 干净，物理量排序自洽：max|u| D1600 3.0655 > d1800 2.8907 > L1600 2.5511 mm）证明是<b>个例踩进两码在端载边界层分歧最大的区域</b>、不是直径维系统性问题——按「判据一字不动」的纪律<b>换点入库</b>（d1800 顶替 val），d1600 产物留档 <code>outputs_b6_retired(_abaqus)</code> 不入库，gate3 判决表五行轨迹存 <code>_b6_gate3.json</code>。'},
+ {sev:'中', title:'开孔板放量已落地，但「厚度维」划分未声明 + 「首个命中」的宽松读法是个缺陷类（D28，2026-10-08）',
+  d:'batch7 一箭三雕（λ 维 d50 / 尺寸维 600x300_d30 / 双维角点 + 偏心新形式各进 test），<b>但有两件事必须留档</b>：① <b>开孔板厚度维未声明划分</b>——壁厚恒 2 mm，厚度 ≠ 2 而居中、λ 不变的点将按「未命中默认 train」落 train（拍板：对齐平板族 D16 口径，暂不声明）；<b>后续放量厚度维须先补声明</b>，否则 train 会被静默灌进未学过的物理参数维（<code>make_manifest</code> limitations 已记账）。② <b>「首个命中即定」的宽松读法</b>：双维角点声明前，<code>600x300_d60</code> 会先撞 λ val 谓词落 val——D16（sweep40_taper040 一度落 val）与 D25 是同款缺陷类，b7 入库前谓词已补上（插在偏心 test 之后、两个 val 谓词之前，两轴用 <b>!=</b> 对齐 D25 读法，λ 向下的点不被 <code>&gt;</code> 漏接），并加两条方向探针进常驻闸。'},
+ {sev:'低', title:'B 解读集 / C 更新集完全未产出',
+  d:'本轮只做 A 建模集。这是你定的优先级，不是遗漏，但对外说数据集时应讲清楚。'},
+ {sev:'低', title:'StructureSpec.params 目前是空的',
+  d:'翼盒参数仍留在 <code>airfoil</code> 块（挪走会作废全部归档哈希，收益为零）。M3 新族必须把参数放 <code>params</code>。'},
+ {sev:'低', title:'许可红线与运行环境',
+  d:'Abaqus 是商业许可 —— <code>_xval/</code> 永不进发布包。本机跑 abaqus 一律需要<b>非隔离 shell</b>，否则 <code>pre.exe</code> 会静默失败（固定 ~19 s、.dat 无报错、退出码 0）。'},
+ {sev:'低', title:'源目录 outputs/ 里有个陈货易误导',
+  d:'<code>outputs/naca4412_wingbox/naca4412_wingbox.msh</code> 是 10-01 的旧 <code>--mesh-only</code> 产物（460825 B），跟新代码重建的（491065 B）不同。<b>别拿它判回归失败</b>，真值看数据集里的 <code>model.msh</code>。'}
+];
+
+/* ---- 已拍板（老王在看板上选定） ---- */
+const DECIDED = [
+ ['D1', 'T2 首个工况', '四边简支 + 横向均布压（板弯曲）', '与我的推荐一致'],
+ ['D2', 'T5 首批截面', 'blade + T 形', '与我的推荐一致 · 已落地'],
+ ['D3', 'T2 尺度', '600 × 600 mm 加筋壁板（贴近试验件）', '未采纳我的 1000×600 推荐'],
+ ['D4', 'Abaqus 验证节奏', '每步都双求解器', '未采纳我的「先 ccx 后补」，成本最高但证据最硬'],
+ ['D5', 'T2 压力量级', '压在小变形范围内（接受压力「不像真的」）', '采纳我的 A 案 · 实测 p = 1e-4 MPa'],
+ ['D6', '「四边简支」DOF', '边线节点约束三向平动、转动自由', '采纳我的 A 案 · clamp_dofs = (1, 3)'],
+ ['D7', 'T2 首条长桁', '先用 blade，T 形留给 T5 翼盒', '采纳我的 A 案 · 单一新变量好归因'],
+ ['D8', '归档 max vM 的口径', '外表面峰值（中面值弃用），且两个求解器都要出外纤维 + 声明字段', '2026-10-03 落地 · ccx 新增 OUTPUT=3D 与外纤维通道'],
+ ['D9', '平板族默认网格', '6 mm → 3 mm（不动 1 % 容差）', '2026-10-03 落地 · 余量 0.800 % → 0.326 %'],
+ ['D10', '关 1 的「零三角」', '能做到零就加约束 → 已升为硬闸，并让网格按模型自动清除三角', '2026-10-03 落地 · 两条 chord800 已重跑重导，11/11 零三角'],
+ ['D11', '关 3 逐节点应力判据挂哪个场', '已注册判据一律不动（仍挂中面场；素板那条如实报「不适用」）', '未采纳我推荐的 C（平板族改判外纤维）'],
+ ['D12', 'M4 划分口径（11 条怎么切 train/val/test）', '口径 A：train 7 / val 1 / test 3（两个族在 train 都有代表；三条 test 各考一种泛化）', '采纳我的推荐 A · 与已落地划分一致，无需改动'],
+ ['D13', 'M5 划分规则口径（M4 显式表 → 规则）', '声明式留出区域：每族声明谓词→side，首个命中即定；未命中默认 train；新族未声明则失败', '采纳我的推荐 · 11/11 复现 D12 的 A，D12 无需重签'],
+ ['D14', 'T1 后掠/锥形翼盒的四项口径', '① 肋垂直展向 ② <b>前缘为参考线</b>：翼尖截面 = 根截面绕前缘缩放 tip_chord_ratio，再后移 span·tan(sweep) ③ 退化值（sweep=0 ∧ ratio=1）<b>走 M1 旧 extrude 路径</b> + 另补解析检查 ④ 新参数<b>加到 AirfoilSpec</b>（全档重导）', '四项均采纳我的推荐 · ③ 是保住 9 条归档零扰动的关键：loft 与 extrude 网格<b>不同</b>（实测 4753 节点 / 4251 面 vs 4418 / 4300）'],
+ ['D15', 'T1 首轮 4 条样本的 split 归属', '混合：<code>sweep20</code> / <code>taper060</code> / <code>taper080</code> 三条<b>单自由度</b>留 train（让模型见得着每个自由度），唯一<b>两个自由度同时动</b>的 <code>sweep20_taper060</code> 判「新平面形状」进 test', '采纳我的推荐 · 与 test 已有的 <code>str3_T</code>（新截面形式）、<code>panel_str3</code>（族内新形式）同性质'],
+ ['D16', 'M5 放量的 val 口径（把「单维外推→val」推广到新维度）', '对齐 ribs 既有口径：<b>单维外推 → val，双维/新形式 → test</b>。翼盒<b>平面形状维</b>（后掠 &gt; 20° 或 锥度 &lt; 0.6，单维）→ val；平板<b>尺寸维</b>（光板且 (L,W) ≠ (600,600)）→ val', '采纳我的推荐 · 落地为 <code>HOLDOUT_REGIONS</code> 两条新谓词 + 常驻闸 <code>T1.D16-val-regions</code>；D12 锁定 11/11 不受影响'],
+ ['D17', 'M5 放量 8 条的分配', '<b>4 val + 3 train + 1 test</b>（翼盒 7 条 + 平板 1 条）：val = <code>sweep40</code>/<code>taper040</code>/<code>n_ribs9</code>/<code>plain800x600</code>；train = <code>sweep10</code>/<code>taper090</code>/<code>str5</code>；test = <code>sweep40_taper040</code>', '采纳我的推荐 · 实测落位 train 3 / val 4 / test 1，与口径完全一致；放量后总划分 train 13 / val 5 / test 5'],
+ ['D18', 'T3 柱壳族的划分口径（柱壳版 ribs 规则）', '<b>单维外推 → val，双维同时外推 → test</b>：长桁数 或 框数<b>之一</b>超出 train 包络（8 / 3）⇒ val；<b>两者同时</b>超出 ⇒ test（走的是与翼盒 <code>n_ribs7_chord800</code>、<code>sweep40_taper040</code> 同一套判断）', '采纳我的推荐 · 落地为 <code>_fuselage_single_extrapolation</code> / <code>_fuselage_double_extrapolation</code> 两条谓词，顺序上双维在前（先命中先定）'],
+ ['D19', 'T3 网格三角包络的退路', '<b>认下包络 + 族校验拒绝</b>：<code>n_stringers ∈ {0} ∪ [5, ∞)</code> 干净，<b>1–4 根直接 raise</b>（不硬修网格、不静默降级）', '采纳我的 A 案 · 五种修法实测全否（20/16/22 个三角全在框外弧，残条 = h_frm − h_str）；如实报「3str 以下做不干净」比假装能做诚实'],
+ ['D20', 'T3 双码 max|u| 差 1.79 % > 1 % 怎么处置', '<b>改交叉判据口径</b>（不动几何、不放容差）：判据 = ① 剔除端载环后的<b>结构 max|u|</b> ② 沿轴 20 站<b>截面形心挠度剖面</b>（对尖端挠度归一）。全域 max|u| 如实印出但不判绿/红', '采纳我的 C 案（未采纳 A「改载荷落点」——实测无效：band25 仍 1.72 %、峰值始终钉在 r=970）· 真凶是自由端框内缘自由边的局部伪峰，不是结构量'],
+ ['D21', 'T3 内压方向（deck 实际施加成了外压）', '<b>按族声明翻转</b>：<code>GeometryResult</code> 新增 <code>pressure_dload_sign</code>（默认 −1），柱壳建面器声明 <b>+1</b>，deck 写 <code>P=+0.05</code>', '采纳我的 A 案 · 实测：修复前自由径向膨胀 −0.22725 mm（应为 +0.228），修复后 <b>+0.22725 mm（−0.329 %）</b>；3 条含 <code>*DLOAD</code> 的归档 deck 逐字节不变'],
+ ['D22', 'T3 柱壳 <code>stringer_kind</code>「声明支持但建不出来」怎么处置', '<b>照 D19 先例拒绝</b>：<code>_validate</code> 对非 <code>blade</code> 的截面直接 raise，报错文本指向未完成任务；T 截面柱壳<b>未实现</b>', '采纳我的推荐 · 实测证据：T 截面 spec 建出的模型与 blade <b>逐位相同</b>（158548 节点 / 157972 单元 / minJ 0.5159，连 minJ 都一样）却声称 48 面长桁——关 4 抓得住（不是静默错），但「T 截面柱壳」今天不存在'],
+ ['D23', 'T4 开孔板的划分口径与双码判据', '① <b>划分</b>：λ 单维外推（居中孔、λ 0.2/0.3 &gt; train 已学 0.1）⇒ <b>val</b>；<b>偏心孔 ⇒ test</b>（新形式，且 Howland 只解中心孔、偏心后无解析对照）② <b>双码判据不用孔边峰值</b>：改成 max|u| 1 % + 孔边逐节点 vM 中位差 5 %', '采纳我的推荐 · 上一批（batch4）已落地却<b>漏进本表</b>，本批补记。峰值两码差 <b>1.92 %</b>，但位移只差 <b>0.154 %</b>、逐节点位移中位差 <b>0.0014 %</b> ⇒ 差在<b>应力恢复路径</b>而非模型（D8 的第三次应验）。落地为常驻闸 <code>check_forms :: T4.role-and-split</code>'],
+ ['D24', 'T6 多闭室翼盒的四项口径', '① <b>归属</b>：翼盒族的<b>新形式维</b>（不是独立新族）② <b>载荷</b>：弯曲 + <b>端部扭矩</b>（闭室数只在扭转下可观测）③ <b>划分</b>：按 <b>D16 类推</b> —— 首实例留 train、单维外推（腹板 2 &gt; 1，位置仍等分）→ val、偏心 / 双维 → test ④ <b>首轮 3 条打样</b>', '四项均采纳我的推荐 · 落地为常驻闸 <code>check_forms :: T6.role-and-split</code>（含「一道腹板的箱 ≠ <code>WINGBOX_BASELINE</code>」这条防复发断言）+ 独立解析对照 <code>verify_multi_cell.py</code>（Bredt-Batho 多闭室扭转，实测 <b>20 PASS / 0 FAIL</b>）'],
+ ['D25', 'T3 尺寸/壁厚维的划分口径 + 去重指纹（batch6）', '① <b>FUSELAGE_TRAIN_SIZE 是精确锚点</b>（D2000/L2000/t3，不是阈值带）：单维外推（直径 / 长度 / 壳厚之一）⇒ <b>val</b>；≥2 维或尺寸×计数跨维 ⇒ <b>test</b> ② <b>去重指纹扩到壳厚</b>：mesh 逐字节 + <code>*SHELL SECTION</code> 厚度表（实测 t2 与族默认的 model.msh 逐字节相同——只按 mesh 判重会把纯壁厚变体误删）', '采纳我的推荐 · 落地为 <code>manifest.split_of</code> 尺寸谓词 + <code>verify_dataset.model_sha256</code> 扩展 + 常驻闸 <code>check_forms :: T3.role-and-split</code>（12 项含规则反向探针）。实测 36 条 / 35 类 / 0 类跨 split'],
+ ['D26', 'T3 网格口径随尺寸怎么走', '<b>cap 独占，删掉等比缩放</b>：T3 的网格由 <code>0.4 × min(h_str, h_frm)</code> cap 决定、与全局尺寸场无关 ⇒ spec 的 size 字段在 T3 上<b>完全空转</b>（实测 size 25 与 80 的 spec 同哈希）', '采纳我的 B 案 · 空转字段必须删而不是留着假装有用；<code>make_batch6_specs.py</code> 已按此口径'],
+ ['D27', 'T3 尺寸维往哪个方向放量', '<b>只朝收缩方向</b>（D/L/t 变小）：向上的手臂在本机做不了——ccx 把每个壳单元展开成实体（固有行为），L3000 需 188,674 节点 / 281 万方程，实测 <code>0xC0000005</code>（fork 先报 <code>0xC000012D</code> = 提交上限）对 ~33 GB 上限', '采纳我的 A 案 · 与 D25 精确锚点配套； upward 方向留档为环境 limitation（<code>_probe_b6/</code>），不假装能做。另：<b>d1600 个例越线换点 d1800</b> 是本轮独立判决，判据一字未动'],
+ ['D28', 'T4 放量（batch7）的划分口径与 Howland 闸挂哪侧', '① <b>划分</b>：尺寸单维（600x300，λ 不变）⇒ <b>val</b>；λ 单维（d50）⇒ <b>val</b>；<b>双维角点</b>（λ 与 (L,W) 同时 ≠ 锚点 λ 0.1 / 400x200，两轴都用 <code>!=</code> 对齐 D25 读法）⇒ <b>test</b>，谓词插在偏心 test 之后、两个 val 谓词之前；偏心 + 更大孔 ⇒ <b>test</b>（沿用 D23）② <b>尺寸不变性</b>：Howland 闸<b>只打 ccx 侧</b>（verify_hole 既有口径——abaqus 峰值是恢复统计量不是不变量，D8）；真闸 = <b>同码跨 coupon Kt 差</b>（同恢复路径、同 λ），实测 ccx 0.629 % / abaqus 1.539 % &lt; 2 %，ccx 对 Howland +0.182 % ③ <b>厚度维暂不声明</b>（对齐平板族 D16 口径），放量前须补', '采纳我的推荐 · 落地为 <code>_probe_b7/b7_size_invariance.py</code> 探针（<code>_b7_size_invariance.json</code>）+ <code>manifest.py</code> 双维角点谓词 + 常驻闸 <code>check_forms :: T4.role-and-split</code>（5 → 11 行，含两条方向探针）。实测 40 条 / 39 类 / 16-13-11 / 0 类跨 split'],
+ ['D29', 'T7 复材层合：架构 / 族归属 / 首批铺层 / 指纹', '① <b>架构 B 等效单层</b>：CLT 把对称均衡层合均匀化成等效正交异性单层，S4 不动、<code>*ELASTIC, TYPE=ENGINEERING CONSTANTS</code> 9 常数——真 COMPOSITE 卡 ccx 只支持 S6/S8R，要动全链网格（不干）② <b>族归属 = 开孔板的材料维</b>（复用 open_hole builder + 关 4 语义），layup 走 <code>params["layup"]</code> dict 键级不加 dataclass 字段 ⇒ 老 40 条 spec_sha256 零扰动 ③ <b>首批铺层 [0/90]s</b> ④ <b>去重指纹加材料律</b>：model_sha256 第三成分 = deck <code>*ELASTIC</code> 块（实测复材与铝 d20 同网格同厚度撞车 <code>80695b4c759e</code>）', '采纳我的推荐 · 划分：复材首实例 sweep/train、+几何单维 val、双维 test、偏心谓词优先（常驻闸 <code>check_forms :: T7.role-and-split</code> 6 行）。gate3 实测 E_eff ccx −2.070 % / abaqus −2.073 %（两码差 0.003 %），TOL_EFF=3 % 按实测链钉；41 条 / 40 类 / 17-13-11'],
+ ['D30', 'T7 放量：铺层族与厚度维怎么进数据集', '① <b>划分升级为「标量轴计数」</b>：开口板四条标量轴 <b>M</b> 铺层（<code>[0/90]s</code> 锚点）/ <b>T</b> 壁厚（2.0 mm）/ <b>L</b> λ（0.1）/ <b>S</b> 尺寸（400×200），<b>0 轴 train、1 轴 val、≥2 轴 test</b>，偏心仍走独立 test 谓词；先实测<b>复现 D12 8/8</b>（<code>_probe_t7b/probe_d30_split.py</code>）才落地 ② <b>铺层族加 2 点</b>：<code>[45/-45]s</code> 与准各向同性 <code>[0/45/-45/90]s</code> ⇒ 各 1 轴 ⇒ val；再加 <code>[45/-45]s + λ0.2</code> 双维角点 ⇒ test ③ <b>厚度维判定退化、不入库</b>：恒定名义应力下 <code>F=σwt</code> 与膜刚度 <code>EAt∝t</code> 精确抵消 ⇒ <code>u=σL/E</code> 与 t 无关，实测 t=2.0 与 t=1.0 的 max|u| <b>逐位相同 0.05734516</b>（vM 差 0.02 %）——作为样本零信息量，<b>改立常驻自检</b> <code>T7.thickness-invariance</code>（断言载荷比恰为 2、等效模量与 t 无关；载荷若没按 t 缩放，两厚度位移会差 2 倍）。厚度要有可观测性需引入弯曲/屈曲（<code>D∝t³</code>），属新形式', '采纳我的推荐 · 实测 <b>44 条 / 43 类 / 17-15-12</b>、0 类跨 split、dup 0；<code>eval_dataset</code> PASS（含 <code>rule_reproduces_D12</code>）与 <code>verify_dataset</code> 88/88 + pairing 44/44 双绿，<code>check_forms</code> <b>54/54</b>（T7 由 6 项增至 10 项）。<b>顺带修掉两个真缺陷</b>：① <code>LayupSpec.is_balanced</code> 按角度 <code>%180</code> 求和会把 <code>-45°</code> 归一成 <code>135°</code> 而<b>误拒合法平衡铺层 <code>[+45/-45]s</code></b> —— 改为有符号配对，并让 <code>a_matrix</code> <b>真算</b> A16/A26（原为硬写 0）加物理交叉校验；② <code>verify_dataset</code> 的 <b>pairing 只打印不参与总判</b>（41 vs 44 条仍报 PASS）—— 已并入 <code>all_ok</code>。准各向同性另用<b>各向同性恒等式 <code>G=E/(2(1+ν))</code></b> 独立验 CLT(20616.463 vs 20616.463 逐位同）'],
+ ['D31', 'M7 之后往哪补：翼盒尺寸维（展长 / 壁厚）进 dataset', '① <b>判据 D31</b>：把 <code>span</code> 与 <code>skin_thickness</code> 从 D25 式「精确锚点」<b>扩为 train 区间</b> —— <code>WINGBOX_TRAIN_SPAN=(1600,2400)</code>、<code>WINGBOX_TRAIN_SKIN=(2.0,4.0)</code>。核心二分：<b>出区间 = 外推</b>（val/test），<b>出锚点但仍在区间内 = 扫点</b>（train）。D25 说「连续维只采过一个点 ⇒ 只能等号」，反过来<b>主动补档位就造出 interior</b>，区间才诚实 ② <b>test 三入口</b>：两轴同时出区间 ／ 一轴出区间 + 他轴（ribs&gt;5 / sweep&gt;20 / tcr&lt;0.6 / webs&gt;1 / 非锚定长桁）／ <b>两轴出锚点但都在区间内</b>（交互点）；<b>chord 绝不算「他轴」</b>（800/1000 两档都在 train，列进去会把 3 条 chord800 重贴成 test）③ <b>先实测零漂移再落地</b>：<code>_probe_m8/probe_d31_landed.json</code> 用 <code>split_of</code> 直测 44 条存量，<b>0 条变化</b>', '采纳我的推荐「先做 1」· 实测 <b>52 条 / 51 类 / 21-17-14</b>（翼盒 17-7-7），0 类跨 split、dup 0。<b>物理核对落盘</b> <code>_probe_m8/physics_check.json</code>：壁厚严格 <code>1/t</code>（skin 1.5→4 位移 <b>2.656 倍</b>，偏差 0.30 %）、展长三点最小二乘指数 <b>2.899</b>（梁论 3，±3 % 偏离来自 n_ribs 固定 5 致肋距随 span 变）、交互项 <b>0.06 % / 0.17 %</b>（可忽略 ⇒ 交互 test 点公平）。<b>补点后模型学到幂律</b>：M3 test <b>10.72 % → 8.32 %</b>、train LOO 3.29 %，常数基线 44.53 %（相对基线 30.6 % → <b>18.7 %</b>）；隐含指数 <code>span +2.858</code> / <code>skin −0.992</code> / <code>chord −2.900</code>（弱正则 alpha=1e-8 对照 2.875 / −0.999 ⇒ 收缩可忽略）。<b>M5≈M3（7.96 % vs 8.32 %）</b>：特征含 log(span)/log(skin) 时 log 空间线性自己就能表达 <code>span³/t</code>，物理先验只在查询跳出特征范围时才兑现。闸：<code>eval_dataset</code> PASS、<code>verify_dataset</code> <b>52/52 + pairing 52/52</b>、<code>check_forms</code> <b>54/54</b>、<code>regress_groups</code> <b>9/9 组</b>、双码 <b>8/8</b>（位移差 0.26–0.50 %、vM 逐节点中位差 0.18–0.45 %、平衡残差 9e-5–1.6e-3 %）'],
+ ['D32', '翼盒族的标量代理目标口径（主 max_disp + 副 max_w）', '① <b>主目标 <code>max_disp</code></b>（合位移；实测 <code>max|v|/max_disp</code>=<b>0.99899–0.99973</b> ⇒ 它本身就是弯曲挠度，不必另立「法向挠度」）② <b>副目标 <code>max_w</code></b>（展向位移，<b>只报不判</b>，仅用于 <code>span</code> 指数交叉检验）③ <b>应力峰值不设为可学目标</b>：1 参数梁标度律已 10.39 %，10 特征只买到 0.88 pp 且配对 CI 跨 0；峰值位置在 31 条里散落 <b>21/25 个节点</b> ⇒ 峰值是<b>离散选择</b>不是光滑泛函 ④ <b>跨目标比 MAPE 必须下掉同一条样本</b>（各自剔各自最差会翻转结论）', '采纳我的推荐「主 + 副」· <b>不把 <code>max_w</code> 定为主目标的四条实测理由</b>：① 它绕开全库唯一会崩的轴（<code>sweep40_taper040</code> 上 ×<b>1.716</b> vs <code>max_disp</code> ×<b>4.171</b>，敏感度 41 %）② 量级仅弯曲位移的 <b>1.9–5.7 %</b>，是泊松耦合次级量 ③ <b>跨族不可用</b>（开孔板纯面内 ≡ 0、加筋板近刚性 ≡ 1）④ 与双码闸门口径分家。<b>D33 补点又添一条铁证</b>：train 只加一个 sweep 站，<code>max_w</code> 的 test 就从 <b>4.17 % 翻到 8.33 %</b>（主目标只动 0.22 pp）⇒ 它的低误差来自「没学到」，不配拿来判模型。统一下掉 <code>sweep40</code> 时 <code>max_disp</code> 3.82 % &lt; <code>max_w</code> 4.48 %，分别剔则反过来。证据 <code>_probe_m9/w_vs_disp_diag.json</code>、<code>_probe_m10/d33_vs_d31.json</code>'],
+ ['D33', '后掠轴补中间档：20° → 30°（把唯一的外推机制变成可内插）', '① <b>规则</b>：<code>WINGBOX_TRAIN_MAX_SWEEP</code> 20°→<b>30°</b>，新增 train 站 <code>sweep30</code>（仅 <code>sweep_deg=30</code>，锥度中性、其余全锚定）② <b>不是放宽考试</b>：<code>sweep40</code> 仍 <b>val</b>、<code>sweep40_taper040</code> 仍 <b>test</b>，只是外推距离 20°→<b>10°</b> ③ <b>先探针后落地</b>：52 条存量 <b>0 条换边</b>、D12 复现 11/11 ④ <b>物理先测</b>：后掠响应<b>超线性</b>（相对 0° 的位移比 1.000/1.094/1.340/1.853/2.965，增量 +0.094/+0.246/+0.514/+1.112 严格递增），0–20° 割线外推到 40° 差 <b>−43.4 %</b>（与 M7 的 −41.5 % 同源）', '采纳我的推荐「现在补」· 实测 <b>53 条 / 52 类 / 22-17-14</b>（翼盒 18-7-7）。<b>效果是混合的，如实记</b>：<code>planform_out</code> 组 <b>32.9 %→25.7 %</b>（−7.2 pp）、主目标 test <b>7.96 %→7.74 %</b>（−0.22 pp）、物理档 M2X <b>16.58 %→14.35 %</b>、val 10.25 %→9.40 %；<b>代价</b>：<code>combo</code> 组 4.6 %→7.0 %、1 参数梁 24.84 %→26.07 %、副目标 <code>max_w</code> 4.17 %→8.33 %。<b>train LOO 3.06 %→4.19 % 是好事</b>——说明新点带来了模型表达不了的曲率（30° 处二次趋势预测已偏 −6.2 %），不是又一个冗余点。<b>净收益 0.22 pp 落在 n=7 的噪声里 ⇒ 方向对、剂量不足；sweep 40° 的 25.7 % 仍是全表最大误差项</b>。物理侧独立测算：3 站二次外推 40° 残差 −22.9 %，4 站二次 −14.1 %，4 站三次 −7.2 %。证据 <code>_probe_m10/probe_d33_split.json</code>、<code>physics_sweep_axis.json</code>、<code>d33_vs_d31.json</code>']
+];
+
+/* ---- 现在待你拍板 ---- */
+const DECISIONS = [
+];
+
+const REVIEW = [
+ {id:'r1', g:'M1', c:'18 条 case（ccx 9 + abaqus 9）已重导，六件套齐全，且未重跑求解',
+  q:'重导只重建网格，数值结果沿用归档。7 条种子 + 网格算法对照 + 加长桁 2 条（blade / T 形）× 双求解器 = 18 条。',
+  cmd:'cd feagpt_repro\npython make_dataset.py --solver ccx    --cases outputs outputs_str outputs_T           --root ../FEM-Bench-Aero\npython make_dataset.py --solver abaqus --cases outputs_abaqus outputs_str_abaqus outputs_T_abaqus --root ../FEM-Bench-Aero',
+  ev:['导出两棵树各 10 条全部成功、无拒绝（其中 1 条是已知重复，随后去重）','每 case 落 6 个文件','带一道「结果–网格同源」闸：重建网格节点数 ≠ 归档 n_nodes 就拒绝导出'],
+  files:['FEM-Bench-Aero/modeling/','FEM-Bench-Aero/_xval/']},
+
+ {id:'r2', g:'M1', c:'关 4 语义门禁：每 case 8 项拓扑计数「派生预期 == 几何实测」',
+  q:'不是拿设计读数和它自己比，是「由设计意图推导出的应有计数」对「gmsh 实测计数」。精确相等，不给容差。',
+  cmd:'cd feagpt_repro\npython check_semantics.py --root ../FEM-Bench-Aero --json ../FEM-Bench-Aero/gate4.json',
+  ev:['modeling 9/9 PASS ｜ _xval 9/9 PASS（合 18/18）','每 case 8 项：梁面 / 上蒙皮 / 下蒙皮 / 肋面 / 上长桁 / 下长桁 / 肋所在 z 平面 / 壳面总数','T 形算例要求「上长桁 36 面、壳面总 117」—— 按截面感知公式重推后精确命中'],
+  files:['FEM-Bench-Aero/gate4.json']},
+
+ {id:'r3', g:'M1', c:'新增「结果–网格同源」闸，堵住关 4 抓不到的错配',
+  q:'关 4 只看几何自洽，看不见「新网格 + 旧结果」。所以导出时另加一道：重建网格的活跃节点数必须等于归档 results.json 的 n_nodes。',
+  cmd:'# 该闸内建于 make_dataset.py，触发时会抛 SameSourceError 并拒绝导出\ncd feagpt_repro && python make_dataset.py --solver ccx --cases outputs outputs_str --root ../FEM-Bench-Aero',
+  ev:['本轮 18 条全部通过','历史背景：7 条旧种子 spec 写着 n_stringers=3 但几何无长桁（空转字段）——正是这类错配催生了这道闸'],
+  files:['feagpt_repro/make_dataset.py']},
+
+ {id:'r4', g:'M2', c:'面分类器换成「建面打标 + outDimTagsMap 继承」，包围盒降为交叉校验',
+  q:'旧的包围盒判据是二值的（腹板 dx 精确 0.0000、蒙皮 450 mm），一旦后掠/锥形就翻转，且三道数值门禁全不报警。',
+  cmd:'cd feagpt_repro && python diagnostics/fragment_map_probe.py outputs/naca4412_wingbox/naca4412_wingbox.spec.json\npython diagnostics/fragment_map_probe.py outputs_str/naca4412_wingbox_str3/naca4412_wingbox_str3.spec.json',
+  ev:['探针实测：len(outDimTagsMap) == 输入实体数','基线 21 面 / 加长桁 69 面 —— 每个输出面被恰好一个输入认领（无漏、无重）','打标结果与旧包围盒判据零分歧'],
+  files:['feagpt_repro/diagnostics/fragment_map_probe.py','feagpt_repro/feagpt/geometry.py']},
+
+ {id:'r5', g:'M2', c:'M2 硬门槛达成：9 条种子分组逐位一致',
+  q:'比的是「逐面 bbox 指纹」——不比面数（面数相同也可能面在组间搬家），不比 tag（gmsh 会重新编号）。',
+  cmd:'cd feagpt_repro\npython regress_groups.py --check regress_baseline_groups.json',
+  ev:['9/9 逐位一致（逐面 bbox 指纹 + 网格统计 + 拓扑计数）','基准是改代码之前落的快照 regress_baseline_groups.json'],
+  files:['feagpt_repro/regress_baseline_groups.json']},
+
+ {id:'r6', g:'M2', c:'结构族抽象落地：StructureSpec + BUILDERS 注册表，未知族直接报错',
+  q:'不再「一个函数写死翼盒」。未知结构族抛 ValueError，不静默回落成翼盒。',
+  cmd:'cd feagpt_repro && python -c "from feagpt import geometry; print(list(geometry.BUILDERS))"',
+  ev:['BUILDERS 键 = [\'wingbox\']，M3 往这里加键即可','未知族 ValueError 已实测验证'],
+  files:['feagpt_repro/feagpt/spec.py','feagpt_repro/feagpt/geometry.py']},
+
+ {id:'r7', g:'M2', c:'BC / 载荷绑定从硬编码 group 名改为按几何声明',
+  q:'以前 inp_writer 里写死 groups["root"]/["tip"]，换结构族会静默丢掉约束和载荷。',
+  cmd:'# GeometryResult.bc_groups 声明 {\'clamp\':\'root\', \'load\':\'tip\'}，一路透传到 deck writer\ncd feagpt_repro && python run_pipeline.py --demo --out _m2_smoke',
+  ev:['基线复现：21 面 / 5144 单元 / minJ 0.6249 / max|u| 2.3654 mm','新构建的 deck 与归档 model.inp 逐字节一致'],
+  files:['feagpt_repro/feagpt/inp_writer.py','feagpt_repro/feagpt/pipeline.py']},
+
+ {id:'r8', g:'M2', c:'重导只动了该动的：物理文件 18/18 一字未变',
+  q:'加了 structure 字段 ⇒ spec 哈希全变 ⇒ 必须重导。但网格/deck/结果不该变。',
+  cmd:'cd feagpt_repro\npython - <<\'PY\'\nimport hashlib, json\nfrom pathlib import Path\npre = json.loads(Path("m1_to_m2_hash_snapshot.json").read_text())\nsame = diff = 0\nfor k, h in pre.items():\n    p = Path("../FEM-Bench-Aero") / k\n    if not p.exists(): continue          # 被去重删掉的那条\n    if hashlib.md5(p.read_bytes()).hexdigest() == h: same += 1\n    else: diff += 1; print("changed:", k)\nprint("unchanged", same, "changed", diff)\nPY',
+  ev:['model.msh / model.inp / model.step / model.results.json：18/18 逐字节未变','spec.json / truth.json：18/18 变更（正是该变的两个）','二次重导后 64 个物理文件仍全部未变（确定性）'],
+  files:['feagpt_repro/m1_to_m2_hash_snapshot.json']},
+
+ {id:'r9', g:'去重', c:'重复算例已物理删除：9 条 → 8 条/树',
+  q:'naca4412_wingbox 与 naca4412_wingbox_n_ribs5_chord1000 的 model.msh 逐字节相同（同一模型、两个输入写法：chord 1000.0 vs 1000）。',
+  cmd:'cd feagpt_repro\npython dedup_dataset.py --root ../FEM-Bench-Aero --keep naca4412_wingbox          # dry-run\npython dedup_dataset.py --root ../FEM-Bench-Aero --keep naca4412_wingbox --apply  # 真删',
+  ev:['删两棵树各 1 条，保留 naca4412_wingbox（它是 M2 回归基准）','数据集 9→8 条/树，19 MB','删除记录留在 dedup_report.json，原始 outputs/ 未动，可逆'],
+  files:['FEM-Bench-Aero/dedup_report.json']},
+
+ {id:'r10', g:'去重', c:'去重从「仅报告」升为硬闸 —— 先证明它会咬人再修',
+  q:'verify_dataset.py 现在要求跨树同类不重复；一旦出现重复直接判 CHECK（退出码 2）。',
+  cmd:'cd feagpt_repro\npython verify_dataset.py --root ../FEM-Bench-Aero',
+  ev:['改闸后、删之前：exit=2，VERDICT: CHECK（证明闸真的会咬人）','删除之后：exit=0，VERDICT: PASS','树内去重，跨树同哈希不算重复（那是交叉验证的前提）'],
+  files:['feagpt_repro/verify_dataset.py']},
+
+ {id:'r11', g:'关 3', c:'关 3 双求解器交叉验证：9/9 PASS',
+  q:'同一模型喂给 CalculiX 和 Abaqus 两个独立代码，比节点数、坐标、单元数、位移、反力平衡、应力。',
+  cmd:'cd feagpt_repro\n# 9 条逐条跑，源目录按 case 选（种子在 outputs/，对照在 outputs_str/，T 形在 outputs_T/）\npython verify_solvers.py --ccx outputs_T --abaqus outputs_T_abaqus --case naca4412_wingbox_str3_T',
+  ev:['节点数 9/9 完全一致；坐标最大差 5.86e-05 mm（ODB 用 32 位浮点存坐标，这是存储精度）','max|u| 差 0.14–0.51 %；逐节点 vM 中位差 0.12–0.59 %','T 形算例（29447 节点）max|u| ccx 2.11507 vs abaqus 2.11812 mm → 差 0.144 %，中位差 0.12 %','静力平衡残差 0.00002–0.00036 %','逐条日志见 gate3_xval.log'],
+  files:['FEM-Bench-Aero/gate3_xval.log']},
+
+ {id:'r12', g:'关 3', c:'静力平衡：反力合力 = 施加力，残差 < 0.0004 %',
+  q:'这是唯一不依赖任何解析模型的硬不变量 —— 无论模型建得对不对，只要求解正确，反力合力就必须等于外力。',
+  cmd:'# 与 r11 同一条命令，看第 6 项输出\ncd feagpt_repro && python verify_solvers.py --ccx outputs --abaqus outputs_abaqus --case naca4412_wingbox',
+  ev:['ccx: |R| 500.00017 N vs 500.0 N applied，残差 0.000034 %','abaqus: |R| 500.00046 N vs 500.0 N，残差 0.000091 %','9 条 case 全部在同一量级；T 形算例 ccx 0.000034 % / abaqus 0.000031 %'],
+  files:['FEM-Bench-Aero/gate3_xval.log']},
+
+ {id:'r13', g:'独立验证', c:'独立验证①（悬臂盒解析解）读数与历史逐位相同，证明 M2 改动零影响',
+  q:'一个带解析解的悬臂薄壁盒，解出来跟梁理论比。这是链路健康的历史锚点。',
+  cmd:'cd feagpt_repro\npython verify_cantilever.py',
+  ev:['位移 1.91029 mm，与梁理论差 +8.82 %（薄壁剪切滞后所致，一直如此）','厚壁对照 +0.80 %','与 M2 之前的读数完全一致 ⇒ deck writer 的改动没有动到数值'],
+  files:['feagpt_repro/verify_cantilever.py']},
+
+ {id:'r14', g:'数据集', c:'数据集自洽验收 18/18 OK，跨树网格 9/9 逐字节一致',
+  q:'每个 case 六件套齐全、spec↔truth 哈希对得上、scalars 与 results.json 一致；同一模型在 ccx 树与 abaqus 树里的网格必须逐字节相同。',
+  cmd:'cd feagpt_repro\npython verify_dataset.py --root ../FEM-Bench-Aero',
+  ev:['总数 18（9 模型 × 2 树），n_ok 18','cross_tree_mesh: 9/9 一致，无 mismatch','duplicates: modeling 0 / _xval 0','配对 9，modeling_only 0 / xval_only 0'],
+  files:['FEM-Bench-Aero/verify_report.json']},
+
+ {id:'r15', g:'M3/T5', c:'测出来的第一件事：T 形截面是 3 个壳面，不是 2 个',
+  q:'直觉上「腹板 + 翼缘」是 2 片。但翼缘要被腹板切开，所以是 腹板 1 + 翼缘 2 片 = 3 面。这个数直接决定关 4 的期望值公式。',
+  cmd:'cd feagpt_repro\npython diagnostics/t_stringer_probe.py      # 输出 diagnostics/t_stringer_probe.json',
+  ev:['不做布尔：2 面（各自 4 条边界曲线）','做 occ.fragment 之后：3 面，shared_nodes 矩阵 = [[32,11,11],[11,22,11],[11,11,22]]','outDimTagsMap 实测 = [[面1], [面2, 面3]] —— 腹板未被切，翼缘被切成两半'],
+  files:['feagpt_repro/diagnostics/t_stringer_probe.py','feagpt_repro/diagnostics/t_stringer_probe.json']},
+
+ {id:'r16', g:'M3/T5', c:'最危险的一条：两片「贴着」的面在网格里根本不连着（0 个共享节点）',
+  q:'T 形如果按「腹板拉伸 + 翼缘拉伸」分别建，几何上紧贴，网格上却不共享节点 —— 翼缘变成一根悬在空中的悬臂。线性静力照样解得出位移，<b>三道数值门禁一条都不会报警</b>。',
+  cmd:'cd feagpt_repro\npython diagnostics/t_stringer_probe.py',
+  ev:['不做布尔（nofrag）：两面共享节点 = <b>0</b>（矩阵 [[32,0],[0,32]]）','做 occ.fragment：每对面共享 <b>11</b> 个节点、1 条边界曲线','所以 flanged 截面必须过布尔，这是 build_wingbox 里那段 bonding 存在的唯一理由'],
+  files:['feagpt_repro/feagpt/geometry.py']},
+
+ {id:'r17', g:'M3/T5', c:'网格尺寸上限：我自己的假设被数据推翻了，才换成最后那个公式',
+  q:'T 形翼缘是 15 mm 半宽的窄条，blossom 全四边形直接失败（"1D mesh cannot be divided by 2"）。我先假设「按翼缘半宽自适应」——探针把这个假设证伪了。',
+  cmd:'cd feagpt_repro\npython diagnostics/t5_robustness.py          # 5 种宽度 × 3 种策略\npython diagnostics/t5_mesh_probe.py',
+  ev:['我的假设（自适应 0.8×半宽）：宽度 20/30/40/50/60 → minJ 0.485 / 0.533 / 0.433 / <span style="color:var(--amber)">0.225</span> / 0.594 —— <b>非单调，宽度 50 处逼近门禁 0.30</b>','改固定上限 12 mm：同样 5 种宽度 → minJ 0.504 / 0.533 / 0.493 / 0.527 / 0.532 —— 每个宽度都稳','固定 15 mm：宽度 20 处直接失败的，「不是趋势，是掷硬币」','落地方案 = <code>min(0.8 × 翼缘半宽, size_chord)</code>，实测等于 12 mm'],
+  files:['feagpt_repro/diagnostics/t5_robustness.json','feagpt_repro/feagpt/geometry.py']},
+
+ {id:'r18', g:'M3/T5', c:'退化自检：把翼缘关掉，T 形必须逐面还原成 blade（新形式自带一条回家的路）',
+  q:'方案里定的硬要求——每种新结构形式必须能退化成已信任的旧形式，否则新参数「有没有真接上」根本无法证伪。T5 的退化点是「翼缘宽 → 0」。',
+  cmd:'cd feagpt_repro\npython check_forms.py --json check_forms.json',
+  ev:['定义层：T(fw=0) 的 segments / role / n_faces 与 blade 完全相同（1 面）','构建层：blade 模型与 T(fw=0) 模型的<b>逐面 bbox 指纹逐位一致</b>（7831 节点 / 7517 壳面 / minJ 0.5228 / 9 个分组）','关 4 连带：退化后的期望值会从「每根长桁 3 面」降到 1 面，gate4 8/8 PASS —— 不这么做，关 4 会把<b>正确的</b>构建判成错'],
+  files:['feagpt_repro/check_forms.py','feagpt_repro/check_forms.json','feagpt_repro/feagpt/sections.py']},
+
+ {id:'r19', g:'M3/T5', c:'T 形算例正式入库，数据集 8 → 9 条/树',
+  q:'不再是探针目录里的临时算例：它以正式 case 的身份进入 modeling/ 与 _xval/，走完整套门禁。',
+  cmd:'cd feagpt_repro\npython make_dataset.py --solver ccx    --cases outputs outputs_str outputs_T           --root ../FEM-Bench-Aero\npython make_dataset.py --solver abaqus --cases outputs_abaqus outputs_str_abaqus outputs_T_abaqus --root ../FEM-Bench-Aero\npython dedup_dataset.py --root ../FEM-Bench-Aero --keep naca4412_wingbox          # 先 dry-run\npython verify_dataset.py --root ../FEM-Bench-Aero',
+  ev:['<code>naca4412_wingbox_str3_T</code>：117 壳面 / 29447 活跃节点 / 29733 quad4 / minJ 0.5332','关 4 PASS（8 项，含「上长桁 36 面」这条截面感知的期望值）','关 3 PASS（7 项）：max|u| 差 0.144 %、逐节点 vM 中位差 0.12 %、平衡残差 0.000034 % / 0.000031 %','去重后两棵树各 9 条，自洽 18/18 OK，跨树网格 9/9 逐字节一致','9 条种子分组回归仍 9/9 逐位一致 —— blade 路径一个字节都没动'],
+  files:['FEM-Bench-Aero/modeling/naca4412_wingbox_str3_T/','FEM-Bench-Aero/_xval/naca4412_wingbox_str3_T/','FEM-Bench-Aero/verify_report.json']},
+
+ {id:'r20', g:'M3/T2', c:'开工第一个陷阱：两个求解器都给你一个叫「力」的量，它们不是同一个东西',
+  q:'平板是分布压力，自平衡且有支反力，一验平衡就露馅：<b>ccx 的 FORC 是「外力合力」</b>（施加 + 反力，全节点求和恒为 0）；<b>abaqus 的 RF 是「纯反力」</b>（自由节点为 0，全节点求和 = 施加的 36 N）。我一开始当成同一个量，平板平衡残差直接报 100 %。',
+  cmd:'cd feagpt_repro\npython diagnostics/forc_audit.py\n# 用翼盒（载荷 +y、悬臂端无分布压）把两码的量分别锚定，再上平板',
+  ev:['翼盒上 ccx 全节点 ΣFORC = 0（自平衡），abaqus 全节点 ΣRF = +500 N（恰等于施加力）','平板上一开始按同一目标比 → 残差 100 %，是<b>口径错</b>不是求解器错','改成「各码各自的目标」后：ccx 0.000018 % ／ abaqus 0.000001 %','落地：<code>verify_solvers.py</code> 里加 <code>FORCE_CONVENTION = {"ccx":"total","abaqus":"reaction"}</code>；用 <code>--reaction-set all</code> 显式选节点集'],
+  files:['feagpt_repro/diagnostics/forc_audit.py','feagpt_repro/verify_solvers.py']},
+
+ {id:'r21', g:'M3/T2', c:'第二结构族的独立验证线：一条闭式解 + 一组不依赖任何模型的守恒量',
+  q:'翼盒那条线是「悬臂梁解析解」。平板换一条：<b>四边简支矩形板的 Navier 双正弦解</b> w_max = 0.00406·q·a⁴/D。之外再挂四个不变量：受载面积、全节点合力、支反力、对边对称。',
+  cmd:'cd feagpt_repro\npython verify_panel.py            # 12 项检查 -> FEM-Bench-Aero/panel_verify.json',
+  ev:['解析解 0.96268 mm ｜ 6 mm 网格 FE 0.95658 mm → <b>−0.634 %</b>','受载面积：网格积分 360000.0000 mm² vs 板面积 360000.0 mm² → 偏差 <b>0.00 %</b>（证明<b>长桁没有被加压</b>——如果压上了会是 +10 %）','支反力：400 个被夹边节点 ΣFORC_z +35.37040 N + 落在节点上的压力 +0.62858 N = 35.99897 N vs 施加 36.00000 N → <b>0.0029 %</b>','对边对称：x 对边 1.732 %、y 对边 0.483 %（平板网格不是镜像对称的，所以留了残差，容差 3 %）','加长桁后刚度 <b>×62.8</b>（0.95658 → 0.01523 mm）。若长桁没粘上，这个数会是 ~1'],
+  files:['feagpt_repro/verify_panel.py','FEM-Bench-Aero/panel_verify.json']},
+
+ {id:'r22', g:'M3/T2', c:'0.800 % 到底是不是求解器分歧？把网格减半就知道了',
+  q:'无长桁平板的 max|u| 跨求解器差 0.800 %，容差 1 %，只剩 0.2 个百分点的余量 —— 这是 11 条里唯一一条贴边的。判断是「离散化」还是「真分歧」，办法只有一个：加密网格看它往哪边走。',
+  cmd:'cd feagpt_repro\npython verify_solvers.py --ccx outputs/_verify_panel --abaqus outputs/_verify_panel_abq \\\n  --case verify_panel_plain_fine --spec outputs/_verify_panel/verify_panel_plain_fine/verify_panel_plain_fine.spec.json \\\n  --force 36 --reaction-set all\n# 日志落在 FEM-Bench-Aero/gate3_panel_fine.log',
+  ev:['6 mm：ccx 0.95658 vs abaqus 0.96429 mm → <b>0.800 %</b>','3 mm：ccx 0.96175 vs abaqus 0.96490 mm → <b>0.326 %</b>（减半还多）','而且解析解 0.96268 mm 被<b>从两侧夹住</b>：ccx −0.097 % ／ abaqus +0.230 %','⇒ 结论：0.800 % 是离散化，不是分歧。按纪律「先加密网格、后动容差」，我没有碰容差'],
+  files:['FEM-Bench-Aero/gate3_panel_fine.log']},
+
+ {id:'r23', g:'M3/T2', c:'第二结构族的真正接入面：4 处「写死翼盒」必须改成按 builder 声明',
+  q:'开工前盘点出三处，实际做的时候又浮出一处。这些地方都是「跑得通但结果错」——不会崩、不会报警，只会安静地产出错的数。',
+  cmd:'cd feagpt_repro\npython run_pipeline.py --case stiffened_panel_600x600 --spec _t2_probe/stiffened_panel_600x600.spec.json\n# 四处声明在 feagpt/panel.py 里返回，pipeline / inp_writer 只读不猜',
+  ev:['① <b>约束/加载节点</b>：pipeline 原来用 <code>abs(z)&lt;1e-6</code> 找根部端面 —— 平板在 z=0 的面上有 400 个节点，规则会误伤。改成 <code>GeometryResult.bc_nodes</code> 回调，<code>None</code>=沿用翼盒 z 规则','② <b>厚度表</b>：<code>_group_thicknesses</code> 原来按翼盒组名建表并读 <code>spec.airfoil.*</code>。改成 <code>shell_thickness</code> 由 builder 给','③ <b>约束自由度</b>：<code>*BOUNDARY</code> 原来写死 <code>1, 6</code>（全约束）。简支只该约束三向平动 → <code>clamp_dofs = (1, 3)</code>','④ <b>压力作用对象</b>：<code>*DLOAD</code> 原来写死 <code>E_UPPER_SKIN</code>。改成 <code>pressure_group</code> 声明，平板指向整块蒙皮（长桁不加压）','验证：四处改完后 9 条老算例的物理文件<b>逐字节未变</b>（见 r26）'],
+  files:['feagpt_repro/feagpt/panel.py','feagpt_repro/feagpt/pipeline.py','feagpt_repro/feagpt/inp_writer.py','feagpt_repro/feagpt/geometry.py']},
+
+ {id:'r24', g:'M3/T2', c:'和 T 形翼缘同一个坑：长桁条与蒙皮「贴着」不等于「连着」',
+  q:'长桁是竖在蒙皮上的薄壳条。如果两者分别建、只是几何上贴在一起，网格里<b>共享 0 个节点</b> —— 长桁变成三根悬在空中的悬臂，而<b>三道数值门禁一条都不会报警</b>（位移、平衡、语义全过）。',
+  cmd:'cd feagpt_repro\npython diagnostics/panel_bond_probe.py',
+  ev:['不做布尔：长桁条与蒙皮共享节点 = <b>0</b>','过 <code>occ.fragment</code>：每根长桁共享 <b>51</b> 个节点 + 3 条共享边界曲线','这就是为什么 <code>panel.py</code> 必须走布尔；也是 T5「T 形必须过布尔」的同一条教训在新结构族上复现','旁证：加了长桁后刚度 ×62.8（r21）。若没粘上，这个数会是 ~1 —— 但那是靠一个<b>额外</b>的检查抓到的，不是靠门禁'],
+  files:['feagpt_repro/diagnostics/panel_bond_probe.py','feagpt_repro/feagpt/panel.py']},
+
+ {id:'r25', g:'M3/T2', c:'退化自检 T2：长桁数 → 0 必须还原成一块光板，而且长桁参数一个都不许起作用',
+  q:'方案里定的硬要求。T2 的退化点是「长桁数 → 0」。但只测这一条不够：<b>长桁高度/厚度/截面形式在 n=0 时必须全都不起作用</b> —— 否则新加的字段是个空转旋钮，而扫描时你会看到一堆一模一样的模型还以为是稳定性好。',
+  cmd:'cd feagpt_repro\npython check_forms.py --json ../FEM-Bench-Aero/check_forms.json',
+  ev:['<code>n=0</code>：蒙皮 1 面 / 长桁 0 面 / 1 个几何面 / 站位 [] —— 即一块光板，关 4 PASS','<b>参数不变性</b>：n=0 时同时把高度 20→40、厚度 2.5→5、截面 blade→T(fw=50) 全改一遍，模型<b>逐面 bbox 指纹完全一致</b>','<code>n=1 / n=3</code>：蒙皮 2/4 面、长桁 1/3 面、站位实测 [300] / [150,300,450]、网格通过、关 4 PASS','合计 <b>8/8 PASS</b>（T2 4 项 + T5 4 项）'],
+  files:['feagpt_repro/check_forms.py','FEM-Bench-Aero/check_forms.json']},
+
+ {id:'r26', g:'M3/T2', c:'「没动归档」不该靠我相信，要靠一条有退出码的命令',
+  q:'为了让第二个结构族跑通，我重构了 <code>inp_writer</code> / <code>pipeline</code>。正确断言不是「大概没影响」，而是<b>一条老算例的字节都不许变</b>。所以做了哈希快照工具，并且把它做成闸（退出码非 0 即失败）。',
+  cmd:'cd feagpt_repro\npython diagnostics/hash_manifest.py write FEM-Bench-Aero/snap_before.json    # 动手前\n#   ... 重构 + 重新导库 ...\npython diagnostics/hash_manifest.py diff snap_before.json FEM-Bench-Aero \\\n       --only modeling --only _xval --gate changed',
+  ev:['<b>108 个已归档模型文件：0 变更</b>（`--gate changed` 退出码 0）','新增 24 个 = 2 条新算例 × 6 文件 × 2 树，一个不多','全树视图里另有 4 个 changed，<b>全部落在树根的报告文件</b>上（README / 去重报告 / 两道门禁日志），没有一个是算例','工具顺手加了 <code>--gate</code>（any ／ changed）和 <code>--only</code>（作用域），还有按目录的变更分布 —— 「4 个 changed 是不是算例」不再需要人眼去数'],
+  files:['feagpt_repro/diagnostics/hash_manifest.py']},
+
+ {id:'r27', g:'M3/T2', c:'平板入库时撞见的真问题：两棵树里同名的 max_von_mises 是两个不同的量',
+  q:'纯弯曲平板上，ccx 报的峰值 1.2135 MPa <b>100 % 是横向剪切</b>（面内场恒为 0），abaqus 报的膜场<b>恒等于 0</b>。两边都是对的物理，但根本不是同一个量 —— 而 <code>truth.json</code> 里它俩叫同一个名字。',
+  cmd:'cd feagpt_repro && python -c "import json;[print(p, json.load(open(p))[\'scalars\'].get(\'max_von_mises\'), json.load(open(p))[\'scalars\'].get(\'max_von_mises_peak\')) for p in [\'../FEM-Bench-Aero/modeling/stiffened_panel_600x600/truth.json\',\'../FEM-Bench-Aero/_xval/stiffened_panel_600x600/truth.json\']]"',
+  ev:['<code>modeling/</code>（ccx）<code>max_von_mises</code> = <b>1.2135</b>','<code>_xval/</code>（abaqus）<code>max_von_mises</code> = <b>0.0</b>，另有 <code>max_von_mises_peak</code> = 3.1952','<b>下游按同名取数会得出「abaqus 侧零应力」</b>—— 这是会真出事的，已列为待拍板 D8','同上，3 mm 网格复算：ccx 1.3590（仍 100 % 剪切）vs abaqus 外层 3.5066，两码峰值差 61.2 %','翼盒上也有同样的口径差：ccx 10.2823 ／ abaqus 膜 8.4541 ／ abaqus 外层 11.7809'],
+  files:['FEM-Bench-Aero/modeling/stiffened_panel_600x600/truth.json','FEM-Bench-Aero/_xval/stiffened_panel_600x600/truth.json']},
+
+ {id:'r28', g:'自查', c:'顺手抓到我自己工具里的一个缺陷：门禁印了一个它没量过的数字',
+  q:'关 3 在「abaqus 膜场恒为 0」时会打一条说明，原文最后一句写着「the codes agree within 1.2 %」。那个 1.2 % 是<b>写死的字符串</b>——对当初那个算例是对的，在平板上是编的（真实差 62 %）。门禁自己的输出里出现没量过的数，比门禁漏报更危险。',
+  cmd:'cd feagpt_repro\ngrep -n "within 1.2" verify_solvers.py      # 改之前：硬编码\npython verify_solvers.py --ccx outputs_panel --abaqus outputs_panel_abaqus \\\n  --case stiffened_panel_600x600 --spec _t2_probe/stiffened_panel_600x600.spec.json --force 36 --reaction-set all',
+  ev:['改之前：无论什么模型都印「agree within 1.2 %」','改成当场量出来：平板印「ccx 1.2135 vs abaqus outer fibre 3.1952 → <b>62.0 %</b> apart」，3 mm 那张印 61.2 %','同一条说明的措辞也改了：不再说「外层纤维那个数是可比数」，而是明说<b>纯弯曲下没有哪个单独数字是跨求解器可比的，除非先把应力定义定下来</b>（→ D8）','两份平板日志已用修正后的工具重生成'],
+  files:['feagpt_repro/verify_solvers.py','FEM-Bench-Aero/gate3_panel.log','FEM-Bench-Aero/gate3_panel_fine.log']},
+
+ {id:'r29', g:'M4', c:'等价类：基线与它自己的「网格算法对照」是同一个模型 —— 所以它们不能分家',
+  q:'naca4412_wingbox_recombination_algorithm3 与基线只差一个 mesh.recombination_algorithm（1 vs 3）。几何、壁厚、载荷全同 —— 那是同一条 case 的两种网格，不是两条 case。若把它们分到 train 和 test 两边，模型记住的是几何、考的是几何，等于把答案递过去。',
+  cmd:'cd feagpt_repro\npython make_manifest.py --root ../FEM-Bench-Aero     # 打印 11 条 / 10 类\npython -c "import json;m=json.load(open(\'../FEM-Bench-Aero/manifest.json\'));print(m[\'classes\'])"',
+  ev:['11 条 → <b>10 个等价类</b>：唯一的多成员类是 <code>a796c5b1d217</code> = {基线, 网格算法对照}，两者都在 train','等价类的字段口径是**白名单**（族 + 几何 + 壁厚），明确排除 mesh / load / bc / analysis / 名字 —— 新加一个求解器选项不会把类打散','同时用**黑名单**（去掉一切「处理类」字段）独立推一遍：两种推法给出同一个划分（10 类），这才说明字段归属没有漏判','同类成员还额外要求 <code>truth.json</code> 的 design 与几何读数完全一致（跨文件佐证，spec 推的类要和几何构建的实测对上）'],
+  files:['FEM-Bench-Aero/manifest.json','feagpt_repro/feagpt/manifest.py']},
+
+ {id:'r30', g:'M4', c:'独立复算 29 项 + 幂等 + 负向测试：闸先证明会咬人，再算数',
+  q:'manifest 是**声明**，eval 是**复算**。每条声明字段都从磁盘重算一遍（文件 sha / spec 哈希 / 等价类 / 角色 / 读数 / 三角数 / minJ），不读 manifest 里的派生值来验它自己。',
+  cmd:'cd feagpt_repro\npython eval_dataset.py --root ../FEM-Bench-Aero --json ../FEM-Bench-Aero/eval_report.json\n# 幂等：连跑两次，json 与 md 都必须逐字节一致\npython make_manifest.py --root ../FEM-Bench-Aero --json _m4_probe/m1.json --md _m4_probe/m1.md\npython make_manifest.py --root ../FEM-Bench-Aero --json _m4_probe/m2.json --md _m4_probe/m2.md\ndiff _m4_probe/m1.json _m4_probe/m2.json && diff _m4_probe/m1.md _m4_probe/m2.md',
+  ev:['<b>29 项全 OK</b>：逐 case 的 spec_sha256 / mesh_sha256 / 六件套 sha / 等价类 / 角色 / split / 读数 全部复算一致','6 道集级闸：0 个等价类跨 split ｜ 每族 test 非空 ｜ 无 unassigned ｜ 树内重复 0 ｜ 白名单 partition == 黑名单 partition ｜ 规则复现 D12（M5 新增）','<b>幂等</b>：连跑两次 <code>make_manifest</code>（json 与 md）逐字节一致 —— 无时间戳、无主机名，所以「变没变」是一次 diff 而不是回忆','<b>负向测试①</b>（改产物）：手改 manifest 里一条 split → eval 立刻 <code>recompute split</code> FAIL + <code>manifest_summary.splits</code> FAIL，退出码 2','<b>负向测试②</b>（拆等价类）：把基线与其网格消融对照分到 train/test 两边 → <code>no_class_spans_splits</code> FAIL，并点名 <code>a796c5b1d217</code> 跨 ["test","train"]'],
+  files:['FEM-Bench-Aero/eval_report.json','feagpt_repro/eval_dataset.py','feagpt_repro/_m4_probe/bad.json']},
+
+ {id:'r31', g:'M4', c:'被否掉的方案也留读数：本想拿 model.step 当几何指纹，实测不成立',
+  q:'最硬的做法本该是「几何相同 ⇔ STEP 文件逐字节相同」——它完全绕开 spec 字段归属这个人为判断。所以先量了一下，结果不成立，于是换成 spec 白名单/黑名单双推导。',
+  cmd:'cd FEM-Bench-Aero/modeling\nhead -3 naca4412_wingbox/model.step        # HEADER 里带导出时间戳\nsha256sum naca4412_wingbox/model.step naca4412_wingbox_recombination_algorithm3/model.step\n# 剥掉时间戳再对一次\nfor c in naca4412_wingbox naca4412_wingbox_recombination_algorithm3; do\n  sed "s/\'[0-9-]\\{4,10\\}T[0-9:]*\'/\'TS\'/" $c/model.step | sha256sum; done',
+  ev:['STEP 的 HEADER 带导出时间戳：<code>FILE_NAME(\'Open CASCADE Shape Model\',\'2026-10-03T09:47:34\',...)</code>','同一几何的基线 vs 网格算法对照：裸 sha 不同（66f515b4… vs 10f8eae7…，差 31 字节）；<b>剥掉时间戳后仍不同</b>（25dea842… vs c813d6af…）——两个文件是不同次导出，导出本身有非确定项','⇒ STEP 不能当几何指纹。等价类改用 spec 字段推导，并且用白名单/黑名单两条互补规则互验（见 r29）'],
+  files:['FEM-Bench-Aero/modeling/naca4412_wingbox/model.step','FEM-Bench-Aero/modeling/naca4412_wingbox_recombination_algorithm3/model.step']},
+
+ {id:'r32', g:'M5', c:'划分从「显式表」换成「规则」，且必须逐条复现 D12 锁定的口径 A',
+  q:'11 条的显式表能被人逐行审阅，但到 200 条就不 scale。换成规则的风险是：规则一旦与旧划分不一致，D12 锁定就名存实亡。所以先量化「规则能否复现 A」，再决定要不要动。',
+  cmd:'cd feagpt_repro\npython _m5_probe/rule_probe.py --root ../FEM-Bench-Aero     # 规则原型 vs D12 表，逐条对比\npython make_manifest.py --root ../FEM-Bench-Aero --json ../FEM-Bench-Aero/manifest.json --md ../FEM-Bench-Aero/MANIFEST.md\npython eval_dataset.py --root ../FEM-Bench-Aero --json ../FEM-Bench-Aero/eval_report.json\npython _m5_probe/neg_test.py                                # 篡改声明 + 未声明族，两道负向测试',
+  ev:['规则 = <b>声明式留出区域</b>（每族 谓词→side，首个命中即定，未命中默认 train）；声明在 <code>feagpt/manifest.py :: HOLDOUT_REGIONS</code>，机制在 <code>split_of()</code>','实测规则<b>逐条复现 D12 的 A，11/11 完全一致</b>（train 7 / val 1 / test 3）—— 所以 D12 无需重签','为防「改声明悄悄改了旧划分」，冻结 <code>D12_LOCKED_SPLIT</code> 并新增集级闸 <code>rule_reproduces_D12</code>：把「单维外推」由 val 改判 test → 立刻点名 <code>ribs7_chord1000: locked=val rule=test</code>','负向测试顺带抓到一个真 bug：case 变 <code>unassigned</code> 时 <code>eval_dataset</code> 原本 KeyError 崩溃 —— 已修成如实报「未声明族」','判据可陈述：<b>超过默认值即视为外推</b>；外推更深 / 引入新形式 → test，单维外推 → val，其余 → train'],
+  files:['feagpt_repro/feagpt/manifest.py','feagpt_repro/_m5_probe/rule_probe.py','feagpt_repro/_m5_probe/neg_test.py','FEM-Bench-Aero/eval_report.json']},
+
+ {id:'r33', g:'M5/T1', c:'开工第一件事：放样面和拉伸面是两种网格 —— 所以退化值绝不能走放样路径',
+  q:'T1 要把「沿展向刚体平移的等直箱」变成「两截面放样」。可退化值（sweep=0 ∧ ratio=1）在几何上<b>看起来一样</b>，走放样也能跑通 —— 那 9 条归档会不会悄悄重解？先量，再决定。',
+  cmd:'cd feagpt_repro\npython _m5_probe/loft_probe.py        # 同尺寸场下 build 两条路径，数节点/单元/坐标\npython check_forms.py --only T1       # 退化与接线常驻自检',
+  ev:['<b>决定性实测</b>：同一尺寸场下 <code>extrude</code> 得 <b>4418 节点 / 4300 四边形</b>，<code>addThruSections</code> 放样得 <b>4753 / 4251</b> —— <b>不是同一个网格</b>','所以退化值必须派发回 M1 旧路径：<code>AirfoilSpec.is_prismatic</code>（<code>ratio == 1.0 and sweep == 0.0</code>）','中性重建与发运 <code>model.msh</code> <b>逐字节一致</b>（sha 前缀 <code>29faefe3f88855e9</code> 两侧相同）⇒ 9 条归档零扰动','接线由 D14 闭式独立验证：sweep 20° → tip 前缘 x <b>977.9405</b> = 500·tan20°；taper 0.6 → tip 弦 <b>270.0</b> = 450×0.6','负向测试：把前缘基准取反 → <code>T1.swept-is-wired</code> FAIL；把 <code>is_prismatic</code> 钉死 True（模拟派发丢失）→ <code>T1.invocation</code> 立刻炸（<code>1D mesh cannot be divided by 2</code>）'],
+  files:['feagpt_repro/_m5_probe/loft_probe.py','feagpt_repro/_m5_probe/t1_neg.py','feagpt_repro/feagpt/geometry.py','feagpt_repro/check_forms.py']},
+
+ {id:'r34', g:'M5/T1', c:'锥形箱的后梁是梯形：默认网格会挤出针状四边形（minJ 0.0437），解法沿用 T5',
+  q:'<code>taper060</code> 一上来就挂：minJ <b>0.0437</b>（门禁要求 ≥ 0.30）。是模型错还是网格错？先定位到面，再扫参数。',
+  cmd:'cd feagpt_repro\npython _m5_probe/t1_mesh_probe.py     # 扫尺寸与肋数，把失效面定位出来\npython _m5_probe/t1_cap_probe.py      # 验证「按最窄腹板声明尺寸上限」',
+  ev:['根因：锥形后梁是<b>梯形</b>，锥度 0.6 时最窄处只剩 <b>43.79 mm</b>，而默认 <code>size_span=25</code> 是它的 57% ⇒ blossom 挤出针状四边形，节点跑到 z≈1620 形成 120 mm 长条','<b>不是趋势是掷硬币</b>：肋数 3/4/5/7 挂、6 过 —— 说明与肋数无因果关系，是尺寸比','解法（复用 T5 的常数）：builder 声明 <code>mesh_size_cap = 0.4 × 最窄条带全宽</code>，<b>只对非等直声明</b>','12 组扫描（锥度 × 后掠 × 肋数）：无 cap <b>6/12</b> 过，有 cap <b>12/12</b> 过；等直不受影响（实测归档一个字节没动）','入库实测：<code>taper060</code> cap <b>17.52 mm</b>、<code>taper080</code> <b>23.36 mm</b>、<code>sweep20</code> <b>29.20 mm</b>，四条 minJ 0.4902–0.5593、<b>0 个三角</b>'],
+  files:['feagpt_repro/_m5_probe/t1_mesh_probe.py','feagpt_repro/_m5_probe/t1_cap_probe.py','feagpt_repro/feagpt/geometry.py']},
+
+ {id:'r35', g:'M5/T1', c:'后掠箱一度被判成 <code>baseline</code> —— 修的是判据，补的是闸',
+  q:'新加的两个平面形状字段，居然让一个 sweep=20° 的箱段拿到了 <code>baseline</code> 的角色 —— 和真正的基线并列。<b>原因不是数据，是判据的实现方式。</b>',
+  cmd:'cd feagpt_repro\npython check_forms.py --only T1       # 看 T1.role-and-split 这一条',
+  ev:['<code>_is_wingbox_baseline</code> 写成 <code>all(got[k] == v for k, v in WINGBOX_BASELINE.items())</code> —— <b>只检查白名单里列出的键</b>，不在名单里的字段一律不参与判断','实测（修之前）：<code>sweep_deg=20</code> → <code>_is_wingbox_baseline = True</code>，role <code>baseline</code>；<code>tip_chord_ratio=0.6</code> 同样中招','修复：把两个字段以<b>中性值</b>（1.0 / 0.0）加进白名单。对现有 11 条<b>零影响</b>（它们本就是中性），只把后掠/锥形箱正确踢出 baseline','补<b>常驻闸</b> <code>T1.role-and-split</code>：neutral→<code>baseline/train</code>、sweep→<code>sweep/train</code>、taper→<code>sweep/train</code>、兼具→<code>sweep/test</code>，四条一起断言','副作用如实报：翼盒等价类指纹<b>全部重算</b>（新字段进 <code>asdict(airfoil)</code>），但不变量「基线 + 网格消融同类」仍成立（<code>04fda953</code>），泄漏闸 0 个类跨 split'],
+  files:['feagpt_repro/feagpt/manifest.py','feagpt_repro/check_forms.py','FEM-Bench-Aero/check_forms.json']},
+
+ {id:'r36', g:'M5/T1', c:'T1 首轮 4 条入库：15 条 / 树，重导 88 个四件套文件 0 变更',
+  q:'四条（sweep20 / taper060 / taper080 / sweep20_taper060）× 2 树入库，并证明「新字段进契约」这件事只动了该动的两个文件。',
+  cmd:'cd feagpt_repro\npython _m5_probe/make_t1_specs.py --out-dir _t1_specs --workdir outputs_t1\npython run_pipeline.py --spec _t1_specs/naca4412_wingbox_sweep20.spec.json --out outputs_t1 --solver ccx\npython run_pipeline.py --spec _t1_specs/naca4412_wingbox_sweep20.spec.json --out outputs_t1_abaqus --solver abaqus\npython make_dataset.py --solver ccx    --cases outputs_t1 --root ../FEM-Bench-Aero\npython make_dataset.py --solver abaqus --cases outputs_t1_abaqus --root ../FEM-Bench-Aero\npython diagnostics/hash_manifest.py diff ../_snap_t1_before.json ../FEM-Bench-Aero --only modeling --only _xval',
+  ev:['全档重导：<b>132 → 132 文件</b>，<b>0 added / 0 removed</b>，<b>44 changed</b> = 22×<code>spec.json</code> + 22×<code>truth.json</code>（新字段进契约正是目的）','<b>88 个四件套文件（inp / msh / step / results.json）逐字节不变</b>；重导后 <code>regress_groups</code> 分组指纹 <b>9/9 逐位一致</b>','关 4 双树 <b>4/4 PASS</b>（各 8 项）；关 3 四条 <b>7 项全过</b>：max|u| 差 0.19–0.32 %、逐节点 vM 中位差 0.13–0.24 %、平衡残差 0.00002–0.00076 %','<code>verify_dataset</code> <b>30/30 OK</b>、跨树网格 15/15 逐字节一致、树内重复 0；<code>eval_dataset</code> <b>29 项全绿</b>、0 个等价类跨 split','划分：train 10 / val 1 / test 4（翼盒 9/1/3，平板 1/0/1）；<code>rule_reproduces_D12</code> 仍 11/11'],
+  files:['feagpt_repro/_m5_probe/make_t1_specs.py','feagpt_repro/_gate3_t1.log','FEM-Bench-Aero/manifest.json','FEM-Bench-Aero/eval_report.json','FEM-Bench-Aero/verify_report.json']},
+
+ {id:'r37', g:'M5/放量', c:'放量 8 条入库：23 条 / 树，老 15 条一个字节没动（96 added / 0 removed / 0 changed）',
+  q:'D16/D17 定了 8 条怎么放（4 val + 3 train + 1 test）。放量最大的风险不是新案例本身，而是「重导会不会把老的 15 条一起动了」——所以先冻结快照，再导出，再逐条 diff。',
+  cmd:'cd feagpt_repro\npython _m5_probe/make_batch2_specs.py --out-dir _m5_probe/_batch2_specs      # 从数据集规范基线派生 8 条 + 回读断言落位\ndiagnostics/hash_manifest.py snap ../_snap_b2_before.json --root ../FEM-Bench-Aero\npython make_dataset.py --solver ccx    --cases outputs_b2 --root ../FEM-Bench-Aero\npython make_dataset.py --solver abaqus --cases outputs_b2_abaqus --root ../FEM-Bench-Aero\npython diagnostics/hash_manifest.py diff ../_snap_b2_before.json ../FEM-Bench-Aero --only modeling --only _xval',
+  ev:['<b>hash diff = 96 added / 0 removed / 0 changed</b>（205 → 301 文件）—— 96 = 8 条 × 2 树 × 6 文件，<b>老 15 条零改动</b>（本轮无 spec 字段变更，故老 case 无需重导）','<b>先打样后全量</b>：先单跑 <code>taper040</code>（ccx）验机制 —— minJ 0.5064、<b>0 tri3</b>、cap 11.68 mm、导出后 hash diff 6 added / 0 changed','ccx <b>8/8 PASS</b>：minJ 0.4861–0.6337，<b>全部零 tri3</b>；abaqus <b>8/8 补齐</b>；双码 max|u| 差 0.07–0.76 %（全部 &lt; 1 %）','划分落位与 D17 完全一致（train 3 / val 4 / test 1）；放量后总划分 <b>train 13 / val 5 / test 5</b>，22 个等价类、0 个跨 split','<code>eval_dataset</code> <b>29/29 全绿</b>、<code>verify_dataset</code> <b>46/46</b>（跨树网格含 T1 全部一致）、<code>check_semantics</code> <b>46/46</b>、<code>check_forms</code> <b>15 PASS / 0 FAIL</b>','<code>dedup</code>：<code>no duplicate models found</code>（0 组）—— 新 8 条与老案例无重'],
+  files:['feagpt_repro/_m5_probe/make_batch2_specs.py','feagpt_repro/_m5_probe/panel800_probe.py','FEM-Bench-Aero/manifest.json','FEM-Bench-Aero/eval_report.json']},
+
+ {id:'r38', g:'M5/放量', c:'平板 800×600：两个码把解析值夹在中间 —— 顺带修掉一个「矩形板 von Mises」口径错',
+  q:'放量新增的 800×600 是平板族的第一个 val。可看板上的平板详情全是 600×600 的实测数（36 N、0.96268 mm…）——直接套上去就是印没量过的数。所以要么实测，要么不写。',
+  cmd:'cd feagpt_repro\npython _m5_probe/panel800_probe.py    # 复用 verify_panel 的独立校验，跑在新平板上',
+  ev:['<b>Navier 夹逼</b>：解析 w_max = <b>1.57088 mm</b>；ccx 1.56189（<b>−0.573 %</b>）／ abaqus 1.57378（<b>+0.184 %</b>）—— 两个独立代码把解析值夹在中间','载荷积分 <b>480000.0000 mm² = 板面积</b>（偏差 0.00 %）；全节点 ΣFORC_z = −0.000000 N vs 外载 48 N（0.000000 %）；936 个约束边节点反力 + 集总 = <b>47.99912 / 48</b>（0.0018 %）','对边对称 x 1.740 % ｜ y 0.055 %（网格非镜像对称，故有残差，容差 3 %）','<b>口径修正（本条是探针自己的 bug）</b>：<code>navier_sigma_max</code> 只返回 <code>6 Mx/t²</code>，这在<b>方板</b>上等于 von Mises（Mx=My）；可 800×600 是矩形板，<b>Mx ≠ My</b>，直接比会报 +23.7 % 的假差异。改用 <code>√(σx²−σxσy+σy²)</code>（σx 2.81845 ｜ σy 3.91249 → 3.49629）后，实测中心节点 3.48773 → <b>−0.245 %</b>','<code>med</code>（逐节点 vM 中位差）如实为 <b>null</b>：光板纯弯，abaqus 中面场恒为 0，不可比 —— 与 600×600 光板同一条物理'],
+  files:['feagpt_repro/_m5_probe/panel800_probe.py','feagpt_repro/verify_panel.py','FEM-Bench-Aero/manifest.json']},
+
+ {id:'r39', g:'M5/放量', c:'Abaqus 批量循环会「静默空转」：0 帧 ODB、rc=0、还留个 .lck —— 必须串行/逐条',
+  q:'8 条 abaqus 一起跑时，6 条报 <code>AbaqusException: 0</code>（ODB 0 帧），退出码却是 0。是模型错，还是启动错？',
+  cmd:'# 单条 interactive 手跑必成功；solver.run 直调必成功（65.7s 真解）\n# 结论：串行 / 逐条跑，每条备 1–2 次尝试；必要时清 scratch 重跑',
+  ev:['症状：<code>.dat</code> 显示输入处理完就 <code>JOB TIME SUMMARY</code>（CPU ~0.9 s）并留下 <code>.lck</code> —— <b>分析根本没启动</b>，但 rc=0，不会被上层捕获','主因 = <b>ccx 与 abaqus 两个循环并行</b>的竞争；次因 = 某目录<b>首次</b> abaqus 启动静默失败，重跑即成功（实测复现）','处置：改成<b>串行 / 逐条单独跑</b>，每条备 1–2 次尝试；平板先用 <code>solver.run</code> 直调跑出真 ODB','这类「退出码 0 但没算」的失败最危险：门禁只看 rc 会全绿。所以关 3 的证据一律是<b>真 ODB 的读数</b>（本次读出 61834/5697 节点级场），不是「命令返回 0」'],
+  files:['feagpt_repro/outputs_b2_abaqus/','feagpt_repro/outputs_b2_abaqus/stiffened_panel_800x600/stiffened_panel_800x600.odb.json']},
+
+ {id:'r40', g:'M5/T3', c:'柱壳的内压被 deck 施加成了<b>外压</b> —— 验证线抓出来的真缺陷（D21）',
+  q:'柱壳「独立验证② · 自由径向膨胀」实测 <b>−0.22725 mm</b>，而闭式 <code>pR²/(Et)</code> = <b>+0.228</b>。符号反了，怎么处置？',
+  cmd:'cd feagpt_repro\npython verify_barrel.py --ccx-only --json _m5_probe/verify_barrel_ccx_d21.json\npython -c "import check_forms; print(check_forms._pressure_sign_probe())"',
+  ev:['机理：<code>inp_writer</code> 把压力硬编码成 <code>-abs(p)</code>。翼盒/平板的蒙皮是<b>拉伸</b>出来的、柱壳蒙皮是<b>回转</b>出来的，法向朝向相反 ⇒ 同一行写在柱壳上就是外压','修复前：中面环 8 条经线径向位移<b>全为负</b>（−0.227 / −0.180），柱壳被压瘪；修复后 <b>+0.22725 mm（−0.329 %）</b>','处置（D21）：<code>GeometryResult</code> 新增 <code>pressure_dload_sign</code>（默认 −1），柱壳建面器声明 <b>+1</b>，deck 写 <code>P=+0.05</code>','<b>零扰动实测</b>：只有 3 条归档 deck 含 <code>*DLOAD</code>（面板），且逐字节不变；其余 20 条翼盒走 <code>*CLOAD</code>，改动路径不可达','加常驻闸 <code>T3.pressure-sign</code>（机制）+ <code>T3.pressure-sign-builder</code>（防「常量对、builder 没传」）'],
+  files:['feagpt_repro/feagpt/geometry.py','feagpt_repro/feagpt/inp_writer.py','feagpt_repro/feagpt/fuselage.py','feagpt_repro/_m5_probe/verify_barrel_ccx_d21.json','feagpt_repro/_m5_probe/verify_barrel_b3.json']},
+
+ {id:'r41', g:'M5/T3', c:'1–4 根长桁的柱壳<b>管不住三角</b> —— 认下包络并拒绝，不硬修（D19）',
+  q:'柱壳 1–4 根长桁时，框外弧 r≈998 处冒出 16–22 个三角。是修网格，还是把这段包络拒掉？',
+  cmd:'cd feagpt_repro\npython check_forms.py --only T3\npython -c "from feagpt import fuselage; [print(k, fuselage.parse_params(fuselage.make_spec(\'p\', n_stringers=k))) for k in (4,5)]"',
+  ev:['实测：3str/2frm <b>20 个</b>、4str/2frm 16、4str/3frm 22，<b>全部落在框外弧</b>','近因：长桁腹板在 <code>r = R − h_str</code> 处切断框扇区的径向边，留一条 <code>h_frm − h_str = 5 mm</code> 的半单元残条 × 扇区角度','五种修法（简单重组 / 只细分框经线 / 蒙皮与框一起细分 / 框专用尺寸场 / 逐面 2-D 算法）<b>全部实测否决</b>','处置（D19）：<b>认下包络</b> <code>n_stringers ∈ {0} ∪ [5, ∞)</code>，1–4 直接 <code>raise</code>；<code>check_forms :: T3.stringer-envelope</code> 逐个试 1..5，要求 1–4 全拒、5 收','代价有界：数据集 val 坐 10/12/16 根、train 坐 5–8 根，计划中的样本一个不丢'],
+  files:['feagpt_repro/feagpt/fuselage.py','feagpt_repro/check_forms.py','feagpt_repro/_m5_probe/t3_mesh_envelope.md']},
+
+ {id:'r42', g:'M5/T3', c:'柱壳双码 max|u| 差 1.79 % > 1 % —— 换判据，不改几何也不放容差（D20）',
+  q:'柱壳一开始就过不了关 3 的 1 %。是几何/载荷错，还是判据量的东西不对？',
+  cmd:'cd feagpt_repro\npython verify_barrel.py --json _m5_probe/verify_barrel_b3.json\npython _m5_probe/t3_d20_batch3.py --json _m5_probe/t3_d20_batch3.json',
+  ev:['逐层剥离：剔除加载环后 <b>0.42 %</b>、纯内压 <b>0.25 %</b>、加载环 3226 节点独占 <b>2.25 %</b> ⇒ 真凶 = <b>自由端框内缘的自由边</b>，在那里打集中力是两码各自离散的局部伪峰','A 路（改载荷落点）实测无效：band25 仍 1.72 %、band5 1.11 %，峰值始终钉在 <code>r=970</code>','处置（D20）：判据换成 ① 剔除端载环后的<b>结构 max|u|</b>（环由族自己的 <code>fuselage.barrel_nodes</code> 圈定）② 沿轴 20 站<b>截面形心挠度剖面</b>（对尖端挠度归一）','实测 8str <b>0.4015 % / 0.1980 %</b>、12str <b>0.7816 % / 0.1529 %</b>，全过；全域差（2.02 % / 3.34 %）<b>如实印出但不判绿/红</b>','顺带修掉 <code>verify_barrel</code> 两处 bug：ccx/abaqus 共用输出根导致互串、abaqus 半从未真正跑过'],
+  files:['feagpt_repro/verify_barrel.py','feagpt_repro/_m5_probe/t3_d20_batch3.py','feagpt_repro/_m5_probe/verify_barrel_b3.json','feagpt_repro/_m5_probe/t3_d20_batch3.json']},
+
+ {id:'r43', g:'M5/T3', c:'batch3 入库：26 条 / 树，<b>老 23 条一个字节没动</b>（36 added / 0 removed / 0 changed）',
+  q:'新增第三族 + 平板 val，会不会动到已归档的 23 条？',
+  cmd:'cd feagpt_repro\npython make_dataset.py --solver ccx    --cases outputs_b3         --root ../FEM-Bench-Aero\npython make_dataset.py --solver abaqus --cases outputs_b3_abaqus --root ../FEM-Bench-Aero\npython diagnostics/hash_manifest.py diff _m5_probe/_snap_b3_before.json ../FEM-Bench-Aero',
+  ev:['入库 <b>3/3 PASS × 2 树</b>（两条柱壳 + 一条平板），关 4 语义逐条命中','哈希 diff：301 → 337 文件，<b>36 added / 0 removed / 0 changed</b>（36 = 3 × 2 树 × 6 文件）','受影响的只有 <code>manifest.json</code> / <code>MANIFEST.md</code> / <code>eval_report.json</code> 这些<b>刻意重生成</b>的索引','验收：eval <b>29/29</b> ／ check_forms <b>24/24</b> ／ 关 4 <b>52/52</b> ／ verify_dataset 六件套 <b>52/52</b> + 跨树网格 26/26 ／ dedup <b>0 组</b> ／ regress_groups <b>9/9</b> ／ 看板 <b>ALL PASS</b>'],
+  files:['FEM-Bench-Aero/modeling/','FEM-Bench-Aero/_xval/','feagpt_repro/_m5_probe/_snap_b3_before.json']},
+
+ {id:'r44', g:'M5/T6', c:'多闭室翼盒入库：32 条 / 树；全档重导后<b>四件套 256 个文件一个字节没动</b>',
+  q:'T6 往剖面加腹板 ⇒ spec 多一个字段 ⇒ 全部老 case 的 spec_sha256 失效 ⇒ 必须全档重导。怎么证明「该变的两件套变了、不该变的四件套一点没变」？',
+  cmd:'cd feagpt_repro\npython make_dataset.py --solver ccx    --cases outputs_b5         --root ../FEM-Bench-Aero\npython make_dataset.py --solver abaqus --cases outputs_b5_abaqus --root ../FEM-Bench-Aero\npython _m5_probe/t6_reexport.py --root ../FEM-Bench-Aero      # 32 case × 2 树，显式清单不 glob\ndiagnostics/hash_manifest.py diff _snap_b5_prereexport.json ../FEM-Bench-Aero',
+  ev:['入库：<b>3/3 PASS × 2 树</b>，关 4 语义 <b>10/10</b>（比普通翼盒多 <code>n_web_faces</code> 与 <code>web_stations</code> 两项）','入库哈希 diff：373 → 409 文件，<b>36 added / 0 removed / 0 changed</b>（= 3 × 2 树 × 6）—— <b>老 29 条一个字节没动</b>','全档重导 diff：<b>0 added / 0 removed / 116 changed</b>，116 <b>全部</b>是 <code>spec.json</code>+<code>truth.json</code>（= 29 老 case × 2 树 × 2，T6 三条入库时已是最新）','<b>逐文件枚举</b>核对：四件套 <code>model.msh / model.inp / model.step / model.results.json</code> 共 <b>256</b> 个（32 × 2 树 × 4），本轮 <b>changed = 0</b>','<b>重导用显式清单不 glob</b>：源目录 <code>outputs/</code> 里还留着已退役的重复 case，glob 会把它复活（M3/T1 各踩过一次）','连带：<code>regress_groups</code> 0/9 → 重签基线 → <b>9/9 PASS</b>（差异全部来自新增的 <code>webs</code> 键，既有组指纹零变化）'],
+  files:['FEM-Bench-Aero/modeling/','FEM-Bench-Aero/_xval/','feagpt_repro/_m5_probe/t6_reexport.py','FEM-Bench-Aero/regress_groups_t6_before_resign.log','FEM-Bench-Aero/verify_solvers_t6.log']},
+
+ {id:'r45', g:'M5/T6', c:'多闭室扭转的独立解析对照：Bredt-Batho —— 而且「腹板抬高 GJ」是<b>弱判据</b>',
+  q:'加了腹板，凭什么说模型对了？（D4 的规矩：每步都要双求解器 + 一条不依赖模型的解析线。）',
+  cmd:'cd feagpt_repro\npython verify_multi_cell.py --with-abaqus     # 20 PASS / 0 FAIL\npython _m5_probe/web_shear_probe3.py          # 剪流口径的定位探针',
+  ev:['<b>刚体转动最小二乘拟合</b>求扭转率（不是 z 切片）：蒙皮是非结构四边形网格，节点不落在 z 平面上 ⇒ 改在<b>无肋肋间跨</b>上拟合 <code>u_x = a_x + b_x z − θ(z)(y−yc)</code>、<code>u_y = a_y + b_y z + θ(z)(x−xc)</code>、<code>θ(z)=t₀+t₁z</code>，<code>GJ = T/|t₁|</code>，无偏（翘曲纯轴向）','GJ 跨码：ccx <b>6.686e11</b> vs abaqus <b>6.674e11</b> → <b>0.184 %</b>（规范限 5 %）；逐闭室剪流 ccx <code>[6.4167, 5.7810]</code> vs abaqus <code>[6.4152, 5.7793]</code> → <b>0.029 %</b>','<b>关键物理事实</b>：薄翼型上加<b>同厚度</b>腹板，解析 GJ 只涨 <b>+0.42 %（2 闭室）/ +1.76 %（3 闭室）</b>，矩形箱<b>恒等不变</b> ⇒ 「腹板抬高刚度」是<b>弱判据</b>（贴 1 % 阈值会变成掷硬币）','所以判据挂在<b>剪流</b>上：实测 2 等闭室 <code>[1.0, 0.9009]</code> vs 解析 <code>[1.0, 0.8955]</code>；3 等闭室 <code>[1.0, 1.1207, 0.8640]</code> vs <code>[1.0, 1.1076, 0.8556]</code>；腹板承 <code>|q₁−q₂|</code> 比值 <b>0.1011 / 0.1340</b> vs 解析 <b>0.1045 / 0.1295</b>','⚠️ <b>口径陷阱</b>：翼盒蒙皮在 <b>x-z 面</b>，面内剪力是全局 <code>sxz</code>；<code>post.von_mises_inplane</code>（给 x-y 平板写的）会把它<b>丢掉</b> ⇒ 读 0.05 MPa，而全分量读 <b>6.1408 MPa</b>（解析剪流 6.1361 MPa，<b>+0.078 %</b>）。探针先犯了这个错，修掉后才对上'],
+  files:['feagpt_repro/verify_multi_cell.py','FEM-Bench-Aero/verify_multi_cell.log','feagpt_repro/_m5_probe/web_shear_probe3.py']},
+
+ {id:'r46', g:'M7/D31', c:'翼盒尺寸维 8 条入库：<b>52 条双树齐备</b>，双码 8/8，且壁厚 1/t 被两码各自独立复现',
+  q:'M7 说「当前是外推评测集、只有翼盒 13 条可训」，而 span / skin_t 全族恒定使物理项退化成常数。补点之后：① 双码还对得上吗 ② 补的是不是真自由度（还是又一批同质样本）。',
+  cmd:'cd feagpt_repro/_probe_m8\npython ../resummarize.py --roots outputs_abaqus_size_*        # 手工 bat 只产 odb.json，先补 results.json\npython ../make_dataset.py --solver abaqus --cases outputs_abaqus_size_* --root ../../FEM-Bench-Aero\npython xval_m8.py                                            # 8/8 双码\ncd .. && python make_manifest.py --root ../FEM-Bench-Aero --json ../FEM-Bench-Aero/manifest.json --md ../FEM-Bench-Aero/MANIFEST.md\npython verify_dataset.py --root ../FEM-Bench-Aero && python check_forms.py --json ../FEM-Bench-Aero/check_forms_d31.json',
+  ev:['入库后 <b>52 条 / 51 类 / 21-17-14</b>（翼盒 17-7-7）；<code>verify_dataset</code> <b>pairing 52/52</b>、跨树 mesh <b>52/52 identical</b>、dup 0 → <b>VERDICT: PASS</b>','双码 <b>8/8 PASS</b>：model-wide max|u| 差 <b>0.26–0.50 %</b>、vM 逐节点中位差 <b>0.18–0.45 %</b>、平衡残差 <b>9e-5 – 1.6e-3 %</b>（8 条 .sta 全 COMPLETED SUCCESSFULLY、.dat 零 ERROR）','<b>壁厚维可观测性由两码各自独立复现</b>：skin 1.5→4 位移比 ccx <b>2.6562</b> / abaqus <b>2.6614</b>（互差 0.20 %），即 <code>u∝1/t</code> —— 与 T7 开口板的「与 t 逐位无关」形成对照，差别全在<b>载荷随不随 t 缩放</b>','<b>展长指数</b>用双码读数各算一遍：ccx <b>2.9013</b> / abaqus <b>2.8989</b>（梁论 3；偏离来自 n_ribs 固定 5 使肋距随 span 变）','⚠️ <b>本轮踩到的坑</b>：手工 bat 只产 <code>.odb.json</code>，首次 <code>make_dataset</code> 直接跑 ⇒ <code>_xval</code> 六件套里<b>缺 model.results.json</b>，导出逐条报 <code>max|u|=n/a</code> 却仍宣称 OK。<b>它是提示不是闸</b>——所以流程必须「先 resummarize 再 make_dataset」，收口时逐目录数文件数（6 个）才算过','<b>口径说明（不填没量过的数）</b>：这 8 条<b>不进</b>上面「逐条双码明细表」（<code>CASES</code>）——该表要 <code>vmm</code>（per-element 峰）/ <code>vmf</code>（node-averaged 峰）两个口径，而手工 bat 的 <code>odb.json</code> <b>没有导出</b> <code>stress_candidates_max_vm</code>，这两格无从实测。该表本就不收全量翼盒（<code>str3_T</code> 亦不在内）；8 条的完整双码读数全在 <code>_xval_m8.json</code>，划分归属见上面划分表'],
+  files:['FEM-Bench-Aero/_xval_m8.json','feagpt_repro/_probe_m8/xval_m8.py','feagpt_repro/_probe_m8/physics_check.json','FEM-Bench-Aero/m8_d31_coefficients.json','FEM-Bench-Aero/check_forms_d31.json','FEM-Bench-Aero/eval_report_d31_final.json','FEM-Bench-Aero/regress_groups_d31.json']},
+ {id:'r47', g:'M8', c:'算法侧 baseline 正式化：<b>位移可学（max_w 4.17 %）· 应力不可学（1 参数梁已 10.4 %）</b>',
+  q:'M7 的六档对照是<b>探针</b>，不是可引用的数：① val 与 test 各选一次 α，两列不可比 ② M1/M2 在原始空间拟合、M3/M4/M5 在 log 空间——MAPE 是相对误差，空间不统一就有人白吃亏 ③ 常数基线用算术平均，而 MAPE 的最优常数是<b>加权中位数</b> ④ 最强物理对手没有自由指数 ⑤ 单点 MAPE 无区间。收口前要回答两件事：<b>位移到底学到什么程度，应力还值不值得补样本</b>。',
+  cmd:'cd feagpt_repro\npython baseline.py --boot 4000 --json ../FEM-Bench-Aero/baseline_d31.json\n# 9 档 x 4 目标；模型选择在 val 上做，test 只报一次；每档给 bootstrap 95% CI',
+  ev:['<b>四目标 test MAPE（val 选、test 报）</b>：<code>max_disp</code>（<b>= 弯曲挠度</b>）49.06 → M5 <b>7.96</b>（相对基线 <b>16.2 %</b>）｜<code>max_w</code>（展向，副指标）35.93 → <b>4.17</b>（11.6 %）｜<code>vM</code> 中面 29.84 → <b>9.51</b>（31.9 %）｜<code>vM</code> 外表面 31.22 → <b>10.68</b>（34.2 %）。<b>位移与应力是两个物种</b>','<b>应力上 1 参数闭式解已经到顶</b>：<code>vM</code> 中面 M1（<code>F·span/(t·c²)</code> 配一个常数）<b>10.39 %</b> vs 最优 10 特征学习器 9.51 %，差 <b>0.88 pp</b>；外表面 12.22 % vs 10.68 %，差 1.54 pp，配对 bootstrap CI 跨 0 ⇒ <b>统计上分不开</b>。加特征、加样本在应力上已经榨不出东西','<b>⚠️ 本条已推翻（M9 更正）</b>：初版说「<code>max_w</code> 才是弯曲量、应定为代理目标」——错。deck 的 <b>z 轴是展向</b>（0–2002 mm）、载荷是 <code>*CLOAD, DOF 2</code> = <b>y</b>，故 <code>max_w = max|DISP[2]|</code> 是<b>展向位移</b>；实测 <code>max|v|/max_disp</code> = <b>0.99899–0.99973</b>（15 条，浮动 0.07 %）⇒ <code>max_disp</code> 本身就是弯曲挠度。4.17 % 低于 7.96 % 的真因是<b>对 sweep 不敏感</b>：<code>sweep40_taper040</code> 上 <code>max_disp</code> ×4.171 而 <code>max_w</code> 仅 ×1.716（敏感度 41 %），幂指数 span^<b>2.90</b> vs span^<b>1.95</b>。逐条看该条 <code>max_w</code> 2.4 % / <code>max_disp</code> 32.9 %，但 <code>sweep20_taper060</code> 反向 16.4 % vs 8.6 %；<b>统一下掉 sweep40 后 <code>max_disp</code> 3.82 % &lt; <code>max_w</code> 4.48 %</b> ⇒ <b>不设 max_w 为代理目标</b>，只作副指标交叉检验。证据 <code>_probe_m9/w_vs_disp_diag.json</code>','<b>误差几乎全集中在 <code>planform_out</code></b>（按外推机制分组，M5 / max_disp）：<code>planform_out</code> <b>32.9 %</b>（sweep 40° 出 train 上界 20°）｜<code>webpos_new</code> 6.3 ｜<code>section_new</code> 5.3 ｜<code>combo</code>（各轴都在值域内、组合没见过）<b>4.6</b> ｜<code>size_out</code> 2.0 ｜<code>ribs_new</code> 0.0。去掉各自最差 1 条后 M5 只剩 <b>3.81 %</b>（中位 5.26 %、最大 32.9 %）⇒ <b>报 MAPE 必须同时报中位数与最大值</b>','<b>峰值是「离散选择」不是「光滑泛函」</b>：31 条里 <code>max_disp_node</code> 有 <b>21 个</b>不同节点、<code>vM</code> 中面峰值位置有 <b>25 个</b>不同节点。位移场平滑（位置偏一点值几乎不变），应力场在孔边/角点梯度陡（位置错就值错）——<b>这就是应力不可学的机制，也是「继续给 vM 补样本白费」的理由</b>','<b>口径收紧没有改变主干</b>：M3 的 <code>max_disp</code> test 误差 <b>8.32 %</b> 与 <code>m8_learnability_d31.json</code> <b>逐位一致</b>。本轮新增的是：全部 9 档统一次选 α、全部 log 空间拟合、地板换成 MAPE 最优常数、补上自由指数幂律对手（M2L / M2X）、以及 4000 次 bootstrap 区间','⚠️ <b>本轮我犯的错（都写进脚本注释）</b>：① M2 用 IRLS 解乘性形状修正 ⇒ test <b>1373 %</b> ② 改 log 空间无正则 ⇒ 三形状列共线，test <b>49665 %</b>，最终改岭收缩 + <b>报条件数（541.7，可辨识）</b>，并明确「条件数大 = 物理形式不可辨识，不是物理输给 ML」③ 常数基线一开始用几何平均当 floor ⇒ 偏弱会虚抬学习器，补 M0m ④ 一开始用 <b>test 挑最强物理档</b> ⇒ 选择偏置，改为 val 选 test 报 ⑤ 外推分组一开始只判「单轴出界」，把 D31 的「区间内新组合」误判成标签错误 ⑥ <b>把 <code>max_w</code> 当法向挠度、并据此建议定为代理目标</b> ⇒ M9 实测推翻（见上条）',],
+   files:['FEM-Bench-Aero/BASELINE.md','FEM-Bench-Aero/baseline_d31.json','feagpt_repro/baseline.py','FEM-Bench-Aero/m8_learnability_d31.json']},
+  {id:'r48', g:'M9/D32', c:'目标口径定案：<b>主 max_disp 7.74 % · 副 max_w 只报不判 · 应力峰值不设为可学目标</b>',
+   q:'M8 报出 <code>max_w</code> 4.17 % 低于 <code>max_disp</code> 7.96 % 时，第一反应是「换个更纯的目标」。M9 先把坐标系查清再下结论：本 deck 的 <b>z 轴是展向</b>、载荷是 <code>*CLOAD, DOF 2</code>=y，所以 <code>max_w</code> 是展向位移；而 <code>max|v|/max_disp</code>=<b>0.99899–0.99973</b> ⇒ <code>max_disp</code> 本身就是弯曲挠度，不需要换。问题于是变成：两个量既不同，把哪个当主指标？',
+   cmd:'cd feagpt_repro/_probe_m9\npython diag_w_vs_disp.py        # -> w_vs_disp_diag.json（VERDICT: PASS）\n# 三分量幂指数 / sweep 敏感度 / 同样本跨目标比较 / 三族 max_w 可用性',
+   ev:['<b>两个量不是一回事</b>：三层幂指数 <code>max_disp</code> span^<b>2.90</b>/skin^−1.00（梁论 3/−1）、<code>max_w</code> span^<b>1.95</b>/skin^−0.97 ⇒ 前者是弯曲量，后者是泊松耦合次级量（量级仅 1.9–5.7 %）','<b><code>max_w</code> 绕开唯一会崩的轴</b>：<code>sweep40_taper040</code> 上 <code>max_disp</code> ×4.171、<code>max_w</code> ×1.716 ⇒ 敏感度只有 <b>41 %</b>。用它对数据集最大缺陷不敏感','<b>跨目标比必须下掉同一条样本</b>：统一下掉 <code>sweep40</code> 时 <code>max_disp</code> <b>3.82 %</b> &lt; <code>max_w</code> <b>4.48 %</b>；各自剔各自最差则 3.82 % vs <b>2.15 %</b> —— 结论翻转，所以旧报法无效','<b>跨族不可用</b>：开孔板纯面内 ⇒ <code>max_w≡0</code>、加筋板近刚性 ⇒ <code>max_w≡1</code>；只有翼盒能用的指标不能当统一目标','<b>D33 又添一条铁证</b>：train 只加一个 sweep 站，<code>max_w</code> test <b>4.17 %→8.33 %</b>（翻倍）而主目标只动 0.22 pp ⇒ 它的低误差来自「没学到」，不配判模型','<b>应力侧不设为目标</b>：1 参数梁 10.39 % vs 10 特征 9.51 %，差 0.88 pp 且配对 CI 跨 0；31 条里峰值位置散落 <b>21/25 个不同节点</b> ⇒ 峰值是离散选择不是光滑泛函'],
+   files:['FEM-Bench-Aero/BASELINE.md','feagpt_repro/_probe_m9/diag_w_vs_disp.py','feagpt_repro/_probe_m9/w_vs_disp_diag.json','FEM-Bench-Aero/baseline_d33.json','FEM-Bench-Aero/_xval_d33.json','FEM-Bench-Aero/verify_dataset_d33.json']},
+  {id:'r49', g:'M10/D33', c:'后掠轴补 30° 中间档：<b>planform_out 32.9 → 25.7 %，但净收益只有 0.22 pp（方向对、剂量不足）</b>',
+   q:'全库只剩一条外推机制还在崩：<code>sweep</code> 20→40°（M7 实测 −41.5 %）。补中间档能不能把它变成内插？补之前先答两问：① 这条轴<b>真的弯</b>吗（若线性，中间档是纯负担）② 这个点<b>真的含新信息</b>吗（若旧趋势已能预测 30°，补了等于没补）。两问都用数据答，不靠直觉。',
+   cmd:'cd feagpt_repro\npython _probe_m10/make_m10_specs.py       # 只一条：仅 sweep_deg=30，锥度中性、其余全锚定\npython _probe_m10/probe_d33_split.py      # 落位：52 条 0 换边 / D12 11/11 / 新点落 train\npython _probe_m10/physics_sweep_axis.py   # 物理：超线性 / 割线 −43.4 % / 30° 偏趋势 −6.2 %\npython run_pipeline.py --spec _probe_m10/naca4412_wingbox_sweep30.spec.json --out _probe_m10/outputs_sweep30 --solver ccx\n# abaqus 侧在 WorkBuddy 外手工跑 _probe_m10/run_m10_abq_MANUAL.bat\npython _probe_m10/compare_d31_d33.py      # 前后逐条对比（含对齐自检）\n# abaqus 回件后：先 resummarize 再 make_dataset（顺序反了不报错、只打 max|u|=n/a）\npython resummarize.py --roots _probe_m10/outputs_abaqus_sweep30\npython make_dataset.py --solver abaqus --cases _probe_m10/outputs_abaqus_sweep30 --root ../FEM-Bench-Aero\npython _probe_m10/xval_m10.py             # 双码交叉 -> _xval_d33.json',
+   ev:['<b>轴确实弯</b>：相对 0° 的位移比 <b>1.000/1.094/1.340/1.853/2.965</b>，增量 +0.094/+0.246/+0.514/+1.112 <b>严格递增</b>；0–20° 割线外推到 40° 差 <b>−43.4 %</b>（与 M7 的 −41.5 % 同源，两种口径互证）','<b>新点确含新信息</b>：0/10/20 三点二次趋势预测 30° 处偏 <b>−6.2 %</b> ⇒ 不是冗余叠加，值得一次求解','<b>规则改动 0 漂移</b>：52 条存量 <b>0 条换边</b>、D12 复现 <b>11/11</b>；<code>sweep40</code> 仍 val、<code>sweep40_taper040</code> 仍 test ⇒ <b>考试点一个没删</b>，只是外推距离 20°→10°','<b>有效但不足</b>：主目标 test <b>7.96 %→7.74 %</b>（−0.22 pp）、<code>planform_out</code> 组 <b>32.9 %→25.7 %</b>（−7.2 pp）、物理档 M2X <b>16.58 %→14.35 %</b>、val 10.25 %→9.40 %','<b>代价如实记</b>：<code>combo</code> 组 4.6 %→7.0 %、1 参数梁 24.84 %→26.07 %、副目标 <code>max_w</code> 4.17 %→8.33 %；train LOO 3.06 %→4.19 % <b>反而是好事</b>——说明曲率真进来了','<b>物理侧独立测算 40° 处残差</b>：3 站二次 −22.9 %、4 站二次 −14.1 %、4 站三次 −7.2 % ⇒ 模型假设 log 线性，吃不到三次曲率，所以停在中间。要再进一步只能补 35° 或改模型形式，<b>把 40° 收进 train 不是解（那样就没有外推测试点了）</b>','<b>双码已补齐（abaqus 回件验收）</b>：<code>.sta</code> SUCCESSFUL、<code>.dat</code> 零 ERROR；mesh <b>5347/5347</b> 逐点一致（坐标差 0）、平衡残差 <b>1.6e-4 %</b>、<code>max|u|</code> 4.38434 vs 4.39379 差 <b>0.22 %</b>（不判，D20）、vM 逐节点中位差 <b>0.23 %</b>（判据 5 %）→ <code>_xval_d33.json</code> PASS。峰值 12.904@857 vs 10.346@3322 <b>不同节点</b>，正是 D8「峰值禁裸比」的实例'],
+   files:['FEM-Bench-Aero/BASELINE.md','feagpt_repro/_probe_m10/probe_d33_split.json','feagpt_repro/_probe_m10/physics_sweep_axis.json','feagpt_repro/_probe_m10/d33_vs_d31.json','FEM-Bench-Aero/baseline_d33.json','FEM-Bench-Aero/_xval_d33.json','FEM-Bench-Aero/verify_dataset_d33.json']}
+ ];
+
+/* ============ 渲染 ============ */
+const $ = s => document.querySelector(s);
+
+function renderStats(){
+  const html = [
+    {k:'当前里程碑', v:'M9 · M10 收口（D32 · D33）', n:'<b>D32 目标口径定案</b>：主 <code>max_disp</code>／副 <code>max_w</code> 只报不判／应力峰值不设为目标 ｜ <b>D33 后掠中间档落地</b>：<code>sweep30</code> 入 train，<code>planform_out</code> 32.9 %→<b>25.7 %</b>、主目标 7.96 %→<b>7.74 %</b>，但净收益仅 0.22 pp（方向对、剂量不足）', c:'g'},
+    {k:'数据集规模', v:'53 × 2', n:'53 模型 · 52 等价类 · 4 个结构族 · train 22 ／ val 17 ／ test 14 · modeling + _xval 各 53 条', c:'k'},
+    {k:'门禁', v:'6 / 6 全绿', n:'关 1 / 关 3 / 关 4 / 自洽 / 退化自检 / 无漂移 全绿（退化自检 <b>54/54</b>、自洽 <b>106/106</b>、跨树网格 <b>53/53</b>、配对 <b>53/53</b>、双码 <b>9/9</b>）；<code>sweep30</code> abaqus 已入库（<code>_xval_d33.json</code>：平衡残差 1.6e-4 %、<code>max|u|</code> 差 0.22 %、vM 中位差 0.23 %）', c:'g'},
+    {k:'结构形式', v:'4 族 + 2 截面 + 平面形状 + 多闭室 + 复材材料维 + 尺寸维', n:'T1–T7 七种形式全部落地（T7 = CLT 等效单层）· 长桁截面 blade+T · 柱壳 blade-only（D22）· 开孔板 / 多闭室各有闭式解 · D31 翼盒展长/壁厚进 train 区间', c:'a'}
+  ].map(s=>`<div class="stat ${s.c}"><div class="k">${s.k}</div><div class="v">${s.v}</div><div class="n">${s.n}</div></div>`).join('');
+  $('#statrow').innerHTML = html;
+}
+
+function renderPanels(){
+  $('#panelBody').innerHTML = PANELS.map((p,i)=>`
+    <tr class="expander" data-p="p${i}">
+      <td><span class="caret">▸</span>${p.id}</td>
+      <td class="num">${p.n_str}</td><td class="num">${p.faces}</td>
+      <td class="num">${p.nodes}</td><td class="num">${p.elems}</td>
+      <td class="num">${p.minj.toFixed(4)}</td>
+      <td class="num">${p.u.toFixed(5)}</td><td class="num">${p.ua.toFixed(5)}</td>
+      <td class="num" style="color:${p.du>0.5?'var(--amber)':'var(--green)'}">${p.du.toFixed(3)}</td>
+      <td class="num" style="color:var(--green)">${p.navier===null?'—':p.navier.toFixed(3)+' %'}</td>
+    </tr>
+    <tr class="detail" id="dtp${i}" style="display:none"><td colspan="10">
+      <div class="box">
+        <b>关 3 交叉验证逐项读数</b>（同一模型，两个独立代码）
+        ${p.tag?`　<span class="pill b">${p.tag}</span>`:''}
+        <table style="margin-top:8px">
+          <tr><td style="width:180px;color:var(--ink3);font-size:12px">节点数</td><td class="mid">ccx ${p.nodes} vs abaqus ${p.nodes} → <span style="color:var(--green)">完全一致</span></td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">单元数</td><td class="mid">abaqus 组装 ${p.elems} 个 S4（从 ODB 读，不是读 deck 文本）</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">max |u| 差</td><td class="mid">${p.du.toFixed(3)} %　<span style="color:var(--ink3)">（容差 1 %）</span></td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">逐节点 vM 中位差</td><td class="mid">${p.med===null?'<span style="color:var(--amber)">不可比 —— abaqus 膜场恒为 0（纯弯曲的正确物理）</span>':p.med.toFixed(2)+' %　<span style="color:var(--ink3)">（容差 5 %）</span>'}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">静力平衡残差</td><td class="mid">ccx ${p.eqc.toFixed(6)} % ｜ abaqus ${p.eqa.toFixed(6)} %</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">峰值 vM · D8 口径</td>
+              <td class="mid">归档值 = <b>外表面峰值</b>：ccx 外纤维·逐节点 <b>${p.vm.toFixed(4)}</b> ｜
+              Abaqus 外纤维·逐单元 <b>${p.vmm.toFixed(4)}</b> MPa
+              <br>同归约对照（两码都取逐节点平均）：ccx ${p.vm.toFixed(4)} ｜ Abaqus ${p.vmf.toFixed(4)}
+              　→ 差 ${(((p.vm - p.vmf) / p.vm) * 100).toFixed(2)} %
+              <br>中面值（D8 弃用，仅留档）：ccx ${p.vmc.toFixed(4)} ｜ Abaqus ${p.vma.toFixed(4)} MPa
+              ${p.vma === 0 ? '<br><span style="color:var(--red);font-size:11.8px">↑ Abaqus 中面恒为 0 —— 纯弯平板没有膜作用，这是正确的物理，也正是 D8 判「中面值不可用」的实测依据（它同时让中面场的逐节点对照在这条上无从比对）</span>' : ''}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证① · 解析解</td>
+              <td class="mid">${p.v.navier}${p.navier===null?'':'　<span style="color:var(--ink3)">（容差 2 %）</span>'}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证② · 载荷积分</td><td class="mid">${p.v.area}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证③ · 全节点合力</td><td class="mid">${p.v.sumz}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证④ · 支撑反力</td><td class="mid">${p.v.react}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证⑤ · 对边对称</td><td class="mid">${p.v.sym}　<span style="color:var(--ink3)">对<b>边</b>相等，不是四边 —— 长桁沿 y 跑，x/y 边是不同构件</span></td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证⑥ · 外纤维 vs 闭式</td>
+              <td class="mid">${p.v.outer===null?'本条不做（有长桁，无闭式解）':p.v.outer}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">加筋效果</td><td class="mid">${p.v.stiff===null?'本条不做（本身即无长桁的素板）':p.v.stiff}</td></tr>
+        </table>
+        <div style="margin-top:8px;font-size:12px;color:var(--ink3)">
+          复现：<code>cd feagpt_repro &amp;&amp; python verify_solvers.py --ccx ${p.srcc} --abaqus ${p.srca} --case ${p.id} --spec ${p.specpath} --force ${p.force} --reaction-set all</code>
+          <br>原始日志：<code>FEM-Bench-Aero/gate3_panel.log</code> ｜ 平板独立不变量：<code>python verify_panel.py</code>（600×600）· <code>python _m5_probe/panel800_probe.py</code>（800×600）
+        </div>
+      </div>
+    </td></tr>`).join('');
+
+  document.querySelectorAll('tr.expander[data-p]').forEach(tr=>{
+    tr.addEventListener('click',()=>{
+      const i = tr.dataset.p.replace('p','');
+      const d = document.getElementById('dtp'+i);
+      const open = d.style.display !== 'none';
+      d.style.display = open ? 'none' : '';
+      tr.classList.toggle('open', !open);
+    });
+  });
+}
+
+function renderFuselage(){
+  $('#fuselageBody').innerHTML = FUSELAGE.map((f,i)=>`
+    <tr class="expander" data-f="f${i}">
+      <td><span class="caret">▸</span>${f.id}</td>
+      <td class="num">${f.n_str}</td><td class="num">${f.n_frm}</td>
+      <td class="num">${f.faces}</td>
+      <td class="num">${f.nodes}</td><td class="num">${f.elems}</td>
+      <td class="num">${f.minj.toFixed(4)}</td>
+      <td class="num">${f.u.toFixed(5)}</td><td class="num">${f.ua.toFixed(5)}</td>
+      <td class="num" style="color:var(--amber)">${f.du.toFixed(4)}</td>
+      <td class="num" style="color:var(--green)"><b>${f.d20s.toFixed(4)}</b></td>
+    </tr>
+    <tr class="detail" id="dtf${i}" style="display:none"><td colspan="11">
+      <div class="box">
+        <b>关 3 交叉验证逐项读数</b>（同一模型，两个独立代码）${f.tag?`　<span class="pill b">${f.tag}</span>`:''}
+        <table style="margin-top:8px">
+          <tr><td style="width:190px;color:var(--ink3);font-size:12px">节点数</td><td class="mid">ccx ${f.nodes} vs abaqus ${f.nodes} → <span style="color:var(--green)">完全一致</span>（活跃节点）</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">单元数</td><td class="mid">${f.elems} 个 S4，<b>全部四边形（0 tri3）</b> ｜ 几何面 ${f.nsrfc} = ${f.faces} 蒙皮 + ${f.nsrfc-2*f.faces} 长桁… 见下方语义行</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">全域 max|u| 差</td><td class="mid"><b>${f.du.toFixed(4)} %</b>　<span style="color:var(--amber)">超 1 % —— 但这不是判据（D20）</span>：ccx ${f.u.toFixed(5)} vs abaqus ${f.ua.toFixed(5)} mm</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px"><b>D20 · 结构峰值差</b></td><td class="mid"><b style="color:var(--green)">${f.d20s.toFixed(4)} %</b>　<span style="color:var(--ink3)">（容差 1 %）</span>：剔除端载环后 ccx ${f.ustc.toFixed(5)} vs abaqus ${f.usta.toFixed(5)} mm（ccx 峰值 node ${f.ustn}）</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px"><b>D20 · 挠度剖面差</b></td><td class="mid"><b style="color:var(--green)">${f.d20p.toFixed(4)} %</b> of 尖端挠度　<span style="color:var(--ink3)">（容差 1 %；沿轴 20 站截面形心 ux）</span></td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">静力平衡</td><td class="mid">${f.v.eq}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证① · 环向膜应力</td><td class="mid">${f.v.hoop}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证② · 自由径向膨胀</td><td class="mid">${f.v.w}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证③ · 梁弯应力</td><td class="mid">${f.v.bend}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证④ · D20 口径</td><td class="mid">${f.v.d20}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">网格与语义</td><td class="mid">${f.v.mesh}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">峰值 vM · D8 口径</td><td class="mid">归档值 = <b>外表面峰值</b>：ccx ${f.vm.toFixed(4)} ｜ Abaqus ${f.vma.toFixed(4)} MPa　<span style="color:var(--ink3)">（同名同定义，但归约方式不同 ⇒ 峰值禁裸比；T3 的跨码判据走 D20 的位移口径）</span></td></tr>
+        </table>
+        <div style="margin-top:8px;font-size:12px;color:var(--ink3)">
+          复现：<code>python run_pipeline.py --spec ${f.specpath} --out ${f.srcc} --solver ccx</code>（abaqus 换 <code>--out ${f.srca} --solver abaqus</code>）
+          <br>D20 逐条读数：<code>python _m5_probe/t3_d20_batch3.py</code> ｜ 闭式解与不变量：<code>python verify_barrel.py</code>（族默认柱壳）
+          ｜ 原始报告：<code>_m5_probe/verify_barrel_b3.json</code> · <code>_m5_probe/t3_d20_batch3.json</code>
+        </div>
+      </div>
+    </td></tr>`).join('');
+
+  document.querySelectorAll('tr.expander[data-f]').forEach(tr=>{
+    tr.addEventListener('click',()=>{
+      const i = tr.dataset.f.replace('f','');
+      const d = document.getElementById('dtf'+i);
+      const open = d.style.display !== 'none';
+      d.style.display = open ? 'none' : '';
+      tr.classList.toggle('open', !open);
+    });
+  });
+}
+
+function renderOpenHole(){
+  $('#t4Body').innerHTML = OPENHOLE.map((g,i)=>`
+    <tr class="expander" data-t="t${i}">
+      <td><span class="caret">▸</span>${g.id}</td>
+      <td class="num">${g.d}</td>
+      <td class="num">${g.lam.toFixed(3)}</td>
+      <td class="num">${g.pos}</td>
+      <td class="num">${g.faces}<span style="color:var(--ink3)">/${g.curves}</span></td>
+      <td class="num">${g.nodes}</td><td class="num">${g.elems}</td>
+      <td class="num">${g.minj.toFixed(4)}</td>
+      <td class="num">${g.u.toFixed(7)}</td><td class="num">${g.ua.toFixed(7)}</td>
+      <td class="num" style="color:var(--green)">${g.du.toFixed(3)}</td>
+      <td class="num" style="color:var(--green)"><b>${g.ktg.toFixed(4)}</b>${g.how===null?'':`<span style="color:var(--ink3);font-size:11.5px"> ${g.err>=0?'+':''}${g.err.toFixed(3)}%</span>`}</td>
+    </tr>
+    <tr class="detail" id="dtt${i}" style="display:none"><td colspan="12">
+      <div class="box">
+        <b>开孔板独立验证逐项读数</b>${g.tag?`　<span class="pill b">${g.tag}</span>`:''}
+        <table style="margin-top:8px">
+          <tr><td style="width:198px;color:var(--ink3);font-size:12px">几何</td>
+              <td class="mid">400×200×2 mm 板，1 个面 / ${g.curves} 条曲线（孔 = 1 圈，<b>用 <code>occ.cut</code> 而非 fragment</b>——
+              误用 fragment 会得到两个面）；孔 d=${g.d} mm，λ=${g.lam.toFixed(3)}，位置 <b>${g.pos}</b></td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">网格与语义</td><td class="mid">${g.v.mesh}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证① · Kt vs 闭式</td><td class="mid">${g.v.kt}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证② · 孔边收敛</td><td class="mid">${g.v.conv}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证③ · 静力平衡</td><td class="mid">${g.v.eq}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证④ · λ 趋势</td><td class="mid">${g.v.trend}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证⑤ · 双码交叉</td><td class="mid">${g.v.cross}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">独立验证⑥ · 可建包络</td><td class="mid">${g.v.env}</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">峰值 vM · D8 口径</td>
+              <td class="mid">归档值 = <b>外表面峰值</b>：ccx ${g.vmC.toFixed(4)} ｜ Abaqus ${g.vmA.toFixed(4)} MPa →
+              差 ${(((g.vmC - g.vmA) / g.vmC) * 100).toFixed(2)} %　<span style="color:var(--ink3)">（同名同定义但归约方式不同 ⇒ 峰值禁裸比；跨码判据走位移 + 孔边中位差）</span></td></tr>
+        </table>
+        <div style="margin-top:8px;font-size:12px;color:var(--ink3)">
+          复现：<code>python run_pipeline.py --spec ${g.specpath} --out ${g.srcc} --solver ccx</code>（abaqus 换 <code>--out ${g.srca} --solver abaqus</code>）
+          <br>闭式与不变量：<code>python verify_hole.py --trend</code> ｜ 三条 Kt 落盘：<code>python _t4_probe/open_hole_readings.py</code>
+          ｜ 双码离散差实测：<code>python _t4_probe/diag_cross_k.py</code>
+        </div>
+      </div>
+    </td></tr>`).join('');
+
+  document.querySelectorAll('tr.expander[data-t]').forEach(tr=>{
+    tr.addEventListener('click',()=>{
+      const i = tr.dataset.t.replace('t','');
+      const d = document.getElementById('dtt'+i);
+      const open = d.style.display !== 'none';
+      d.style.display = open ? 'none' : '';
+      tr.classList.toggle('open', !open);
+    });
+  });
+}
+
+function renderTrack(){
+  $('#trackBody').innerHTML = MILESTONES.map((m,i)=>{
+    const cls = m.state==='done'?'done':m.state==='next'?'next':'';
+    const dot = m.state==='done'?'✓':m.id.replace('M','');
+    const bl = i===0?'':'<div class="bar l"></div>';
+    const br = i===MILESTONES.length-1?'':'<div class="bar r"></div>';
+    return `<div class="ms ${cls}">${bl}${br}<div class="dot">${dot}</div>
+      <div class="t">${m.id} ${m.name.length>12?m.name.slice(0,11)+'…':m.name}</div>
+      <div class="s">${m.date}</div><div class="d">${m.detail}</div></div>`;
+  }).join('');
+}
+
+function renderGates(){
+  $('#gateBody').innerHTML = GATES.map(g=>`
+    <div class="gate">
+      <div class="gh"><div class="gn">${g.n}</div><span class="pill ok">PASS</span></div>
+      <div class="gv">${g.v}</div>
+      <div class="gd">${g.d}</div>
+      <div class="gbar" style="width:${g.pct}%"></div>
+    </div>`).join('');
+}
+
+const ROLE_CN = {baseline:'基线', ablation:'网格消融', sweep:'参数扫描', feature:'新形式', degenerate:'退化基准'};
+const FAM_CN = {wingbox:'翼盒', stiffened_panel:'平板', fuselage_barrel:'机身柱壳', open_hole_panel:'开孔板'};
+
+function renderSplits(){
+  const n = s => SPLITS.rows.filter(r=>r.split===s).length;
+  const cols = ['train','val','test'].map(s=>{
+    const rows = SPLITS.rows.filter(r=>r.split===s);
+    const head = {train:'训练集', val:'验证集', test:'测试集'}[s];
+    return `<div class="splitcol ${s}">
+      <h4><span>${head} <code style="font-family:var(--mono);font-size:11.5px">${s}</code></span>
+          <span>${rows.length} 条</span></h4>
+      <ul>${rows.map(r=>`
+        <li title="${r.why.replace(/\*\*/g,'')}">
+          <span class="cid">${r.id}</span>
+          <div class="meta">
+            <span class="rl ${r.role}">${ROLE_CN[r.role]}</span>
+            <span>${FAM_CN[r.fam]}</span>
+            <span class="clsmark ${r.clsN>1?'multi':''}">${r.cls}${r.clsN>1?'×'+r.clsN:''}</span>
+            <span>${r.nodes} 节点</span>
+            <span>max|u| ${r.u.toFixed(3)}</span>
+          </div>
+        </li>`).join('')}</ul>
+    </div>`;
+  }).join('');
+
+  const fams = {};
+  SPLITS.rows.forEach(r=>{ fams[r.fam] = fams[r.fam] || {train:0,val:0,test:0}; fams[r.fam][r.split]++; });
+
+  $('#splitBody').innerHTML = `
+    <div class="splitbar">
+      <div class="sb"><div class="k">发布树 case 数（modeling/）</div><div class="v">${SPLITS.n_cases}</div></div>
+      <div class="sb"><div class="k">几何等价类</div><div class="v">${SPLITS.n_classes}</div></div>
+      <div class="sb"><div class="k">实际划分 train / val / test</div><div class="v">${n('train')} / ${n('val')} / ${n('test')}</div></div>
+      <div class="sb"><div class="k">目标比例（未达成）</div><div class="v">60 / 20 / 20 %</div></div>
+    </div>
+    <div class="leakbadge">泄漏闸：${SPLITS.n_leaky} 个等价类跨 split ｜ 树内重复模型 ${SPLITS.n_dup} ｜ eval_dataset 32 项独立复算全绿</div>
+    <div class="splitgrid">${cols}</div>
+    <div style="margin-top:11px;font-size:12.3px;color:var(--ink3)">
+      <b>等价类</b>：几何（形状 + 壁厚）相同即同类；<code>×2</code> 表示该类有两个成员，<b>必须同集</b>。
+      唯一的多成员类是 <code>04fda953</code> —— 基线与它自己的网格算法对照（两者只能一起留在 train）。
+      <br><b>族覆盖</b>：${Object.entries(fams).map(([f,d])=>
+        `${FAM_CN[f]} {train ${d.train} / val ${d.val} / test ${d.test}}`).join('　')}
+      —— 平板族已补上<b>含长桁的 val</b>；batch6（2026-10-07）又把<b>柱壳族的 val 补到 3 条</b>（尺寸·壁厚维，d1800/l1600/t2），四族 val 全部非空。
+      <br><b>划分规则</b>（M5 起）：每族<b>声明留出区域</b>（谓词 → train/val/test），
+      一条 case <b>首个命中</b>的区域决定去向；<b>都没命中就进 train</b>。
+      所以 train 行的理由是「落在训练包络内」，val/test 行才是被留出的那条。
+      规则须<b>逐条复现 D12 锁定的口径 A</b>——由 <code>rule_reproduces_D12</code> 闸断言，改声明改了旧划分就报警。
+      <br><b>T1 首轮加入后</b>（D15）：三条<b>单自由度</b>平面形状样本（<code>sweep20</code> / <code>taper060</code> / <code>taper080</code>）
+      留 train —— 训练集的用意就是让模型<b>见得着</b>每个自由度；唯一那条<b>两个自由度同时动</b>的
+      <code>sweep20_taper060</code> 判为「新平面形状」，与 <code>str3_T</code>、<code>panel_str3</code> 同性质，进 test。
+      <br>新字段进 <code>asdict(airfoil)</code> ⇒ <b>翼盒等价类指纹全部重算</b>（平板族走 <code>structure.params</code>，不变）；
+      「基线 + 网格消融同类」这条不变量在重算后依旧成立。
+      <br>生成：<code>cd feagpt_repro &amp;&amp; python make_manifest.py --root ../FEM-Bench-Aero</code>
+      ｜ 校验：<code>python eval_dataset.py --root ../FEM-Bench-Aero</code>
+      <br>机器可读：<code>FEM-Bench-Aero/manifest.json</code>
+      ｜ 人读索引：<code>FEM-Bench-Aero/MANIFEST.md</code>
+      ｜ 校验报告：<code>FEM-Bench-Aero/eval_report.json</code>
+    </div>`;
+}
+
+function renderCases(){
+  $('#caseBody').innerHTML = CASES.map((c,i)=>`
+    <tr class="expander" data-i="${i}">
+      <td><span class="caret">▸</span>${c.id}</td>
+      <td class="num">${c.ribs}</td><td class="num">${c.chord}</td><td class="num">${c.shape}</td><td class="num">${c.str}</td>
+      <td class="num">${c.web===undefined?'0 / 1':c.web}</td>
+      <td class="num">${c.faces}</td><td class="num">${c.nodes}</td><td class="num">${c.elems}</td>
+      <td class="num">${c.u.toFixed(5)}</td><td class="num">${c.ua.toFixed(5)}</td>
+      <td class="num" style="color:var(--green)">${c.du.toFixed(3)}</td>
+      <td class="num">${c.vm.toFixed(2)}</td>
+    </tr>
+    <tr class="detail" id="dt${i}" style="display:none"><td colspan="13">
+      <div class="box">
+        <b>关 3 交叉验证逐项读数</b>（同一模型，两个独立代码）
+        ${c.tag?`　<span class="pill b">${c.tag}</span>`:''}
+        <table style="margin-top:8px">
+          <tr><td style="width:180px;color:var(--ink3);font-size:12px">节点数</td><td class="mid">ccx ${c.nodes} vs abaqus ${c.nodes} → <span style="color:var(--green)">完全一致</span></td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">坐标最大差</td><td class="mid">5.859e-05 mm（32 位浮点存储精度）</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">单元数</td><td class="mid">abaqus 组装 ${c.elems} 个（从 ODB 读，不是读 deck 文本）</td></tr>
+          ${c.web!==undefined?`<tr><td style="color:var(--ink3);font-size:12px"><b>腹板 / 闭室（T6）</b></td><td class="mid">${c.web}　<span style="color:var(--ink3)">（n_cells = n_webs + 1；腹板贯穿上下蒙皮，长桁贴单侧不贯穿）</span></td></tr>`:''}
+          <tr><td style="color:var(--ink3);font-size:12px">max |u| 差</td><td class="mid">${c.du.toFixed(3)} %　<span style="color:var(--ink3)">（容差 1 %）</span></td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">逐节点 vM 中位差</td><td class="mid">${c.med.toFixed(2)} %　<span style="color:var(--ink3)">（容差 5 %）</span></td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">静力平衡残差</td><td class="mid">ccx ${c.eqc.toFixed(6)} % ｜ abaqus ${c.eqa.toFixed(6)} %</td></tr>
+          <tr><td style="color:var(--ink3);font-size:12px">峰值 vM · D8 口径</td>
+              <td class="mid">归档值 = <b>外表面峰值</b>：ccx 外纤维·逐节点 <b>${c.vm.toFixed(4)}</b> ｜
+              Abaqus 外纤维·逐单元 <b>${c.vmm.toFixed(4)}</b> MPa
+              <br>同归约对照（两码都取逐节点平均）：ccx ${c.vm.toFixed(4)} ｜ Abaqus ${c.vmf.toFixed(4)}
+              　→ 差 ${(((c.vm - c.vmf) / c.vm) * 100).toFixed(2)} %（这部分落在梁肋交汇的几何奇异点上）
+              <br>中面值（D8 弃用，仅留档）：ccx ${c.vmc.toFixed(4)} ｜ Abaqus ${c.vma.toFixed(4)} MPa
+              <br><span style="color:var(--amber);font-size:11.8px">↑ 两码<b>归约方式不同</b>（ccx 逐节点 / Abaqus 逐单元不做平均），
+              所以<b>峰值不可裸比</b>；关 3 的应力判据是逐节点中位差 ${c.med.toFixed(2)} %，见「缺口与风险」第一条</span></td></tr>
+        </table>
+        <div style="margin-top:8px;font-size:12px;color:var(--ink3)">
+          复现：<code>cd feagpt_repro &amp;&amp; python verify_solvers.py --ccx ${c.srcc} --abaqus ${c.srca} --case ${c.id}</code>
+          <br>原始日志：<code>FEM-Bench-Aero/gate3_xval.log</code>
+          ${c.web!==undefined?`<br><b>多闭室独立解析对照</b>：<code>python verify_multi_cell.py${c.id.indexOf('offcentre')>=0?'  # 本 case 的偏心腹板 ≠ 等分，Bredt-Batho 不描述该截面 —— 解析表对照的是 web1/web2 两条等分件':'  # 本条在 Bredt-Batho 对照表内（等分腹板）'}</code>　→ 日志 <code>FEM-Bench-Aero/verify_multi_cell.log</code>`:''}
+        </div>
+      </div>
+    </td></tr>`).join('');
+
+  document.querySelectorAll('tr.expander').forEach(tr=>{
+    tr.addEventListener('click',()=>{
+      const i = tr.dataset.i;
+      const d = document.getElementById('dt'+i);
+      const open = d.style.display !== 'none';
+      d.style.display = open ? 'none' : '';
+      tr.classList.toggle('open', !open);
+    });
+  });
+}
+
+function renderModules(){
+  $('#modBody').innerHTML = MODULES.map(m=>`
+    <div class="mod">
+      <div class="mn">${m.n}<span>${m.f}</span></div>
+      <div class="mtrack"><div class="mfill" style="width:${m.pct}%;background:${m.c}"></div></div>
+      <div class="ms">${m.s}</div>
+    </div>`).join('');
+}
+
+function renderGaps(){
+  const cls = {高:'hi',中:'mid',低:'lo'};
+  $('#gapBody').innerHTML = GAPS.map(g=>`
+    <div class="gap">
+      <div class="sev ${cls[g.sev]}">${g.sev} 风险</div>
+      <div><div class="gt">${g.title}</div><div class="gd">${g.d}</div></div>
+    </div>`).join('');
+}
+
+function renderDecisions(){
+  $('#decDone').innerHTML = `
+    <div class="dec" style="border-left:4px solid var(--green)">
+      <div class="dh"><div class="dq">已拍板（2026-10-02 → 10-04）</div><span class="pill ok">已生效</span></div>
+      <table style="margin-top:4px">
+        <thead><tr><th style="width:52px">编号</th><th style="width:180px">岔路口</th><th>你的选择</th><th style="width:230px">备注</th></tr></thead>
+        <tbody>${DECIDED.map(r=>`<tr>
+          <td class="mid">${r[0]}</td><td style="font-size:12.5px">${r[1]}</td>
+          <td style="font-size:12.8px;font-weight:600">${r[2]}</td>
+          <td style="font-size:12.2px;color:var(--ink3)">${r[3]}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>`;
+
+  $('#decBody').innerHTML = DECISIONS.map(d=>`
+    <div class="dec">
+      <div class="dh"><div class="dq">${d.q}</div></div>
+      <p class="dc">${d.c}</p>
+      ${d.opts.map(o=>`
+        <div class="opt ${o.rec?'rec':''}">
+          <div class="ol">${o.l}</div>
+          <div class="ob"><b>${o.b}</b><span>${o.s}</span></div>
+          <div class="orr">${o.rec?'我的推荐':''}</div>
+        </div>`).join('')}
+      <div class="mine"><b>蜗子的意见　</b>${d.mine}</div>
+    </div>`).join('');
+}
+
+const RV_KEY = 'fembench_aero_review_v1';
+let rvState = {};
+try{ rvState = JSON.parse(localStorage.getItem(RV_KEY) || '{}'); }catch(e){ rvState = {}; }
+
+function renderReview(){
+  $('#rvBody').innerHTML = REVIEW.map(r=>{
+    const st = rvState[r.id] || '';
+    return `<div class="rv ${st}" id="rv-${r.id}">
+      <div class="rvt">
+        <div class="rvtag">${r.g}</div>
+        <div class="rvbody">
+          <div class="rvc">${r.c}</div>
+          <div class="rvq">${r.q}</div>
+          <button class="evbtn" data-ev="${r.id}">查看证据 ▾</button>
+          <div class="ev" id="ev-${r.id}">
+            <div class="row"><div class="lab">复现命令</div><div class="val"><pre>${r.cmd}</pre></div></div>
+            <div class="row"><div class="lab">实测读数</div><div class="val">${r.ev.map(e=>'· '+e).join('<br>')}</div></div>
+            <div class="row"><div class="lab">产物路径</div><div class="val">${r.files.map(f=>'<code>'+f+'</code>').join(' ')}</div></div>
+          </div>
+        </div>
+        <div class="rva">
+          <button class="rbtn ${st==='ok'?'on ok':''}" data-st="ok"    data-id="${r.id}">我确认</button>
+          <button class="rbtn ${st==='doubt'?'on doubt':''}" data-st="doubt" data-id="${r.id}">有疑问</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.querySelectorAll('.evbtn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const ev = document.getElementById('ev-'+b.dataset.ev);
+      const on = ev.classList.toggle('show');
+      b.textContent = on ? '收起证据 ▴' : '查看证据 ▾';
+    });
+  });
+  document.querySelectorAll('.rbtn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const id = b.dataset.id, st = b.dataset.st;
+      rvState[id] = (rvState[id] === st) ? '' : st;
+      localStorage.setItem(RV_KEY, JSON.stringify(rvState));
+      applyState(id);
+      updateDock();
+    });
+  });
+  updateDock();
+}
+
+function applyState(id){
+  const box = document.getElementById('rv-'+id);
+  const st = rvState[id] || '';
+  box.classList.remove('ok','doubt');
+  if(st) box.classList.add(st);
+  box.querySelectorAll('.rbtn').forEach(b=>{
+    b.classList.toggle('on', b.dataset.st === st);
+    b.classList.toggle('ok', b.dataset.st==='ok' && b.dataset.st===st);
+    b.classList.toggle('doubt', b.dataset.st==='doubt' && b.dataset.st===st);
+  });
+}
+
+function updateDock(){
+  const total = REVIEW.length;
+  const ok = Object.values(rvState).filter(v=>v==='ok').length;
+  const doubt = Object.values(rvState).filter(v=>v==='doubt').length;
+  $('#dockTxt').innerHTML = `已确认 <b>${ok}</b> / 共 ${total} 项 ｜ 标记疑问 <b>${doubt}</b> 项`;
+  $('#pbA').style.width = (ok/total*100)+'%';
+  $('#pbB').style.width = (doubt/total*100)+'%';
+}
+
+function buildReceipt(){
+  const ok = [], doubt = [], untouched = [];
+  REVIEW.forEach(r=>{
+    const st = rvState[r.id];
+    if(st==='ok') ok.push(r); else if(st==='doubt') doubt.push(r); else untouched.push(r);
+  });
+  const L = [];
+  L.push('# FEM-Bench-Aero 检查回执');
+  L.push('生成时间：' + new Date().toLocaleString('zh-CN'));
+  L.push('看板版本：2026-10-04（M5 进行中 · ① 划分规则化落地 · 规则 11/11 复现 D12 的 A · D13 已拍板）');
+  L.push('');
+  L.push('## 你留下的标记（未标记项即「还没看」）');
+  L.push('');
+  L.push(`## 汇总：确认 ${ok.length} ｜ 疑问 ${doubt.length} ｜ 未看 ${untouched.length} （共 ${REVIEW.length}）`);
+  L.push('');
+  L.push('## ✅ 我确认的');
+  if(ok.length) ok.forEach(r=>L.push(`- [${r.g}] ${r.c}`)); else L.push('- （无）');
+  L.push('');
+  L.push('## ❓ 我有疑问的（请蜗子重点解释或补证据）');
+  if(doubt.length) doubt.forEach(r=>L.push(`- [${r.g}] ${r.c}`)); else L.push('- （无）');
+  L.push('');
+  L.push('## ⬜ 我还没看的');
+  if(untouched.length) untouched.forEach(r=>L.push(`- [${r.g}] ${r.c}`)); else L.push('- （无）');
+  L.push('');
+  L.push('---');
+  L.push('## 已拍板（D1–D11，仅供参考）');
+  DECIDED.forEach(r=>L.push(`- ${r[0]} ${r[1]} → ${r[2]}（${r[3]}）`));
+  L.push('');
+  L.push('（以下是当前待决项，请在对话里直接告诉蜗子你的选择）');
+  DECISIONS.forEach(d=>L.push(`- ${d.q}`));
+  return L.join('\n');
+}
+
+/* ============ 事件 ============ */
+document.addEventListener('DOMContentLoaded',()=>{
+  renderStats(); renderTrack(); renderGates(); renderCases(); renderPanels(); renderFuselage(); renderOpenHole(); renderSplits();
+  renderModules(); renderGaps(); renderDecisions(); renderReview();
+
+  $('#btnReceipt').addEventListener('click',()=>{
+    $('#rcpt').value = buildReceipt();
+    $('#modal').classList.add('show');
+  });
+  $('#btnClose').addEventListener('click',()=>$('#modal').classList.remove('show'));
+  $('#modal').addEventListener('click',e=>{ if(e.target.id==='modal') $('#modal').classList.remove('show'); });
+  $('#btnCopy').addEventListener('click',()=>{
+    const t = $('#rcpt'); t.select(); t.setSelectionRange(0,999999);
+    try{ document.execCommand('copy'); $('#btnCopy').textContent='已复制 ✓';
+         setTimeout(()=>$('#btnCopy').textContent='复制到剪贴板',1600); }catch(e){}
+  });
+  $('#btnTop').addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+  $('#rvClear').addEventListener('click',()=>{
+    rvState = {}; localStorage.removeItem(RV_KEY);
+    Object.keys(REVIEW.reduce((a,r)=>(a[r.id]=1,a),{})).forEach(applyState);
+    renderReview();
+  });
+});
+</script>
+</body>
+</html>

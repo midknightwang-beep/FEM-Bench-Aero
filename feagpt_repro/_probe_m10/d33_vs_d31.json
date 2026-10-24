@@ -1,0 +1,450 @@
+{
+ "digest": {
+  "d31": "9ce23a7bdf041758d7764e0cd4fd2aa0ac0a00e76197be2d8d6bce533629c4b0",
+  "d33": "ebdbd4fe325ac90a0ca94b1d1e1b761265811758532542a06f2da0cc4493940c"
+ },
+ "n": {
+  "d31": {
+   "total": 31,
+   "train": 17,
+   "val": 7,
+   "test": 7
+  },
+  "d33": {
+   "total": 32,
+   "train": 18,
+   "val": 7,
+   "test": 7
+  }
+ },
+ "splits": {
+  "d31": "17/7/7",
+  "d33": "18/7/7"
+ },
+ "test_order": [
+  "naca4412_wingbox_n_ribs7_chord800",
+  "naca4412_wingbox_size_span2400_skin2",
+  "naca4412_wingbox_size_span3000_skin1p5",
+  "naca4412_wingbox_str3_T",
+  "naca4412_wingbox_sweep20_taper060",
+  "naca4412_wingbox_sweep40_taper040",
+  "naca4412_wingbox_web1_offcentre"
+ ],
+ "tiers": {
+  "max_disp": {
+   "M1 beam(1p)": {
+    "train_loo_mape": {
+     "before": 10.14,
+     "after": 13.4,
+     "delta": 3.27
+    },
+    "val_mape": {
+     "before": 21.33,
+     "after": 22.45,
+     "delta": 1.12
+    },
+    "test_mape": {
+     "before": 24.84,
+     "after": 26.07,
+     "delta": 1.23
+    }
+   },
+   "M2X full-pow(7p)": {
+    "train_loo_mape": {
+     "before": 3.73,
+     "after": 3.84,
+     "delta": 0.1
+    },
+    "val_mape": {
+     "before": 6.17,
+     "after": 4.87,
+     "delta": -1.3
+    },
+    "test_mape": {
+     "before": 16.58,
+     "after": 14.35,
+     "delta": -2.22
+    }
+   },
+   "M3 ridge(10f)": {
+    "train_loo_mape": {
+     "before": 3.29,
+     "after": 4.75,
+     "delta": 1.46
+    },
+    "val_mape": {
+     "before": 10.51,
+     "after": 9.75,
+     "delta": -0.76
+    },
+    "test_mape": {
+     "before": 8.32,
+     "after": 8.62,
+     "delta": 0.3
+    }
+   },
+   "M5 hybrid(10f+phys)": {
+    "train_loo_mape": {
+     "before": 3.06,
+     "after": 4.19,
+     "delta": 1.12
+    },
+    "val_mape": {
+     "before": 10.25,
+     "after": 9.4,
+     "delta": -0.85
+    },
+    "test_mape": {
+     "before": 7.96,
+     "after": 7.74,
+     "delta": -0.22
+    }
+   }
+  },
+  "max_w": {
+   "M1 beam(1p)": {
+    "train_loo_mape": {
+     "before": 11.11,
+     "after": 12.5,
+     "delta": 1.39
+    },
+    "val_mape": {
+     "before": 22.84,
+     "after": 23.59,
+     "delta": 0.74
+    },
+    "test_mape": {
+     "before": 25.87,
+     "after": 27.39,
+     "delta": 1.51
+    }
+   },
+   "M2X full-pow(7p)": {
+    "train_loo_mape": {
+     "before": 5.19,
+     "after": 4.76,
+     "delta": -0.44
+    },
+    "val_mape": {
+     "before": 6.05,
+     "after": 5.67,
+     "delta": -0.38
+    },
+    "test_mape": {
+     "before": 16.72,
+     "after": 17.55,
+     "delta": 0.83
+    }
+   },
+   "M3 ridge(10f)": {
+    "train_loo_mape": {
+     "before": 2.92,
+     "after": 4.18,
+     "delta": 1.25
+    },
+    "val_mape": {
+     "before": 7.61,
+     "after": 6.73,
+     "delta": -0.89
+    },
+    "test_mape": {
+     "before": 4.44,
+     "after": 9.6,
+     "delta": 5.17
+    }
+   },
+   "M5 hybrid(10f+phys)": {
+    "train_loo_mape": {
+     "before": 2.98,
+     "after": 4.27,
+     "delta": 1.29
+    },
+    "val_mape": {
+     "before": 7.39,
+     "after": 6.01,
+     "delta": -1.38
+    },
+    "test_mape": {
+     "before": 4.17,
+     "after": 8.33,
+     "delta": 4.16
+    }
+   }
+  },
+  "max_von_mises_midsurface": {
+   "M1 beam(1p)": {
+    "train_loo_mape": {
+     "before": 3.27,
+     "after": 4.51,
+     "delta": 1.23
+    },
+    "val_mape": {
+     "before": 9.14,
+     "after": 8.33,
+     "delta": -0.82
+    },
+    "test_mape": {
+     "before": 10.39,
+     "after": 10.72,
+     "delta": 0.32
+    }
+   },
+   "M2X full-pow(7p)": {
+    "train_loo_mape": {
+     "before": 3.95,
+     "after": 4.78,
+     "delta": 0.82
+    },
+    "val_mape": {
+     "before": 8.5,
+     "after": 4.22,
+     "delta": -4.28
+    },
+    "test_mape": {
+     "before": 9.87,
+     "after": 10.33,
+     "delta": 0.46
+    }
+   },
+   "M3 ridge(10f)": {
+    "train_loo_mape": {
+     "before": 2.79,
+     "after": 4.92,
+     "delta": 2.14
+    },
+    "val_mape": {
+     "before": 9.74,
+     "after": 8.0,
+     "delta": -1.74
+    },
+    "test_mape": {
+     "before": 10.08,
+     "after": 9.38,
+     "delta": -0.7
+    }
+   },
+   "M5 hybrid(10f+phys)": {
+    "train_loo_mape": {
+     "before": 2.53,
+     "after": 3.92,
+     "delta": 1.38
+    },
+    "val_mape": {
+     "before": 9.05,
+     "after": 7.66,
+     "delta": -1.39
+    },
+    "test_mape": {
+     "before": 9.51,
+     "after": 9.48,
+     "delta": -0.03
+    }
+   }
+  },
+  "max_von_mises": {
+   "M1 beam(1p)": {
+    "train_loo_mape": {
+     "before": 3.8,
+     "after": 5.37,
+     "delta": 1.57
+    },
+    "val_mape": {
+     "before": 10.22,
+     "after": 9.78,
+     "delta": -0.43
+    },
+    "test_mape": {
+     "before": 12.22,
+     "after": 12.57,
+     "delta": 0.35
+    }
+   },
+   "M2X full-pow(7p)": {
+    "train_loo_mape": {
+     "before": 4.73,
+     "after": 5.32,
+     "delta": 0.58
+    },
+    "val_mape": {
+     "before": 10.2,
+     "after": 5.9,
+     "delta": -4.3
+    },
+    "test_mape": {
+     "before": 10.55,
+     "after": 11.97,
+     "delta": 1.42
+    }
+   },
+   "M3 ridge(10f)": {
+    "train_loo_mape": {
+     "before": 3.59,
+     "after": 5.76,
+     "delta": 2.17
+    },
+    "val_mape": {
+     "before": 11.08,
+     "after": 9.66,
+     "delta": -1.42
+    },
+    "test_mape": {
+     "before": 10.65,
+     "after": 10.39,
+     "delta": -0.26
+    }
+   },
+   "M5 hybrid(10f+phys)": {
+    "train_loo_mape": {
+     "before": 3.16,
+     "after": 4.51,
+     "delta": 1.35
+    },
+    "val_mape": {
+     "before": 9.47,
+     "after": 8.4,
+     "delta": -1.07
+    },
+    "test_mape": {
+     "before": 10.68,
+     "after": 10.6,
+     "delta": -0.08
+    }
+   }
+  }
+ },
+ "per_case": {
+  "max_disp": {
+   "naca4412_wingbox_n_ribs7_chord800": {
+    "before": 0.03,
+    "after": 0.75,
+    "delta": 0.72
+   },
+   "naca4412_wingbox_size_span2400_skin2": {
+    "before": 0.65,
+    "after": 0.06,
+    "delta": -0.59
+   },
+   "naca4412_wingbox_size_span3000_skin1p5": {
+    "before": 2.03,
+    "after": 1.3,
+    "delta": -0.73
+   },
+   "naca4412_wingbox_str3_T": {
+    "before": 5.26,
+    "after": 5.79,
+    "delta": 0.53
+   },
+   "naca4412_wingbox_sweep20_taper060": {
+    "before": 8.63,
+    "after": 13.88,
+    "delta": 5.25
+   },
+   "naca4412_wingbox_sweep40_taper040": {
+    "before": 32.86,
+    "after": 25.7,
+    "delta": -7.16
+   },
+   "naca4412_wingbox_web1_offcentre": {
+    "before": 6.28,
+    "after": 6.74,
+    "delta": 0.46
+   }
+  },
+  "max_w": {
+   "naca4412_wingbox_n_ribs7_chord800": {
+    "before": 0.34,
+    "after": 0.08,
+    "delta": -0.26
+   },
+   "naca4412_wingbox_size_span2400_skin2": {
+    "before": 0.75,
+    "after": 0.8,
+    "delta": 0.05
+   },
+   "naca4412_wingbox_size_span3000_skin1p5": {
+    "before": 1.56,
+    "after": 1.01,
+    "delta": -0.55
+   },
+   "naca4412_wingbox_str3_T": {
+    "before": 4.57,
+    "after": 4.5,
+    "delta": -0.06
+   },
+   "naca4412_wingbox_sweep20_taper060": {
+    "before": 16.41,
+    "after": 26.76,
+    "delta": 10.35
+   },
+   "naca4412_wingbox_sweep40_taper040": {
+    "before": 2.36,
+    "after": 21.91,
+    "delta": 19.55
+   },
+   "naca4412_wingbox_web1_offcentre": {
+    "before": 3.21,
+    "after": 3.26,
+    "delta": 0.05
+   }
+  }
+ },
+ "fails": [],
+ "groups": {
+  "ribs_new": {
+   "n": 1,
+   "before": 0.03,
+   "after": 0.75,
+   "delta": 0.72,
+   "cases": [
+    "naca4412_wingbox_n_ribs7_chord800"
+   ]
+  },
+  "combo": {
+   "n": 2,
+   "before": 4.64,
+   "after": 6.97,
+   "delta": 2.33,
+   "cases": [
+    "naca4412_wingbox_size_span2400_skin2",
+    "naca4412_wingbox_sweep20_taper060"
+   ]
+  },
+  "size_out": {
+   "n": 1,
+   "before": 2.03,
+   "after": 1.3,
+   "delta": -0.73,
+   "cases": [
+    "naca4412_wingbox_size_span3000_skin1p5"
+   ]
+  },
+  "section_new": {
+   "n": 1,
+   "before": 5.26,
+   "after": 5.79,
+   "delta": 0.53,
+   "cases": [
+    "naca4412_wingbox_str3_T"
+   ]
+  },
+  "planform_out": {
+   "n": 1,
+   "before": 32.86,
+   "after": 25.7,
+   "delta": -7.16,
+   "cases": [
+    "naca4412_wingbox_sweep40_taper040"
+   ]
+  },
+  "webpos_new": {
+   "n": 1,
+   "before": 6.28,
+   "after": 6.74,
+   "delta": 0.46,
+   "cases": [
+    "naca4412_wingbox_web1_offcentre"
+   ]
+  }
+ },
+ "verdict": "PASS"
+}

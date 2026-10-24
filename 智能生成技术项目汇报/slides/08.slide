@@ -1,0 +1,36 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 28, right: 80 }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>FEM-Bench-Aero 基准数据集</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 116, flexDirection: 'column' }}>
+    <Text style={{ fontSize: 96, fontWeight: 'bold', color: '#E65100', lineHeight: 1.05 }}>41 <span style={{ fontSize: 52, color: '#1A1A1A' }}>条 × 2 树</span></Text>
+    <Text style={{ fontSize: 22, color: '#334155', lineHeight: 1.6, marginTop: 10 }}>
+      CalculiX 发布树 + Abaqus 交叉验证树<span style={{ fontWeight: 'bold' }}>同构逐字节对应</span>——标签可信度不依赖单一求解器
+    </Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, right: 80, top: 350, flexDirection: 'row', gap: 24 }}>
+    {[
+      { v: '40', u: '个几何等价类', d: '同族同几何同壁厚归一类，防止同类算例跨集泄漏' },
+      { v: '4 族 · 7 形式', u: 'T1–T7 全部落地', d: '翼盒 / 壁板 / 柱壳 / 开孔板，含复材层合' },
+      { v: '17 / 13 / 11', u: 'train / val / test', d: '按尺寸·材料·形式维外推划分，评泛化非记忆' },
+      { v: '6 件套', u: '每条算例', d: '契约·几何·网格·双后端卡片·结果·真值' },
+    ].map((k, i) => (
+      <Box key={i} style={{ flex: 1, background: '#F1F5F9', borderRadius: 10, padding: '20px 22px', borderTop: '4px solid #1565C0' }}>
+        <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1565C0', marginBottom: 4 }}>{k.v}</Text>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 8 }}>{k.u}</Text>
+        <Text style={{ fontSize: 14, color: '#64748B', lineHeight: 1.55 }}>{k.d}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, right: 80, bottom: 70, background: '#0F172A', borderRadius: 10, padding: '18px 26px' }}>
+    <Text style={{ fontSize: 18, color: '#FFFFFF', lineHeight: 1.6 }}>
+      <span style={{ color: '#06B6D4', fontWeight: 'bold' }}>判断：</span>划分按物理维度外推而非随机抽样——
+      评测的是大模型<span style={{ fontWeight: 'bold' }}>"没见过的结构能不能算对"</span>，与工程实际外推需求一一对应
+    </Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>基于大模型的飞机有限元模型智能生成技术</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>08 / 15</Text>
+  </Box>
+</Slide>

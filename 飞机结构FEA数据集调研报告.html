@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>飞机结构强度 FEM 构建与更新（LLM+Agent）数据集调研报告</title>
+<style>
+  :root{
+    --bg:#ffffff; --panel:#f7f9fc; --panel2:#eef2f8; --ink:#1f2733; --muted:#5b6573;
+    --line:#dbe2ec; --brand:#1f5fd6; --brand2:#0a8f6f; --warn:#c0392b; --warnbg:#fdecea;
+    --ok:#0a8f6f; --chip:#e7eefb; --chipink:#1f5fd6; --shadow:0 1px 3px rgba(20,40,80,.08),0 6px 20px rgba(20,40,80,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.7;}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  /* layout */
+  .wrap{display:flex;min-height:100vh}
+  nav.side{width:260px;flex:0 0 260px;position:sticky;top:0;height:100vh;overflow-y:auto;
+    background:var(--panel);border-right:1px solid var(--line);padding:18px 14px}
+  nav.side h2{font-size:13px;letter-spacing:.04em;color:var(--muted);text-transform:uppercase;margin:14px 8px 6px}
+  nav.side a{display:block;padding:7px 10px;border-radius:8px;color:var(--ink);font-size:14px;margin:2px 0}
+  nav.side a:hover{background:var(--panel2);text-decoration:none}
+  nav.side a.active{background:var(--chip);color:var(--chipink);font-weight:600}
+  main{flex:1;min-width:0;padding:32px 44px 80px;max-width:1100px}
+  header.hero{background:linear-gradient(135deg,#1f5fd6,#0a8f6f);color:#fff;border-radius:16px;
+    padding:28px 30px;box-shadow:var(--shadow);margin-bottom:26px}
+  header.hero h1{margin:0 0 6px;font-size:25px}
+  header.hero p{margin:0;opacity:.92;font-size:14px}
+  .tags{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+  .tag{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);padding:3px 10px;border-radius:999px;font-size:12px}
+  section{margin:0 0 34px;scroll-margin-top:16px}
+  h2.sec{font-size:21px;border-left:5px solid var(--brand);padding-left:12px;margin:30px 0 14px}
+  h3.sub{font-size:17px;margin:20px 0 8px;color:#16324f}
+  h4.min{font-size:15px;margin:14px 0 6px;color:#1f5fd6}
+  p{margin:8px 0}
+  .muted{color:var(--muted);font-size:13px}
+  .note{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    padding:12px 16px;border-radius:10px;margin:14px 0;font-size:14px}
+  .warn{background:var(--warnbg);border:1px solid #f3c4bd;border-left:4px solid var(--warn);}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;background:#fff;box-shadow:var(--shadow);border-radius:10px;overflow:hidden}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+  th{background:var(--panel2);color:#16324f;font-weight:600}
+  tr:nth-child(even) td{background:#fafcff}
+  .lic-open{color:var(--ok);font-weight:600}
+  .lic-warn{color:var(--warn);font-weight:600}
+  /* dataset index interactive */
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 14px}
+  .toolbar input{padding:8px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;min-width:240px}
+  .chip-btn{border:1px solid var(--line);background:var(--panel);padding:6px 12px;border-radius:999px;font-size:13px;cursor:pointer}
+  .chip-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .fit{font-variant-numeric:tabular-nums;font-weight:600}
+  /* deep dive tabs */
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 0;border-bottom:2px solid var(--line)}
+  .tab{padding:10px 16px;cursor:pointer;border:1px solid transparent;border-bottom:none;border-radius:10px 10px 0 0;
+    background:var(--panel);font-size:14px;font-weight:600;color:var(--muted)}
+  .tab.active{background:#fff;color:var(--brand);border-color:var(--line);box-shadow:0 -2px 0 var(--brand) inset}
+  .panelbox{display:none;border:1px solid var(--line);border-top:none;border-radius:0 0 12px 12px;padding:18px 20px;background:#fff;box-shadow:var(--shadow)}
+  .panelbox.active{display:block}
+  .kv{display:grid;grid-template-columns:130px 1fr;gap:6px 14px;margin:10px 0;font-size:14px}
+  .kv b{color:#16324f}
+  .stars{color:#f0a020;letter-spacing:2px}
+  .stars .e{color:#cdd5e0}
+  /* comparison chart */
+  .chart{margin:14px 0}
+  .crow{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:center;margin:7px 0}
+  .crow .lab{font-size:13px;color:#16324f;text-align:right}
+  .bar{height:18px;border-radius:6px;background:linear-gradient(90deg,#1f5fd6,#0a8f6f);position:relative;min-width:2px}
+  .bar span{position:absolute;right:6px;top:0;font-size:11px;color:#fff;line-height:18px;font-weight:600}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:6px 0 14px}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  details{border:1px solid var(--line);border-radius:10px;padding:4px 14px;margin:8px 0;background:#fff}
+  summary{cursor:pointer;font-weight:600;padding:8px 0;color:#16324f}
+  .small{font-size:12.5px;color:var(--muted)}
+  code{background:var(--panel2);padding:1px 6px;border-radius:5px;font-size:12.5px}
+  footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:16px;margin-top:30px}
+  @media(max-width:880px){nav.side{display:none}main{padding:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="side">
+  <h2>导航</h2>
+  <a href="#overview">0. 框架与方法</a>
+  <a href="#index">数据集速查索引</a>
+  <a href="#construct">1. 模型高效构建</a>
+  <a href="#update">2. 模型更新数据</a>
+  <a href="#material">3. 材料与强度属性</a>
+  <a href="#llmbench">4. LLM/Agent 基准</a>
+  <a href="#commercial">5. 非开源/受限</a>
+  <a href="#recommend">6. 推荐组合</a>
+  <a href="#deepdive">7. 四大基准深度解读</a>
+  <a href="#links">8. 获取链接汇总</a>
+</nav>
+
+<main>
+<header class="hero">
+  <h1>飞机结构强度分析有限元模型高效构建与更新（LLM + Agent）数据集调研报告</h1>
+  <p>检索时间：2026-07-14 ｜ 开源优先，非开源单列说明 ｜ 含 ALL-FEM / FRAME / FEM-Bench / StructuralEval 深度评估</p>
+  <div class="tags">
+    <span class="tag">✅ 开源免费</span>
+    <span class="tag">💰 商业/受限</span>
+    <span class="tag">构建 · 更新 · 智能体</span>
+    <span class="tag">可交互版</span>
+  </div>
+</header>
+
+<!-- 0 -->
+<section id="overview">
+  <h2 class="sec">0. 研究方法与数据映射框架</h2>
+  <p>本课题拆解为三个能力环，每个环对数据的需求不同。下表即全篇组织方式：</p>
+  <table>
+    <thead><tr><th>能力环</th><th>对数据的需求</th><th>对应章节</th></tr></thead>
+    <tbody>
+      <tr><td><b>A. 模型高效构建</b><br>（几何→网格→属性→求解）</td><td>飞机结构几何/CAD、参数化建模序列、材料/强度属性</td><td>§1、§3</td></tr>
+      <tr><td><b>B. 模型更新</b><br>（试验/监测数据驱动修正）</td><td>全机/部件模态试验、振动/导波/声发射监测、损伤样本</td><td>§2</td></tr>
+      <tr><td><b>C. LLM/Agent 训练与评测</b></td><td>FEA 代码语料、结果解读基准、力学推理题、知识图谱</td><td>§4、§7</td></tr>
+    </tbody>
+  </table>
+  <div class="note">🔎 <b>使用提示：</b>所有数据集的<b>许可与获取方式以官方源为准</b>，尤其涉及商业用途时务必再次核对条款。本报告对许可的标注基于检索时公开页面信息。</div>
+</section>
+
+<!-- INDEX -->
+<section id="index">
+  <h2 class="sec">数据集速查索引（可检索 / 筛选）</h2>
+  <p class="muted">在搜索框输入关键词，或点击分类标签筛选。下表汇总全文核心数据集。</p>
+  <div class="toolbar">
+    <input id="search" placeholder="搜索数据集名称 / 关键词…" oninput="filterRows()">
+    <span class="chip-btn active" data-cat="all" onclick="setCat('all',this)">全部</span>
+    <span class="chip-btn" data-cat="construct" onclick="setCat('construct',this)">构建几何</span>
+    <span class="chip-btn" data-cat="update" onclick="setCat('update',this)">模型更新</span>
+    <span class="chip-btn" data-cat="material" onclick="setCat('material',this)">材料属性</span>
+    <span class="chip-btn" data-cat="llm" onclick="setCat('llm',this)">LLM/智能体</span>
+    <span class="chip-btn" data-cat="commercial" onclick="setCat('commercial',this)">非开源</span>
+  </div>
+  <table id="idx">
+    <thead><tr><th>数据集</th><th>类别</th><th>许可</th><th>一句话用途 / 适配</th><th>适配</th></tr></thead>
+    <tbody>
+      <tr data-cat="construct"><td>NASA CRM / pCRM9 / uCRM</td><td>构建几何</td><td class="lic-open">✅ CC BY 4.0 / 公开</td><td>跨音速民航机基准几何 + 气动弹性机翼 NASTRAN 模型</td><td class="fit">★★★★★</td></tr>
+      <tr data-cat="construct"><td>NASA CRM Wingbox FEM</td><td>构建几何</td><td class="lic-open">✅ 公开</td><td>现成翼盒有限元模型（材料/PSHELL/CONM2）</td><td class="fit">★★★★★</td></tr>
+      <tr data-cat="construct"><td>OpenVSP + RAVEN/BD-6</td><td>构建几何</td><td class="lic-open">✅ 开源</td><td>参数化飞机几何引擎，自然语言→几何的程序化入口</td><td class="fit">★★★★★</td></tr>
+      <tr data-cat="construct"><td>GARTEUR / AGARD 445.6 / X-56A</td><td>构建几何</td><td class="lic-open">✅ 基准公开</td><td>模型修正/气动弹性经典基准，贴近柔性飞机</td><td class="fit">★★★★☆</td></tr>
+      <tr data-cat="construct"><td>Fusion 360 Gallery</td><td>构建几何</td><td class="lic-open">✅ 研究许可</td><td>8,625 条真实 CAD 设计序列（草图+拉伸）</td><td class="fit">★★★★☆</td></tr>
+      <tr data-cat="construct"><td>DeepCAD</td><td>构建几何</td><td class="lic-open">✅ 开源</td><td>~17.8 万 CAD 命令序列，规模大一个量级</td><td class="fit">★★★★☆</td></tr>
+      <tr data-cat="construct"><td>ABC Dataset</td><td>构建几何</td><td class="lic-open">✅ MIT</td><td>100 万+ B-rep CAD，几何深度学习/逆向</td><td class="fit">★★★★☆</td></tr>
+      <tr data-cat="construct"><td>SMCAD</td><td>构建几何</td><td class="lic-open">✅ 开源</td><td>机械零件语义标签（齿轮/螺栓等）</td><td class="fit">★★★☆☆</td></tr>
+      <tr data-cat="update"><td>Hawk T1A 全机 MIMO 模态</td><td>模型更新</td><td class="lic-open">✅ CC BY 4.0</td><td>退役整机模态+可控损伤，全机级更新基准</td><td class="fit">★★★★★</td></tr>
+      <tr data-cat="update"><td>M001 CRM 折叠翼 GVT+NASTRAN</td><td>模型更新</td><td class="lic-open">✅ 4TU 开放</td><td>原始模型 vs 更新后模型对照，训练更新 Agent</td><td class="fit">★★★★★</td></tr>
+      <tr data-cat="update"><td>复合材料外翼导波库（Bologna）</td><td>模型更新</td><td class="lic-open">✅ 开放</td><td>4.5m 复材外翼 160 压电导波，损伤检测</td><td class="fit">★★★★☆</td></tr>
+      <tr data-cat="update"><td>CompInnova WP2 / AIRSD / 声发射</td><td>模型更新</td><td class="lic-open">✅ 开放/免费</td><td>复材损伤量化、表面损伤、AE 信号分类</td><td class="fit">★★★☆☆</td></tr>
+      <tr data-cat="update"><td>桥梁类（PMC/HBTA/ASCE-IASC）</td><td>模型更新</td><td class="lic-open">✅ 多开放</td><td>模型更新/损伤识别范式迁移</td><td class="fit">★★★☆☆</td></tr>
+      <tr data-cat="material"><td>Materials Project / OPTIMADE</td><td>材料属性</td><td class="lic-open">✅ 开源 API</td><td>弹性常数/相图跨库查询，注入 FE 属性</td><td class="fit">★★★★☆</td></tr>
+      <tr data-cat="material"><td>NCAMP 复材库</td><td>材料属性</td><td class="lic-open">✅ 免费注册</td><td>航空级复材单层/层板特性，FE 建模首选</td><td class="fit">★★★★★</td></tr>
+      <tr data-cat="material"><td>MatKG + MatBERT</td><td>材料属性</td><td class="lic-open">✅ 开放/开源</td><td>材料知识图谱 + 领域预训练权重</td><td class="fit">★★★★☆</td></tr>
+      <tr data-cat="material"><td>MMPDS（金属许用值）</td><td>材料属性</td><td class="lic-warn">💰 商业</td><td>航空金属统计许用值金标准（只读校核）</td><td class="fit">★★★★★</td></tr>
+      <tr data-cat="llm"><td>ALL-FEM</td><td>LLM/智能体</td><td class="lic-open">✅ 研究开源</td><td>1,000+ FEniCS 脚本 + 多智能体自主仿真框架</td><td class="fit">★★★☆☆</td></tr>
+      <tr data-cat="llm"><td>FRAME</td><td>LLM/智能体</td><td class="lic-open">✅ 开源</td><td>FEA 结果解读多模态基准（含航空航天）</td><td class="fit">★★★★☆</td></tr>
+      <tr data-cat="llm"><td>FEM-Bench</td><td>LLM/智能体</td><td class="lic-open">✅ 开源</td><td>33 题计算力学代码生成评测（含 MSA 3D）</td><td class="fit">★★★☆☆</td></tr>
+      <tr data-cat="llm"><td>StructuralEval</td><td>LLM/智能体</td><td class="lic-warn">⚠️ CC BY-NC</td><td>图片→结构 JSON 视觉转译评测（25 题）</td><td class="fit">★★★☆☆</td></tr>
+      <tr data-cat="llm"><td>SoM-1K / OpenTO</td><td>LLM/智能体</td><td class="lic-open">✅ / ⚠️ NC-ND</td><td>材料力学千题 / 220 万拓扑优化（非商用）</td><td class="fit">★★★☆☆</td></tr>
+      <tr data-cat="commercial"><td>MaterialCenter Databanks</td><td>非开源</td><td class="lic-warn">💰 商业</td><td>集成 MMPDS/NCAMP/MIL-HDBK-17 等材料后端</td><td class="fit">★★★★☆</td></tr>
+      <tr data-cat="commercial"><td>MatWeb / CES / ASM</td><td>非开源</td><td class="lic-warn">💰 商业</td><td>通用材料属性聚合，精度不及航空标准</td><td class="fit">★★★☆☆</td></tr>
+      <tr data-cat="commercial"><td>NAFEMS 标准基准书 P18</td><td>非开源</td><td class="lic-warn">💰 书付费</td><td>单题与解法广泛免费，建模/求解器验证必备</td><td class="fit">★★★★☆</td></tr>
+    </tbody>
+  </table>
+  <p class="small">适配度为本报告综合评级（★ 越高越契合"飞机结构强度 FEM 构建与更新"）。</p>
+</section>
+
+<!-- 1 -->
+<section id="construct">
+  <h2 class="sec">1. 飞机结构有限元模型"高效构建"相关数据</h2>
+  <h3 class="sub">1.1 飞机结构几何与现成有限元模型</h3>
+  <table>
+    <thead><tr><th>数据集</th><th>内容</th><th>许可/获取</th><th>适配性</th></tr></thead>
+    <tbody>
+      <tr><td>NASA CRM 几何与网格</td><td>跨音速民航机基准构型几何（IGS/CGNS 多分辨率）、基线/优化外形</td><td class="lic-open">✅ CC BY 4.0；Mendeley/DOI</td><td>构建机翼/机身 FEM 的金标准基准几何</td></tr>
+      <tr><td>NASA CRM Wingbox FEM</td><td>翼盒有限元模型（V12/V14/V15、MATLAB 版、中面 IGES）</td><td class="lic-open">✅ 公开（NASA）</td><td>现成翼盒 FE 模型，可作 Agent 输出对照</td></tr>
+      <tr><td>pCRM9 / uCRM</td><td>pCRM9 NASTRAN SOL103 模态模型；uCRM-9/13.5 高保真气动-结构模型</td><td class="lic-open">✅ pCRM9 镜像；uCRM CC BY 4.0</td><td>机翼模态分析现成基准，适合构建→模态校核闭环</td></tr>
+      <tr><td>OpenVSP + RAVEN/BD-6</td><td>开源参数化几何工具；NASA RAVEN、BD-6 等 OpenVSP 模型</td><td class="lic-open">✅ 开源（NASA）</td><td>程序化生成飞机几何，是"自然语言→FE 模型"入口</td></tr>
+      <tr><td>GARTEUR 飞机模型</td><td>欧洲航宇院基准（翼展 2m，铝+约束阻尼），参数与 FE 方法公开</td><td class="lic-open">✅ 基准（参数公开）</td><td>模型修正经典基准，可作构建+更新联合评测</td></tr>
+      <tr><td>AGARD 445.6 机翼</td><td>跨音速颤振标准试验机翼；实验模态频率公开</td><td class="lic-open">✅ 实验数据公开</td><td>气动弹性/颤振基准，构建→气动弹性校核</td></tr>
+      <tr><td>X-56A MUTT</td><td>NASA 高柔性长航时机翼无人机，模块化可换翼，含气动弹性飞行数据</td><td class="lic-open">✅ NASA 公开</td><td>高柔翼"模型不确定性大、需更新"典型对象</td></tr>
+    </tbody>
+  </table>
+  <h3 class="sub">1.2 CAD 建模序列（支撑"从描述/草图自动生成模型"）</h3>
+  <table>
+    <thead><tr><th>数据集</th><th>内容</th><th>许可/获取</th><th>适配性</th></tr></thead>
+    <tbody>
+      <tr><td>Fusion 360 Gallery</td><td>8,625 条真实人类 CAD 设计序列（Sketch+Extrude 程序化表达）</td><td class="lic-open">✅ 研究许可（GitHub）</td><td>训练"从自然语言/草图→参数化 CAD→网格"生成式 Agent</td></tr>
+      <tr><td>DeepCAD（Siemens）</td><td>~178,238 个 CAD 模型，统一"草图+挤压"命令序列+参数</td><td class="lic-open">✅ 开源</td><td>规模较 Fusion360 大一个量级，学习 CAD 命令序列生成</td></tr>
+      <tr><td>ABC Dataset</td><td>100 万+ CAD 模型（STEP/B-rep/Parasolid/STL），精确曲面</td><td class="lic-open">✅ MIT（版权归创作者）</td><td>几何深度学习/逆向建模/特征检测</td></tr>
+      <tr><td>SMCAD</td><td>~10,000 机械零件（STEP+网格+语义标签：齿轮、螺栓等）</td><td class="lic-open">✅ 开源</td><td>带工程语义，让 Agent 理解"是什么零件、如何建"</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 2 -->
+<section id="update">
+  <h2 class="sec">2. 有限元模型"更新"相关数据（试验/监测/损伤）</h2>
+  <h3 class="sub">2.1 全尺寸飞机模态试验 / 模型更新（最贴合本课题）</h3>
+  <table>
+    <thead><tr><th>数据集</th><th>内容</th><th>许可/获取</th><th>适配性</th></tr></thead>
+    <tbody>
+      <tr><td>Hawk T1A 全尺寸飞机 MIMO 模态试验</td><td>退役 BAE Hawk T1A 整机 MIMO 模态测试，含多种已知加载与损伤模拟工况</td><td class="lic-open">✅ CC BY 4.0（White Rose / Sheffield）</td><td><b>强烈推荐</b>：全尺寸真实飞机、可控损伤，试验数据驱动 FE 模型更新的极少见全机级开放基准</td></tr>
+      <tr><td>M001：折叠翼尖机翼 GVT + NASTRAN</td><td>5 个不同刚度机翼 GVT 模态数据 + NASTRAN 模型；含"原始"与"更新后"模型</td><td class="lic-open">✅ 开放（4TU.ResearchData）</td><td><b>强烈推荐</b>：直接提供"原始 vs 更新后"对照，训练/评测更新 Agent 的现成素材</td></tr>
+    </tbody>
+  </table>
+  <h3 class="sub">2.2 结构健康监测 / 损伤检测基准（方法可迁移）</h3>
+  <table>
+    <thead><tr><th>数据集</th><th>内容</th><th>许可/获取</th><th>适配性</th></tr></thead>
+    <tbody>
+      <tr><td>复合材料全尺寸外翼导波库（Bologna/Leonardo）</td><td>~4.5m 复材外翼，160 压电换能器导波与机电阻抗；加载/疲劳/冲击前后 4 阶段</td><td class="lic-open">✅ 开放获取</td><td>飞机复材结构损伤检测/表征真实尺度数据，支撑"损伤信息→模型更新"</td></tr>
+      <tr><td>CompInnova WP2（Cranfield）</td><td>复材层合板/层合件超声相控阵 C-scan 冲击损伤（CSV+图像）</td><td class="lic-open">✅ 开放（Zenodo）</td><td>复材损伤量化，补充模型更新的损伤证据</td></tr>
+      <tr><td>AIRSD（战斗机表面损伤）</td><td>8,091 张 640×640 飞机表面图像，11 类损伤（合成+真实）</td><td class="lic-open">✅ 公开（Google Drive）</td><td>视觉损伤检测，多模态 Agent 的"损伤识别"输入</td></tr>
+      <tr><td>飞机复合材料声发射（AE）</td><td>1,000 样本、14 特征，复材损伤（基体开裂/纤维断裂）分类</td><td class="lic-open">✅ 免费（Kaggle）</td><td>时域信号特征化损伤分类，监测类 Agent</td></tr>
+      <tr><td>桥梁类（PMC/HBTA/挪威桥/Z24/ASCE-IASC）</td><td>受控损伤、环境/疲劳监测、加速度/应变时序、模态参数</td><td class="lic-open">✅ 多开放</td><td>成熟"模型更新/损伤识别"范式，可迁移到航空结构</td></tr>
+    </tbody>
+  </table>
+  <h3 class="sub">2.3 通用 FE 模型更新基准</h3>
+  <p>UCF Grid Benchmark、Canton Tower SHM、IASC-ASCE Phase II 等提供"先验 FE 模型 + 实测 FRF/模态"对照，是模型更新（刚度/质量参数辨识）的经典学术基准，宜作算法预研中介数据集。</p>
+</section>
+
+<!-- 3 -->
+<section id="material">
+  <h2 class="sec">3. 材料与强度属性数据（强度分析核心输入）</h2>
+  <h3 class="sub">3.1 金属（航空铝合金 / 钛合金）</h3>
+  <table>
+    <thead><tr><th>数据集</th><th>内容</th><th>许可/获取</th><th>适配性</th></tr></thead>
+    <tbody>
+      <tr><td>Materials Project / OQMD / AFLOW / OPTIMADE</td><td>大规模材料计算库，弹性常数、相图、热力学；OPTIMADE 统一 API 跨库查询</td><td class="lic-open">✅ 开源 API</td><td>为 FE 模型批量注入材料弹性参数（E、ν、密度）</td></tr>
+      <tr><td>MMPDS</td><td>全球航空金属统计许用值（拉伸、疲劳、膨胀系数），FAA/DoD/NASA 认可</td><td class="lic-warn">💰 商业（Matplus）</td><td>飞机结构选材与许用值金标准（见 §5）</td></tr>
+      <tr><td>MIL-HDBK-17（历史卷）</td><td>MMPDS 前身，部分历史卷为美国政府公开文件</td><td class="lic-open">✅ 历史卷多公开</td><td>低成本获取航空复材/金属许用值的替代来源</td></tr>
+    </tbody>
+  </table>
+  <h3 class="sub">3.2 复合材料</h3>
+  <table>
+    <thead><tr><th>数据集</th><th>内容</th><th>许可/获取</th><th>适配性</th></tr></thead>
+    <tbody>
+      <tr><td>NCAMP 共享复材特性库</td><td>航空级复材（如 CYCOM 5320-1）层板/单层性能，经统计鉴定</td><td class="lic-open">✅ 免费（需注册）</td><td>飞机主结构复材属性权威来源，支撑复材 FE 建模</td></tr>
+      <tr><td>kompozity.info 复材库</td><td>十余种复材试验结果（超轻飞机主结构用）</td><td class="lic-open">✅ 免费 Web</td><td>轻量化航空复材属性补充</td></tr>
+      <tr><td>MaterialsMine（NanoMine/MetaMine）</td><td>纳米复合材料、力学超材料开放知识图谱与数据</td><td class="lic-open">✅ 开源</td><td>复材/超材料属性与微结构数据</td></tr>
+      <tr><td>CLT-material-properties</td><td>经典层合理论（CLT）计算：刚度矩阵、失效准则（Tsai-Wu 等）</td><td class="lic-open">✅ 开源（GitHub）</td><td>可嵌入 Agent 的"复材层合板强度校核"工具链</td></tr>
+    </tbody>
+  </table>
+  <h3 class="sub">3.3 材料知识图谱 / 语料</h3>
+  <table>
+    <thead><tr><th>数据集</th><th>内容</th><th>许可/获取</th><th>适配性</th></tr></thead>
+    <tbody>
+      <tr><td>MatKG</td><td>材料科学最大知识图谱：7 万+实体、540 万三元组</td><td class="lic-open">✅ 开放（CSV/RDF）</td><td>Agent 的"材料→性能→工艺"结构化检索与推理底座</td></tr>
+      <tr><td>MatBERT</td><td>200 万篇材料科学论文上预训练的 BERT 权重（88 亿 token）</td><td class="lic-open">✅ 开源权重</td><td>领域 LLM 初始化，提升 Agent 对材料/强度文本理解</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 4 -->
+<section id="llmbench">
+  <h2 class="sec">4. LLM / Agent 训练与评测基准（直接面向"FEA + LLM"）</h2>
+  <table>
+    <thead><tr><th>数据集/基准</th><th>内容</th><th>许可/获取</th><th>适配性</th></tr></thead>
+    <tbody>
+      <tr><td>ALL-FEM</td><td>1,000+ 经校验 FEniCS 脚本 + 多智能体框架（详见第 7 章）</td><td class="lic-open">✅ 研究开源</td><td>FE 代码生成与"问题→校验解"闭环 Agent 资源</td></tr>
+      <tr><td>FRAME</td><td>FEA 结果解读开源基准（详见第 7 章）</td><td class="lic-open">✅ 开源</td><td>训练/评测 Agent 的"看结果→提修改"推理</td></tr>
+      <tr><td>FEM-Bench</td><td>33 题计算力学代码生成评测（详见第 7 章）</td><td class="lic-open">✅ 开源</td><td>评测 Agent 生成科学有效 FEM 代码</td></tr>
+      <tr><td>StructuralEval</td><td>结构力学视觉转译评测（详见第 7 章）</td><td class="lic-warn">⚠️ CC BY-NC 4.0</td><td>"图片→可计算结构模型"评测基线</td></tr>
+      <tr><td>SoM-1K</td><td>1,000 道材料力学题（含图），评测 LLM/VLM 领域推理</td><td class="lic-open">✅ 开源</td><td>力学推理能力基线评测</td></tr>
+      <tr><td>OpenTO / OpenOAT</td><td>220 万优化结构（2M 无标签+700K 标注+15K 测试）</td><td class="lic-warn">⚠️ CC BY-NC-ND</td><td>训练"载荷/约束→最优拓扑"；<b>不可商用、不可改</b></td></tr>
+    </tbody>
+  </table>
+  <div class="note">📌 上述四个 FEA+LLM 基准（ALL-FEM、FRAME、FEM-Bench、StructuralEval）的<b>深度解读、评测结果与场景适配性评分见第 7 章</b>。</div>
+</section>
+
+<!-- 5 -->
+<section id="commercial">
+  <h2 class="sec">5. 非开源 / 受限但高度适配的数据集（内容说明 + 适配性）</h2>
+  <table>
+    <thead><tr><th>数据集</th><th>内容说明</th><th>许可/获取</th><th>适配性</th></tr></thead>
+    <tbody>
+      <tr><td>MMPDS（金属航空许用值）</td><td>全球商业/军用航空金属统计许用值标准库（铝 7075/2050/7140、钛 Ti-6Al-4V 等），被 FAA/DoD/NASA 认可；MMPDS-26 新增增材制造并支持 API</td><td class="lic-warn">💰 商业（Matplus）</td><td>适配度极高：飞机结构强度选材与许用值金标准。局限：需采购、不可再分发；适合作 Agent 运行时只读权威查值/校核接口</td></tr>
+      <tr><td>NCAMP 复材库</td><td>航空级复材单层/层板特性，经统计鉴定</td><td class="lic-open">✅ 实际免费需注册</td><td>虽常被标注商业，官方门户对个人免费，是复材 FE 建模首选免费权威源</td></tr>
+      <tr><td>MaterialCenter Databanks</td><td>集成 MMPDS 金属库、NCAMP 复材库、MIL-HDBK-17（免费）、JAHM、Senvol、Machine Design（免费）等</td><td class="lic-warn">💰 商业平台</td><td>企业级材料数据后端；免费子库（MIL-HDBK-17、Machine Design）可直接利用</td></tr>
+      <tr><td>MatWeb / CES / ASM</td><td>通用材料机械/物理属性聚合站</td><td class="lic-warn">💰 商业/教育</td><td>通用查值方便，但航空级精度与认证不及 MMPDS/NCAMP</td></tr>
+      <tr><td>NAFEMS 标准基准书 P18</td><td>经典 FEM 验证题（LE1/LE6/LE10 等）含解析解</td><td class="lic-warn">💰 书付费</td><td>建模/求解器验证必备；单题与解法广泛免费（Seamplex/Caesar/ESRD）</td></tr>
+      <tr><td>商业 FEA 模型库</td><td>厂商随软件附带的工程示例 FE 模型（含航空案例）</td><td class="lic-warn">💰 随授权</td><td>可作内部"构建目标"对照，受 EULA 限制不可外部分发</td></tr>
+    </tbody>
+  </table>
+  <div class="note">💡 <b>适配性小结：</b>非开源数据中，<b>MMPDS（金属）与 NCAMP（复材）是飞机结构强度分析不可替代的权威属性源</b>。最佳实践：以开源几何/模态/语料训练与评测 Agent，以 MMPDS/NCAMP 作为 Agent 运行时的"只读权威查值/校核"接口（官方 API 或授权库），而非打包进可分发训练集。</div>
+</section>
+
+<!-- 6 -->
+<section id="recommend">
+  <h2 class="sec">6. 推荐组合与落地建议</h2>
+  <h4 class="min">A. "模型高效构建"数据栈</h4>
+  <p>几何入口：<code>OpenVSP</code> 参数化生成 + <code>NASA CRM / pCRM9 / uCRM</code> 基准外形；建模序列学习：<code>Fusion 360 Gallery</code> + <code>DeepCAD</code> + <code>ABC</code>；属性注入：<code>Materials Project/OPTIMADE</code>（金属）、<code>NCAMP</code>（复材）、<code>CLT-material-properties</code>；目标：训练"自然语言/参数 → CAD → 网格 → 带属性 FE 模型"生成式 Agent。</p>
+  <h4 class="min">B. "模型更新"数据栈</h4>
+  <p>首选：<code>Hawk T1A</code> 全机模态 + <code>M001 CRM 折叠翼 GVT vs 更新后模型</code> 作端到端更新基准；补充：<code>Bologna 外翼导波库</code> / <code>CompInnova</code> 提供损伤证据；<code>AGARD 445.6</code> / <code>X-56A</code> 提供气动弹性更新对象；方法迁移：桥梁类基准；目标：训练"试验/监测数据 → 参数修正建议 → 更新后 FE 模型"更新 Agent。</p>
+  <h4 class="min">C. "智能体"训练与评测栈</h4>
+  <p>代码生成/闭环：<code>ALL-FEM</code> + <code>FEM-Bench</code>；结果解读/自优化：<code>FRAME</code> + <code>StructuralEval</code>（视觉转译）；领域知识：<code>MatBERT</code> + <code>MatKG</code>；力学推理：<code>SoM-1K</code>；拓扑生成（非商用）：<code>OpenTO/OpenOAT</code>。</p>
+  <div class="warn note">⚠️ <b>许可红线：</b>① OpenTO/OpenOAT 为 <b>CC BY-NC-ND</b>——不可商用、不可改数据集；② MMPDS/MatWeb/ASM/NAFEMS 书不可自由再分发，作只读校核源；③ ABC 模型版权归 Onshape 作者；④ 所有 NASA/4TU/Zenodo/Nature 资源基本可自由使用（个别标注 CC BY 需署名）。</div>
+</section>
+
+<!-- 7 DEEP DIVE -->
+<section id="deepdive">
+  <h2 class="sec">7. 重点解读：FEA+LLM 四大基准深度评估</h2>
+  <p>这四类数据集是当前"有限元分析 + 大语言模型/智能体"方向最成体系的开源资源。以下逐项解读设计、规模、评测结果与对本课题的适配性，并给出 5 分制适配度评分。</p>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="allfem" onclick="showTab('allfem',this)">ALL-FEM</div>
+    <div class="tab" data-tab="frame" onclick="showTab('frame',this)">FRAME</div>
+    <div class="tab" data-tab="fembench" onclick="showTab('fembench',this)">FEM-Bench</div>
+    <div class="tab" data-tab="seval" onclick="showTab('seval',this)">StructuralEval</div>
+  </div>
+
+  <!-- ALL-FEM -->
+  <div class="panelbox active" id="allfem">
+    <h3 class="sub">ALL-FEM —— 自主有限元仿真系统（语料 + 多智能体框架）</h3>
+    <div class="kv">
+      <b>来源</b><span>CMAME 2026, vol.457, arXiv:2603.21011</span>
+      <b>核心</b><span>"领域微调 LLM + 多智能体"自主仿真系统，面向 FEniCS 代码生成（固/流/多物理场）</span>
+      <b>语料</b><span>1,000+ 条<b>经校验 FEniCS 脚本</b> = 500+ 专家整理 + 检索增强多 LLM 流水线生成/过滤（不同 PDE、几何、边界条件）</span>
+      <b>微调</b><span>3B–120B 开放权重模型；最佳为 GPT OSS 120B（OpenAI 开放权重）</span>
+      <b>智能体</b><span>多专职 Agent：问题→PDE 建模、代码生成、调试、可视化，带运行时反馈闭环</span>
+      <b>评测</b><span>39 题（线性/非线性弹性、塑性、牛顿/非牛顿流、热流、FSI、相分离、动域输运）；GPT OSS 120B 代码级成功率 <b>71.79%</b>，优于非智能体 GPT-5 Thinking</span>
+      <b>许可</b><span class="lic-open">✅ 模型/数据集/基准随论文开源（研究用途）；GPT OSS 120B 为开放权重</span>
+    </div>
+    <h4 class="min">✅ 价值</h4>
+    <p>提供"问题陈述 → 校验解"的<b>端到端自主仿真智能体蓝图</b>与可直接微调的 FEM 代码语料，是构建"建模 Agent"的方法论范本。</p>
+    <h4 class="min">⚠️ 局限</h4>
+    <p>① 基于 <b>FEniCS（变分形式 + dolfinx）</b>，与飞机结构强度常用的 NASTRAN/Abaqus/ANSYS（壳/梁/接触/非线性材料）差异大，需领域迁移与语料扩充；② 39 题偏"科学计算 PDE"，<b>不含航空结构几何、材料、载荷与模型更新</b>；③ 不直接涉及"从试验数据更新模型"。</p>
+    <div class="note">📊 适配度（5 分制）：模型构建方法 <b>4.5</b> ｜ 模型更新 <b>1.5</b> ｜ 多模态推理 <b>2.0</b> ｜ 航空专用 <b>2.0</b> ｜ 可直接训练 <b>4.0</b> ｜ 许可友好 <b>4.0</b> → <b>综合 3.0</b></div>
+    <h4 class="min">🛠 使用建议</h4>
+    <p>将其智能体框架（PDE 建模→代码生成→调试→可视化）复用到本课题"建模 Agent"；将 FEniCS 语料作种子，结合 §1–§3 的飞机几何/材料数据，扩充出航空结构专用 FE 代码微调集。</p>
+  </div>
+
+  <!-- FRAME -->
+  <div class="panelbox" id="frame">
+    <h3 class="sub">FRAME —— FEA 结果解读与自优化智能体基准</h3>
+    <div class="kv">
+      <b>来源</b><span>FRAME (Finite element Reasoning and AI-Agent Model Engine)，OpenReview</span>
+      <b>核心</b><span><b>开源多模态基准</b>，评测/微调 VLM/LLM 对 FEA 结果（云图+参数）的解读与推理；演示自优化设计智能体工作流</span>
+      <b>数据</b><span>"数千个"数据点，整理自学术文献与内部仿真，覆盖<b>航空航天、汽车、生物力学</b></span>
+      <b>配对</b><span>可视化仿真输出（应力/应变/温度云图）+ 关键参数（材料、边界条件）→ 结构化文本描述</span>
+      <b>任务</b><span>① 识别关键特征（应力集中、屈服、最大变形）② 提取关键值（最大 von Mises）③ 提出可执行修改建议（如"增大圆角半径"）</span>
+      <b>质量</b><span>经人类专家评估（忠实性、物理准确性、完整性）验证</span>
+      <b>评测</b><span>多通用多模态模型零样本；微调较小开源模型后略提升，且<b>超过更大的通用基线</b>（语义相似度+ROBERTA 关键词准确率）</span>
+      <b>许可</b><span class="lic-open">✅ 开源基准（论文随附，许可以仓库为准）</span>
+    </div>
+    <h4 class="min">✅ 价值</h4>
+    <p>① 直接覆盖<b>航空航天</b>领域；② 任务（读云图→提建议）正是飞机结构强度"模型解读/设计改进"所需；③ "自优化 Agent 工作流"可对接 §2 更新数据形成"解读→更新"闭环。</p>
+    <h4 class="min">⚠️ 局限</h4>
+    <p>① 属"结果解读/建议"而非"模型构建"或"模型更新（参数反演）"；② 数据为文献+内部仿真整理，量级与格式需自行对接；③ 不直接提供数值化"更新后模型"。</p>
+    <div class="note">📊 适配度（5 分制）：模型构建 <b>2.0</b> ｜ 模型更新 <b>3.0</b>（作为解读前端）｜ 多模态推理 <b>4.5</b> ｜ 航空专用 <b>4.0</b> ｜ 可直接训练 <b>4.0</b> ｜ 许可友好 <b>4.0</b> → <b>综合 3.5</b></div>
+    <h4 class="min">🛠 使用建议</h4>
+    <p>将 FRAME 作为"FEA 结果理解"智能体头的训练/评测集；其"识别→提取→建议"三任务可改造为"读取强度分析结果→定位超限区→生成模型修正指令"的子 Agent。</p>
+  </div>
+
+  <!-- FEM-Bench -->
+  <div class="panelbox" id="fembench">
+    <h3 class="sub">FEM-Bench —— 计算力学代码生成结构化评测</h3>
+    <div class="kv">
+      <b>来源</b><span>arXiv:2512.20732（2026-05），40 页，含 pytest 单测</span>
+      <b>核心</b><span>面向"LLM 生成科学有效 FEM 代码"的结构化评测基准，强调客观可验证</span>
+      <b>任务</b><span>33 个"入门但非平凡"任务，对齐研一计算力学：<b>FEM 1D</b>（离散化/装配/线弹性）、<b>FEM 2D</b>（高阶插值/多维积分/几何映射）、<b>MSA 3D</b>（局部/全局坐标、单元刚度、装配、线弹性求解、屈曲特征值）</span>
+      <b>验证</b><span>每题配对参考实现+验证输入+<b>pytest 单元测试</b>；递归数值匹配（容差内）二值正确性</span>
+      <b>评测</b><span>10 模型（温度 0.1）：函数编写最佳 Gemini 3 Pro（30/33 至少一次、26/33 五次全过）；单测编写最佳 GPT-5（平均联合成功率 <b>73.8%</b>）</span>
+      <b>许可</b><span class="lic-open">✅ 开源基准（arXiv + 代码仓库）</span>
+    </div>
+    <h4 class="min">✅ 价值</h4>
+    <p>① 提供<b>严格、可复现的代码级评测协议</b>（pytest + 数值容差），可直接作本课题"建模 Agent 代码生成"评测底座；② MSA 3D 与飞机骨架（梁/刚架）分析直接相关；③ 支持"函数生成+单测生成"双重评估，利于 Agent 自校验。</p>
+    <h4 class="min">⚠️ 局限</h4>
+    <p>① 任务为<b>教科书级</b>，远未达飞机结构（壳/接触/非线性/动力学）复杂度；② 仅评"写代码"，不含完整建模链路（几何→网格→属性→求解→解读）；③ 不涉及模型更新。</p>
+    <div class="note">📊 适配度（5 分制）：模型构建 <b>3.5</b> ｜ 模型更新 <b>1.0</b> ｜ 多模态推理 <b>1.5</b> ｜ 航空专用 <b>2.5</b> ｜ 可直接训练(评测) <b>4.5</b> ｜ 许可友好 <b>4.5</b> → <b>综合 3.0</b></div>
+    <h4 class="min">🛠 使用建议</h4>
+    <p>作为"建模 Agent"代码生成能力的<b>回归测试集</b>；在其上扩展飞机结构专属题（壳单元、装配接触、复材层合、颤振/模态），形成本课题专用 <b>FEM-Bench-Aero</b>。</p>
+  </div>
+
+  <!-- StructuralEval -->
+  <div class="panelbox" id="seval">
+    <h3 class="sub">StructuralEval —— 结构力学视觉转译评测（图片→结构模型）</h3>
+    <div class="kv">
+      <b>来源</b><span>HuggingFace，v1.0 共 25 题</span>
+      <b>核心</b><span>多模态模型把梁/刚架/桁架图片"翻译"为标准结构定义 JSON，再由 WASM 求解器 FrameCalc 做有限元验证</span>
+      <b>理念</b><span>"AI 负责建模，引擎负责计算"：输入图片 → 输出 JSON（节点、构件连接、支座、荷载）</span>
+      <b>难度</b><span>1–5 级：L1–2 基础梁；L3 简单桁架/刚架；L4–5 复杂多跨刚架/大型桁架（含天大 2021 结构力学考研真题 frame_010）</span>
+      <b>评分</b><span>分级诊断：几何 0.0→支座 0.25→连接 0.50→荷载 0.75→完全正确 1.0；<b>加权准确率</b>=Σ(难度×系数)/Σ总难度</span>
+      <b>榜单</b><span>2026-04-05（Retries=3）：Qwen3.5-35B-A3B <b>40.23%</b>；Qwen3-VL-32B 35.16%；gemma-4-31B 33.98%；GLM-4.5V 19.53%</span>
+      <b>许可</b><span class="lic-warn">⚠️ CC BY-NC 4.0（署名-非商业）——禁止商用，免费须标注来源</span>
+    </div>
+    <h4 class="min">✅ 价值</h4>
+    <p>① 直接对应本课题"模型高效构建"中的"从工程图/照片自动建模"环节；② "图片→JSON→求解器验证"闭环与评价机制可复用；③ 难度分级与诊断式评分利于定位 Agent 弱点。</p>
+    <h4 class="min">⚠️ 局限</h4>
+    <p>① 仅覆盖梁/刚架/桁架（杆系），不含飞机典型<b>板壳/实体/复合材料</b>；② 图片为简化示意图，与真实飞机结构图（尺寸标注、剖视）差距大；③ 非商业许可限制产品化；④ 不涉及模型更新。</p>
+    <div class="note">📊 适配度（5 分制）：模型构建 <b>4.0</b> ｜ 模型更新 <b>1.0</b> ｜ 多模态推理 <b>4.0</b> ｜ 航空专用 <b>2.5</b> ｜ 可直接训练 <b>3.5</b> ｜ 许可友好 <b>2.5</b>（非商业）→ <b>综合 3.0</b></div>
+    <h4 class="min">🛠 使用建议</h4>
+    <p>作为"图纸/草图→结构模型"多模态 Agent 评测基线；将题集扩展为含飞机结构元素（翼肋/长桁/框的板壳图、带标注工程图）的自建版，并复用其 WASM 验证思路。</p>
+  </div>
+
+  <!-- comparison chart -->
+  <h3 class="sub">7.5 四基准横向对比与本课题适配度总评</h3>
+  <div class="legend">
+    <span><i style="background:#1f5fd6"></i>ALL-FEM</span>
+    <span><i style="background:#0a8f6f"></i>FRAME</span>
+    <span><i style="background:#e08a1e"></i>FEM-Bench</span>
+    <span><i style="background:#9b59b6"></i>StructuralEval</span>
+    <span class="small">（条长 = 5 分制综合适配度）</span>
+  </div>
+  <div class="chart" id="cmp"></div>
+
+  <table>
+    <thead><tr><th>维度</th><th>ALL-FEM</th><th>FRAME</th><th>FEM-Bench</th><th>StructuralEval</th></tr></thead>
+    <tbody>
+      <tr><td>核心定位</td><td>代码生成+自主仿真</td><td>结果解读+自优化</td><td>代码生成评测</td><td>视觉转译评测</td></tr>
+      <tr><td>模态</td><td>文本(代码)</td><td>多模态(图+参数)</td><td>文本(代码)</td><td>多模态(图→JSON)</td></tr>
+      <tr><td>是否覆盖航空</td><td>间接(通用PDE)</td><td><b>✅ 明确含航空航天</b></td><td>间接(MSA3D)</td><td>间接(杆系)</td></tr>
+      <tr><td>模型构建</td><td><span class="stars">★★★★<span class="e">★</span></span></td><td><span class="stars">★★<span class="e">★★</span></span></td><td><span class="stars">★★★★<span class="e">★</span></span>(评测)</td><td><span class="stars">★★★★<span class="e">★</span></span></td></tr>
+      <tr><td>模型更新</td><td><span class="stars">☆<span class="e">★★★★</span></span></td><td><span class="stars">★★★<span class="e">★★</span></span></td><td><span class="stars">☆<span class="e">★★★★</span></span></td><td><span class="stars">☆<span class="e">★★★★</span></span></td></tr>
+      <tr><td>多模态推理</td><td><span class="stars">★★<span class="e">★★★</span></span></td><td><span class="stars">★★★★★</span></td><td><span class="stars">★★<span class="e">★★★</span></span></td><td><span class="stars">★★★★<span class="e">★</span></span></td></tr>
+      <tr><td>许可友好度</td><td>研究开源</td><td>开源</td><td>开源</td><td><b>⚠️ CC BY-NC</b></td></tr>
+      <tr><td><b>综合适配(5)</b></td><td><b>3.0</b></td><td><b>3.5</b></td><td><b>3.0</b></td><td><b>3.0</b></td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn note">🚨 <b>关键缺口提示（重要）：</b>
+    <ol style="margin:6px 0 0">
+      <li><b>四大基准均聚焦"构建/解读/代码生成"，没有一项直接覆盖本课题后半段的"有限元模型更新（试验/监测数据驱动的参数反演与修正）"</b>。模型更新数据见 §2（Hawk T1A 全机模态、M001 CRM 折叠翼 GVT+更新后模型、复材导波库等）。</li>
+      <li>四者均为<b>通用计算力学/结构</b>，缺少飞机专用几何、材料、载荷与认证语境；需结合 §1–§3 做领域化扩充。</li>
+      <li>工具链差异：ALL-FEM/FEM-Bench 围绕 FEniCS/Python；真实飞机结构强度多用 NASTRAN/Abaqus/ANSYS。落地时需桥接"LLM 生成的模型描述"与"商业 FEA 输入格式（BDF/INP/CATIA）"。</li>
+    </ol>
+  </div>
+  <h4 class="min">🧩 落地组合建议</h4>
+  <p>"建模 Agent"：ALL-FEM 框架 + FEM-Bench 评测 + StructuralEval 的"图→模型"思路。"解读/更新 Agent"：FRAME 的"识别→提取→建议"头 + §2 试验/监测数据形成"解读→更新"闭环。领域化：以 §1–§3 飞机几何/材料/工况为锚，将四基准扩展为 <b>FEM-Bench-Aero / FRAME-Aero / StructuralEval-Aero</b>。</p>
+</section>
+
+<!-- 8 -->
+<section id="links">
+  <h2 class="sec">8. 关键获取链接汇总</h2>
+  <table>
+    <thead><tr><th>资源</th><th>链接</th></tr></thead>
+    <tbody>
+      <tr><td>NASA CRM / Wingbox FEM</td><td><a href="https://commonresearchmodel.larc.nasa.gov/fem-file/" target="_blank">commonresearchmodel.larc.nasa.gov/fem-file/</a></td></tr>
+      <tr><td>uCRM（Mendeley）</td><td><a href="https://www.selectdataset.com/dataset/f1ae3590789a24f47bf68818b633f5e2" target="_blank">selectdataset.com/dataset/f1ae3590789a24f47bf68818b633f5e2</a></td></tr>
+      <tr><td>OpenVSP</td><td><a href="https://github.com/OpenVSP/OpenVSP" target="_blank">github.com/OpenVSP/OpenVSP</a> ｜ RAVEN：<a href="https://www.nasa.gov?p=924228/" target="_blank">nasa.gov?p=924228</a></td></tr>
+      <tr><td>Fusion 360 Gallery</td><td><a href="https://github.com/AutodeskAILab/Fusion360GalleryDataset" target="_blank">github.com/AutodeskAILab/Fusion360GalleryDataset</a></td></tr>
+      <tr><td>ABC Dataset</td><td><a href="https://deep-geometry.github.io/abc-dataset/" target="_blank">deep-geometry.github.io/abc-dataset</a></td></tr>
+      <tr><td>Hawk T1A</td><td><a href="https://eprints.whiterose.ac.uk/221504/" target="_blank">eprints.whiterose.ac.uk/221504</a></td></tr>
+      <tr><td>M001 GVT + NASTRAN</td><td><a href="https://data.4tu.nl/datasets/984090ea-26fd-4809-8dac-f41367bf8916" target="_blank">data.4tu.nl/.../984090ea-...</a></td></tr>
+      <tr><td>CompInnova WP2</td><td><a href="https://zenodo.org/records/4405276" target="_blank">zenodo.org/records/4405276</a></td></tr>
+      <tr><td>AIRSD</td><td><a href="https://www.selectdataset.com/dataset/8a5ced822abf5ddf2e57233cd70aab7b" target="_blank">selectdataset.com/dataset/8a5ced822abf5ddf2e57233cd70aab7b</a></td></tr>
+      <tr><td>声发射 Kaggle</td><td><a href="https://www.kaggle.com/datasets/ziya07/acoustic-emission-dataset" target="_blank">kaggle.com/datasets/ziya07/acoustic-emission-dataset</a></td></tr>
+      <tr><td>Materials Project</td><td><a href="https://materialsproject.org" target="_blank">materialsproject.org</a> ｜ OPTIMADE：<a href="https://optimade.org" target="_blank">optimade.org</a></td></tr>
+      <tr><td>NCAMP</td><td><a href="https://www.niar.wichita.edu/NCAMPPortal/" target="_blank">niar.wichita.edu/NCAMPPortal</a></td></tr>
+      <tr><td>MatKG</td><td><a href="https://www.nature.com/articles/s41597-024-03039-z" target="_blank">nature.com/articles/s41597-024-03039-z</a></td></tr>
+      <tr><td>MatBERT</td><td><a href="https://github.com/lbnlp/MatBERT" target="_blank">github.com/lbnlp/MatBERT</a></td></tr>
+      <tr><td>ALL-FEM</td><td><a href="https://fenics-llm.github.io/" target="_blank">fenics-llm.github.io</a> ｜ arXiv:2603.21011</td></tr>
+      <tr><td>FRAME</td><td><a href="https://openreview.net/forum?id=2TdYc5V4jU" target="_blank">openreview.net/forum?id=2TdYc5V4jU</a></td></tr>
+      <tr><td>FEM-Bench</td><td><a href="https://arxiv.org/abs/2512.20732" target="_blank">arxiv.org/abs/2512.20732</a></td></tr>
+      <tr><td>StructuralEval</td><td><a href="https://huggingface.co/datasets/superhatk/structural-eval-benchmark" target="_blank">huggingface.co/datasets/superhatk/structural-eval-benchmark</a></td></tr>
+      <tr><td>OpenTO / OpenOAT</td><td><a href="https://hf-mirror.com/datasets/OpenTO/OpenOAT" target="_blank">hf-mirror.com/datasets/OpenTO/OpenOAT</a></td></tr>
+      <tr><td>MMPDS</td><td><a href="https://www.matplus.eu/" target="_blank">matplus.eu</a> ｜ NAFEMS P18：<a href="https://www.nafems.org/publications/resource_center/p18/" target="_blank">nafems.org/.../p18</a></td></tr>
+    </tbody>
+  </table>
+  <footer>
+    本报告由公开网络检索整理，旨在为研究选题与数据获取提供地图。具体数据集的体量、格式、许可条款以各官方源最新发布为准。<br>
+    Markdown 完整版与本文档同源；深度解读章节（第 7 章）为本版新增。
+  </footer>
+</section>
+</main>
+</div>
+
+<script>
+/* scroll-spy */
+const navLinks=[...document.querySelectorAll('nav.side a')];
+const secs=navLinks.map(a=>document.querySelector(a.getAttribute('href')));
+const obs=new IntersectionObserver((es)=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      const id='#'+e.target.id;
+      navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')===id));
+    }
+  });
+},{rootMargin:'-20% 0px -70% 0px'});
+secs.forEach(s=>s&&obs.observe(s));
+
+/* tabs */
+function showTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panelbox').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+/* dataset index filter */
+let curCat='all';
+function setCat(cat,el){
+  curCat=cat;
+  document.querySelectorAll('.chip-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  filterRows();
+}
+function filterRows(){
+  const q=document.getElementById('search').value.trim().toLowerCase();
+  document.querySelectorAll('#idx tbody tr').forEach(tr=>{
+    const cat=tr.getAttribute('data-cat');
+    const txt=tr.textContent.toLowerCase();
+    const okCat=(curCat==='all'||cat===curCat);
+    const okQ=(!q||txt.includes(q));
+    tr.style.display=(okCat&&okQ)?'':'none';
+  });
+}
+
+/* comparison bars */
+const scores={ 'ALL-FEM':3.0, 'FRAME':3.5, 'FEM-Bench':3.0, 'StructuralEval':3.0 };
+const colors={ 'ALL-FEM':'#1f5fd6','FRAME':'#0a8f6f','FEM-Bench':'#e08a1e','StructuralEval':'#9b59b6' };
+const cmp=document.getElementById('cmp');
+Object.entries(scores).forEach(([k,v])=>{
+  const row=document.createElement('div');row.className='crow';
+  const lab=document.createElement('div');lab.className='lab';lab.textContent=k;
+  const bar=document.createElement('div');bar.className='bar';
+  bar.style.width=(v/5*100)+'%';bar.style.background=colors[k];
+  const span=document.createElement('span');span.textContent=v.toFixed(1)+' / 5';
+  bar.appendChild(span);
+  row.appendChild(lab);row.appendChild(bar);cmp.appendChild(row);
+});
+</script>
+</body>
+</html>

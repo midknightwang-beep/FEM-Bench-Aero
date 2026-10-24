@@ -1,0 +1,38 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 28, right: 80 }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>双求解器交叉验证精度</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 122, flexDirection: 'column' }}>
+    <Text style={{ fontSize: 120, fontWeight: 'bold', color: '#E65100', lineHeight: 1.0 }}>0.003<span style={{ fontSize: 60 }}>%</span></Text>
+    <Text style={{ fontSize: 24, color: '#334155', lineHeight: 1.6, marginTop: 14 }}>
+      复材层合等效模量：CalculiX <span style={{ fontWeight: 'bold' }}>73804.31</span> vs Abaqus <span style={{ fontWeight: 'bold' }}>73802.03</span>（同构模型独立求解）
+    </Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, right: 80, top: 396, flexDirection: 'row', gap: 24, height: 170 }}>
+    <Box style={{ flex: 1, background: '#F1F5F9', borderRadius: 10, padding: '16px 22px', borderLeft: '5px solid #1565C0' }}>
+      <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 6 }}>真值标签的实测背书</Text>
+      <Text style={{ fontSize: 14, color: '#334155', lineHeight: 1.6 }}>
+        开孔应力集中系数 Kt 与 Howland 解析解偏差 <span style={{ fontWeight: 'bold', color: '#1565C0' }}>0.45%</span>；
+        尺寸不变性探针验证同 λ 跨算例解析标尺不变——真值可信度经得起独立复核
+      </Text>
+    </Box>
+    <Box style={{ flex: 1, background: '#F1F5F9', borderRadius: 10, padding: '16px 22px', borderLeft: '5px solid #06B6D4' }}>
+      <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 6 }}>容差按实测链钉定，不开口子</Text>
+      <Text style={{ fontSize: 14, color: '#334155', lineHeight: 1.6 }}>
+        无孔板网格收敛判别：20 mm 网格偏差 −1.73% → 5 mm 网格 <span style={{ fontWeight: 'bold', color: '#06B6D4' }}>−0.19%</span>，
+        证明求解卡语义正确；残余偏差为系统离散，据此钉定 3% 容差
+      </Text>
+    </Box>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, right: 80, bottom: 70, background: '#0F172A', borderRadius: 10, padding: '18px 26px' }}>
+    <Text style={{ fontSize: 18, color: '#FFFFFF', lineHeight: 1.6 }}>
+      <span style={{ color: '#06B6D4', fontWeight: 'bold' }}>含义：</span>两套求解引擎对同一模型给出千分之三点以内的差异——
+      数据集的真值标签因此<span style={{ fontWeight: 'bold' }}>不依赖任何单一求解器的正确性</span>
+    </Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>基于大模型的飞机有限元模型智能生成技术</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>11 / 15</Text>
+  </Box>
+</Slide>

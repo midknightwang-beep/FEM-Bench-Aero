@@ -1,0 +1,4700 @@
+{
+ "meta": {
+  "generated_at": "2026-10-06 09:57:24",
+  "dataset_root": "F:\\AI FEA Modeling DataSets\\FEM-Bench-Aero",
+  "release_tree": "modeling",
+  "generator": "make_manifest.py (feagpt_repro)",
+  "schema_version": 1
+ },
+ "manifest": {
+  "summary": {
+   "n_cases": 26,
+   "n_geometry_classes": 25,
+   "splits": {
+    "train": 14,
+    "val": 6,
+    "test": 6
+   },
+   "by_family": {
+    "fuselage_barrel": {
+     "train": 1,
+     "val": 0,
+     "test": 1
+    },
+    "wingbox": {
+     "train": 12,
+     "val": 4,
+     "test": 4
+    },
+    "stiffened_panel": {
+     "train": 1,
+     "val": 2,
+     "test": 1
+    }
+   },
+   "roles": {
+    "ablation": 1,
+    "baseline": 2,
+    "degenerate": 2,
+    "feature": 5,
+    "sweep": 16
+   },
+   "n_duplicate_models": 0,
+   "n_leaky_classes": 0,
+   "xval_cases_available": 26
+  },
+  "split_rule": {
+   "unit": "geometry equivalence class (feagpt.manifest.geometry_class)",
+   "assignment": "declared holdout regions -- feagpt/manifest.py :: HOLDOUT_REGIONS (first match wins; no match => train; undeclared family => unassigned)",
+   "target_ratios": {
+    "train": 0.6,
+    "val": 0.2,
+    "test": 0.2
+   },
+   "constraints": [
+    "same equivalence class => same split (no leakage)",
+    "every family must have at least one test case",
+    "every case must have an explicit split (unassigned fails the check)",
+    "the rule must keep reproducing the D12-locked 口径 A on the eleven cases (manifest.py :: D12_LOCKED_SPLIT)"
+   ]
+  },
+  "limitations": [
+   "val 共 6 条（26 条下 6:2:2 目标要求约 5 条）：val 的绝对数量仍是样本量的限制，不是划分规则的缺陷。",
+   "以下族在 val 为空：fuselage_barrel。族内还缺一个「train 已学档之外」的中间精度点。",
+   "当前划分是**规则**（feagpt/manifest.py :: HOLDOUT_REGIONS）而不是显式表：每族声明留出区域，未命中区域即进 train。规则已按 D12 锁定口径 A 复现 11 条（见 manifest.py :: D12_LOCKED_SPLIT，由 eval_dataset 断言），并在 D15（后掠/锥形兼具 -> test）与 D16（单维外推 -> val）上扩展。",
+   "柱壳族（fuselage_barrel）的网格是**有包络的**（D19，2026-10-05）：n_stringers 只接受 0 或 ≥ 5，1–4 根会在框的外弧（r ≈ R 的框/蒙皮粘结线）上留下三角（3str/2frm 20、4str/2frm 16、4str/3frm 22）。五种修法（simple 重组 / 只细分框经线 / 蒙皮与框一起细分 / 框专用尺寸场 / 逐面 2-D 算法）已全部实测否决，故族 _validate 直接**拒绝**该区间，而不是建一个带三角的模型。数据集因此暂时拿不到 1–4 根长桁的柱壳；val 落在 10/12/16 根、train 落在 5–8 根，均未受影响。",
+   "柱壳族（fuselage_barrel）的双码交叉判据口径 = **D20（2026-10-05）**：门的量是「**剔除自由端端载环后的结构 max|u|**」（该环由族自己的 fuselage.barrel_nodes 圈定，不是写死的坐标带）与「沿轴 **截面形心挠度剖面**」（偏差对**尖端挠度**归一，避免近零截面把相对误差放大），两者容差仍 1 %。**模型全域 max|u| 仍如实印出，但不用于判绿/红**：实测 ccx 2.63102 vs abaqus 2.67818 mm = 1.79 %，峰值落在**自由端框的内缘自由边**上（框建成 30×3 平环板，只沿 r = 1000 与蒙皮粘接），是「节点力压在自由壳边」的局部效应：纯内压（光滑面力）两码只差 0.25 %，剔除该环后 0.42 %，把端载只压在筒壳环上（3226→644 节点）峰值仍在同一位置、差仅降到 1.11 %。",
+   "柱壳族（fuselage_barrel）的内压方向 = **D21（2026-10-05）修正**：`*DLOAD ... P` 是沿壳面法向的**带符号**压力，而壳体法向由建面方式决定 —— `occ.revolve` 建出的桶段蒙皮与拉伸翼盒蒙皮/平板矩形**法向相反**，所以写死 `-abs(p)` 的旧 deck 实际把桶段**由外向内压**：实测中面径向位移 −0.22725 mm，而薄壁闭式解 w = pR²/(Et) = **+0.22800 mm**。符号现由建面器声明（GeometryResult.pressure_dload_sign，默认 −1 保证翼盒/平板 23 条零扰动，桶段声明 +1）。修正后实测 +0.22725 mm，差 −0.329 %。⚠️ 门禁读数：只有 `pressure.radial-growth` 抓得住这个符号错 —— `pressure.hoop-membrane` 比的是 von Mises，压/拉状态下都为正，符号错也照样 PASS。",
+   "柱壳族（fuselage_barrel）**只支持 blade 截面长桁**（D22，2026-10-05）：建面器（geometry.build_fuselage_barrel）每条长桁只出一片平面径向腹板，**从不读 stringer_kind**，所以 T/L 等带翼缘截面会被静默建成 blade。实测 T(fw=30) 与 blade 逐位相同（158548 节点 / 157972 单元 / minJ 0.5159），而 topology 按 3 面/长桁要求 48 面、只观察到 16 —— gate 4 会 FAIL（非静默），但族 schema、_validate、_design_fuselage 三处都曾声称支持。现由 _validate **拒绝**非 blade（与 D19 同一 posture），并留档为待实现能力；副作用是 manifest._fuselage_new_form（新截面形式 → test）暂无数据可匹配，T3 的留出形态改由**双维外推**提供。"
+  ],
+  "classes": {
+   "0120242504c5": [
+    "naca4412_wingbox_taper040"
+   ],
+   "04fda953cfda": [
+    "naca4412_wingbox",
+    "naca4412_wingbox_recombination_algorithm3"
+   ],
+   "0fc97e867d7a": [
+    "naca4412_wingbox_str5"
+   ],
+   "16c690030894": [
+    "naca4412_wingbox_n_ribs5_chord800"
+   ],
+   "27c7b136a680": [
+    "naca4412_wingbox_n_ribs3_chord1000"
+   ],
+   "31f73bf54eb1": [
+    "naca4412_wingbox_str3"
+   ],
+   "3620a71c7d61": [
+    "naca4412_wingbox_n_ribs7_chord1000"
+   ],
+   "407d63dd4806": [
+    "naca4412_wingbox_taper060"
+   ],
+   "4452206f867d": [
+    "naca4412_wingbox_sweep20"
+   ],
+   "589369d32c00": [
+    "fuselage_barrel_d2000_l2000_str8_frm3"
+   ],
+   "652d537e3d91": [
+    "stiffened_panel_800x600"
+   ],
+   "6c26678d4e93": [
+    "naca4412_wingbox_sweep20_taper060"
+   ],
+   "6f61e089e75a": [
+    "naca4412_wingbox_n_ribs3_chord800"
+   ],
+   "7ba2e12216c0": [
+    "stiffened_panel_600x600"
+   ],
+   "7f8e913d28ee": [
+    "naca4412_wingbox_taper080"
+   ],
+   "8488a8303db0": [
+    "naca4412_wingbox_n_ribs7_chord800"
+   ],
+   "a103d70ed0a6": [
+    "naca4412_wingbox_sweep10"
+   ],
+   "a9604f56b898": [
+    "fuselage_barrel_d2000_l2000_str12_frm4"
+   ],
+   "b55964a50887": [
+    "naca4412_wingbox_sweep40"
+   ],
+   "b8239f1030bc": [
+    "stiffened_panel_800x600_str3"
+   ],
+   "bc4990b00bae": [
+    "stiffened_panel_600x600_str3"
+   ],
+   "ce972f69795c": [
+    "naca4412_wingbox_taper090"
+   ],
+   "de9cc4386fe9": [
+    "naca4412_wingbox_n_ribs9_chord1000"
+   ],
+   "f12e1fec520e": [
+    "naca4412_wingbox_sweep40_taper040"
+   ],
+   "fe7d0a48ad1b": [
+    "naca4412_wingbox_str3_T"
+   ]
+  }
+ },
+ "gates": {
+  "eval": {
+   "n_checks": 29,
+   "n_pass": 29,
+   "checks": [
+    {
+     "key": "case_set_matches",
+     "pass": true,
+     "detail": "manifest 26 vs disk 26; only-in-manifest=[] only-on-disk=[]"
+    },
+    {
+     "key": "recompute spec_sha256",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "truth.json spec_sha256 self-consistent",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "recompute mesh_sha256",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "recompute geometry_class",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "recompute role",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "recompute split",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "recompute family",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "recompute completeness",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "recompute files",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "recompute readings.n_nodes",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "recompute readings.max_disp",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "recompute readings.max_von_mises",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "recompute readings.n_tri3",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "recompute readings.min_jacobian",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "equivalence_whitelist_eq_blacklist",
+     "pass": true,
+     "detail": "whitelist has 25 class(es), blacklist 25"
+    },
+    {
+     "key": "same_class_same_design",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "no_class_spans_splits",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "every_family_has_test",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "every_case_assigned",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "rule_reproduces_D12",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "no_duplicate_models",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "key": "manifest_summary.n_cases",
+     "pass": true,
+     "detail": "manifest 26 vs recomputed 26"
+    },
+    {
+     "key": "manifest_summary.n_geometry_classes",
+     "pass": true,
+     "detail": "manifest 25 vs recomputed 25"
+    },
+    {
+     "key": "manifest_summary.n_leaky_classes",
+     "pass": true,
+     "detail": "manifest 0 vs recomputed 0"
+    },
+    {
+     "key": "manifest_summary.n_duplicate_models",
+     "pass": true,
+     "detail": "manifest 0 vs recomputed 0"
+    },
+    {
+     "key": "manifest_summary.roles",
+     "pass": true,
+     "detail": "manifest {'ablation': 1, 'baseline': 2, 'degenerate': 2, 'feature': 5, 'sweep': 16} vs recomputed {'ablation': 1, 'baseline': 2, 'degenerate': 2, 'feature': 5, 'sweep': 16}"
+    },
+    {
+     "key": "manifest_summary.by_family",
+     "pass": true,
+     "detail": "manifest {'fuselage_barrel': {'train': 1, 'val': 0, 'test': 1}, 'wingbox': {'train': 12, 'val': 4, 'test': 4}, 'stiffened_panel': {'train': 1, 'val': 2, 'test': 1}} vs recomputed {'fuselage_barrel': {'train': 1, 'val': 0, 'test': 1}, 'stiffened_panel': {'train': 1, 'val': 2, 'test': 1}, 'wingbox': {'train': 12, 'val': 4, 'test': 4}}"
+    },
+    {
+     "key": "manifest_summary.splits",
+     "pass": true,
+     "detail": "manifest {'train': 14, 'val': 6, 'test': 6} vs recomputed {'test': 6, 'train': 14, 'val': 6}"
+    }
+   ],
+   "failures": []
+  },
+  "verify_dataset": {
+   "n_cases": 52,
+   "n_ok": 52,
+   "n_unique_trees_meshes": 52,
+   "n_duplicate_cases": 0,
+   "duplicates_ok": true,
+   "stress_definition_ok": true,
+   "all_ok": true
+  },
+  "gate4": {
+   "n_cases": 52,
+   "n_pass": 52
+  },
+  "check_forms": {
+   "n_pass": 24,
+   "n_fail": 0,
+   "checks": [
+    {
+     "form": "T1",
+     "check": "T1.dispatch-definition",
+     "pass": true,
+     "detail": "neutral (ratio 1.0, sweep 0) -> prismatic; (0.9, 0) and (1.0, 5) -> loft"
+    },
+    {
+     "form": "T1",
+     "check": "T1.neutral-reproduces-M1",
+     "pass": true,
+     "detail": "neutral box == shipped case: 5482 nodes, 5144 shells, minJ 0.6249, 9 groups"
+    },
+    {
+     "form": "T1",
+     "check": "T1.swept-is-wired",
+     "pass": true,
+     "detail": "ratio=1 sweep=20: tip-rib chord 450.0000 (want 450.0000), tip LE x 977.9405 (want 977.9405), nodes 5698, minJ 0.4902"
+    },
+    {
+     "form": "T1",
+     "check": "T1.tapered-is-wired",
+     "pass": true,
+     "detail": "ratio=0.6 sweep=0: tip-rib chord 270.0000 (want 270.0000), tip LE x 150.0000 (want 150.0000), nodes 8426, minJ 0.5593"
+    },
+    {
+     "form": "T1",
+     "check": "T1.sensitivity",
+     "pass": true,
+     "detail": "sweep 20 deg moves the model: 6 difference(s) vs neutral"
+    },
+    {
+     "form": "T1",
+     "check": "T1.role-and-split",
+     "pass": true,
+     "detail": "neutral baseline/train; sweep sweep/train; taper sweep/train; both sweep/test"
+    },
+    {
+     "form": "T1",
+     "check": "T1.D16-val-regions",
+     "pass": true,
+     "detail": "sweep40(val) sweep/val; sweep10(train) sweep/train; taper040(val) sweep/val; taper090(train) sweep/train; both40x040(test) sweep/test; ribs9(val) sweep/val; plain800x600(val) degenerate/val; plain600x600(train) degenerate/train"
+    },
+    {
+     "form": "T2",
+     "check": "T2.definition-degeneration",
+     "pass": true,
+     "detail": "n=0 -> stations () pitch None; n=3 -> stations (150.0, 300.0, 450.0) pitch 150 (want (150.0, 300.0, 450.0) / 150)"
+    },
+    {
+     "form": "T2",
+     "check": "T2.degenerate-model",
+     "pass": true,
+     "detail": "n=0 built: skin 1 face(s), stringer 0 face(s), 1 surface(s), stations []; gate4 PASS; 46432 nodes, minJ 0.6167"
+    },
+    {
+     "form": "T2",
+     "check": "T2.parameter-invariance",
+     "pass": true,
+     "detail": "n=0 with height 20->40, thickness 2.5->5, blade->T(fw=50) is identical face for face"
+    },
+    {
+     "form": "T2",
+     "check": "T2.stringer-sensitivity",
+     "pass": true,
+     "detail": "n=1: skin 2/2 str 1/1 stations [300.0] mesh ok {'quad4': 47684} minJ 0.6207 gate4 PASS; n=3: skin 4/4 str 3/3 stations [150.0, 300.0, 450.0] mesh ok {'quad4': 50976} minJ 0.5367 gate4 PASS"
+    },
+    {
+     "form": "T3",
+     "check": "T3.definition-degeneration",
+     "pass": true,
+     "detail": "n_str=0 -> angles (); n_frm=2 -> frame_z (0.0, 2000.0) (want (0.0, 2000.0)); bay_count 1 (want 1)"
+    },
+    {
+     "form": "T3",
+     "check": "T3.stringer-envelope",
+     "pass": true,
+     "detail": "n_stringers 1..4 refused [1, 2, 3, 4] (want [1, 2, 3, 4]); n_stringers=5 accepted [5] (want [5]) - D19: below five the frame arcs carry triangles"
+    },
+    {
+     "form": "T3",
+     "check": "T3.pressure-sign",
+     "pass": true,
+     "detail": "fuselage.PRESSURE_DLOAD_SIGN = 1.0 (want 1.0); GeometryResult() default = -1.0 (want -1.0); deck: sign=+1 -> P +0.05 (want > 0), sign=-1 -> P -0.05 (want < 0)"
+    },
+    {
+     "form": "T3",
+     "check": "T3.section-kind-envelope",
+     "pass": true,
+     "detail": "non-blade sections ['T', 't'] all refused: yes; blade accepted: yes - D22: the barrel builder builds a flat radial web per stringer, so a flanged request would silently produce the blade model"
+    },
+    {
+     "form": "T3",
+     "check": "T3.degenerate-expectation",
+     "pass": true,
+     "detail": "derived: skin 4/4, stringer 0/0, frames 8/8, z-planes 2/2, surfaces 12/12, angles []"
+    },
+    {
+     "form": "T3",
+     "check": "T3.degenerate-model",
+     "pass": true,
+     "detail": "n_str=0/n_frm=2 built: skin 4 face(s), stringer 0, frames 8 on 2 z-plane(s), 12 surface(s), angles []; gate4 PASS; 105199 nodes, minJ 0.5818"
+    },
+    {
+     "form": "T3",
+     "check": "T3.pressure-sign-builder",
+     "pass": true,
+     "detail": "build_fuselage_barrel declared pressure_dload_sign = +1.0 (want +1.0) - the deck must see the family's number, not the writer's default"
+    },
+    {
+     "form": "T3",
+     "check": "T3.parameter-invariance",
+     "pass": true,
+     "detail": "n_str=0 with height 25->40, thickness 2.5->5, flange width 0->50 is identical face for face - no stringer parameter reaches a stringer-free barrel (the blade->T axis is D22's refusal, checked separately)"
+    },
+    {
+     "form": "T3",
+     "check": "T3.layout-sensitivity",
+     "pass": true,
+     "detail": "0str/2frm: skin 4/4 str 0/0 frm 8/8 angles 0/0 mesh ok 105199n minJ 0.5818 gate4 PASS; 5str/2frm: skin 5/5 str 5/5 frm 10/10 angles 5/5 mesh ok 152645n minJ 0.5159 gate4 PASS; 8str/3frm: skin 16/16 str 16/16 frm 24/24 angles 8/8 mesh ok 158548n minJ 0.5159 gate4 PASS; 12str/4frm: skin 36/36 str 36/36 frm 48/48 angles 12/12 mesh ok 169654n minJ 0.5211 gate4 PASS"
+    },
+    {
+     "form": "T5",
+     "check": "T5.section-degeneration",
+     "pass": true,
+     "detail": "T(flange_width=0) -> segments=(((100.0, 5.0), (100.0, -15.0)),) role=('web',) n_faces=1; blade -> (((100.0, 5.0), (100.0, -15.0)),) ('web',) 1"
+    },
+    {
+     "form": "T5",
+     "check": "T5.faces-per-section",
+     "pass": true,
+     "detail": "blade(w=None)->1 T(w=30.0)->3 T(w=0.0)->1 T(w=-5.0)->1"
+    },
+    {
+     "form": "T5",
+     "check": "T5.build-degeneration",
+     "pass": true,
+     "detail": "blade and T(fw=0) builds are identical: 7831 nodes, 7517 shells, minJ 0.5228, 9 groups"
+    },
+    {
+     "form": "T5",
+     "check": "T5.degenerated-gate4",
+     "pass": true,
+     "detail": "gate4 on T(fw=0) = PASS (8/8 checks), faces-per-stringer-section = 1"
+    }
+   ]
+  },
+  "dedup": {
+   "n_groups": 0,
+   "n_removed": 0
+  }
+ },
+ "cases": [
+  {
+   "case_id": "fuselage_barrel_d2000_l2000_str12_frm4",
+   "family": "fuselage_barrel",
+   "role": "sweep",
+   "split": "test",
+   "split_reason": "双维外推（长桁 12 与框 4 同时超出 train 包络）",
+   "geometry_class": "a9604f56b898",
+   "spec_sha256": "ab271cb7d0197b9db128a541101b5b23695bc7797fb32cd3c8524c5d8a337c2a",
+   "spec": {
+    "family": "fuselage_barrel",
+    "params": {
+     "diameter": 2000.0,
+     "length": 2000.0,
+     "thickness": 3.0,
+     "n_stringers": 12,
+     "n_frames": 4
+    },
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 25.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": false,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "pressure",
+     "magnitude": 0.05,
+     "direction": [
+      0.0,
+      0.0,
+      1.0
+     ]
+    },
+    "extra": {
+     "end_shear": 50000.0,
+     "end_moment": 50000000.0,
+     "shear_axis": [
+      1.0,
+      0.0,
+      0.0
+     ],
+     "moment_axis": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "workdir": "outputs_b3"
+   },
+   "mesh": {
+    "n_nodes": 169606,
+    "n_elements": 169150,
+    "element_types": {
+     "quad4": 169150
+    },
+    "tri3": 0,
+    "minJ": 0.5210726431303866,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "fuselage_barrel",
+     "diameter": 2000.0,
+     "length": 2000.0,
+     "thickness": 3.0,
+     "n_stringers": 12,
+     "n_faces_per_stringer_section": 1,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0,
+     "stringer_angles": [
+      0.0,
+      0.523598776,
+      1.047197551,
+      1.570796327,
+      2.094395102,
+      2.617993878,
+      3.141592654,
+      3.665191429,
+      4.188790205,
+      4.71238898,
+      5.235987756,
+      5.759586532
+     ],
+     "n_frames": 4,
+     "frame_z": [
+      0.0,
+      666.666667,
+      1333.333333,
+      2000.0
+     ]
+    },
+    "geometry": {
+     "n_surfaces": 120,
+     "n_skin_faces": 36,
+     "n_stringer_faces": 36,
+     "n_frame_faces": 48,
+     "n_frame_z_planes": 4,
+     "frame_z_planes": [
+      -0.0,
+      666.666667,
+      1333.333333,
+      2000.0
+     ],
+     "stringer_angles": [
+      0.0,
+      0.523598776,
+      1.047197551,
+      1.570796327,
+      2.094395102,
+      2.617993878,
+      3.141592654,
+      3.665191429,
+      4.188790205,
+      4.71238898,
+      5.235987756,
+      5.759586532
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 2.5692317380921965,
+    "max_von_mises": 258.4794260500205,
+    "max_von_mises_midsurface": 106.06328293341386,
+    "max_von_mises_peak": 258.4794260500205,
+    "n_nodes": 169606,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 2.658140448868816,
+    "max_von_mises": 265.3805649128246,
+    "max_von_mises_midsurface": 105.377390480552,
+    "max_von_mises_peak": 265.3805649128246,
+    "n_nodes": 169606,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 169150,
+     "element_types": {
+      "S4": 169150
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 3.460517377955139,
+    "vm_peak_diff_pct": 2.669898710417514,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "fuselage_barrel_d2000_l2000_str8_frm3",
+   "family": "fuselage_barrel",
+   "role": "baseline",
+   "split": "train",
+   "split_reason": "落在训练包络内（未命中任何留出区域）",
+   "geometry_class": "589369d32c00",
+   "spec_sha256": "e661b7ab0a08e81a7018ae06b7d2818657aaced1d0ffedbb81ac35cd2fac18f8",
+   "spec": {
+    "family": "fuselage_barrel",
+    "params": {
+     "diameter": 2000.0,
+     "length": 2000.0,
+     "thickness": 3.0,
+     "n_stringers": 8,
+     "n_frames": 3
+    },
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 25.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": false,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "pressure",
+     "magnitude": 0.05,
+     "direction": [
+      0.0,
+      0.0,
+      1.0
+     ]
+    },
+    "extra": {
+     "end_shear": 50000.0,
+     "end_moment": 50000000.0,
+     "shear_axis": [
+      1.0,
+      0.0,
+      0.0
+     ],
+     "moment_axis": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "workdir": "outputs_b3"
+   },
+   "mesh": {
+    "n_nodes": 158524,
+    "n_elements": 157972,
+    "element_types": {
+     "quad4": 157972
+    },
+    "tri3": 0,
+    "minJ": 0.5159485244228189,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "fuselage_barrel",
+     "diameter": 2000.0,
+     "length": 2000.0,
+     "thickness": 3.0,
+     "n_stringers": 8,
+     "n_faces_per_stringer_section": 1,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0,
+     "stringer_angles": [
+      0.0,
+      0.785398163,
+      1.570796327,
+      2.35619449,
+      3.141592654,
+      3.926990817,
+      4.71238898,
+      5.497787144
+     ],
+     "n_frames": 3,
+     "frame_z": [
+      0.0,
+      1000.0,
+      2000.0
+     ]
+    },
+    "geometry": {
+     "n_surfaces": 56,
+     "n_skin_faces": 16,
+     "n_stringer_faces": 16,
+     "n_frame_faces": 24,
+     "n_frame_z_planes": 3,
+     "frame_z_planes": [
+      -0.0,
+      1000.0,
+      2000.0
+     ],
+     "stringer_angles": [
+      0.0,
+      0.785398163,
+      1.570796327,
+      2.35619449,
+      3.141592654,
+      3.926990817,
+      4.71238898,
+      5.497787144
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 2.631030661252164,
+    "max_von_mises": 249.39830401249134,
+    "max_von_mises_midsurface": 116.08617036847801,
+    "max_von_mises_peak": 249.39830401249134,
+    "n_nodes": 158524,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 2.685233649824806,
+    "max_von_mises": 281.0579209266885,
+    "max_von_mises_midsurface": 109.66013152107536,
+    "max_von_mises_peak": 281.0579209266885,
+    "n_nodes": 158524,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 157972,
+     "element_types": {
+      "S4": 157972
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 2.060142793883127,
+    "vm_peak_diff_pct": 12.694399442512431,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "stiffened_panel_600x600",
+   "family": "stiffened_panel",
+   "role": "degenerate",
+   "split": "train",
+   "split_reason": "落在训练包络内（未命中任何留出区域）",
+   "geometry_class": "7ba2e12216c0",
+   "spec_sha256": "54dd5664efa85857bfc40500220f4e5a6c851dbf64bac1802043b0ca91e800d8",
+   "spec": {
+    "family": "stiffened_panel",
+    "params": {
+     "length": 600.0,
+     "width": 600.0,
+     "thickness": 2.0,
+     "n_stringers": 0
+    },
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 3.0,
+     "size_span": 3.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "pressure",
+     "magnitude": 0.0001,
+     "direction": [
+      0.0,
+      0.0,
+      -1.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_panel"
+   },
+   "mesh": {
+    "n_nodes": 46432,
+    "n_elements": 46031,
+    "element_types": {
+     "quad4": 46031
+    },
+    "tri3": 0,
+    "minJ": 0.6166945961423866,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "stiffened_panel",
+     "length": 600.0,
+     "width": 600.0,
+     "thickness": 2.0,
+     "n_stringers": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0,
+     "stringer_pitch": null,
+     "stringer_stations": []
+    },
+    "geometry": {
+     "n_surfaces": 1,
+     "n_skin_faces": 1,
+     "n_stringer_faces": 0,
+     "stringer_stations": []
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 0.961753,
+    "max_von_mises": 2.968201976638486,
+    "max_von_mises_midsurface": 1.3589707994248,
+    "max_von_mises_peak": 2.968201976638486,
+    "n_nodes": 46432,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 0.9649020433425903,
+    "max_von_mises": 3.506615077142298,
+    "max_von_mises_midsurface": 0.0,
+    "max_von_mises_peak": 3.506615077142298,
+    "n_nodes": 46432,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 46031,
+     "element_types": {
+      "S4": 46031
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.32742745201630385,
+    "vm_peak_diff_pct": 18.13936870676062,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "stiffened_panel_600x600_str3",
+   "family": "stiffened_panel",
+   "role": "feature",
+   "split": "test",
+   "split_reason": "族内新形式（光板 ⇒ 3 根长桁）",
+   "geometry_class": "bc4990b00bae",
+   "spec_sha256": "53ea1d985fd1e291061aa2b93aab143ac5077216b5ad813a19b8637b6b4bc9d7",
+   "spec": {
+    "family": "stiffened_panel",
+    "params": {
+     "length": 600.0,
+     "width": 600.0,
+     "thickness": 2.0,
+     "n_stringers": 3
+    },
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 3.0,
+     "size_span": 3.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "pressure",
+     "magnitude": 0.0001,
+     "direction": [
+      0.0,
+      0.0,
+      -1.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_panel"
+   },
+   "mesh": {
+    "n_nodes": 51401,
+    "n_elements": 50976,
+    "element_types": {
+     "quad4": 50976
+    },
+    "tri3": 0,
+    "minJ": 0.5367410202103274,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "stiffened_panel",
+     "length": 600.0,
+     "width": 600.0,
+     "thickness": 2.0,
+     "n_stringers": 3,
+     "n_faces_per_stringer_section": 1,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0,
+     "stringer_pitch": 150.0,
+     "stringer_stations": [
+      150.0,
+      300.0,
+      450.0
+     ]
+    },
+    "geometry": {
+     "n_surfaces": 7,
+     "n_skin_faces": 4,
+     "n_stringer_faces": 3,
+     "stringer_stations": [
+      150.0,
+      300.0,
+      450.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 0.015261651810931748,
+    "max_von_mises": 1.7743572948808453,
+    "max_von_mises_midsurface": 1.7689225568450382,
+    "max_von_mises_peak": 1.7743572948808453,
+    "n_nodes": 51401,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 0.015271318088133687,
+    "max_von_mises": 1.9055278385393157,
+    "max_von_mises_midsurface": 1.7470664145323878,
+    "max_von_mises_peak": 1.9055278385393157,
+    "n_nodes": 51401,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 50976,
+     "element_types": {
+      "S4": 50976
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.063337031415006,
+    "vm_peak_diff_pct": 7.392566538707136,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "stiffened_panel_800x600",
+   "family": "stiffened_panel",
+   "role": "degenerate",
+   "split": "val",
+   "split_reason": "平板尺寸单维外推（800x600 ≠ train 已学 600x600）",
+   "geometry_class": "652d537e3d91",
+   "spec_sha256": "d9ca8f320749eee02db17be69c1f05305addbd39ea0b01beb67f8c8dcdbb6cba",
+   "spec": {
+    "family": "stiffened_panel",
+    "params": {
+     "length": 800.0,
+     "width": 600.0,
+     "thickness": 2.0,
+     "n_stringers": 0
+    },
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 3.0,
+     "size_span": 3.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "pressure",
+     "magnitude": 0.0001,
+     "direction": [
+      0.0,
+      0.0,
+      -1.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_b2"
+   },
+   "mesh": {
+    "n_nodes": 61834,
+    "n_elements": 61365,
+    "element_types": {
+     "quad4": 61365
+    },
+    "tri3": 0,
+    "minJ": 0.6183347453669573,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "stiffened_panel",
+     "length": 800.0,
+     "width": 600.0,
+     "thickness": 2.0,
+     "n_stringers": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0,
+     "stringer_pitch": null,
+     "stringer_stations": []
+    },
+    "geometry": {
+     "n_surfaces": 1,
+     "n_skin_faces": 1,
+     "n_stringer_faces": 0,
+     "stringer_stations": []
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 1.56189,
+    "max_von_mises": 4.302588854538858,
+    "max_von_mises_midsurface": 2.2929980498307287,
+    "max_von_mises_peak": 4.302588854538858,
+    "n_nodes": 61834,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 1.5737814903259277,
+    "max_von_mises": 4.201782064451703,
+    "max_von_mises_midsurface": 0.0,
+    "max_von_mises_peak": 4.201782064451703,
+    "n_nodes": 61834,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 61365,
+     "element_types": {
+      "S4": 61365
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.7613526129194587,
+    "vm_peak_diff_pct": 2.342933370935798,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "stiffened_panel_800x600_str3",
+   "family": "stiffened_panel",
+   "role": "feature",
+   "split": "val",
+   "split_reason": "平板尺寸单维外推（800x600 ≠ train 已学 600x600）",
+   "geometry_class": "b8239f1030bc",
+   "spec_sha256": "ac4bf5fbd09a9fb88d0edd44726aa6133b6f88948684f8265e59cb97f623aa50",
+   "spec": {
+    "family": "stiffened_panel",
+    "params": {
+     "length": 800.0,
+     "width": 600.0,
+     "thickness": 2.0,
+     "n_stringers": 3
+    },
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 3.0,
+     "size_span": 3.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "pressure",
+     "magnitude": 0.0001,
+     "direction": [
+      0.0,
+      0.0,
+      -1.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_b3"
+   },
+   "mesh": {
+    "n_nodes": 67797,
+    "n_elements": 67300,
+    "element_types": {
+     "quad4": 67300
+    },
+    "tri3": 0,
+    "minJ": 0.5977714101052465,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "stiffened_panel",
+     "length": 800.0,
+     "width": 600.0,
+     "thickness": 2.0,
+     "n_stringers": 3,
+     "n_faces_per_stringer_section": 1,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0,
+     "stringer_pitch": 200.0,
+     "stringer_stations": [
+      200.0,
+      400.0,
+      600.0
+     ]
+    },
+    "geometry": {
+     "n_surfaces": 7,
+     "n_skin_faces": 4,
+     "n_stringer_faces": 3,
+     "stringer_stations": [
+      200.0,
+      400.0,
+      600.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 0.028976110654446975,
+    "max_von_mises": 2.4046570188336363,
+    "max_von_mises_midsurface": 2.3935898686947783,
+    "max_von_mises_peak": 2.4046570188336363,
+    "n_nodes": 67797,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 0.028988757591019938,
+    "max_von_mises": 2.583655637610804,
+    "max_von_mises_midsurface": 2.3640586574408524,
+    "max_von_mises_peak": 2.583655637610804,
+    "n_nodes": 67797,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 67300,
+     "element_types": {
+      "S4": 67300
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.04364608046878158,
+    "vm_peak_diff_pct": 7.443831589088321,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox",
+   "family": "wingbox",
+   "role": "baseline",
+   "split": "train",
+   "split_reason": "落在训练包络内（未命中任何留出区域）",
+   "geometry_class": "04fda953cfda",
+   "spec_sha256": "795afb1a62cd5dfc07dcfb9be08637231e2453b06d422d7e754e152784700f43",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs"
+   },
+   "mesh": {
+    "n_nodes": 5074,
+    "n_elements": 5144,
+    "element_types": {
+     "quad4": 5144
+    },
+    "tri3": 0,
+    "minJ": 0.6249201101994613,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 21,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 4,
+     "n_skin_faces_lower": 4,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 2.3654390542892276,
+    "max_von_mises": 10.60478594684109,
+    "max_von_mises_midsurface": 10.28238898829173,
+    "max_von_mises_peak": 10.60478594684109,
+    "n_nodes": 5074,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 2.3738960041929107,
+    "max_von_mises": 11.780898280710014,
+    "max_von_mises_midsurface": 8.454058904563793,
+    "max_von_mises_peak": 11.780898280710014,
+    "n_nodes": 5074,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 5144,
+     "element_types": {
+      "S4": 5144
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.3575213611337041,
+    "vm_peak_diff_pct": 11.090392015118974,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_n_ribs3_chord1000",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "train",
+   "split_reason": "落在训练包络内（未命中任何留出区域）",
+   "geometry_class": "27c7b136a680",
+   "spec_sha256": "fbe9739d4a6d0ae39dd077fd749a7b99c7a1d836166a1baeaf74ffb56216a963",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 3,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {
+     "sweep_index": 1
+    },
+    "workdir": "outputs"
+   },
+   "mesh": {
+    "n_nodes": 4668,
+    "n_elements": 4690,
+    "element_types": {
+     "quad4": 4690
+    },
+    "tri3": 0,
+    "minJ": 0.5964583834552789,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 3,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 11,
+     "n_spar_faces": 4,
+     "n_skin_faces_upper": 2,
+     "n_skin_faces_lower": 2,
+     "n_rib_faces": 3,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 3,
+     "rib_z_planes": [
+      -0.0,
+      1000.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 2.372344338375239,
+    "max_von_mises": 10.4392708580544,
+    "max_von_mises_midsurface": 10.161539080738757,
+    "max_von_mises_peak": 10.4392708580544,
+    "n_nodes": 4668,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 2.3785566040478026,
+    "max_von_mises": 11.77365557042394,
+    "max_von_mises_midsurface": 8.269332288079585,
+    "max_von_mises_peak": 11.77365557042394,
+    "n_nodes": 4668,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 4690,
+     "element_types": {
+      "S4": 4690
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.261861887925521,
+    "vm_peak_diff_pct": 12.782355496983769,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_n_ribs3_chord800",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "train",
+   "split_reason": "落在训练包络内（未命中任何留出区域）",
+   "geometry_class": "6f61e089e75a",
+   "spec_sha256": "5a672be1893fb97df5963a835c958d1cebd9fe0913a7f00240634f81d5035788",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 800,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 3,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {
+     "sweep_index": 0
+    },
+    "workdir": "outputs"
+   },
+   "mesh": {
+    "n_nodes": 3679,
+    "n_elements": 3696,
+    "element_types": {
+     "quad4": 3696
+    },
+    "tri3": 0,
+    "minJ": 0.5949959160014804,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 3,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 11,
+     "n_spar_faces": 4,
+     "n_skin_faces_upper": 2,
+     "n_skin_faces_lower": 2,
+     "n_rib_faces": 3,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 3,
+     "rib_z_planes": [
+      -0.0,
+      1000.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 4.54015407249073,
+    "max_von_mises": 15.95839120937423,
+    "max_von_mises_midsurface": 15.39443045897294,
+    "max_von_mises_peak": 15.95839120937423,
+    "n_nodes": 3679,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 4.550353828916151,
+    "max_von_mises": 17.332039408912117,
+    "max_von_mises_midsurface": 12.727542516205512,
+    "max_von_mises_peak": 17.332039408912117,
+    "n_nodes": 3679,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 3696,
+     "element_types": {
+      "S4": 3696
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.22465661434757095,
+    "vm_peak_diff_pct": 8.607685959791372,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_n_ribs5_chord800",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "train",
+   "split_reason": "落在训练包络内（未命中任何留出区域）",
+   "geometry_class": "16c690030894",
+   "spec_sha256": "c9654fcb9d617b475d31bebc3bbbb22daac1c094dbeeba3f3207944904d813ba",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 800,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {
+     "sweep_index": 2
+    },
+    "workdir": "outputs"
+   },
+   "mesh": {
+    "n_nodes": 4057,
+    "n_elements": 4112,
+    "element_types": {
+     "quad4": 4112
+    },
+    "tri3": 0,
+    "minJ": 0.5949959160014804,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 21,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 4,
+     "n_skin_faces_lower": 4,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 4.526727690746489,
+    "max_von_mises": 15.761825692876124,
+    "max_von_mises_midsurface": 15.272589981817703,
+    "max_von_mises_peak": 15.761825692876124,
+    "n_nodes": 4057,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 4.5428539840558715,
+    "max_von_mises": 17.57169287932763,
+    "max_von_mises_midsurface": 12.525571706246296,
+    "max_von_mises_peak": 17.57169287932763,
+    "n_nodes": 4057,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 4112,
+     "element_types": {
+      "S4": 4112
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.35624615419982397,
+    "vm_peak_diff_pct": 11.482598664122477,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_n_ribs7_chord1000",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "val",
+   "split_reason": "单维外推（肋 7 > 5，弦保持默认）",
+   "geometry_class": "3620a71c7d61",
+   "spec_sha256": "185bfb1ec59724e2af033f4fdbdf67ded1d05e0d20d37b78ee788f26fe17a93e",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 7,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {
+     "sweep_index": 5
+    },
+    "workdir": "outputs"
+   },
+   "mesh": {
+    "n_nodes": 5593,
+    "n_elements": 5711,
+    "element_types": {
+     "quad4": 5711
+    },
+    "tri3": 0,
+    "minJ": 0.6082783927001695,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 7,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 31,
+     "n_spar_faces": 12,
+     "n_skin_faces_upper": 6,
+     "n_skin_faces_lower": 6,
+     "n_rib_faces": 7,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 7,
+     "rib_z_planes": [
+      -0.0,
+      333.333333,
+      666.666667,
+      1000.0,
+      1333.333333,
+      1666.666667,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 2.3580540580706995,
+    "max_von_mises": 10.743173201647076,
+    "max_von_mises_midsurface": 10.427805786050106,
+    "max_von_mises_peak": 10.743173201647076,
+    "n_nodes": 5593,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 2.368824684633222,
+    "max_von_mises": 12.003206304623296,
+    "max_von_mises_midsurface": 8.451313556540047,
+    "max_von_mises_peak": 12.003206304623296,
+    "n_nodes": 5593,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 5711,
+     "element_types": {
+      "S4": 5711
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.45675910294164146,
+    "vm_peak_diff_pct": 11.728686481411648,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_n_ribs7_chord800",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "test",
+   "split_reason": "双维外推（肋 7 > 5 且 弦 800 ≠ 1000）",
+   "geometry_class": "8488a8303db0",
+   "spec_sha256": "5ba82d52b6f4212c089aef1cb2339e9dec23f725b8a9afa7d769046e9704e505",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 800,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 7,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {
+     "sweep_index": 4
+    },
+    "workdir": "outputs"
+   },
+   "mesh": {
+    "n_nodes": 4352,
+    "n_elements": 4445,
+    "element_types": {
+     "quad4": 4445
+    },
+    "tri3": 0,
+    "minJ": 0.5098911686469797,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 7,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 31,
+     "n_spar_faces": 12,
+     "n_skin_faces_upper": 6,
+     "n_skin_faces_lower": 6,
+     "n_rib_faces": 7,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 7,
+     "rib_z_planes": [
+      -0.0,
+      333.333333,
+      666.666667,
+      1000.0,
+      1333.333333,
+      1666.666667,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 4.5123206310669195,
+    "max_von_mises": 15.85067216837446,
+    "max_von_mises_midsurface": 15.391905349427423,
+    "max_von_mises_peak": 15.85067216837446,
+    "n_nodes": 4352,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 4.5352136296902374,
+    "max_von_mises": 18.03887616117191,
+    "max_von_mises_midsurface": 12.726835238087025,
+    "max_von_mises_peak": 18.03887616117191,
+    "n_nodes": 4352,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 4445,
+     "element_types": {
+      "S4": 4445
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.5073442358174135,
+    "vm_peak_diff_pct": 13.805117975775136,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_n_ribs9_chord1000",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "val",
+   "split_reason": "单维外推（肋 9 > 5，弦保持默认）",
+   "geometry_class": "de9cc4386fe9",
+   "spec_sha256": "20950286a9707d6abdd30312fa89d90f8dcef889e0bb56437cb39696e5004753",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 9,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_b2"
+   },
+   "mesh": {
+    "n_nodes": 5706,
+    "n_elements": 5872,
+    "element_types": {
+     "quad4": 5872
+    },
+    "tri3": 0,
+    "minJ": 0.6337412125729462,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 9,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 41,
+     "n_spar_faces": 16,
+     "n_skin_faces_upper": 8,
+     "n_skin_faces_lower": 8,
+     "n_rib_faces": 9,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 9,
+     "rib_z_planes": [
+      -0.0,
+      250.0,
+      500.0,
+      750.0,
+      1000.0,
+      1250.0,
+      1500.0,
+      1750.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 2.3503343566447765,
+    "max_von_mises": 10.69336585047379,
+    "max_von_mises_midsurface": 10.380297805396822,
+    "max_von_mises_peak": 10.69336585047379,
+    "n_nodes": 5706,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 2.363437997556635,
+    "max_von_mises": 11.94323499022196,
+    "max_von_mises_midsurface": 8.444676903559534,
+    "max_von_mises_peak": 11.94323499022196,
+    "n_nodes": 5706,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 5872,
+     "element_types": {
+      "S4": 5872
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.5575224169621747,
+    "vm_peak_diff_pct": 11.688266886452716,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_recombination_algorithm3",
+   "family": "wingbox",
+   "role": "ablation",
+   "split": "train",
+   "split_reason": "落在训练包络内（未命中任何留出区域）",
+   "geometry_class": "04fda953cfda",
+   "spec_sha256": "0610503695b385cad4abdcf95ec080dd4cb11df541f08494bfb90a2b4bee820a",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 3
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {
+     "sweep_index": 0
+    },
+    "workdir": "outputs"
+   },
+   "mesh": {
+    "n_nodes": 5281,
+    "n_elements": 5351,
+    "element_types": {
+     "quad4": 5351
+    },
+    "tri3": 0,
+    "minJ": 0.5725205939642284,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 21,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 4,
+     "n_skin_faces_lower": 4,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 2.3648673060530063,
+    "max_von_mises": 10.609667615451286,
+    "max_von_mises_midsurface": 10.315606597923914,
+    "max_von_mises_peak": 10.609667615451286,
+    "n_nodes": 5281,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 2.372416858073929,
+    "max_von_mises": 11.801119571214668,
+    "max_von_mises_midsurface": 8.41922706961026,
+    "max_von_mises_peak": 11.801119571214668,
+    "n_nodes": 5281,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 5351,
+     "element_types": {
+      "S4": 5351
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.3192378702009745,
+    "vm_peak_diff_pct": 11.229870707996756,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_str3",
+   "family": "wingbox",
+   "role": "feature",
+   "split": "train",
+   "split_reason": "落在训练包络内（未命中任何留出区域）",
+   "geometry_class": "31f73bf54eb1",
+   "spec_sha256": "c2995e54937ea4a8265d02cc85030cd9f4f3ae3f428316221935c90d60db30e7",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 3,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs"
+   },
+   "mesh": {
+    "n_nodes": 7387,
+    "n_elements": 7517,
+    "element_types": {
+     "quad4": 7517
+    },
+    "tri3": 0,
+    "minJ": 0.5228144470085714,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 3,
+     "n_stringers_upper": 3,
+     "n_stringers_lower": 3,
+     "n_faces_per_stringer_section": 1,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 69,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 16,
+     "n_skin_faces_lower": 16,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 12,
+     "n_stringer_faces_lower": 12,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 2.2193965388854355,
+    "max_von_mises": 10.140596401997234,
+    "max_von_mises_midsurface": 9.825463603700657,
+    "max_von_mises_peak": 10.140596401997234,
+    "n_nodes": 7387,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 2.22557264527261,
+    "max_von_mises": 11.28189221381298,
+    "max_von_mises_midsurface": 8.207721753313997,
+    "max_von_mises_peak": 11.28189221381298,
+    "n_nodes": 7387,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 7517,
+     "element_types": {
+      "S4": 7517
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.2782786347083419,
+    "vm_peak_diff_pct": 11.254720793255942,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_str3_T",
+   "family": "wingbox",
+   "role": "feature",
+   "split": "test",
+   "split_reason": "新截面形式（train 里没有锚定 'T' 形式）",
+   "geometry_class": "fe7d0a48ad1b",
+   "spec_sha256": "34ec737544cb9b10356315a95e7fc26f4fac97ab0cd27c1e18b9209a86a1b2f7",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 3,
+     "stringer_kind": "T",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs"
+   },
+   "mesh": {
+    "n_nodes": 29447,
+    "n_elements": 29733,
+    "element_types": {
+     "quad4": 29733
+    },
+    "tri3": 0,
+    "minJ": 0.5332034793851477,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 3,
+     "n_stringers_upper": 3,
+     "n_stringers_lower": 3,
+     "n_faces_per_stringer_section": 3,
+     "stringer_section": "T",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 117,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 16,
+     "n_skin_faces_lower": 16,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 36,
+     "n_stringer_faces_lower": 36,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 2.115066913441561,
+    "max_von_mises": 11.184666107572331,
+    "max_von_mises_midsurface": 10.67851247209391,
+    "max_von_mises_peak": 11.184666107572331,
+    "n_nodes": 29447,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 2.1181165704369294,
+    "max_von_mises": 12.88916331352548,
+    "max_von_mises_midsurface": 8.58777536083678,
+    "max_von_mises_peak": 12.88916331352548,
+    "n_nodes": 29447,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 29733,
+     "element_types": {
+      "S4": 29733
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.14418725837878557,
+    "vm_peak_diff_pct": 15.239589537672076,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_str5",
+   "family": "wingbox",
+   "role": "feature",
+   "split": "train",
+   "split_reason": "落在训练包络内（未命中任何留出区域）",
+   "geometry_class": "0fc97e867d7a",
+   "spec_sha256": "953fc857d3b33a5662ee65f86e168c7a73ff12b0951059040eea70e06a3d94c2",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 5,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_b2"
+   },
+   "mesh": {
+    "n_nodes": 8205,
+    "n_elements": 8367,
+    "element_types": {
+     "quad4": 8367
+    },
+    "tri3": 0,
+    "minJ": 0.5351130132476979,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 5,
+     "n_stringers_upper": 5,
+     "n_stringers_lower": 5,
+     "n_faces_per_stringer_section": 1,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 101,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 24,
+     "n_skin_faces_lower": 24,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 20,
+     "n_stringer_faces_lower": 20,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 2.135446558417041,
+    "max_von_mises": 9.86918268353307,
+    "max_von_mises_midsurface": 9.641833611172135,
+    "max_von_mises_peak": 9.86918268353307,
+    "n_nodes": 8205,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 2.1411447756504858,
+    "max_von_mises": 11.250319025494377,
+    "max_von_mises_midsurface": 7.891870477399704,
+    "max_von_mises_peak": 11.250319025494377,
+    "n_nodes": 8205,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 8367,
+     "element_types": {
+      "S4": 8367
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.26683960837065995,
+    "vm_peak_diff_pct": 13.994434861011953,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_sweep10",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "train",
+   "split_reason": "落在训练包络内（未命中任何留出区域）",
+   "geometry_class": "a103d70ed0a6",
+   "spec_sha256": "632fd00c97153c5fc4a1721eccc88eba40b95b0f6cbb1e8db3024d6fd997c4c9",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 10.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_b2"
+   },
+   "mesh": {
+    "n_nodes": 5484,
+    "n_elements": 5554,
+    "element_types": {
+     "quad4": 5554
+    },
+    "tri3": 0,
+    "minJ": 0.6265579236591259,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 21,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 4,
+     "n_skin_faces_lower": 4,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 2.587602126746103,
+    "max_von_mises": 9.829712715372917,
+    "max_von_mises_midsurface": 9.560667467785786,
+    "max_von_mises_peak": 9.829712715372917,
+    "n_nodes": 5484,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 2.5950575466781918,
+    "max_von_mises": 10.69581210112629,
+    "max_von_mises_midsurface": 7.960195918168706,
+    "max_von_mises_peak": 10.69581210112629,
+    "n_nodes": 5484,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 5554,
+     "element_types": {
+      "S4": 5554
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.28812079936972473,
+    "vm_peak_diff_pct": 8.811034572748596,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_sweep20",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "train",
+   "split_reason": "落在训练包络内（未命中任何留出区域）",
+   "geometry_class": "4452206f867d",
+   "spec_sha256": "0435d0e179625e12e65e2d6f984f836dc904ddcfd58b2fe532d5a3032137d5c1",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 20.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_t1"
+   },
+   "mesh": {
+    "n_nodes": 5222,
+    "n_elements": 5292,
+    "element_types": {
+     "quad4": 5292
+    },
+    "tri3": 0,
+    "minJ": 0.4901674525594982,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 21,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 4,
+     "n_skin_faces_lower": 4,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 3.169341103852119,
+    "max_von_mises": 10.475926278475475,
+    "max_von_mises_midsurface": 10.117079827363572,
+    "max_von_mises_peak": 10.475926278475475,
+    "n_nodes": 5222,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 3.1776258561868236,
+    "max_von_mises": 10.941072345441729,
+    "max_von_mises_midsurface": 8.218960061819304,
+    "max_von_mises_peak": 10.941072345441729,
+    "n_nodes": 5222,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 5292,
+     "element_types": {
+      "S4": 5292
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.261402987663112,
+    "vm_peak_diff_pct": 4.440142614615123,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_sweep20_taper060",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "test",
+   "split_reason": "新平面形状组合（后掠 20° × 锥度 0.6 兼具；train 中两个自由度各只有单变量）",
+   "geometry_class": "6c26678d4e93",
+   "spec_sha256": "fdc02cee841e1487c4c8b2e8a275111385527af43f8550da9b5f61f90640449a",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 0.6,
+     "sweep_deg": 20.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_t1"
+   },
+   "mesh": {
+    "n_nodes": 7771,
+    "n_elements": 7847,
+    "element_types": {
+     "quad4": 7847
+    },
+    "tri3": 0,
+    "minJ": 0.5522722542545676,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 21,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 4,
+     "n_skin_faces_lower": 4,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 3.9610402229969455,
+    "max_von_mises": 9.41477507770387,
+    "max_von_mises_midsurface": 9.050886277887999,
+    "max_von_mises_peak": 9.41477507770387,
+    "n_nodes": 7771,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 3.9687270194562543,
+    "max_von_mises": 10.309450788170087,
+    "max_von_mises_midsurface": 7.850855248101673,
+    "max_von_mises_peak": 10.309450788170087,
+    "n_nodes": 7771,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 7847,
+     "element_types": {
+      "S4": 7847
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.1940600455072616,
+    "vm_peak_diff_pct": 9.502889905304201,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_sweep40",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "val",
+   "split_reason": "平面形状单维外推（后掠 40° > train 已学 20°，锥度中性）",
+   "geometry_class": "b55964a50887",
+   "spec_sha256": "7c3dbb31a9e69c33178d3c604a70681d53a701a5a2a2b650aa9bd7edbd64653c",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 1.0,
+     "sweep_deg": 40.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_b2"
+   },
+   "mesh": {
+    "n_nodes": 5697,
+    "n_elements": 5767,
+    "element_types": {
+     "quad4": 5767
+    },
+    "tri3": 0,
+    "minJ": 0.48606104078476603,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 21,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 4,
+     "n_skin_faces_lower": 4,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 7.014337862568018,
+    "max_von_mises": 18.651761912933694,
+    "max_von_mises_midsurface": 17.32167774629491,
+    "max_von_mises_peak": 18.651761912933694,
+    "n_nodes": 5697,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 7.026717742880465,
+    "max_von_mises": 18.96550108923645,
+    "max_von_mises_midsurface": 13.737130619730284,
+    "max_von_mises_peak": 18.96550108923645,
+    "n_nodes": 5697,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 5767,
+     "element_types": {
+      "S4": 5767
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.17649392651175605,
+    "vm_peak_diff_pct": 1.6820886829206256,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_sweep40_taper040",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "test",
+   "split_reason": "新平面形状组合（后掠 40° × 锥度 0.4 兼具；train 中两个自由度各只有单变量）",
+   "geometry_class": "f12e1fec520e",
+   "spec_sha256": "2214a4ed4e51bf6a9ef5f72f5fa2a4ff2c466802982f4c150aa78be173509d73",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 0.4,
+     "sweep_deg": 40.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_b2"
+   },
+   "mesh": {
+    "n_nodes": 15681,
+    "n_elements": 15780,
+    "element_types": {
+     "quad4": 15780
+    },
+    "tri3": 0,
+    "minJ": 0.5447613378516956,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 21,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 4,
+     "n_skin_faces_lower": 4,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 9.867346144431435,
+    "max_von_mises": 15.940495932793402,
+    "max_von_mises_midsurface": 15.079491272314694,
+    "max_von_mises_peak": 15.940495932793402,
+    "n_nodes": 15681,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 9.874359668238789,
+    "max_von_mises": 16.939554030113005,
+    "max_von_mises_midsurface": 13.243995372968145,
+    "max_von_mises_peak": 16.939554030113005,
+    "n_nodes": 15681,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 15780,
+     "element_types": {
+      "S4": 15780
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.07107811669616639,
+    "vm_peak_diff_pct": 6.26742167578552,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_taper040",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "val",
+   "split_reason": "平面形状单维外推（锥度 0.4 < train 已学 0.6，后掠中性）",
+   "geometry_class": "0120242504c5",
+   "spec_sha256": "0c75e19bd056f0f8c324b23a3b5b285cdc1332eb3d37a9c6011112aa33eb7368",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 0.4,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_b2"
+   },
+   "mesh": {
+    "n_nodes": 14937,
+    "n_elements": 15036,
+    "element_types": {
+     "quad4": 15036
+    },
+    "tri3": 0,
+    "minJ": 0.5063815701996744,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 21,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 4,
+     "n_skin_faces_lower": 4,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 4.488857764398142,
+    "max_von_mises": 12.225366825633698,
+    "max_von_mises_midsurface": 11.629420409365332,
+    "max_von_mises_peak": 12.225366825633698,
+    "n_nodes": 14937,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 4.495085521867187,
+    "max_von_mises": 13.860493635257514,
+    "max_von_mises_midsurface": 9.760256660002113,
+    "max_von_mises_peak": 13.860493635257514,
+    "n_nodes": 14937,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 15036,
+     "element_types": {
+      "S4": 15036
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.13873813330505047,
+    "vm_peak_diff_pct": 13.374869097550047,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_taper060",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "train",
+   "split_reason": "落在训练包络内（未命中任何留出区域）",
+   "geometry_class": "407d63dd4806",
+   "spec_sha256": "b9211032b3488dccb5af535a848d6afb17365c96b76ddff196ed4905ec1e8823",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 0.6,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_t1"
+   },
+   "mesh": {
+    "n_nodes": 7950,
+    "n_elements": 8026,
+    "element_types": {
+     "quad4": 8026
+    },
+    "tri3": 0,
+    "minJ": 0.559324850692488,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 21,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 4,
+     "n_skin_faces_lower": 4,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 3.3841521444874867,
+    "max_von_mises": 11.406788368911096,
+    "max_von_mises_midsurface": 10.956538876741602,
+    "max_von_mises_peak": 11.406788368911096,
+    "n_nodes": 7950,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 3.3914620763235805,
+    "max_von_mises": 12.695837204100416,
+    "max_von_mises_midsurface": 9.112664350219077,
+    "max_von_mises_peak": 12.695837204100416,
+    "n_nodes": 7950,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 8026,
+     "element_types": {
+      "S4": 8026
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.2160048225964411,
+    "vm_peak_diff_pct": 11.300716674139311,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_taper080",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "train",
+   "split_reason": "落在训练包络内（未命中任何留出区域）",
+   "geometry_class": "7f8e913d28ee",
+   "spec_sha256": "bb20882633c802f295682df65eab7609cf790b55e0d87ad11c7b12f832f5304d",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 0.8,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_t1"
+   },
+   "mesh": {
+    "n_nodes": 5125,
+    "n_elements": 5191,
+    "element_types": {
+     "quad4": 5191
+    },
+    "tri3": 0,
+    "minJ": 0.5483708034761166,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 21,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 4,
+     "n_skin_faces_lower": 4,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 2.7520888147218887,
+    "max_von_mises": 10.76496177054013,
+    "max_von_mises_midsurface": 10.439201687620503,
+    "max_von_mises_peak": 10.76496177054013,
+    "n_nodes": 5125,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 2.7610115114339733,
+    "max_von_mises": 11.954510262439012,
+    "max_von_mises_midsurface": 8.599062107911822,
+    "max_von_mises_peak": 11.954510262439012,
+    "n_nodes": 5125,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 5191,
+     "element_types": {
+      "S4": 5191
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.32421543463110386,
+    "vm_peak_diff_pct": 11.05018779680437,
+    "n_nodes_equal": true
+   }
+  },
+  {
+   "case_id": "naca4412_wingbox_taper090",
+   "family": "wingbox",
+   "role": "sweep",
+   "split": "train",
+   "split_reason": "落在训练包络内（未命中任何留出区域）",
+   "geometry_class": "ce972f69795c",
+   "spec_sha256": "d4a70625cf5d68738e415780e850a8afc6f06a01cff0b77d41a1e73dc0ce5ee2",
+   "spec": {
+    "family": "wingbox",
+    "params": {},
+    "airfoil": {
+     "chord": 1000.0,
+     "span": 2000.0,
+     "skin_thickness": 3.0,
+     "n_ribs": 5,
+     "rib_thickness": 4.0,
+     "n_stringers_per_skin": 0,
+     "stringer_kind": "blade",
+     "stringer_height": 20.0,
+     "stringer_thickness": 2.5,
+     "tip_chord_ratio": 0.9,
+     "sweep_deg": 0.0
+    },
+    "mesh": {
+     "element_order": 1,
+     "size_chord": 12.0,
+     "size_span": 25.0,
+     "refine_at_leading_edge": true,
+     "leading_edge_threshold": 1.6,
+     "min_jacobian": 0.3,
+     "algorithm_2d": 6,
+     "recombine": true,
+     "recombination_algorithm": 0
+    },
+    "load": {
+     "kind": "tip_force",
+     "magnitude": 500.0,
+     "direction": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    },
+    "extra": {},
+    "workdir": "outputs_b2"
+   },
+   "mesh": {
+    "n_nodes": 4871,
+    "n_elements": 4935,
+    "element_types": {
+     "quad4": 4935
+    },
+    "tri3": 0,
+    "minJ": 0.5492092350251745,
+    "minJ_pass": true
+   },
+   "truth": {
+    "design": {
+     "family": "wingbox",
+     "n_ribs": 5,
+     "n_spars": 2,
+     "n_skins": 2,
+     "n_stringers_per_skin": 0,
+     "n_stringers_upper": 0,
+     "n_stringers_lower": 0,
+     "n_faces_per_stringer_section": 0,
+     "stringer_section": "blade",
+     "stringer_flange_width": 30.0
+    },
+    "geometry": {
+     "n_surfaces": 21,
+     "n_spar_faces": 8,
+     "n_skin_faces_upper": 4,
+     "n_skin_faces_lower": 4,
+     "n_rib_faces": 5,
+     "n_stringer_faces_upper": 0,
+     "n_stringer_faces_lower": 0,
+     "n_rib_z_planes": 5,
+     "rib_z_planes": [
+      -0.0,
+      500.0,
+      1000.0,
+      1500.0,
+      2000.0
+     ]
+    },
+    "semantic_gate_pass": true
+   },
+   "ccx": {
+    "max_disp": 2.53635648204659,
+    "max_von_mises": 10.580192768648201,
+    "max_von_mises_midsurface": 10.271326992381374,
+    "max_von_mises_peak": 10.580192768648201,
+    "n_nodes": 4871,
+    "solver_meta": {}
+   },
+   "abaqus": {
+    "max_disp": 2.5451441544416773,
+    "max_von_mises": 11.729738277969357,
+    "max_von_mises_midsurface": 8.485812374955719,
+    "max_von_mises_peak": 11.729738277969357,
+    "n_nodes": 4871,
+    "solver_meta": {
+     "source": "abaqus-odb",
+     "step": "Step-1",
+     "section_points": [
+      1,
+      5
+     ],
+     "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+     ],
+     "stress_type": "TENSOR_3D_PLANAR",
+     "n_elements": 4935,
+     "element_types": {
+      "S4": 4935
+     },
+     "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+     ]
+    }
+   },
+   "xval": {
+    "max_disp_diff_pct": 0.3464683476983764,
+    "vm_peak_diff_pct": 10.865071501603932,
+    "n_nodes_equal": true
+   }
+  }
+ ],
+ "t3": {
+  "verify_barrel": {
+   "model": {
+    "diameter": 2000.0,
+    "length": 2000.0,
+    "thickness": 3.0,
+    "n_stringers": 8,
+    "n_frames": 3,
+    "min_skin_segments": 4
+   },
+   "pressure": {
+    "hoop_vm_MPa": 16.688446,
+    "hoop_closed_form_MPa": 16.666667,
+    "sigma_z_MPa": 0.01823,
+    "w_mm": 0.227248,
+    "w_closed_form_mm": 0.227998,
+    "node": 22234,
+    "coord": [
+     705.96,
+     708.25,
+     1001.05
+    ],
+    "n_nodes": 105199
+   },
+   "moment": {
+    "bending_vm_MPa": 3.725754,
+    "bending_closed_form_MPa": 3.751318,
+    "inertia_mm4": 9424777960.769379,
+    "x_mm": 707.1067811865476,
+    "node": 22234,
+    "coord": [
+     705.96,
+     708.25,
+     1001.05
+    ],
+    "n_nodes": 105199
+   },
+   "combined": {
+    "force_sum_N": [
+     0.009388,
+     -0.000256,
+     0.02266
+    ],
+    "ccx_max_disp": 2.631030661252164,
+    "ccx_nodes": 158548,
+    "structure_max_disp_mm": [
+     1.38962,
+     1.395222
+    ],
+    "structure_cross_pct": 0.40148,
+    "full_max_disp_mm": [
+     2.631031,
+     2.685234
+    ],
+    "full_cross_pct": 2.01856,
+    "abaqus_max_disp": 2.685233649824806,
+    "profile_pct_of_tip": 0.19803,
+    "profile_worst_station_mm": 1850.0,
+    "profile_worst_relative_pct": 0.38143,
+    "profile_ccx_tip_mm": 0.614119,
+    "profile_abaqus_tip_mm": 0.613842
+   },
+   "checks": [
+    {
+     "key": "pressure.hoop-membrane",
+     "pass": true,
+     "detail": "outer-fibre von Mises at mid-length (node 22234 at (705.96, 708.25, 1001.05)) = 16.68845 MPa vs pR/t = 16.66667 MPa -> +0.131 %; sigma_z there = 0.01823 MPa (+0.11 % of hoop - the barrel has no end caps, so the pressure has no axial resultant)"
+    },
+    {
+     "key": "pressure.radial-growth",
+     "pass": true,
+     "detail": "radial displacement at mid-length = 0.22725 mm vs pR^2/(E t) = 0.22800 mm -> -0.329 % (E = 73100 MPa, nu = 0.33; the free growth, i.e. far from the clamped end)"
+    },
+    {
+     "key": "moment.beam-bending",
+     "pass": true,
+     "detail": "outer-fibre von Mises at mid-length (node 22234 at (705.96, 708.25, 1001.05)) = 3.72575 MPa vs M x / I = 3.75132 MPa -> -0.681 % (I = pi R^3 t = 9.425e+09 mm^4 at R = 1000, t = 3; x = R cos(pi/4) = 707.107 mm - the sampled meridian is half a bay off the free skin seam)"
+    },
+    {
+     "key": "combined.equilibrium",
+     "pass": true,
+     "detail": "sum(FORC) over all 158524 nodes = (+0.00939, -0.00026, +0.02266) N; worst component 0.00005 % of the applied shear 50000 N (must be ~0 - applied and reaction cancel by construction)"
+    },
+    {
+     "key": "combined.cross-solver",
+     "pass": true,
+     "detail": "structure max|u| (D20 - the free-end end-load ring removed, by the family's own rule fuselage.barrel_nodes): ccx 1.38962 (node 155525) vs abaqus 1.39522 (node 155576) mm -> 0.4015 % (tolerance 1 %).  REPORTED, NOT GATED: model-wide max|u| ccx 2.63103 vs abaqus 2.68523 mm -> 2.0186 % - that peak sits on the ring the end loads are applied to, where a nodal force on a free shell edge is a local artifact the two formulations resolve differently (see the module docstring, D20)"
+    },
+    {
+     "key": "combined.deflection-profile",
+     "pass": true,
+     "detail": "section-centroid ux at 20 axial stations (deviation quoted against the tip deflection 0.61412 mm, so a near-zero station cannot inflate it): worst station z = 1850 mm -> ccx 0.37776 vs abaqus 0.37898 mm = 0.1980 % (tolerance 1 %).  Tip station (z = 2000 mm): ccx 0.61412 vs abaqus 0.61384 mm.  Strictest per-station relative error: 0.3814 % at z = 50 mm.  This is the beam quantity the load case is really about, and it moves if a shear or a couple is mis-emitted"
+    }
+   ],
+   "n_pass": 6,
+   "n_fail": 0
+  },
+  "d20": {
+   "tolerance_pct": 1.0,
+   "cases": [
+    {
+     "case": "fuselage_barrel_d2000_l2000_str8_frm3",
+     "n_stringers": 8,
+     "n_frames": 3,
+     "R": 1000.0,
+     "L": 2000.0,
+     "structure_peak_mm": [
+      1.38962,
+      1.39522
+     ],
+     "structure_peak_node": [
+      155525,
+      155576
+     ],
+     "structure_cross_pct": 0.4015,
+     "structure_gate": true,
+     "full_max_u_mm": [
+      2.63103,
+      2.68523
+     ],
+     "full_cross_pct": 2.0186,
+     "profile_worst_pct_of_tip": 0.198,
+     "profile_worst_station_mm": 1850.0,
+     "profile_worst_relative_pct": 0.3814,
+     "profile_tip_mm": [
+      0.61412,
+      0.61384
+     ],
+     "profile_gate": true
+    },
+    {
+     "case": "fuselage_barrel_d2000_l2000_str12_frm4",
+     "n_stringers": 12,
+     "n_frames": 4,
+     "R": 1000.0,
+     "L": 2000.0,
+     "structure_peak_mm": [
+      1.42733,
+      1.43857
+     ],
+     "structure_peak_node": [
+      164743,
+      164743
+     ],
+     "structure_cross_pct": 0.7816,
+     "structure_gate": true,
+     "full_max_u_mm": [
+      2.56923,
+      2.65814
+     ],
+     "full_cross_pct": 3.3448,
+     "profile_worst_pct_of_tip": 0.1529,
+     "profile_worst_station_mm": 1850.0,
+     "profile_worst_relative_pct": 0.4324,
+     "profile_tip_mm": [
+      0.61182,
+      0.6117
+     ],
+     "profile_gate": true
+    }
+   ]
+  },
+  "cap_rule": [
+   {
+    "label": "n_str10_3frm",
+    "rule": 0.4,
+    "cap": 10.0,
+    "passed": true,
+    "tri3": 0,
+    "minJ": 0.5159,
+    "nodes": 159917,
+    "elems": 159357,
+    "algo": 1
+   },
+   {
+    "label": "n_str10_3frm",
+    "rule": 0.5,
+    "cap": 12.5,
+    "passed": true,
+    "tri3": 0,
+    "minJ": 0.5709,
+    "nodes": 102965,
+    "elems": 102485,
+    "algo": 1
+   },
+   {
+    "label": "n_str16_3frm",
+    "rule": 0.4,
+    "cap": 10.0,
+    "passed": true,
+    "tri3": 0,
+    "minJ": 0.5159,
+    "nodes": 164515,
+    "elems": 163955,
+    "algo": 1
+   },
+   {
+    "label": "n_str16_3frm",
+    "rule": 0.5,
+    "cap": 12.5,
+    "passed": true,
+    "tri3": 0,
+    "minJ": 0.5796,
+    "nodes": 104056,
+    "elems": 103560,
+    "algo": 1
+   },
+   {
+    "label": "n_str8_5frm",
+    "rule": 0.4,
+    "cap": 10.0,
+    "passed": true,
+    "tri3": 0,
+    "minJ": 0.5159,
+    "nodes": 165671,
+    "elems": 165159,
+    "algo": 1
+   },
+   {
+    "label": "n_str8_5frm",
+    "rule": 0.5,
+    "cap": 12.5,
+    "passed": true,
+    "tri3": 0,
+    "minJ": 0.5974,
+    "nodes": 104463,
+    "elems": 104015,
+    "algo": 1
+   },
+   {
+    "label": "n_str8_3frm_h20_f25",
+    "rule": 0.4,
+    "cap": 8.0,
+    "passed": true,
+    "tri3": 0,
+    "minJ": 0.4757,
+    "nodes": 246886,
+    "elems": 246174,
+    "algo": 1
+   },
+   {
+    "label": "n_str8_3frm_h20_f25",
+    "rule": 0.5,
+    "cap": 10.0,
+    "passed": true,
+    "tri3": 0,
+    "minJ": 0.62,
+    "nodes": 154902,
+    "elems": 154294,
+    "algo": 1
+   }
+  ]
+ },
+ "panel": {
+  "verify": {
+   "navier_wmax": 0.9626822181019532,
+   "navier_coefficient": 0.004062352660676288,
+   "runs": {
+    "coarse": {
+     "ok": true,
+     "name": "verify_panel_plain_coarse",
+     "n_stringers": 0,
+     "size": 6.0,
+     "n_nodes": 11761,
+     "n_elements": 11560,
+     "element_types": {
+      "quad4": 11560
+     },
+     "min_quality": 0.6043,
+     "gate4": true,
+     "max_disp": 0.956577,
+     "max_w": 0.956577,
+     "max_vm_mid": 1.2134785891862483,
+     "peak_vm_centre": 2.632619783083414,
+     "peak_vm_centre_node": 8496,
+     "peak_vm_centre_coord": [
+      298.623,
+      300.265,
+      0.0
+     ],
+     "peak_vm_max": 3.0865976572687943,
+     "pressure": 0.0001,
+     "deck": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\outputs\\_verify_panel\\verify_panel_plain_coarse\\verify_panel_plain_coarse.inp",
+     "navier_err_pct": -0.6341883112778777
+    },
+    "fine": {
+     "ok": true,
+     "name": "verify_panel_plain_fine",
+     "n_stringers": 0,
+     "size": 3.0,
+     "n_nodes": 46432,
+     "n_elements": 46031,
+     "element_types": {
+      "quad4": 46031
+     },
+     "min_quality": 0.6167,
+     "gate4": true,
+     "max_disp": 0.961753,
+     "max_w": 0.961753,
+     "max_vm_mid": 1.3589707994248,
+     "peak_vm_centre": 2.639838618530945,
+     "peak_vm_centre_node": 13221,
+     "peak_vm_centre_coord": [
+      298.623,
+      299.396,
+      0.0
+     ],
+     "peak_vm_max": 2.968201976638486,
+     "pressure": 0.0001,
+     "deck": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\outputs\\_verify_panel\\verify_panel_plain_fine\\verify_panel_plain_fine.inp",
+     "navier_err_pct": -0.09652386680469711
+    },
+    "plain": {
+     "ok": true,
+     "name": "verify_panel_plain_sym",
+     "n_stringers": 0,
+     "size": 3.0,
+     "n_nodes": 46432,
+     "n_elements": 46031,
+     "element_types": {
+      "quad4": 46031
+     },
+     "min_quality": 0.6167,
+     "gate4": true,
+     "max_disp": 0.961753,
+     "max_w": 0.961753,
+     "max_vm_mid": 1.3589707994248,
+     "peak_vm_centre": 2.639838618530945,
+     "peak_vm_centre_node": 13221,
+     "peak_vm_centre_coord": [
+      298.623,
+      299.396,
+      0.0
+     ],
+     "peak_vm_max": 2.968201976638486,
+     "pressure": 0.0001,
+     "deck": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\outputs\\_verify_panel\\verify_panel_plain_sym\\verify_panel_plain_sym.inp"
+    },
+    "stiffened": {
+     "ok": true,
+     "name": "verify_panel_stiff_sym",
+     "n_stringers": 3,
+     "size": 3.0,
+     "n_nodes": 51401,
+     "n_elements": 50976,
+     "element_types": {
+      "quad4": 50976
+     },
+     "min_quality": 0.5367,
+     "gate4": true,
+     "max_disp": 0.015261651810931748,
+     "max_w": 0.01526165,
+     "max_vm_mid": 1.7689225568450382,
+     "peak_vm_centre": 0.2649058266408017,
+     "peak_vm_centre_node": 542,
+     "peak_vm_centre_coord": [
+      300.0,
+      300.0,
+      0.0
+     ],
+     "peak_vm_max": 1.7743572948808453,
+     "pressure": 0.0001,
+     "deck": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\outputs\\_verify_panel\\verify_panel_stiff_sym\\verify_panel_stiff_sym.inp"
+    }
+   },
+   "invariants": {
+    "plain": {
+     "edge_reaction_sums": {
+      "x0": 10.876755,
+      "x1": 10.769818,
+      "y0": 10.644671,
+      "y1": 10.706994
+     },
+     "held_edges": {
+      "n": 800,
+      "sum_forc_z": 35.678081,
+      "lumped_pressure": 0.321771,
+      "reaction": 35.999852
+     },
+     "global_sum_fz": 1.94e-06,
+     "opposite_edge_dev_pct": {
+      "x0/x1": 0.983173,
+      "y0/y1": 0.582077
+     }
+    },
+    "stiffened": {
+     "edge_reaction_sums": {
+      "x0": 3.382067,
+      "x1": 3.389166,
+      "y0": 14.721271,
+      "y1": 14.717078
+     },
+     "held_edges": {
+      "n": 848,
+      "sum_forc_z": 35.6785,
+      "lumped_pressure": 0.320658,
+      "reaction": 35.999158
+     },
+     "global_sum_fz": -2.299e-06,
+     "opposite_edge_dev_pct": {
+      "x0/x1": 0.209444,
+      "y0/y1": 0.028481
+     }
+    }
+   },
+   "stiffening": {
+    "w_plain": 0.961753,
+    "w_stiff": 0.01526165,
+    "ratio": 63.017629155432076,
+    "subpanel_wmax": 0.011866087739457918,
+    "pitch": 150.0
+   },
+   "checks": [
+    {
+     "key": "plain/coarse.navier",
+     "pass": true,
+     "detail": "6 mm mesh, 11560 elems, {'quad4': 11560} | w_max 0.95658 mm vs Navier 0.96268 mm -> -0.634 %"
+    },
+    {
+     "key": "plain/fine.navier",
+     "pass": true,
+     "detail": "3 mm mesh, 46031 elems, {'quad4': 46031} | w_max 0.96175 mm vs Navier 0.96268 mm -> -0.097 %"
+    },
+    {
+     "key": "plain.convergence",
+     "pass": true,
+     "detail": "|err| coarse 0.634 % -> fine 0.097 % (must not grow with refinement)"
+    },
+    {
+     "key": "plain.loaded-area",
+     "pass": true,
+     "detail": "mesh-integrated loaded area 360000.0000 mm^2 vs plate 360000.0 mm^2 -> 0.00e+00 % (the stringers would add 0 mm^2, 0.0 %)"
+    },
+    {
+     "key": "plain.global-sum",
+     "pass": true,
+     "detail": "sum(FORC_z) over all 46432 nodes +0.000002 N vs applied 36.00000 N -> 0.00001 % (must be ~0; no lumping model involved)"
+    },
+    {
+     "key": "plain.support-reaction",
+     "pass": true,
+     "detail": "sum(FORC_z) over 800 held edge nodes +35.67808 N + pressure lumped on them +0.32177 N = reaction +35.99985 N vs applied 36.00000 N -> 0.0004 %"
+    },
+    {
+     "key": "plain.reaction-symmetry",
+     "pass": true,
+     "detail": "edge sums x0 +10.8768, x1 +10.7698, y0 +10.6447, y1 +10.7070 N -> opposite-edge spread x0/x1 0.983 %, y0/y1 0.582 % (worst 0.983 %)"
+    },
+    {
+     "key": "stiffened.loaded-area",
+     "pass": true,
+     "detail": "mesh-integrated loaded area 360000.0000 mm^2 vs plate 360000.0 mm^2 -> 0.00e+00 % (the stringers would add 36000 mm^2, 10.0 %)"
+    },
+    {
+     "key": "stiffened.global-sum",
+     "pass": true,
+     "detail": "sum(FORC_z) over all 51401 nodes -0.000002 N vs applied 36.00000 N -> 0.00001 % (must be ~0; no lumping model involved)"
+    },
+    {
+     "key": "stiffened.support-reaction",
+     "pass": true,
+     "detail": "sum(FORC_z) over 848 held edge nodes +35.67850 N + pressure lumped on them +0.32066 N = reaction +35.99916 N vs applied 36.00000 N -> 0.0023 %"
+    },
+    {
+     "key": "stiffened.reaction-symmetry",
+     "pass": true,
+     "detail": "edge sums x0 +3.3821, x1 +3.3892, y0 +14.7213, y1 +14.7171 N -> opposite-edge spread x0/x1 0.209 %, y0/y1 0.028 % (worst 0.209 %)"
+    },
+    {
+     "key": "stiffened.stiffening",
+     "pass": true,
+     "detail": "w_plain 0.96175 / w_stiff 0.01526 = 63.0x (>= 5x required; a detached stringer gives ~1x). One bay 150 x 600 mm as a rigidly-supported plate would be 0.01187 mm - reported, not asserted"
+    },
+    {
+     "key": "plain.outer-fibre-stress",
+     "pass": true,
+     "detail": "6 Mx/t^2 at the centre = 2.64554 MPa; FE outer-fibre vM at the node nearest the centre (13221 at (298.62, 299.4, 0.0)) = 2.63984 -> -0.22 % | mid-surface channel reads 1.35897 (shear-dominated, D8's reason for discarding it); model-wide outer-fibre max 2.9682 MPa, +12.2 % above the closed form, on a supported edge"
+    }
+   ],
+   "n_pass": 13,
+   "n_fail": 0
+  },
+  "convergence": {
+   "navier_wmax": 0.9626822181019532,
+   "runs": [
+    {
+     "ok": true,
+     "size": 12.0,
+     "clamp_dofs": [
+      1,
+      3
+     ],
+     "n_nodes": 2986,
+     "n_elements": 2885,
+     "element_types": {
+      "quad4": 2885
+     },
+     "min_quality": 0.6877,
+     "max_disp": 0.897023,
+     "centre_uz": -0.896049,
+     "centre_coord": [
+      304.214,
+      302.97,
+      0.0
+     ]
+    },
+    {
+     "ok": true,
+     "size": 6.0,
+     "clamp_dofs": [
+      1,
+      3
+     ],
+     "n_nodes": 11761,
+     "n_elements": 11560,
+     "element_types": {
+      "quad4": 11560
+     },
+     "min_quality": 0.6043,
+     "max_disp": 0.956577,
+     "centre_uz": -0.956577,
+     "centre_coord": [
+      298.623,
+      300.265,
+      0.0
+     ]
+    },
+    {
+     "ok": true,
+     "size": 3.0,
+     "clamp_dofs": [
+      1,
+      3
+     ],
+     "n_nodes": 46432,
+     "n_elements": 46031,
+     "element_types": {
+      "quad4": 46031
+     },
+     "min_quality": 0.6167,
+     "max_disp": 0.961753,
+     "centre_uz": -0.961753,
+     "centre_coord": [
+      298.623,
+      299.396,
+      0.0
+     ]
+    },
+    {
+     "ok": true,
+     "size": 6.0,
+     "clamp_dofs": [
+      3,
+      3
+     ],
+     "n_nodes": 11761,
+     "n_elements": 11560,
+     "element_types": {
+      "quad4": 11560
+     },
+     "min_quality": 0.6043,
+     "max_disp": 0.9977774519218001,
+     "centre_uz": -0.956577,
+     "centre_coord": [
+      298.623,
+      300.265,
+      0.0
+     ]
+    }
+   ]
+  }
+ }
+}

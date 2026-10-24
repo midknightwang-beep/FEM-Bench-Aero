@@ -1,0 +1,81 @@
+{
+ "shipped_cases": 44,
+ "split_drift": 0,
+ "drift_detail": [],
+ "batch": [
+  {
+   "tag": "size_skin1p5",
+   "span": 2000.0,
+   "skin": 1.5,
+   "role": "sweep",
+   "split": "val",
+   "reason": "尺寸单维外推（壁厚 1.5 出 train 区间 [2, 4]）",
+   "cls": null
+  },
+  {
+   "tag": "size_skin2",
+   "span": 2000.0,
+   "skin": 2.0,
+   "role": "sweep",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "cls": null
+  },
+  {
+   "tag": "size_skin4",
+   "span": 2000.0,
+   "skin": 4.0,
+   "role": "sweep",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "cls": null
+  },
+  {
+   "tag": "size_span1600",
+   "span": 1600.0,
+   "skin": 3.0,
+   "role": "sweep",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "cls": null
+  },
+  {
+   "tag": "size_span2400",
+   "span": 2400.0,
+   "skin": 3.0,
+   "role": "sweep",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "cls": null
+  },
+  {
+   "tag": "size_span2400_skin2",
+   "span": 2400.0,
+   "skin": 2.0,
+   "role": "sweep",
+   "split": "test",
+   "reason": "尺寸双轴组合外推（展长 2400 ≠ 2000 且 壁厚 2 ≠ 3；train 各站只动单轴，交互项未见过）",
+   "cls": null
+  },
+  {
+   "tag": "size_span3000",
+   "span": 3000.0,
+   "skin": 3.0,
+   "role": "sweep",
+   "split": "val",
+   "reason": "尺寸单维外推（展长 3000 出 train 区间 [1600, 2400]）",
+   "cls": null
+  },
+  {
+   "tag": "size_span3000_skin1p5",
+   "span": 3000.0,
+   "skin": 1.5,
+   "role": "sweep",
+   "split": "test",
+   "reason": "尺寸双维外推（展长 3000 出 train 区间 [1600, 2400] 且 壁厚 1.5 出 train 区间 [2, 4]）",
+   "cls": null
+  }
+ ],
+ "design_mismatch": 0,
+ "pass": true
+}

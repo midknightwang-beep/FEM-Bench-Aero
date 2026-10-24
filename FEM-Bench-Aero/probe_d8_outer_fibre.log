@@ -1,0 +1,20 @@
+==============================================================================
+  D8 PROBE - the outer fibre against the Navier closed form
+==============================================================================
+  plate 120 x 120 x 2 mm, q = 0.0001 MPa, E = 73100 MPa, nu = 0.33
+  closed form: w_max 0.00154029 mm | Mx 0.070548 N.mm/mm | sigma = 6Mx/t^2 = 0.10582 MPa
+------------------------------------------------------------------------------
+  [6 mm] 1000 expanded nodes -> 500 mid-surface (orphans 0)
+        witness 1 (closed form)     : 0.10582 MPa
+        witness 2 (FE displacement) : 0.10457 MPa from 13 nodes, w,xx +9.5820e-07 -> -1.18 %
+        raw FRD node 1574 (57.9, 62.3, 1.0): vM 0.10474 -> -1.03 %
+        STRESS_PEAK at mid node 358: 0.10474 -> -1.03 %  (the path the pipeline reads)
+------------------------------------------------------------------------------
+  [3 mm] 3822 expanded nodes -> 1911 mid-surface (orphans 0)
+        witness 1 (closed form)     : 0.10582 MPa
+        witness 2 (FE displacement) : 0.10521 MPa from 59 nodes, w,xx +9.6420e-07 -> -0.58 %
+        raw FRD node 4677 (60.88, 59.75, 1.0): vM 0.10566 -> -0.15 %
+        STRESS_PEAK at mid node 922: 0.10566 -> -0.15 %  (the path the pipeline reads)
+------------------------------------------------------------------------------
+  VERDICT: PASS - the outer fibre is the bending stress
+==============================================================================

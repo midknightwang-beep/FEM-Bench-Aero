@@ -1,0 +1,42 @@
+{
+  "n_pass": 6,
+  "n_fail": 0,
+  "checks": [
+    {
+      "form": "T7",
+      "check": "T7.clt-anchor",
+      "pass": true,
+      "detail": "[0/90]s EX=EY=75364.49 (closed 75364.49), nuxy=0.040000, GXY=5000"
+    },
+    {
+      "form": "T7",
+      "check": "T7.isotropic-degeneration",
+      "pass": true,
+      "detail": "single isotropic ply -> EX=73100.0 (want 73100), nuxy=0.3300 (want 0.33), GXY=27481.2 (want 27481.2)"
+    },
+    {
+      "form": "T7",
+      "check": "T7.contract-refusals",
+      "pass": true,
+      "detail": "all refused"
+    },
+    {
+      "form": "T7",
+      "check": "T7.deck-card",
+      "pass": true,
+      "detail": "ortho deck carries 9-constant card (EX=75364.5 present); isotropic deck unchanged (no card)"
+    },
+    {
+      "form": "T7",
+      "check": "T7.layup-key-plumbing",
+      "pass": true,
+      "detail": "factory description: 'ension, laminate [0/90]s' ; geometry params ['hole_center', 'hole_d', 'hole_x', 'hole_y', 'lambda', 'length', 'net_width', 'thickness', 'width'] carry no layup"
+    },
+    {
+      "form": "T7",
+      "check": "T7.role-and-split",
+      "pass": true,
+      "detail": "alu anchor(baseline) baseline/train; laminate anchor(train) sweep/train; laminate lambda val sweep/val; laminate size val sweep/val; laminate double(test) sweep/test; laminate offcentre(feature/test) feature/test"
+    }
+  ]
+}

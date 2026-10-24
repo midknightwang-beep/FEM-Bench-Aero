@@ -1,0 +1,251 @@
+{
+  "generated": "2026-10-24",
+  "milestone": "M11 / D34 verification",
+  "targets": {
+    "max_disp": {
+      "tier": "phys (M5 recipe)",
+      "lin": {
+        "test_mape": 7.744,
+        "loo": 4.188,
+        "cond": 1.8,
+        "sweep_coef": {
+          "sw:s": 0.329739
+        }
+      },
+      "quad": {
+        "test_mape": 6.177,
+        "loo": 2.143,
+        "cond": 8.5,
+        "sweep_coef": {
+          "sw:s": 0.063864,
+          "sw:s2": 0.232214
+        }
+      },
+      "delta_pp": -1.567,
+      "paired_boot_diff_95ci": [
+        -4.462,
+        0.229
+      ],
+      "significant": false,
+      "test_ape_lin": {
+        "naca4412_wingbox_n_ribs7_chord800": 0.753,
+        "naca4412_wingbox_size_span2400_skin2": -0.061,
+        "naca4412_wingbox_size_span3000_skin1p5": -1.298,
+        "naca4412_wingbox_str3_T": 5.785,
+        "naca4412_wingbox_sweep20_taper060": 13.877,
+        "naca4412_wingbox_sweep40_taper040": -25.698,
+        "naca4412_wingbox_web1_offcentre": -6.737
+      },
+      "test_ape_quad": {
+        "naca4412_wingbox_n_ribs7_chord800": -0.154,
+        "naca4412_wingbox_size_span2400_skin2": -0.775,
+        "naca4412_wingbox_size_span3000_skin1p5": -2.239,
+        "naca4412_wingbox_str3_T": 5.059,
+        "naca4412_wingbox_sweep20_taper060": 13.31,
+        "naca4412_wingbox_sweep40_taper040": 15.703,
+        "naca4412_wingbox_web1_offcentre": -6.002
+      }
+    },
+    "max_w": {
+      "tier": "phys (M5 recipe)",
+      "lin": {
+        "test_mape": 8.333,
+        "loo": 4.273,
+        "cond": 1.8,
+        "sweep_coef": {
+          "sw:s": 0.206964
+        }
+      },
+      "quad": {
+        "test_mape": 13.494,
+        "loo": 1.766,
+        "cond": 8.5,
+        "sweep_coef": {
+          "sw:s": -0.069024,
+          "sw:s2": 0.213881
+        }
+      },
+      "delta_pp": 5.161,
+      "paired_boot_diff_95ci": [
+        -3.085,
+        18.534
+      ],
+      "significant": false,
+      "test_ape_lin": {
+        "naca4412_wingbox_n_ribs7_chord800": 0.078,
+        "naca4412_wingbox_size_span2400_skin2": -0.798,
+        "naca4412_wingbox_size_span3000_skin1p5": -1.013,
+        "naca4412_wingbox_str3_T": 4.502,
+        "naca4412_wingbox_sweep20_taper060": 26.759,
+        "naca4412_wingbox_sweep40_taper040": 21.915,
+        "naca4412_wingbox_web1_offcentre": 3.264
+      },
+      "test_ape_quad": {
+        "naca4412_wingbox_n_ribs7_chord800": -0.14,
+        "naca4412_wingbox_size_span2400_skin2": -0.569,
+        "naca4412_wingbox_size_span3000_skin1p5": -1.394,
+        "naca4412_wingbox_str3_T": 4.63,
+        "naca4412_wingbox_sweep20_taper060": 19.408,
+        "naca4412_wingbox_sweep40_taper040": 65.076,
+        "naca4412_wingbox_web1_offcentre": 3.239
+      }
+    },
+    "max_von_mises_midsurface": {
+      "tier": "phys (M5 recipe)",
+      "lin": {
+        "test_mape": 9.157,
+        "loo": 4.916,
+        "cond": 1.8,
+        "sweep_coef": {
+          "sw:s": 0.09646
+        }
+      },
+      "quad": {
+        "test_mape": 10.751,
+        "loo": 2.032,
+        "cond": 8.5,
+        "sweep_coef": {
+          "sw:s": -0.314472,
+          "sw:s2": 0.31017
+        }
+      },
+      "delta_pp": 1.594,
+      "paired_boot_diff_95ci": [
+        -6.015,
+        11.515
+      ],
+      "significant": false,
+      "test_ape_lin": {
+        "naca4412_wingbox_n_ribs7_chord800": -1.038,
+        "naca4412_wingbox_size_span2400_skin2": -1.443,
+        "naca4412_wingbox_size_span3000_skin1p5": -1.616,
+        "naca4412_wingbox_str3_T": -7.972,
+        "naca4412_wingbox_sweep20_taper060": 32.748,
+        "naca4412_wingbox_sweep40_taper040": -8.842,
+        "naca4412_wingbox_web1_offcentre": -10.442
+      },
+      "test_ape_quad": {
+        "naca4412_wingbox_n_ribs7_chord800": 0.175,
+        "naca4412_wingbox_size_span2400_skin2": -0.339,
+        "naca4412_wingbox_size_span3000_skin1p5": -0.806,
+        "naca4412_wingbox_str3_T": -7.586,
+        "naca4412_wingbox_sweep20_taper060": 19.481,
+        "naca4412_wingbox_sweep40_taper040": 36.625,
+        "naca4412_wingbox_web1_offcentre": -10.247
+      }
+    },
+    "max_von_mises": {
+      "tier": "phys (M5 recipe)",
+      "lin": {
+        "test_mape": 9.407,
+        "loo": 5.744,
+        "cond": 1.8,
+        "sweep_coef": {
+          "sw:s": 0.099281
+        }
+      },
+      "quad": {
+        "test_mape": 11.546,
+        "loo": 2.602,
+        "cond": 8.5,
+        "sweep_coef": {
+          "sw:s": -0.318596,
+          "sw:s2": 0.317529
+        }
+      },
+      "delta_pp": 2.139,
+      "paired_boot_diff_95ci": [
+        -5.508,
+        11.937
+      ],
+      "significant": false,
+      "test_ape_lin": {
+        "naca4412_wingbox_n_ribs7_chord800": 0.593,
+        "naca4412_wingbox_size_span2400_skin2": -0.571,
+        "naca4412_wingbox_size_span3000_skin1p5": 0.261,
+        "naca4412_wingbox_str3_T": -9.623,
+        "naca4412_wingbox_sweep20_taper060": 32.684,
+        "naca4412_wingbox_sweep40_taper040": -9.822,
+        "naca4412_wingbox_web1_offcentre": -12.297
+      },
+      "test_ape_quad": {
+        "naca4412_wingbox_n_ribs7_chord800": 0.676,
+        "naca4412_wingbox_size_span2400_skin2": -0.442,
+        "naca4412_wingbox_size_span3000_skin1p5": -1.059,
+        "naca4412_wingbox_str3_T": -9.317,
+        "naca4412_wingbox_sweep20_taper060": 19.71,
+        "naca4412_wingbox_sweep40_taper040": 37.71,
+        "naca4412_wingbox_web1_offcentre": -11.912
+      }
+    }
+  },
+  "mechanisms": {
+    "combo": {
+      "n": 2,
+      "lin_pct": 6.969,
+      "quad_pct": 7.042,
+      "delta_pp": 0.073,
+      "cases": [
+        "naca4412_wingbox_size_span2400_skin2",
+        "naca4412_wingbox_sweep20_taper060"
+      ]
+    },
+    "planform_out": {
+      "n": 1,
+      "lin_pct": 25.698,
+      "quad_pct": 15.703,
+      "delta_pp": -9.995,
+      "cases": [
+        "naca4412_wingbox_sweep40_taper040"
+      ]
+    },
+    "ribs_new": {
+      "n": 1,
+      "lin_pct": 0.753,
+      "quad_pct": 0.154,
+      "delta_pp": -0.599,
+      "cases": [
+        "naca4412_wingbox_n_ribs7_chord800"
+      ]
+    },
+    "section_new": {
+      "n": 1,
+      "lin_pct": 5.785,
+      "quad_pct": 5.059,
+      "delta_pp": -0.726,
+      "cases": [
+        "naca4412_wingbox_str3_T"
+      ]
+    },
+    "size_out": {
+      "n": 1,
+      "lin_pct": 1.298,
+      "quad_pct": 2.239,
+      "delta_pp": 0.942,
+      "cases": [
+        "naca4412_wingbox_size_span3000_skin1p5"
+      ]
+    },
+    "webpos_new": {
+      "n": 1,
+      "lin_pct": 6.737,
+      "quad_pct": 6.002,
+      "delta_pp": -0.736,
+      "cases": [
+        "naca4412_wingbox_web1_offcentre"
+      ]
+    }
+  },
+  "stability": {
+    "s2_full": 0.232214,
+    "s2_loo_min": 0.180233,
+    "s2_loo_max": 0.235241,
+    "s2_sign_flips": 0,
+    "s_full": 0.063864,
+    "s_loo_min": 0.057494,
+    "s_loo_max": 0.126976,
+    "note": "a curvature term whose sign flips when one row is removed is fitting that row, not the shape"
+  },
+  "fails": [],
+  "verdict": "PASS"
+}

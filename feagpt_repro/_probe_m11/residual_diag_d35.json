@@ -1,0 +1,108 @@
+{
+  "generated": "2026-10-24",
+  "milestone": "M11 / D34 residual diagnosis",
+  "claim": "the residual at the taper-off sweep corners is a sweep x taper interaction, and that interaction, not the sweep basis, is what remains -- it is structurally unestimable on this train set",
+  "interaction_columns": {
+    "train": {
+      "n": 20,
+      "sweep_gt0": 5,
+      "sweep_gt0_and_taper_off": 2
+    },
+    "val": {
+      "n": 7,
+      "sweep_gt0": 1,
+      "sweep_gt0_and_taper_off": 0
+    },
+    "test": {
+      "n": 6,
+      "sweep_gt0": 1,
+      "sweep_gt0_and_taper_off": 1
+    }
+  },
+  "interaction_identifiable": true,
+  "quad_phys_info": {
+    "form": "quad",
+    "hybrid": true,
+    "alpha": 0.31622776601683794,
+    "loo_mape": 3.617,
+    "cond_number": 9.7,
+    "identifiable": true,
+    "dropped_cols": [
+      "is_T",
+      "n_web"
+    ],
+    "n_free_directions": 9,
+    "sweep_coef": {
+      "sw:s": 0.0755,
+      "sw:s2": 0.197578
+    },
+    "const_features": [
+      "is_T"
+    ]
+  },
+  "residuals": [
+    {
+      "case_id": "naca4412_wingbox_sweep10",
+      "split": "train",
+      "sweep": 10.0,
+      "taper": 1.0,
+      "ape_pct": 0.617,
+      "taper_off": false
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep20",
+      "split": "train",
+      "sweep": 20.0,
+      "taper": 1.0,
+      "ape_pct": -1.065,
+      "taper_off": false
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep20_taper060",
+      "split": "train",
+      "sweep": 20.0,
+      "taper": 0.6,
+      "ape_pct": 4.888,
+      "taper_off": true
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep30",
+      "split": "train",
+      "sweep": 30.0,
+      "taper": 1.0,
+      "ape_pct": -4.925,
+      "taper_off": false
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep30_taper080",
+      "split": "train",
+      "sweep": 30.0,
+      "taper": 0.8,
+      "ape_pct": 1.981,
+      "taper_off": true
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep40",
+      "split": "val",
+      "sweep": 40.0,
+      "taper": 1.0,
+      "ape_pct": -12.795,
+      "taper_off": false
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep40_taper040",
+      "split": "test",
+      "sweep": 40.0,
+      "taper": 0.4,
+      "ape_pct": -5.452,
+      "taper_off": true
+    }
+  ],
+  "held_out_taper_neutral_abs_pct": [
+    12.795
+  ],
+  "held_out_taper_off_abs_pct": [
+    5.452
+  ],
+  "verdict": "CHECK"
+}

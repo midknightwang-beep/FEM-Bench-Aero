@@ -1,0 +1,33 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 0, top: 0, width: 420, height: 720, background: '#0F172A' }}>
+    <Box style={{ padding: '0 56px', paddingTop: 250 }}>
+      <Text style={{ fontSize: 44, color: '#FFFFFF', fontWeight: 'bold', lineHeight: 1.35 }}>汇报<br />提纲</Text>
+      <Box style={{ width: 72, height: 5, background: 'linear-gradient(90deg, #1565C0 0%, #06B6D4 100%)', marginTop: 28 }} />
+    </Box>
+    <svg width={420} height={200} viewBox='0 0 420 200' style={{ position: 'absolute', bottom: 0, left: 0 }}>
+      <circle cx='60' cy='170' r='120' fill='rgba(21,101,192,0.18)' />
+      <circle cx='120' cy='200' r='70' fill='rgba(6,182,212,0.14)' />
+    </svg>
+  </Box>
+  <Box style={{ position: 'absolute', left: 480, top: 120, right: 80, flexDirection: 'column', gap: 34 }}>
+    {[
+      { n: '01', t: '项目概况与技术框架', d: '六层架构与三条设计原则——契约驱动、质量闸闭环的技术底座' },
+      { n: '02', t: '执行历程', d: 'M1–M6 六个里程碑的执行逻辑与关键实测动作' },
+      { n: '03', t: '数据集与质量实测', d: 'FEM-Bench-Aero 规模覆盖、九道质量闸、双码交叉验证精度' },
+      { n: '04', t: '支撑机制与展望', d: '数据集支撑大模型生成的四条机制、项目价值与后续规划' },
+    ].map((item, idx) => (
+      <Box key={idx} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 24 }}>
+        <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#1565C0', width: 72, lineHeight: 1.2 }}>{item.n}</Text>
+        <Box style={{ flex: 1 }}>
+          <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 6 }}>{item.t}</Text>
+          <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.55 }}>{item.d}</Text>
+          {idx < 3 && <Box style={{ height: 1, background: '#E2E8F0', marginTop: 22 }} />}
+        </Box>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 480, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>基于大模型的飞机有限元模型智能生成技术</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>02 / 15</Text>
+  </Box>
+</Slide>

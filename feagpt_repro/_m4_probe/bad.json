@@ -1,0 +1,520 @@
+{
+  "schema_version": 1,
+  "generator": "make_manifest.py (feagpt_repro)",
+  "release_tree": "modeling",
+  "regenerate": "cd feagpt_repro && python make_manifest.py --root ../FEM-Bench-Aero --json ../FEM-Bench-Aero/manifest.json --md ../FEM-Bench-Aero/MANIFEST.md",
+  "split_rule": {
+    "unit": "geometry equivalence class (feagpt.manifest.geometry_class)",
+    "assignment": "explicit table -- feagpt/manifest.py :: SPLIT_TABLE",
+    "target_ratios": {
+      "train": 0.6,
+      "val": 0.2,
+      "test": 0.2
+    },
+    "constraints": [
+      "same equivalence class => same split (no leakage)",
+      "every family must have at least one test case",
+      "every case must have an explicit split (unassigned fails the check)"
+    ]
+  },
+  "summary": {
+    "n_cases": 11,
+    "n_geometry_classes": 10,
+    "splits": {
+      "train": 6,
+      "val": 1,
+      "test": 4
+    },
+    "by_family": {
+      "wingbox": {
+        "train": 6,
+        "val": 1,
+        "test": 2
+      },
+      "stiffened_panel": {
+        "train": 1,
+        "val": 0,
+        "test": 1
+      }
+    },
+    "roles": {
+      "ablation": 1,
+      "baseline": 1,
+      "degenerate": 1,
+      "feature": 3,
+      "sweep": 5
+    },
+    "n_duplicate_models": 0,
+    "n_leaky_classes": 0,
+    "xval_cases_available": 11
+  },
+  "classes": {
+    "2080b3c75e86": [
+      "naca4412_wingbox_str3_T"
+    ],
+    "7ba2e12216c0": [
+      "stiffened_panel_600x600"
+    ],
+    "881352f30b03": [
+      "naca4412_wingbox_n_ribs3_chord1000"
+    ],
+    "a2d3919e2967": [
+      "naca4412_wingbox_n_ribs7_chord800"
+    ],
+    "a796c5b1d217": [
+      "naca4412_wingbox",
+      "naca4412_wingbox_recombination_algorithm3"
+    ],
+    "bc4990b00bae": [
+      "stiffened_panel_600x600_str3"
+    ],
+    "c5d7acd6cdf8": [
+      "naca4412_wingbox_n_ribs5_chord800"
+    ],
+    "d5c8cd012201": [
+      "naca4412_wingbox_n_ribs3_chord800"
+    ],
+    "f94525421be5": [
+      "naca4412_wingbox_str3"
+    ],
+    "fdad20c06f0e": [
+      "naca4412_wingbox_n_ribs7_chord1000"
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "naca4412_wingbox",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "baseline",
+      "geometry_class": "a796c5b1d217",
+      "split": "train",
+      "split_reason": "族的基线锚点 —— 必须留在 train（M2 回归基准，所有定性的参照）",
+      "solver": "ccx",
+      "spec_sha256": "608143a9e394abe55de18ba55c1dd839771afb6aa1c5365abeb5057d95648116",
+      "mesh_sha256": "29faefe3f88855e9cd50e3872787c6cf291750f610a41f990d200f86a50680fe",
+      "files": {
+        "spec.json": "c3344e733b13f9c2e9e0d7d21281f8801e2697d744681beec83e5d23f9e85ddc",
+        "model.inp": "b675d38be2d85f19a830ae4a7e6ee7eaad3f25149408fa67e91becaa48c4798a",
+        "model.step": "66f515b41bf0366b032bc8798833439d199bf1352f0808d7ce5a2738f87594e0",
+        "model.msh": "29faefe3f88855e9cd50e3872787c6cf291750f610a41f990d200f86a50680fe",
+        "model.results.json": "4ef1fc333312b5a007f305d669e6d89deae3132f4dd7698c88e07b34440d3640",
+        "truth.json": "6b508e4670aaaf603fb139da7aa1cce909e8f57421caf1024791b628f13bee67"
+      },
+      "readings": {
+        "n_nodes": 5074,
+        "max_disp": 2.3654390542892276,
+        "max_von_mises": 10.60478594684109,
+        "max_von_mises_midsurface": 10.28238898829173,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6249,
+        "n_elements": 5144,
+        "element_types": {
+          "quad4": 5144
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 8,
+        "no_tri3": true
+      },
+      "class_size": 2
+    },
+    {
+      "case_id": "naca4412_wingbox_n_ribs3_chord1000",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "881352f30b03",
+      "split": "train",
+      "split_reason": "参数扫描（少肋）",
+      "solver": "ccx",
+      "spec_sha256": "16c16ee2dc1710d50b5c523ab6cc512a997242818cad1e6d79742b9c61fd677f",
+      "mesh_sha256": "12d7c68bbe1220ba739dd764cf40c7b1987187c4cb3ffa1199ddad30710362c3",
+      "files": {
+        "spec.json": "706eadf450f50570bab7fd3a9de15f45994da81dee5c28156d651ca5aabcefe0",
+        "model.inp": "8d14b93185975b2e9f3ad752cc8865f61c3c5c3ed9ab815b67a79e38ec87e1ee",
+        "model.step": "49c5d1b89190027a6e4e5461614194eb592c6f84efb2550a2ae00298c9570779",
+        "model.msh": "12d7c68bbe1220ba739dd764cf40c7b1987187c4cb3ffa1199ddad30710362c3",
+        "model.results.json": "47f217d7dca604900806835c92593640956de5d28a93dda9791c1cb258efd084",
+        "truth.json": "9516fd927e0f4e79441c4b8bf105f8d978ce3b7d8e5a1bf9e36a1ed2bc1e07cb"
+      },
+      "readings": {
+        "n_nodes": 4668,
+        "max_disp": 2.372344338375239,
+        "max_von_mises": 10.4392708580544,
+        "max_von_mises_midsurface": 10.161539080738757,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5965,
+        "n_elements": 4690,
+        "element_types": {
+          "quad4": 4690
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 8,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_n_ribs3_chord800",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "d5c8cd012201",
+      "split": "train",
+      "split_reason": "参数扫描（少肋 + 短弦）",
+      "solver": "ccx",
+      "spec_sha256": "18e8facf5e57427a58d90f06b30a39c6ed7607e28b5c9da59ab744ab58d8914d",
+      "mesh_sha256": "417e11323e27e28a57229a4b4a089974efb2e1b4b40e423e896828b7efeb77f9",
+      "files": {
+        "spec.json": "ce66dbcff20d5748b83e467b2f32fb3499dc7c182916da4d5c9747c8c51e4a4c",
+        "model.inp": "b7895c28c275fb0fe608ee1d46d338f490961dea029d6415111a0a409787ca58",
+        "model.step": "a97d4ca9185ca6fa5325321835d15c8a33406da3e83cce932e57fc3e68eb141c",
+        "model.msh": "417e11323e27e28a57229a4b4a089974efb2e1b4b40e423e896828b7efeb77f9",
+        "model.results.json": "abbe9a679853e248af84703147699c566b21738ef8167c9b3b66df04af62223a",
+        "truth.json": "26a335b0ef5ebacbd389dd655938f8ce952a4cabf7859f04894df5be7891d1f4"
+      },
+      "readings": {
+        "n_nodes": 3679,
+        "max_disp": 4.54015407249073,
+        "max_von_mises": 15.95839120937423,
+        "max_von_mises_midsurface": 15.39443045897294,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.595,
+        "n_elements": 3696,
+        "element_types": {
+          "quad4": 3696
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 8,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_n_ribs5_chord800",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "c5d7acd6cdf8",
+      "split": "train",
+      "split_reason": "参数扫描（短弦）",
+      "solver": "ccx",
+      "spec_sha256": "56b90f0d45b3937985fa890530f76ef256dfafe717f2e318b9c04c4d274cbf19",
+      "mesh_sha256": "5b6349df3f8242fcb3bd0c20c9f2597ba425fa4e9156d7982dff0d9e17cd3c0e",
+      "files": {
+        "spec.json": "9639c766dfdcd3cbdf317f2a4cdafff81a2fd8e689821be333f09b58bd2ae9dd",
+        "model.inp": "379aedf5687fae45391fe1482a95f234b7f5570ca82212b44b22479155e7108f",
+        "model.step": "ab087fa08201e8366ff8af8b28d20eb9798250197312f98222b08a3862e2a633",
+        "model.msh": "5b6349df3f8242fcb3bd0c20c9f2597ba425fa4e9156d7982dff0d9e17cd3c0e",
+        "model.results.json": "2d68fe5d5ab4423fc84098957e67ac9f85b0d47baffd9b927ebed75fa33c376c",
+        "truth.json": "7e36618d3b38292ef35968f9c42776f53b71effd8f4450a7710af7bbb4038d24"
+      },
+      "readings": {
+        "n_nodes": 4057,
+        "max_disp": 4.526727690746489,
+        "max_von_mises": 15.761825692876124,
+        "max_von_mises_midsurface": 15.272589981817703,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.595,
+        "n_elements": 4112,
+        "element_types": {
+          "quad4": 4112
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 8,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_n_ribs7_chord1000",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "fdad20c06f0e",
+      "split": "val",
+      "split_reason": "参数外推（肋最多）—— 留作模型选择，不参与训练",
+      "solver": "ccx",
+      "spec_sha256": "5c277b620b97f44d86397b78d10ae77c771e498b343fc037b0f627d7f8489dd3",
+      "mesh_sha256": "b903560384575c7163f49eb1cddeb7ad89707c8a59a56ce745cb6cfa5d2d7cb0",
+      "files": {
+        "spec.json": "bf9747d1b2114b07e6676c01a805c7ea25ed7d0b57f23bf29bfcad69d5aa4bd6",
+        "model.inp": "4ea58461e6c2184126d67373229b0919f33b54d4c00d38395ef2a75accf0c33d",
+        "model.step": "a1251f38e5628417c5c2f8ad84e4cdc1b9336eb81175abea12d5a888521ed369",
+        "model.msh": "b903560384575c7163f49eb1cddeb7ad89707c8a59a56ce745cb6cfa5d2d7cb0",
+        "model.results.json": "0f0731f3d4b6e4f9d6704e6899205b9082082d66d9a58b423c7817437cdb5552",
+        "truth.json": "4fd3d5a0f0d8e95cbe89a7fb9b5ed41b39c597b05f623d0e0e4418171350a84e"
+      },
+      "readings": {
+        "n_nodes": 5593,
+        "max_disp": 2.3580540580706995,
+        "max_von_mises": 10.743173201647076,
+        "max_von_mises_midsurface": 10.427805786050106,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6083,
+        "n_elements": 5711,
+        "element_types": {
+          "quad4": 5711
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 8,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_n_ribs7_chord800",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "a2d3919e2967",
+      "split": "test",
+      "split_reason": "**双维外推**（肋最多 + 弦最短）：训练集里没有任何一个方向走到这里",
+      "solver": "ccx",
+      "spec_sha256": "b6223272adf5b92d781fa470077abfa1dd8d4fa8b9a6edcbda51afc90ebf4c1b",
+      "mesh_sha256": "7f8394d42b586079083327df49d1c058b31b30115338d11147be14a506246c07",
+      "files": {
+        "spec.json": "b605476d4a4f384281f13376837f4ca7173a7366f47f5187e0534d5ba6d2eab3",
+        "model.inp": "c154392d8353f0818d493a000bf57438fe61650dc095e5c01caf1981acbeb50f",
+        "model.step": "efacef991ae078fd9b6a4a7b57a832a5aff1d5396895c49b44681df6e5558b45",
+        "model.msh": "7f8394d42b586079083327df49d1c058b31b30115338d11147be14a506246c07",
+        "model.results.json": "94a05ea49a7106ac9cef07965e3f97c52e4b190e00cefd4fc121822fc2104e16",
+        "truth.json": "88af62cad5d2a781a7c1fff260322592fb8685847c9963efece36009adec3e75"
+      },
+      "readings": {
+        "n_nodes": 4352,
+        "max_disp": 4.5123206310669195,
+        "max_von_mises": 15.85067216837446,
+        "max_von_mises_midsurface": 15.391905349427423,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5099,
+        "n_elements": 4445,
+        "element_types": {
+          "quad4": 4445
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 8,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_recombination_algorithm3",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "ablation",
+      "geometry_class": "a796c5b1d217",
+      "split": "test",
+      "split_reason": "(tampered)",
+      "solver": "ccx",
+      "spec_sha256": "5da50cb26e36f1fe0ebb8f5585bb9bc97439fa09cf5d09243609ab17d5d8da0f",
+      "mesh_sha256": "11a3667bc61430c6855af139fc30fd63cdeefb05105e3e751eb31cf8b45411f5",
+      "files": {
+        "spec.json": "095d2c63ba1749675721ba58da00ae478593c9420ed2993277f35ffdab033da9",
+        "model.inp": "b11fa6e853578889c2d8ac5a5e85def864f3a79898876debffcfa78c890d76c1",
+        "model.step": "10f8eae71f4bdf11b676dd1693cb043d74f1a7f33ebb20f0fde60f0dbb01ff0b",
+        "model.msh": "11a3667bc61430c6855af139fc30fd63cdeefb05105e3e751eb31cf8b45411f5",
+        "model.results.json": "9d4df83b57966c2cc411d3041c87e0c07f89e10c9f3176e1313994b2e142f10e",
+        "truth.json": "703b75c06e4c0bb1f6a8d8242f16d527125a109fd7d31c3f2a518a5484d46195"
+      },
+      "readings": {
+        "n_nodes": 5281,
+        "max_disp": 2.3648673060530063,
+        "max_von_mises": 10.609667615451286,
+        "max_von_mises_midsurface": 10.315606597923914,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5725,
+        "n_elements": 5351,
+        "element_types": {
+          "quad4": 5351
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 8,
+        "no_tri3": true
+      },
+      "class_size": 2
+    },
+    {
+      "case_id": "naca4412_wingbox_str3",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "feature",
+      "geometry_class": "f94525421be5",
+      "split": "train",
+      "split_reason": "含长桁 —— train 里的**形式锚点**：让 test 的「无长桁 ⇒ 有长桁」成为族内形式泛化，而不是第一次见到长桁",
+      "solver": "ccx",
+      "spec_sha256": "25848ba97279e8229cc4cf49038748c9a942a457dadc8dec860787d07982f142",
+      "mesh_sha256": "9be7969c607bbf75b1cc6a8b373590206dcab327cc9ea2f04ed735a391b2faa5",
+      "files": {
+        "spec.json": "22e086b25ff7169a77de4cc33e9698f4300dd4a83479f4f9f0910155462b8cfe",
+        "model.inp": "4ac8bc67fa85e61a3913faf8dd348c39d625a6208f59861d3080ef63feb6ef02",
+        "model.step": "0860abcdee56ee0168223ccd82faf4a662a78a97ffcd5171eafce32947428f2f",
+        "model.msh": "9be7969c607bbf75b1cc6a8b373590206dcab327cc9ea2f04ed735a391b2faa5",
+        "model.results.json": "0b2a3f2c205908b59942a57368ff187a81056d16bb3c3f175f05acaf414dac80",
+        "truth.json": "c4418027d5fbc702bb17092e138c3240716af9fdd7349eedad319b8c44870145"
+      },
+      "readings": {
+        "n_nodes": 7387,
+        "max_disp": 2.2193965388854355,
+        "max_von_mises": 10.140596401997234,
+        "max_von_mises_midsurface": 9.825463603700657,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5228,
+        "n_elements": 7517,
+        "element_types": {
+          "quad4": 7517
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 8,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_str3_T",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "feature",
+      "geometry_class": "2080b3c75e86",
+      "split": "test",
+      "split_reason": "**新截面形式**（T 形翼缘）—— 整套 bench 最想考的那一步泛化",
+      "solver": "ccx",
+      "spec_sha256": "a0f173534abed0aa82a255efd45f86400a6013ac2d729248cfc95c16d3849e07",
+      "mesh_sha256": "3fae671fa63a037ffd673bb2aa8744db0cd067a094dcd5f05d05d237df8c7e76",
+      "files": {
+        "spec.json": "2bee7c04d4a9cdfe6d1733af9c7c96c9eac71113912233fa9a95340d143b689f",
+        "model.inp": "c581c3321064f4121476911370fbf784ed68558540906d08fefa1a56fe8fecbe",
+        "model.step": "6b86a1494f551dc50ed242a8b61b242b45628808f39a1a9387fb315ee9827111",
+        "model.msh": "3fae671fa63a037ffd673bb2aa8744db0cd067a094dcd5f05d05d237df8c7e76",
+        "model.results.json": "993fb318da3295fbc35c837529c600aaac424802796aa9350fc037a00f728a7e",
+        "truth.json": "9591692c4a4af21d92e9f2786c6aa46786ec7c9bf6aff0a971af09d5d9c8d557"
+      },
+      "readings": {
+        "n_nodes": 29447,
+        "max_disp": 2.115066913441561,
+        "max_von_mises": 11.184666107572331,
+        "max_von_mises_midsurface": 10.67851247209391,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5332,
+        "n_elements": 29733,
+        "element_types": {
+          "quad4": 29733
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 8,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "stiffened_panel_600x600",
+      "tree": "modeling",
+      "family": "stiffened_panel",
+      "role": "degenerate",
+      "geometry_class": "7ba2e12216c0",
+      "split": "train",
+      "split_reason": "第二族的退化成员（无长桁）—— 留在 train，让 test 的平板不是「没见过的族」",
+      "solver": "ccx",
+      "spec_sha256": "17ba10b0afc40fda878b487036b2190498326827d6937a3a8b4e65186e74f5bf",
+      "mesh_sha256": "471e3857a534d4af30bc8a86073ab745b00a5b59a82f409c4c1ba9977a59f9e5",
+      "files": {
+        "spec.json": "f972513326505b884b410daa9c22260969c91d928dd5ddb4f92e7d87582f1462",
+        "model.inp": "8fcdd2c660f5adfe742b8b77af4d3a97262671163a54464229e4f74f4c4390f0",
+        "model.step": "5a53366efaae4f53cd9d16c6e9d18cb1922a5572f5327dc45a998c6ebe055c92",
+        "model.msh": "471e3857a534d4af30bc8a86073ab745b00a5b59a82f409c4c1ba9977a59f9e5",
+        "model.results.json": "51161828f1e65853284be2aeff01ef98bc6c6ca665f65add0d9bff8d13eeb29d",
+        "truth.json": "36c4fd0f032bd4cd70d70b9147438096a0ffb46f437d7a67b51a5b3e2445429d"
+      },
+      "readings": {
+        "n_nodes": 46432,
+        "max_disp": 0.961753,
+        "max_von_mises": 2.968201976638486,
+        "max_von_mises_midsurface": 1.3589707994248,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6167,
+        "n_elements": 46031,
+        "element_types": {
+          "quad4": 46031
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 4,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "stiffened_panel_600x600_str3",
+      "tree": "modeling",
+      "family": "stiffened_panel",
+      "role": "feature",
+      "geometry_class": "bc4990b00bae",
+      "split": "test",
+      "split_reason": "第二族的**族内新形式**（光板 ⇒ 含长桁），与 train 里的光板成对",
+      "solver": "ccx",
+      "spec_sha256": "4a8157f816d17ccaa1f1fc1bc1cc9c809ca7b3f22a8d9d318a10032f7795b7c1",
+      "mesh_sha256": "4a7d73c77b1bc2add361bcef1afd703c2704cf24d8333f5b3a41257f09b14a85",
+      "files": {
+        "spec.json": "c0cc19113ef6578aa7873b4159c3544e79fa5402960f3faf8a6ed47836e1ade7",
+        "model.inp": "3f4e4172431754b818b2eda830787cf92c5b455eee5b7d43424ed6196f209b9a",
+        "model.step": "00ebf1acd26da7bb3c38f6f0c532bb4df9391b25cd76ff4df9b1b4c1a279c2d4",
+        "model.msh": "4a7d73c77b1bc2add361bcef1afd703c2704cf24d8333f5b3a41257f09b14a85",
+        "model.results.json": "d91a83f38b6d168892542a434b24b37c9de5a5ba63367a5b3bd57826f97d2437",
+        "truth.json": "27f92572bd4d8369b094f9f98117f2977916bc769fac3fa417b62bd031bb3f36"
+      },
+      "readings": {
+        "n_nodes": 51401,
+        "max_disp": 0.015261651810931748,
+        "max_von_mises": 1.7743572948808453,
+        "max_von_mises_midsurface": 1.7689225568450382,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5367,
+        "n_elements": 50976,
+        "element_types": {
+          "quad4": 50976
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 4,
+        "no_tri3": true
+      },
+      "class_size": 1
+    }
+  ],
+  "limitations": [
+    "val 只有 1 条（n_ribs7_chord1000）：11 条样本下无法同时给两个族铺满 train/val/test。目标比例 6:2:2 在放量前无法达成，这是样本量的限制，不是划分规则的缺陷。",
+    "stiffened_panel 族在 val 为空：该族只有 2 条（光板 + 3 长桁），光板留 train（让 test 的平板不是「没见过的族」），含长桁进 test，中间没有第三条可以当 val。",
+    "当前划分是**显式表**而不是算法：样本量太小时人工挑比算法可信，但 M5 放量后必须换成规则（见 feagpt/manifest.py 的 SPLIT_TABLE 说明）。"
+  ]
+}

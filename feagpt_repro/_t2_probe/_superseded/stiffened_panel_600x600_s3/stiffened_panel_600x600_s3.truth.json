@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "case_id": "stiffened_panel_600x600_s3",
+  "structure_family": "stiffened_panel",
+  "spec_sha256": "d44ed73704ead0fd2aab310dd88c5b0963e355ebe56b6cddef2cb1fd4a2f6ad2",
+  "topology": {
+    "design": {
+      "family": "stiffened_panel",
+      "length": 600.0,
+      "width": 600.0,
+      "thickness": 2.0,
+      "n_stringers": 3,
+      "n_faces_per_stringer_section": 1,
+      "stringer_section": "blade",
+      "stringer_flange_width": 30.0,
+      "stringer_pitch": 150.0,
+      "stringer_stations": [
+        150.0,
+        300.0,
+        450.0
+      ]
+    },
+    "geometry": {
+      "n_surfaces": 7,
+      "n_skin_faces": 4,
+      "n_stringer_faces": 3,
+      "stringer_stations": [
+        150.0,
+        300.0,
+        450.0
+      ]
+    },
+    "expected_geometry": {
+      "n_skin_faces": 4,
+      "n_stringer_faces": 3,
+      "stringer_stations": [
+        150.0,
+        300.0,
+        450.0
+      ],
+      "n_surfaces": 7
+    }
+  },
+  "scalars": {
+    "n_nodes": 13049,
+    "results": [
+      "DISP",
+      "ERROR",
+      "FORC",
+      "STRESS",
+      "TOSTRAIN"
+    ],
+    "max_disp": 0.015227701828150501,
+    "max_disp_node": 6553,
+    "max_disp_coord": [
+      221.018,
+      301.551,
+      0.0
+    ],
+    "max_w": 0.0152277,
+    "max_von_mises": 1.5742105104313937,
+    "max_vm_location": 12,
+    "max_vm_element": 12
+  },
+  "solver": "ccx",
+  "semantic_gate": {
+    "pass": true,
+    "checks": [
+      {
+        "key": "n_skin_faces",
+        "expected": 4,
+        "actual": 4,
+        "pass": true
+      },
+      {
+        "key": "n_stringer_faces",
+        "expected": 3,
+        "actual": 3,
+        "pass": true
+      },
+      {
+        "key": "stringer_stations",
+        "expected": [
+          150.0,
+          300.0,
+          450.0
+        ],
+        "actual": [
+          150.0,
+          300.0,
+          450.0
+        ],
+        "pass": true
+      },
+      {
+        "key": "n_surfaces",
+        "expected": 7,
+        "actual": 7,
+        "pass": true
+      }
+    ]
+  }
+}

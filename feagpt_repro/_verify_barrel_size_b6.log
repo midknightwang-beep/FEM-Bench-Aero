@@ -1,0 +1,115 @@
+
+*******************************************************************
+******        Statistics on Transfer (Write)                 ******
+
+*******************************************************************
+******        Transfer Mode = 0  I.E.  As Is       ******
+******        Transferring Shape, ShapeType = 0                      ******
+** WorkSession : Sending all data
+ Step File Name : F:\AI FEA Modeling DataSets\feagpt_repro\outputs\_verify_barrel\verify_barrel_pressure_anchor_d2000_l2000_t3\verify_barrel_pressure_anchor_d2000_l2000_t3.step(1268 ents)  Write  Done
+
+*******************************************************************
+******        Statistics on Transfer (Write)                 ******
+
+*******************************************************************
+******        Transfer Mode = 0  I.E.  As Is       ******
+******        Transferring Shape, ShapeType = 0                      ******
+** WorkSession : Sending all data
+ Step File Name : F:\AI FEA Modeling DataSets\feagpt_repro\outputs\_verify_barrel\verify_barrel_pressure_d1800_l2000_t3\verify_barrel_pressure_d1800_l2000_t3.step(1268 ents)  Write  Done
+
+*******************************************************************
+******        Statistics on Transfer (Write)                 ******
+
+*******************************************************************
+******        Transfer Mode = 0  I.E.  As Is       ******
+******        Transferring Shape, ShapeType = 0                      ******
+** WorkSession : Sending all data
+ Step File Name : F:\AI FEA Modeling DataSets\feagpt_repro\outputs\_verify_barrel\verify_barrel_pressure_d2000_l1600_t3\verify_barrel_pressure_d2000_l1600_t3.step(1268 ents)  Write  Done
+
+*******************************************************************
+******        Statistics on Transfer (Write)                 ******
+
+*******************************************************************
+******        Transfer Mode = 0  I.E.  As Is       ******
+******        Transferring Shape, ShapeType = 0                      ******
+** WorkSession : Sending all data
+ Step File Name : F:\AI FEA Modeling DataSets\feagpt_repro\outputs\_verify_barrel\verify_barrel_pressure_d2000_l2000_t2\verify_barrel_pressure_d2000_l2000_t2.step(1268 ents)  Write  Done
+
+*******************************************************************
+******        Statistics on Transfer (Write)                 ******
+
+*******************************************************************
+******        Transfer Mode = 0  I.E.  As Is       ******
+******        Transferring Shape, ShapeType = 0                      ******
+** WorkSession : Sending all data
+ Step File Name : F:\AI FEA Modeling DataSets\feagpt_repro\outputs\_verify_barrel\verify_barrel_pressure_d1600_l1600_t3\verify_barrel_pressure_d1600_l1600_t3.step(1268 ents)  Write  Done
+
+*******************************************************************
+******        Statistics on Transfer (Write)                 ******
+
+*******************************************************************
+******        Transfer Mode = 0  I.E.  As Is       ******
+******        Transferring Shape, ShapeType = 0                      ******
+** WorkSession : Sending all data
+ Step File Name : F:\AI FEA Modeling DataSets\feagpt_repro\outputs\_verify_barrel\verify_barrel_moment_anchor_d2000_l2000_t3\verify_barrel_moment_anchor_d2000_l2000_t3.step(1268 ents)  Write  Done
+
+*******************************************************************
+******        Statistics on Transfer (Write)                 ******
+
+*******************************************************************
+******        Transfer Mode = 0  I.E.  As Is       ******
+******        Transferring Shape, ShapeType = 0                      ******
+** WorkSession : Sending all data
+ Step File Name : F:\AI FEA Modeling DataSets\feagpt_repro\outputs\_verify_barrel\verify_barrel_moment_d1600_l1600_t3\verify_barrel_moment_d1600_l1600_t3.step(1268 ents)  Write  Done
+==============================================================================
+  BARREL SIZE / THICKNESS LINE - closed forms evaluated at each size
+==============================================================================
+
+--- anchor_d2000_l2000_t3: D2000 x L2000 x t3
+  [PASS] pressure.hoop-membrane
+         outer-fibre von Mises at mid-length (node 22234 at (705.96, 708.25, 1001.05)) = 16.68845 MPa vs pR/t = 16.66667 MPa -> +0.131 %; sigma_z there = 0.01823 MPa (+0.11 % of hoop - the barrel has no end caps, so the pressure has no axial resultant)
+  [PASS] pressure.radial-growth
+         radial displacement at mid-length = 0.22725 mm vs pR^2/(E t) = 0.22800 mm -> -0.329 % (E = 73100 MPa, nu = 0.33; the free growth, i.e. far from the clamped end)
+
+--- d1800_l2000_t3: D1800 x L2000 x t3
+  [PASS] pressure.hoop-membrane
+         outer-fibre von Mises at mid-length (node 19076 at (635.85, 636.94, 996.95)) = 14.98335 MPa vs pR/t = 15.00000 MPa -> -0.111 %; sigma_z there = 0.02416 MPa (+0.16 % of hoop - the barrel has no end caps, so the pressure has no axial resultant)
+  [PASS] pressure.radial-growth
+         radial displacement at mid-length = 0.18531 mm vs pR^2/(E t) = 0.18468 mm -> +0.340 % (E = 73100 MPa, nu = 0.33; the free growth, i.e. far from the clamped end)
+
+--- d2000_l1600_t3: D2000 x L1600 x t3
+  [PASS] pressure.hoop-membrane
+         outer-fibre von Mises at mid-length (node 19095 at (708.36, 705.85, 801.82)) = 16.69570 MPa vs pR/t = 16.66667 MPa -> +0.174 %; sigma_z there = 0.00500 MPa (+0.03 % of hoop - the barrel has no end caps, so the pressure has no axial resultant)
+  [PASS] pressure.radial-growth
+         radial displacement at mid-length = 0.22815 mm vs pR^2/(E t) = 0.22800 mm -> +0.067 % (E = 73100 MPa, nu = 0.33; the free growth, i.e. far from the clamped end)
+
+--- d2000_l2000_t2: D2000 x L2000 x t2
+  [PASS] pressure.hoop-membrane
+         outer-fibre von Mises at mid-length (node 22234 at (705.96, 708.25, 1001.05)) = 25.02095 MPa vs pR/t = 25.00000 MPa -> +0.084 %; sigma_z there = 0.02304 MPa (+0.09 % of hoop - the barrel has no end caps, so the pressure has no axial resultant)
+  [PASS] pressure.radial-growth
+         radial displacement at mid-length = 0.34057 mm vs pR^2/(E t) = 0.34200 mm -> -0.416 % (E = 73100 MPa, nu = 0.33; the free growth, i.e. far from the clamped end)
+
+--- d1600_l1600_t3: D1600 x L1600 x t3
+  [PASS] pressure.hoop-membrane
+         outer-fibre von Mises at mid-length (node 5687 at (566.37, 565.0, 794.45)) = 13.35209 MPa vs pR/t = 13.33333 MPa -> +0.141 %; sigma_z there = 0.00663 MPa (+0.05 % of hoop - the barrel has no end caps, so the pressure has no axial resultant)
+  [PASS] pressure.radial-growth
+         radial displacement at mid-length = 0.14595 mm vs pR^2/(E t) = 0.14592 mm -> +0.022 % (E = 73100 MPa, nu = 0.33; the free growth, i.e. far from the clamped end)
+
+--- bending anchor_d2000_l2000_t3
+  [PASS] moment.beam-bending
+         outer-fibre von Mises at mid-length (node 22234 at (705.96, 708.25, 1001.05)) = 3.72575 MPa vs M x / I = 3.75132 MPa -> -0.681 % (I = pi R^3 t = 9.425e+09 mm^4 at R = 1000, t = 3; x = R cos(pi/4) = 707.107 mm - the sampled meridian is half a bay off the free skin seam)
+
+--- bending d1600_l1600_t3
+  [PASS] moment.beam-bending
+         outer-fibre von Mises at mid-length (node 5687 at (566.37, 565.0, 794.45)) = 5.82977 MPa vs M x / I = 5.86143 MPa -> -0.540 % (I = pi R^3 t = 4.825e+09 mm^4 at R = 800, t = 3; x = R cos(pi/4) = 565.685 mm - the sampled meridian is half a bay off the free skin seam)
+
+--- scaling law (FE ratio vs closed-form ratio)
+  [PASS] d1800_l2000_t3         sigma x0.8978 vs x0.9000 (-0.241 %) | w x0.8154 vs x0.8100 (+0.671 %)
+  [PASS] d2000_l1600_t3         sigma x1.0004 vs x1.0000 (+0.043 %) | w x1.0040 vs x1.0000 (+0.397 %)
+  [PASS] d2000_l2000_t2         sigma x1.4993 vs x1.5000 (-0.047 %) | w x1.4987 vs x1.5000 (-0.088 %)
+  [PASS] d1600_l1600_t3         sigma x0.8001 vs x0.8000 (+0.010 %) | w x0.6423 vs x0.6400 (+0.352 %)
+
+size/thickness self-checks: 16 PASS, 0 FAIL
+VERDICT: PASS
+report -> ../FEM-Bench-Aero/verify_barrel_size.json
+RC=0

@@ -1,0 +1,89 @@
+{
+  "navier_wmax": 0.9626822181019532,
+  "runs": [
+    {
+      "ok": true,
+      "size": 12.0,
+      "clamp_dofs": [
+        1,
+        3
+      ],
+      "n_nodes": 2986,
+      "n_elements": 2885,
+      "element_types": {
+        "quad4": 2885
+      },
+      "min_quality": 0.6877,
+      "max_disp": 0.897023,
+      "centre_uz": -0.896049,
+      "centre_coord": [
+        304.214,
+        302.97,
+        0.0
+      ]
+    },
+    {
+      "ok": true,
+      "size": 6.0,
+      "clamp_dofs": [
+        1,
+        3
+      ],
+      "n_nodes": 11761,
+      "n_elements": 11560,
+      "element_types": {
+        "quad4": 11560
+      },
+      "min_quality": 0.6043,
+      "max_disp": 0.956577,
+      "centre_uz": -0.956577,
+      "centre_coord": [
+        298.623,
+        300.265,
+        0.0
+      ]
+    },
+    {
+      "ok": true,
+      "size": 3.0,
+      "clamp_dofs": [
+        1,
+        3
+      ],
+      "n_nodes": 46432,
+      "n_elements": 46031,
+      "element_types": {
+        "quad4": 46031
+      },
+      "min_quality": 0.6167,
+      "max_disp": 0.961753,
+      "centre_uz": -0.961753,
+      "centre_coord": [
+        298.623,
+        299.396,
+        0.0
+      ]
+    },
+    {
+      "ok": true,
+      "size": 6.0,
+      "clamp_dofs": [
+        3,
+        3
+      ],
+      "n_nodes": 11761,
+      "n_elements": 11560,
+      "element_types": {
+        "quad4": 11560
+      },
+      "min_quality": 0.6043,
+      "max_disp": 0.9977774519218001,
+      "centre_uz": -0.956577,
+      "centre_coord": [
+        298.623,
+        300.265,
+        0.0
+      ]
+    }
+  ]
+}

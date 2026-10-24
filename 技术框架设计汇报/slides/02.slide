@@ -1,0 +1,29 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 52, right: 80 }}>
+    <Text style={{ fontSize: 15, color: '#1565C0', letterSpacing: 2 }}>结论前置</Text>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A', marginTop: 6 }}>三条判断，决定这套框架怎么设计</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 190, right: 80, height: 236, flexDirection: 'row', gap: 22 }}>
+    {[
+      { n: '01', t: '约束优于提示', d: '用形式化契约限定生成空间，而不是要求模型"别编"。契约同时解决多求解器口径统一与过程可追溯。', c: '#1565C0' },
+      { n: '02', t: '验证必须独立', d: '生成模型不能自证正确。几何实测、守恒律、解析解对标、双求解器互证，四类证据独立于生成过程。', c: '#00897B' },
+      { n: '03', t: '标准必须同源', d: '数据入库闸与结果放行闸同代码、同阈值、同版本，才能避免"训练合格、上线不合格"的漂移。', c: '#E65100' },
+    ].map((x, i) => (
+      <Box key={i} style={{ flex: 1, height: 236, background: '#F8FAFC', borderRadius: 12, padding: '22px 22px', borderTop: `4px solid ${x.c}` }}>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: x.c, opacity: 0.35 }}>{x.n}</Text>
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A', marginTop: 8 }}>{x.t}</Text>
+        <Text style={{ fontSize: 15, color: '#475569', lineHeight: 1.75, marginTop: 10 }}>{x.d}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 470, right: 80, background: '#E3F2FD', borderRadius: 10, padding: '18px 24px' }}>
+    <Text style={{ fontSize: 16, color: '#0D47A1', lineHeight: 1.7 }}>
+      一句话：<span style={{ fontWeight: 'bold' }}>大模型负责听懂与生成，契约负责约束生成空间，验证闸负责判定可信</span>——三者缺一，模型就进不了工程流程。
+    </Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>技术框架设计报告</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>02 / 12</Text>
+  </Box>
+</Slide>

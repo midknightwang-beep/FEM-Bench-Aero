@@ -1,0 +1,32 @@
+{
+  "rows": [
+    {
+      "label": "T7 [0/90]s d20",
+      "case": "open_hole_panel_400x200_d20_cfrp090s",
+      "layup": "[0/90]s",
+      "sigma_gross": 10.0,
+      "ccx": {
+        "E_eff": 73804.30513536144,
+        "strain": 0.00013549345098039215,
+        "n_end_nodes": 51,
+        "E_clt": 75364.48598130842,
+        "residual_pct": -2.070180437950475
+      }
+    },
+    {
+      "label": "aluminium control (method check)",
+      "case": "open_hole_panel_400x200_d20",
+      "layup": "isotropic",
+      "sigma_gross": 10.0,
+      "ccx": {
+        "E_eff": 72703.75610769466,
+        "strain": 0.00013754447549019607,
+        "n_end_nodes": 51,
+        "E_clt": 73100.0,
+        "residual_pct": -0.542057308215238
+      }
+    }
+  ],
+  "tol_eff": 0.03,
+  "pass": true
+}

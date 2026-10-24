@@ -1,0 +1,36 @@
+{
+  "n_pass": 4,
+  "n_fail": 1,
+  "checks": [
+    {
+      "form": "T3",
+      "check": "T3.definition-degeneration",
+      "pass": true,
+      "detail": "n_str=0 -> angles (); n_frm=2 -> frame_z (0.0, 2000.0) (want (0.0, 2000.0)); bay_count 1 (want 1)"
+    },
+    {
+      "form": "T3",
+      "check": "T3.degenerate-expectation",
+      "pass": true,
+      "detail": "derived: skin 4/4, stringer 0/0, frames 8/8, z-planes 2/2, surfaces 12/12, angles []"
+    },
+    {
+      "form": "T3",
+      "check": "T3.degenerate-model",
+      "pass": true,
+      "detail": "n_str=0/n_frm=2 built: skin 4 face(s), stringer 0, frames 8 on 2 z-plane(s), 12 surface(s), angles []; gate4 PASS; 105199 nodes, minJ 0.5818"
+    },
+    {
+      "form": "T3",
+      "check": "T3.parameter-invariance",
+      "pass": true,
+      "detail": "n_str=0 with height 25->40, thickness 2.5->5, blade->T(fw=50) is identical face for face - no stringer parameter reaches a stringer-free barrel"
+    },
+    {
+      "form": "T3",
+      "check": "T3.layout-sensitivity",
+      "pass": false,
+      "detail": "0str/2frm: skin 4/4 str 0/0 frm 8/8 angles 0/0 mesh ok 105199n minJ 0.5818 gate4 PASS; 4str/2frm: skin 4/4 str 4/4 frm 8/8 angles 4/4 mesh FAIL 152370n minJ 0.4851 gate4 PASS; 8str/3frm: skin 16/16 str 16/16 frm 24/24 angles 8/8 mesh ok 158548n minJ 0.5159 gate4 PASS  <- WRONG ['4/2']"
+    }
+  ]
+}

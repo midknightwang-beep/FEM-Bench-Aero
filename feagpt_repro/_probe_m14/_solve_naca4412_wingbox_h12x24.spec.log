@@ -1,0 +1,10 @@
+es = 10.73 MPa
+        - tagged 21/21 faces via outDimTagsMap
+        - tag/bbox cross-check: 21 faces agree
+        - recombination algorithm 1 (blossom)
+        - quality gate passed: min scaled Jacobian 0.558, 0 triangle(s)
+        - gate4 semantic PASS (10 checks)
+        - dropped 408 unreferenced mesh node(s) (5977 -> 5569); they carry no stiffness but would dilute nodal loads and abort Abaqus
+        - deck written (ccx): 5569 active nodes, 5639 shell elements in 5 group(s)
+
+1/1 case(s) completed. Summary -> F:\AI FEA Modeling DataSets\feagpt_repro\_probe_m14\outputs\batch_summary.json

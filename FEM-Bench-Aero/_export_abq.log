@@ -1,0 +1,16 @@
+   WARNING: shrinks.length==shrinks_max=9266
+   WARNING: shrinks.length==shrinks_max=9266
+[abaqus] 12 case(s) -> ..\FEM-Bench-Aero\_xval
+  [OK ] naca4412_wingbox                               8 checks  nodes=5074  max|u|=2.3739 mm
+  [OK ] naca4412_wingbox_n_ribs3_chord1000             8 checks  nodes=4668  max|u|=2.3786 mm
+  [OK ] naca4412_wingbox_n_ribs3_chord800              8 checks  nodes=3655  max|u|=4.5505 mm
+  [OK ] naca4412_wingbox_n_ribs5_chord1000             8 checks  nodes=5074  max|u|=2.3739 mm
+  [OK ] naca4412_wingbox_n_ribs5_chord800              8 checks  nodes=3859  max|u|=4.5435 mm
+  [OK ] naca4412_wingbox_n_ribs7_chord1000             8 checks  nodes=5593  max|u|=2.3688 mm
+  [OK ] naca4412_wingbox_n_ribs7_chord800              8 checks  nodes=4352  max|u|=4.5352 mm
+  [OK ] naca4412_wingbox_recombination_algorithm3      8 checks  nodes=5281  max|u|=2.3724 mm
+  [OK ] naca4412_wingbox_str3                          8 checks  nodes=7387  max|u|=2.2256 mm
+  [OK ] naca4412_wingbox_str3_T                        8 checks  nodes=29447  max|u|=2.1181 mm
+  [OK ] stiffened_panel_600x600                        4 checks  nodes=46432  max|u|=0.9649 mm
+  [OK ] stiffened_panel_600x600_str3                   4 checks  nodes=51401  max|u|=0.0153 mm
+gate4 semantic: 12/12 PASS

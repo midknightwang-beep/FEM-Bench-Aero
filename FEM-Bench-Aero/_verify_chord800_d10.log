@@ -1,0 +1,50 @@
+##### naca4412_wingbox_n_ribs3_chord800
+  4) max |u|          : ccx 4.54015 mm vs abaqus 4.55035 mm -> diff 0.224 %
+  5) max |UZ|         : ccx 0.16954 mm vs abaqus 0.16988 mm -> diff 0.204 %
+  6) equilibrium      : sum of nodal forces over the 'clamp' node set
+       ccx   :   101 nodes in set [total] | RX     +0.00099  RY   -500.00546  RZ     -0.00476 N
+                dominant = Y  -> |R| 500.00546 N vs target 500.00000 N, residual 0.001092 % of 500 N
+       abaqus:   101 nodes in set [reaction] | RX     -0.00000  RY   -500.00051  RZ     -0.00007 N
+                dominant = Y  -> |R| 500.00051 N vs target 500.00000 N, residual 0.000102 % of 500 N
+  7) stress           : registered definition = OUTER FIBRE (D8);
+                        every value printed with its own reduction
+       ccx outer fibre, node-avg     : 15.9584 MPa  (worst of the two layers at each node)
+       ccx mid-surface, node-avg     : 15.3944 MPa  (layer mean - kept for history, not the sizing number)
+       abaqus outer fibre, per-elem  : 17.3320 MPa  (element-wise peak, NOT node-averaged)
+       abaqus outer fibre, node-avg  : 13.0965 MPa
+       abaqus membrane (mid-surface) : 12.7275 MPa  (mean of outer section points, averaged over elements)
+       outer-fibre peak, ccx vs abaqus: diff 17.933 % (the peak sits at spar/rib junctions - mesh-dependent)
+       ccx peak, in-plane only       : 15.3720 MPa (transverse shear is 0.15 % of the 15.3944 MPa peak)
+       per-node field (3679 nodes) : median diff 0.12 %, p90 42.62 %
+       abaqus section points exposed : [1, 5] (ELEMENT_NODAL extrapolation keeps only the outer two)
+       abaqus stress components      : ['S11', 'S22', 'S33', 'S12'] (TENSOR_3D_PLANAR)
+       abaqus candidate reductions   : membrane_node_averaged=12.7275, outer_fibre_node_averaged=13.0965, outer_fibre_elementwise_max=17.332, outer_fibre_elementwise_vm_then_node_averaged=14.9421
+------------------------------------------------------------------------------
+  note: ODB node coordinates are stored as 32-bit floats, so the 5.9e-05 mm residual is storage precision, not a model difference
+  VERDICT: PASS - 7 checks, no disagreement above tolerance
+==============================================================================
+##### naca4412_wingbox_n_ribs5_chord800
+  4) max |u|          : ccx 4.52673 mm vs abaqus 4.54285 mm -> diff 0.355 %
+  5) max |UZ|         : ccx 0.16910 mm vs abaqus 0.16967 mm -> diff 0.334 %
+  6) equilibrium      : sum of nodal forces over the 'clamp' node set
+       ccx   :   101 nodes in set [total] | RX     +0.00064  RY   -500.00363  RZ     -0.00550 N
+                dominant = Y  -> |R| 500.00363 N vs target 500.00000 N, residual 0.000725 % of 500 N
+       abaqus:   101 nodes in set [reaction] | RX     -0.00001  RY   -500.00051  RZ     -0.00006 N
+                dominant = Y  -> |R| 500.00051 N vs target 500.00000 N, residual 0.000101 % of 500 N
+  7) stress           : registered definition = OUTER FIBRE (D8);
+                        every value printed with its own reduction
+       ccx outer fibre, node-avg     : 15.7618 MPa  (worst of the two layers at each node)
+       ccx mid-surface, node-avg     : 15.2726 MPa  (layer mean - kept for history, not the sizing number)
+       abaqus outer fibre, per-elem  : 17.5717 MPa  (element-wise peak, NOT node-averaged)
+       abaqus outer fibre, node-avg  : 12.8913 MPa
+       abaqus membrane (mid-surface) : 12.5256 MPa  (mean of outer section points, averaged over elements)
+       outer-fibre peak, ccx vs abaqus: diff 18.212 % (the peak sits at spar/rib junctions - mesh-dependent)
+       ccx peak, in-plane only       : 15.2428 MPa (transverse shear is 0.20 % of the 15.2726 MPa peak)
+       per-node field (4057 nodes) : median diff 0.25 %, p90 41.12 %
+       abaqus section points exposed : [1, 5] (ELEMENT_NODAL extrapolation keeps only the outer two)
+       abaqus stress components      : ['S11', 'S22', 'S33', 'S12'] (TENSOR_3D_PLANAR)
+       abaqus candidate reductions   : membrane_node_averaged=12.5256, outer_fibre_node_averaged=12.8913, outer_fibre_elementwise_max=17.5717, outer_fibre_elementwise_vm_then_node_averaged=14.9542
+------------------------------------------------------------------------------
+  note: ODB node coordinates are stored as 32-bit floats, so the 5.9e-05 mm residual is storage precision, not a model difference
+  VERDICT: PASS - 7 checks, no disagreement above tolerance
+==============================================================================

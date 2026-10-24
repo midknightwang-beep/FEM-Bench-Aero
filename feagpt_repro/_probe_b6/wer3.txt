@@ -1,0 +1,69 @@
+﻿total pre.exe reports = 34
+10-06 21:16:52  module=tsbx.dll  tsbxStamp=6abb8245
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+10-06 21:15:50  module=tsbx.dll  tsbxStamp=6abb8245
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+10-06 21:00:52  module=tsbx.dll  tsbxStamp=6abb8245
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+10-06 21:00:01  module=tsbx.dll  tsbxStamp=6abb8245
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+10-06 20:57:46  module=tsbx.dll  tsbxStamp=6abb8245
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+10-06 20:55:21  module=tsbx.dll  tsbxStamp=6abb8245
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+10-06 20:54:28  module=tsbx.dll  tsbxStamp=6abb8245
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+10-06 20:51:24  module=tsbx.dll  tsbxStamp=6abb8245
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+10-06 20:50:12  module=tsbx.dll  tsbxStamp=6abb8245
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+10-06 20:48:49  module=tsbx.dll  tsbxStamp=6abb8245
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+10-06 12:33:10  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-06 12:29:41  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-06 12:11:42  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-06 12:09:33  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-06 12:02:48  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-06 12:00:49  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-06 11:58:56  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-06 11:58:03  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-06 11:56:27  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-06 11:54:56  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-06 11:54:00  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-02 08:02:52  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-02 08:02:24  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-02 07:59:27  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-02 07:58:58  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-02 07:58:30  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-02 07:58:00  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-02 07:57:22  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-02 07:56:52  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-02 07:55:46  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-02 07:54:42  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-02 07:54:12  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-02 07:53:09  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll
+10-02 07:51:19  module=tsbx.dll  tsbxStamp=6ab1160c
+        tsbxPath=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.6.10\tsbx.dll

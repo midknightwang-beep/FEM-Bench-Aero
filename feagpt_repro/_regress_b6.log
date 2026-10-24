@@ -1,0 +1,4 @@
+usage: regress_groups.py [-h] [--cases [CASES ...]] [--save SAVE]
+                         [--check CHECK] [--json JSON]
+regress_groups.py: error: argument --check: expected one argument
+REGRESS RC=2

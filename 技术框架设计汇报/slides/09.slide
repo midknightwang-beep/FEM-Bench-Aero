@@ -1,0 +1,66 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 46, right: 80 }}>
+    <Text style={{ fontSize: 15, color: '#1565C0', letterSpacing: 2 }}>05 具体方案</Text>
+    <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#1A1A1A', marginTop: 6 }}>九道验证闸：可信度的唯一来源</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 160, right: 80, flexDirection: 'row', gap: 16 }}>
+    {[
+      { g: 'G1 网格质量', d: '最小雅可比 + 零三角', k: '硬' },
+      { g: 'G2 语义一致', d: '几何实测 = 契约声明', k: '硬' },
+      { g: 'G3 载荷平衡', d: '反力合力 ≈ 施加载荷', k: '硬' },
+    ].map((x, i) => (
+      <Box key={i} style={{ flex: 1, height: 92, background: '#E3F2FD', borderRadius: 8, padding: '14px 16px', borderTop: '3px solid #1565C0' }}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#0D47A1' }}>{x.g}</Text>
+        <Text style={{ fontSize: 12.5, color: '#334155', marginTop: 4 }}>{x.d}</Text>
+        <Text style={{ fontSize: 11, color: '#B91C1C', marginTop: 4 }}>失败即拒绝（{x.k}）</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 262, right: 80, flexDirection: 'row', gap: 16 }}>
+    {[
+      { g: 'G4 双码一致', d: '两求解器位移/应力偏差在阈值内', k: '软' },
+      { g: 'G5 解析解对标', d: '特征量与闭式解偏差在阈值内', k: '软' },
+      { g: 'G6 退化自检', d: '新形式退化到旧形式结果一致', k: '硬' },
+    ].map((x, i) => (
+      <Box key={i} style={{ flex: 1, height: 92, background: i < 2 ? '#FFF7ED' : '#E3F2FD', borderRadius: 8, padding: '14px 16px', borderTop: `3px solid ${i < 2 ? '#E65100' : '#1565C0'}` }}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: i < 2 ? '#E65100' : '#0D47A1' }}>{x.g}</Text>
+        <Text style={{ fontSize: 12.5, color: '#334155', marginTop: 4 }}>{x.d}</Text>
+        <Text style={{ fontSize: 11, color: i < 2 ? '#9A3412' : '#B91C1C', marginTop: 4 }}>{i < 2 ? '带标记放行（软）' : '失败即拒绝（硬）'}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 364, right: 80, flexDirection: 'row', gap: 16 }}>
+    {[
+      { g: 'G7 去重指纹', d: '网格 + 壳厚 + 材料律唯一', k: '硬' },
+      { g: 'G8 回归基线', d: '与归档基线比对，无未声明漂移', k: '软' },
+      { g: 'G9 契约自洽', d: '双真相量一致、字段约束成立', k: '硬' },
+    ].map((x, i) => (
+      <Box key={i} style={{ flex: 1, height: 92, background: i === 1 ? '#FFF7ED' : '#E3F2FD', borderRadius: 8, padding: '14px 16px', borderTop: `3px solid ${i === 1 ? '#E65100' : '#1565C0'}` }}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: i === 1 ? '#E65100' : '#0D47A1' }}>{x.g}</Text>
+        <Text style={{ fontSize: 12.5, color: '#334155', marginTop: 4 }}>{x.d}</Text>
+        <Text style={{ fontSize: 11, color: i === 1 ? '#9A3412' : '#B91C1C', marginTop: 4 }}>{i === 1 ? '要求说明并重签（软）' : '失败即拒绝（硬）'}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 476, right: 80 }}>
+    <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#0D47A1' }}>判据设计的四条纪律</Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 514, right: 80, flexDirection: 'row', gap: 12 }}>
+    {[
+      { t: '阈值来自实测链', d: '先做收敛性研究再定值' },
+      { t: '峰值只作参考', d: '受网格与提取口径影响大' },
+      { t: '硬软分级', d: '一律拒绝会寸步难行' },
+      { t: '改动必留档', d: '并重签基线，否则比对失效' },
+    ].map((x, i) => (
+      <Box key={i} style={{ flex: 1, height: 96, background: '#F8FAFC', borderRadius: 8, padding: '12px 14px', borderLeft: '3px solid #00897B' }}>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#00695C' }}>{x.t}</Text>
+        <Text style={{ fontSize: 12, color: '#475569', marginTop: 6, lineHeight: 1.5 }}>{x.d}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>技术框架设计报告</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>09 / 12</Text>
+  </Box>
+</Slide>

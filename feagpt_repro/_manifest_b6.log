@@ -1,0 +1,5 @@
+cases 36  classes 35  splits {'train': 16, 'val': 11, 'test': 9}  roles {'ablation': 1, 'baseline': 3, 'degenerate': 2, 'feature': 7, 'sweep': 23}
+  class 4afd1ea3fd9f: naca4412_wingbox, naca4412_wingbox_recombination_algorithm3
+manifest -> ../FEM-Bench-Aero/manifest.json
+index    -> ../FEM-Bench-Aero/MANIFEST.md
+MANIFEST RC=0

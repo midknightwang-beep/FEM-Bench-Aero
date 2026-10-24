@@ -1,0 +1,47 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 28, right: 80 }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>九道质量闸体系</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 130, width: 380, flexDirection: 'column', gap: 20 }}>
+    <Text style={{ fontSize: 18, color: '#1A1A1A', lineHeight: 1.7 }}>
+      只认<span style={{ fontWeight: 'bold' }}>独立复算</span>：平衡不变量、解析解、双码交叉三条路径互相独立；
+      引用的每个数字必须落盘（命令 + 数字 + 产物路径），<span style={{ fontWeight: 'bold' }}>零凭空印制</span>。
+    </Text>
+    <Box style={{ background: '#F1F5F9', borderRadius: 10, padding: '16px 20px', borderLeft: '4px solid #E65100' }}>
+      <Text style={{ fontSize: 16, color: '#334155', lineHeight: 1.65 }}>
+        <span style={{ fontWeight: 'bold' }}>实战战绩</span>：闸在执行中多次当场拦截真实缺陷——
+        去重指纹闸咬住复材/铝同网格撞车、CLT 自测逮住剪切模量公式错误、语义门禁抓出缺摘要产物
+      </Text>
+    </Box>
+    <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.7 }}>
+      变体结果完全相同即报警（防复制粘贴假通过）；判据变更必须留档重签基线
+    </Text>
+  </Box>
+  <svg width={700} height={490} viewBox='0 0 700 490' style={{ position: 'absolute', right: 80, top: 135 }}>
+    {[
+      { n: '闸 1 网格质量', c: 'minJ ≥ 0.30 · 零三角形 · 全四边形', r: '41/41', rr: '0.4636–0.6626' },
+      { n: '闸 2 语义门禁', c: '派生预期与几何实测精确相等', r: '82/82', rr: '两树各 41' },
+      { n: '闸 3 双求解器', c: '位移差＜1% · vM 中位差＜5%', r: '41/41', rr: '双码全过' },
+      { n: '闸 4 物理平衡', c: '载荷-反力残差＜1e-3%', r: '全过', rr: '唯一不变量' },
+      { n: '闸 5 退化自检', c: '参数趋零退化回已信任形式', r: '50/50', rr: 'T1–T7 全覆盖' },
+      { n: '闸 6 回归基线', c: '分组指纹与归档基线比对', r: '9/9', rr: '零漂移' },
+      { n: '闸 7 去重指纹', c: '网格+壳厚+材料律三成分', r: '重复 0', rr: '三度扩展' },
+      { n: '闸 8 跨树一致', c: '两树网格逐字节一致', r: '41/41', rr: 'D8 口径一致' },
+      { n: '闸 9 独立验证线', c: 'Kt/峰位/平衡/双码物理闸', r: '5/5', rr: 'Kt 偏差 0.45%' },
+    ].map((g, i) => (
+      <g key={i}>
+        <rect x='10' y={i * 53} width='680' height='46' rx='8' fill={i % 2 === 0 ? '#F1F5F9' : '#FFFFFF'} stroke='#E2E8F0' strokeWidth='1' />
+        <rect x='10' y={i * 53} width='6' height='46' rx='3' fill='#1565C0' />
+        <text x='34' y={i * 53 + 20} fontSize='14.5' fontWeight='bold' fill='#1A1A1A' fontFamily='Microsoft YaHei'>{g.n}</text>
+        <text x='34' y={i * 53 + 38} fontSize='11.5' fill='#64748B' fontFamily='Microsoft YaHei'>{g.c}</text>
+        <text x='560' y={i * 53 + 29} fontSize='16' fontWeight='bold' fill='#2E7D32' fontFamily='Microsoft YaHei'>{g.r}</text>
+        <text x='690' y={i * 53 + 29} fontSize='11' fill='#94A3B8' textAnchor='end' fontFamily='Microsoft YaHei'>{g.rr}</text>
+      </g>
+    ))}
+  </svg>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>基于大模型的飞机有限元模型智能生成技术</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>10 / 15</Text>
+  </Box>
+</Slide>

@@ -1,0 +1,126 @@
+=== modeling: 55 case(s)
+  [OK  ] fuselage_barrel_d1600_l1600_str8_frm3          ccx    nodes=103715 max|u|=  3.0070mm
+  [OK  ] fuselage_barrel_d1800_l2000_str8_frm3          ccx    nodes=143402 max|u|=  2.8016mm
+  [OK  ] fuselage_barrel_d2000_l1600_str8_frm3          ccx    nodes=129632 max|u|=  2.5511mm
+  [OK  ] fuselage_barrel_d2000_l2000_str12_frm4         ccx    nodes=169606 max|u|=  2.5692mm
+  [OK  ] fuselage_barrel_d2000_l2000_str8_frm3          ccx    nodes=158524 max|u|=  2.6310mm
+  [OK  ] fuselage_barrel_d2000_l2000_t2_str8_frm3       ccx    nodes=158524 max|u|=  4.6787mm
+  [OK  ] naca4412_wingbox                               ccx    nodes= 5074 max|u|=  2.3654mm
+  [OK  ] naca4412_wingbox_n_ribs3_chord1000             ccx    nodes= 4668 max|u|=  2.3723mm
+  [OK  ] naca4412_wingbox_n_ribs3_chord800              ccx    nodes= 3679 max|u|=  4.5402mm
+  [OK  ] naca4412_wingbox_n_ribs5_chord800              ccx    nodes= 4057 max|u|=  4.5267mm
+  [OK  ] naca4412_wingbox_n_ribs7_chord1000             ccx    nodes= 5593 max|u|=  2.3581mm
+  [OK  ] naca4412_wingbox_n_ribs7_chord800              ccx    nodes= 4352 max|u|=  4.5123mm
+  [OK  ] naca4412_wingbox_n_ribs9_chord1000             ccx    nodes= 5706 max|u|=  2.3503mm
+  [OK  ] naca4412_wingbox_recombination_algorithm3      ccx    nodes= 5281 max|u|=  2.3649mm
+  [OK  ] naca4412_wingbox_size_skin1p5                  ccx    nodes= 5074 max|u|=  4.7165mm
+  [OK  ] naca4412_wingbox_size_skin2                    ccx    nodes= 5074 max|u|=  3.5423mm
+  [OK  ] naca4412_wingbox_size_skin4                    ccx    nodes= 5074 max|u|=  1.7757mm
+  [OK  ] naca4412_wingbox_size_span1600                 ccx    nodes= 4273 max|u|=  1.2506mm
+  [OK  ] naca4412_wingbox_size_span2400                 ccx    nodes= 5836 max|u|=  4.0197mm
+  [OK  ] naca4412_wingbox_size_span2400_skin2           ccx    nodes= 5836 max|u|=  6.0231mm
+  [OK  ] naca4412_wingbox_size_span3000                 ccx    nodes= 7116 max|u|=  7.7475mm
+  [OK  ] naca4412_wingbox_size_span3000_skin1p5         ccx    nodes= 7116 max|u|= 15.4733mm
+  [OK  ] naca4412_wingbox_str3                          ccx    nodes= 7387 max|u|=  2.2194mm
+  [OK  ] naca4412_wingbox_str3_T                        ccx    nodes=29447 max|u|=  2.1151mm
+  [OK  ] naca4412_wingbox_str5                          ccx    nodes= 8205 max|u|=  2.1354mm
+  [OK  ] naca4412_wingbox_sweep10                       ccx    nodes= 5484 max|u|=  2.5876mm
+  [OK  ] naca4412_wingbox_sweep20                       ccx    nodes= 5222 max|u|=  3.1693mm
+  [OK  ] naca4412_wingbox_sweep20_taper060              ccx    nodes= 7771 max|u|=  3.9610mm
+  [OK  ] naca4412_wingbox_sweep30                       ccx    nodes= 5347 max|u|=  4.3843mm
+  [OK  ] naca4412_wingbox_sweep30_taper080              ccx    nodes= 5302 max|u|=  4.7050mm
+  [OK  ] naca4412_wingbox_sweep35                       ccx    nodes= 5687 max|u|=  5.4293mm
+  [OK  ] naca4412_wingbox_sweep40                       ccx    nodes= 5697 max|u|=  7.0143mm
+  [OK  ] naca4412_wingbox_sweep40_taper040              ccx    nodes=15681 max|u|=  9.8673mm
+  [OK  ] naca4412_wingbox_taper040                      ccx    nodes=14937 max|u|=  4.4889mm
+  [OK  ] naca4412_wingbox_taper060                      ccx    nodes= 7950 max|u|=  3.3842mm
+  [OK  ] naca4412_wingbox_taper080                      ccx    nodes= 5125 max|u|=  2.7521mm
+  [OK  ] naca4412_wingbox_taper090                      ccx    nodes= 4871 max|u|=  2.5364mm
+  [OK  ] naca4412_wingbox_web1                          ccx    nodes= 5369 max|u|=  2.9646mm
+  [OK  ] naca4412_wingbox_web1_offcentre                ccx    nodes= 5574 max|u|=  3.0608mm
+  [OK  ] naca4412_wingbox_web2                          ccx    nodes= 5653 max|u|=  2.8558mm
+  [OK  ] open_hole_panel_400x200_d20                    ccx    nodes= 9861 max|u|=  0.0575mm
+  [OK  ] open_hole_panel_400x200_d20_cfrp090s           ccx    nodes= 9861 max|u|=  0.0573mm
+  [OK  ] open_hole_panel_400x200_d20_cfrp45s            ccx    nodes= 9861 max|u|=  0.2258mm
+  [OK  ] open_hole_panel_400x200_d20_cfrp45s_d40        ccx    nodes= 8682 max|u|=  0.2327mm
+  [OK  ] open_hole_panel_400x200_d20_cfrpqi             ccx    nodes= 9861 max|u|=  0.0778mm
+  [OK  ] open_hole_panel_400x200_d20_offcentre          ccx    nodes= 9349 max|u|=  0.0586mm
+  [OK  ] open_hole_panel_400x200_d40                    ccx    nodes= 8682 max|u|=  0.0594mm
+  [OK  ] open_hole_panel_400x200_d40_offcentre          ccx    nodes= 8082 max|u|=  0.0648mm
+  [OK  ] open_hole_panel_400x200_d50                    ccx    nodes= 7918 max|u|=  0.0609mm
+  [OK  ] open_hole_panel_600x300_d30                    ccx    nodes=20736 max|u|=  0.0853mm
+  [OK  ] open_hole_panel_600x300_d60                    ccx    nodes=16151 max|u|=  0.0881mm
+  [OK  ] stiffened_panel_600x600                        ccx    nodes=46432 max|u|=  0.9618mm
+  [OK  ] stiffened_panel_600x600_str3                   ccx    nodes=51401 max|u|=  0.0153mm
+  [OK  ] stiffened_panel_800x600                        ccx    nodes=61834 max|u|=  1.5619mm
+  [OK  ] stiffened_panel_800x600_str3                   ccx    nodes=67797 max|u|=  0.0290mm
+=== _xval: 55 case(s)
+  [OK  ] fuselage_barrel_d1600_l1600_str8_frm3          abaqus nodes=103715 max|u|=  3.0816mm
+  [OK  ] fuselage_barrel_d1800_l2000_str8_frm3          abaqus nodes=143402 max|u|=  2.8907mm
+  [OK  ] fuselage_barrel_d2000_l1600_str8_frm3          abaqus nodes=129632 max|u|=  2.6131mm
+  [OK  ] fuselage_barrel_d2000_l2000_str12_frm4         abaqus nodes=169606 max|u|=  2.6581mm
+  [OK  ] fuselage_barrel_d2000_l2000_str8_frm3          abaqus nodes=158524 max|u|=  2.6852mm
+  [OK  ] fuselage_barrel_d2000_l2000_t2_str8_frm3       abaqus nodes=158524 max|u|=  4.8675mm
+  [OK  ] naca4412_wingbox                               abaqus nodes= 5074 max|u|=  2.3739mm
+  [OK  ] naca4412_wingbox_n_ribs3_chord1000             abaqus nodes= 4668 max|u|=  2.3786mm
+  [OK  ] naca4412_wingbox_n_ribs3_chord800              abaqus nodes= 3679 max|u|=  4.5504mm
+  [OK  ] naca4412_wingbox_n_ribs5_chord800              abaqus nodes= 4057 max|u|=  4.5429mm
+  [OK  ] naca4412_wingbox_n_ribs7_chord1000             abaqus nodes= 5593 max|u|=  2.3688mm
+  [OK  ] naca4412_wingbox_n_ribs7_chord800              abaqus nodes= 4352 max|u|=  4.5352mm
+  [OK  ] naca4412_wingbox_n_ribs9_chord1000             abaqus nodes= 5706 max|u|=  2.3634mm
+  [OK  ] naca4412_wingbox_recombination_algorithm3      abaqus nodes= 5281 max|u|=  2.3724mm
+  [OK  ] naca4412_wingbox_size_skin1p5                  abaqus nodes= 5074 max|u|=  4.7402mm
+  [OK  ] naca4412_wingbox_size_skin2                    abaqus nodes= 5074 max|u|=  3.5578mm
+  [OK  ] naca4412_wingbox_size_skin4                    abaqus nodes= 5074 max|u|=  1.7811mm
+  [OK  ] naca4412_wingbox_size_span1600                 abaqus nodes= 4273 max|u|=  1.2556mm
+  [OK  ] naca4412_wingbox_size_span2400                 abaqus nodes= 5836 max|u|=  4.0320mm
+  [OK  ] naca4412_wingbox_size_span2400_skin2           abaqus nodes= 5836 max|u|=  6.0453mm
+  [OK  ] naca4412_wingbox_size_span3000                 abaqus nodes= 7116 max|u|=  7.7680mm
+  [OK  ] naca4412_wingbox_size_span3000_skin1p5         abaqus nodes= 7116 max|u|= 15.5293mm
+  [OK  ] naca4412_wingbox_str3                          abaqus nodes= 7387 max|u|=  2.2256mm
+  [OK  ] naca4412_wingbox_str3_T                        abaqus nodes=29447 max|u|=  2.1181mm
+  [OK  ] naca4412_wingbox_str5                          abaqus nodes= 8205 max|u|=  2.1411mm
+  [OK  ] naca4412_wingbox_sweep10                       abaqus nodes= 5484 max|u|=  2.5951mm
+  [OK  ] naca4412_wingbox_sweep20                       abaqus nodes= 5222 max|u|=  3.1776mm
+  [OK  ] naca4412_wingbox_sweep20_taper060              abaqus nodes= 7771 max|u|=  3.9687mm
+  [OK  ] naca4412_wingbox_sweep30                       abaqus nodes= 5347 max|u|=  4.3938mm
+  [OK  ] naca4412_wingbox_sweep30_taper080              abaqus nodes= 5302 max|u|=  4.7139mm
+  [OK  ] naca4412_wingbox_sweep35                       abaqus nodes= 5687 max|u|=  5.4376mm
+  [OK  ] naca4412_wingbox_sweep40                       abaqus nodes= 5697 max|u|=  7.0267mm
+  [OK  ] naca4412_wingbox_sweep40_taper040              abaqus nodes=15681 max|u|=  9.8744mm
+  [OK  ] naca4412_wingbox_taper040                      abaqus nodes=14937 max|u|=  4.4951mm
+  [OK  ] naca4412_wingbox_taper060                      abaqus nodes= 7950 max|u|=  3.3915mm
+  [OK  ] naca4412_wingbox_taper080                      abaqus nodes= 5125 max|u|=  2.7610mm
+  [OK  ] naca4412_wingbox_taper090                      abaqus nodes= 4871 max|u|=  2.5451mm
+  [OK  ] naca4412_wingbox_web1                          abaqus nodes= 5369 max|u|=  2.9728mm
+  [OK  ] naca4412_wingbox_web1_offcentre                abaqus nodes= 5574 max|u|=  3.0688mm
+  [OK  ] naca4412_wingbox_web2                          abaqus nodes= 5653 max|u|=  2.8645mm
+  [OK  ] open_hole_panel_400x200_d20                    abaqus nodes= 9861 max|u|=  0.0576mm
+  [OK  ] open_hole_panel_400x200_d20_cfrp090s           abaqus nodes= 9861 max|u|=  0.0574mm
+  [OK  ] open_hole_panel_400x200_d20_cfrp45s            abaqus nodes= 9861 max|u|=  0.2259mm
+  [OK  ] open_hole_panel_400x200_d20_cfrp45s_d40        abaqus nodes= 8682 max|u|=  0.2327mm
+  [OK  ] open_hole_panel_400x200_d20_cfrpqi             abaqus nodes= 9861 max|u|=  0.0779mm
+  [OK  ] open_hole_panel_400x200_d20_offcentre          abaqus nodes= 9349 max|u|=  0.0587mm
+  [OK  ] open_hole_panel_400x200_d40                    abaqus nodes= 8682 max|u|=  0.0595mm
+  [OK  ] open_hole_panel_400x200_d40_offcentre          abaqus nodes= 8082 max|u|=  0.0649mm
+  [OK  ] open_hole_panel_400x200_d50                    abaqus nodes= 7918 max|u|=  0.0610mm
+  [OK  ] open_hole_panel_600x300_d30                    abaqus nodes=20736 max|u|=  0.0854mm
+  [OK  ] open_hole_panel_600x300_d60                    abaqus nodes=16151 max|u|=  0.0882mm
+  [OK  ] stiffened_panel_600x600                        abaqus nodes=46432 max|u|=  0.9649mm
+  [OK  ] stiffened_panel_600x600_str3                   abaqus nodes=51401 max|u|=  0.0153mm
+  [OK  ] stiffened_panel_800x600                        abaqus nodes=61834 max|u|=  1.5738mm
+  [OK  ] stiffened_panel_800x600_str3                   abaqus nodes=67797 max|u|=  0.0290mm
+
+=== pairing: 55 paired, 0 modeling-only, 0 xval-only -> PASS
+
+=== duplicate models in modeling/: none
+
+=== duplicate models in _xval/: none
+
+=== cross-tree mesh agreement: 55/55 identical -> PASS
+=== stress definition agreement (D8): modeling ['outer fibre'] vs xval ['outer fibre'] -> PASS
+
+case consistency: 110/110 OK
+duplicate models : 0 (must be 0 within a tree)
+VERDICT: PASS
+report -> _probe_m13/verify_dataset_d36_after.json

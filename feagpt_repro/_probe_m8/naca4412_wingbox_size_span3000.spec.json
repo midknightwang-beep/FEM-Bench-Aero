@@ -1,0 +1,72 @@
+{
+ "name": "naca4412_wingbox_size_span3000",
+ "description": "D31 size axis: span 超包络 -> val",
+ "material": {
+  "name": "Aluminium 2024-T3",
+  "youngs_modulus": 73100.0,
+  "poisson_ratio": 0.33,
+  "density": 2.78e-09,
+  "yield_strength": 345.0
+ },
+ "structure": {
+  "family": "wingbox",
+  "params": {}
+ },
+ "airfoil": {
+  "code": "4412",
+  "chord": 1000.0,
+  "span": 3000.0,
+  "skin_thickness": 3.0,
+  "n_ribs": 5,
+  "rib_thickness": 4.0,
+  "spar_chordwise": [
+   0.25,
+   0.7
+  ],
+  "n_stringers_per_skin": 0,
+  "stringer_height": 20.0,
+  "stringer_thickness": 2.5,
+  "stringer_kind": "blade",
+  "stringer_flange_width": 30.0,
+  "tip_chord_ratio": 1.0,
+  "sweep_deg": 0.0,
+  "web_chordwise": []
+ },
+ "mesh": {
+  "element_order": 1,
+  "size_chord": 12.0,
+  "size_span": 25.0,
+  "refine_at_leading_edge": true,
+  "leading_edge_threshold": 1.6,
+  "min_jacobian": 0.3,
+  "algorithm_2d": 6,
+  "recombine": true,
+  "recombination_algorithm": 0
+ },
+ "load": {
+  "kind": "tip_force",
+  "magnitude": 500.0,
+  "direction": [
+   0.0,
+   1.0,
+   0.0
+  ]
+ },
+ "bc": {
+  "root_surface": "root",
+  "clamp": true
+ },
+ "analysis": {
+  "solver": "auto",
+  "step_type": "static",
+  "incremental": true,
+  "initial_increment": 0.25,
+  "total_time": 1.0,
+  "outputs": [
+   "U",
+   "S"
+  ]
+ },
+ "workdir": "outputs",
+ "extra": {}
+}

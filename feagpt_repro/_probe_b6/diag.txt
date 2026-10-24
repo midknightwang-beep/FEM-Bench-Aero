@@ -1,0 +1,35 @@
+﻿FreePhysMB=6615
+TotalPhysMB=16104
+FreeVirtMB=6072
+TotalVirtMB=29647
+--- PageFile ---
+D:\pagefile.sys AllocMB=13542 CurMB=2718 PeakMB=6190
+--- AutoManaged ---
+AutoManagedPagefile=False
+--- Defender ---
+RealTimeEnabled=False
+AntivirusEnabled=True
+ExclusionPath=C:\Program;C:\Users\22207\AppData\Local\CapableWin;C:\Users\22207\AppData\LocalLow\BKPDFReader;C:\Users\22207\AppData\Roaming\BKPDF;D:\迅雷下载;D:\迅雷下载\files;D:\迅雷下载\OInstall.exe;D:\迅雷下载\OInstallLite.exe
+ExclusionProcess=
+--- Zombie procs ---
+3488 Memory Compression WS_MB=336 Start=10/06/2026 07:48:25
+9080 picpreview WS_MB=5 Start=10/06/2026 09:38:05
+33980 pre WS_MB=0 Start=10/06/2026 20:54:17
+15716 prevhost WS_MB=2 Start=10/06/2026 09:38:04
+23276 prevhost WS_MB=1 Start=10/06/2026 09:38:04
+--- TempDirs ---
+TEMP=C:\Users\22207\AppData\Local\Temp
+TMP=C:\Users\22207\AppData\Local\Temp
+C:\Users\22207\AppData\Local\Temp\22207_md_26276 exists=False
+--- Recent App errors (last 2h) ---
+21:00:41 [Application Error] 出错应用程序名称： pre.exe，版本： 6.428.0.25234，时间戳： 0x68a963cc 出错模块名称： tsbx.dll， 版本： 0.0.0.0，时间戳： 0x6abb8245 异常代码： 0xc0000409 错误偏移： 0x000000000006935d 出错进程 ID： 0x87C8 出错应用程序开始时间： 0x1DD5592AD5
+20:59:50 [Application Error] 出错应用程序名称： pre.exe，版本： 6.428.0.25234，时间戳： 0x68a963cc 出错模块名称： tsbx.dll， 版本： 0.0.0.0，时间戳： 0x6abb8245 异常代码： 0xc0000409 错误偏移： 0x000000000006935d 出错进程 ID： 0x33B4 出错应用程序开始时间： 0x1DD55928EA
+20:57:34 [Application Error] 出错应用程序名称： pre.exe，版本： 6.428.0.25234，时间戳： 0x68a963cc 出错模块名称： tsbx.dll， 版本： 0.0.0.0，时间戳： 0x6abb8245 异常代码： 0xc0000409 错误偏移： 0x000000000006935d 出错进程 ID： 0x7B54 出错应用程序开始时间： 0x1DD55923E0
+20:55:09 [Application Error] 出错应用程序名称： pre.exe，版本： 6.428.0.25234，时间戳： 0x68a963cc 出错模块名称： tsbx.dll， 版本： 0.0.0.0，时间戳： 0x6abb8245 异常代码： 0xc0000409 错误偏移： 0x000000000006935d 出错进程 ID： 0xA4C 出错应用程序开始时间： 0x1DD5591E78B
+20:54:17 [Application Error] 出错应用程序名称： pre.exe，版本： 6.428.0.25234，时间戳： 0x68a963cc 出错模块名称： tsbx.dll， 版本： 0.0.0.0，时间戳： 0x6abb8245 异常代码： 0xc0000409 错误偏移： 0x000000000006935d 出错进程 ID： 0x660C 出错应用程序开始时间： 0x1DD5591C67
+20:51:13 [Application Error] 出错应用程序名称： pre.exe，版本： 6.428.0.25234，时间戳： 0x68a963cc 出错模块名称： tsbx.dll， 版本： 0.0.0.0，时间戳： 0x6abb8245 异常代码： 0xc0000409 错误偏移： 0x000000000006935d 出错进程 ID： 0x7F78 出错应用程序开始时间： 0x1DD5591584
+20:50:01 [Application Error] 出错应用程序名称： pre.exe，版本： 6.428.0.25234，时间戳： 0x68a963cc 出错模块名称： tsbx.dll， 版本： 0.0.0.0，时间戳： 0x6abb8245 异常代码： 0xc0000409 错误偏移： 0x000000000006935d 出错进程 ID： 0x8E00 出错应用程序开始时间： 0x1DD55912D4
+20:48:36 [Application Error] 出错应用程序名称： pre.exe，版本： 6.428.0.25234，时间戳： 0x68a963cc 出错模块名称： tsbx.dll， 版本： 0.0.0.0，时间戳： 0x6abb8245 异常代码： 0xc0000409 错误偏移： 0x000000000006935d 出错进程 ID： 0x7F74 出错应用程序开始时间： 0x1DD5590FA8
+20:06:38 [Application Error] 出错应用程序名称： WerFault.exe，版本： 10.0.26100.9444，时间戳： 0x51b2029a 出错模块名称： ntdll.dll， 版本： 10.0.26100.9444，时间戳： 0x6bdf03ca 异常代码： 0xc00000fd 错误偏移： 0x0000000000059c75 出错进程 ID： 0x6DE8 出错应用程序开始
+20:06:37 [Application Error] 出错应用程序名称： douyin_widget.exe，版本： 8.7.0.0，时间戳： 0x63086893 出错模块名称： parfait.dll， 版本： 1.5.6.5，时间戳： 0x67237395 异常代码： 0xc0000409 错误偏移： 0x00000000000beb75 出错进程 ID： 0x21C4 出错应用程序开始时间： 0x1DD
+19:57:01 [Application Error] 出错应用程序名称： ccx_static.exe，版本： 1.0.0.0，时间戳： 0x68fbbf4b 出错模块名称： ucrtbase.dll， 版本： 10.0.26100.9444，时间戳： 0x2bbefd73 异常代码： 0xc0000005 错误偏移： 0x00000000000ee5e3 出错进程 ID： 0x76E4 出错应用程序开始时间：

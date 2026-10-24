@@ -1,0 +1,383 @@
+{
+  "generated": "2026-10-24",
+  "milestone": "M11 / D34 sweep-term form",
+  "target": "max_disp",
+  "design_note": "train has 3 positive-sweep rows sharing one geometry; s^2/s^3 are non-zero on exactly those 3 rows, so a free cubic is exactly invertible there (M2 failure mode). Condition number is reported for every form and is a hard eligibility gate.",
+  "selection_rule": {
+    "primary": "min |LOO APE at 30 deg station| (leak-free)",
+    "guard_1": "train LOO <= 1.15 x lin",
+    "guard_2": "condition number < 1e6",
+    "val_sweep40": "confirmation only",
+    "test": "reported once, never used to choose"
+  },
+  "train_stations_deg": [
+    10.0,
+    20.0,
+    30.0
+  ],
+  "n_train_zero_sweep": 15,
+  "lin_reproduces_m3_max_dape_pp": 0.004572223502287587,
+  "forms": {
+    "lin@ridge": {
+      "form": "lin",
+      "hybrid": false,
+      "alpha": 0.31622776601683794,
+      "loo_mape": 4.747,
+      "cond_number": 1.8,
+      "identifiable": true,
+      "dropped_cols": [
+        "is_T",
+        "n_web"
+      ],
+      "n_free_directions": 8,
+      "sweep_coef": {
+        "sw:s": 0.36203
+      },
+      "const_features": [
+        "is_T"
+      ],
+      "loo_station_ape_pct": {
+        "10deg": 9.9,
+        "20deg": 9.19,
+        "30deg": -19.6
+      },
+      "val": {
+        "naca4412_wingbox_n_ribs7_chord1000": -1.88,
+        "naca4412_wingbox_n_ribs9_chord1000": -2.97,
+        "naca4412_wingbox_size_skin1p5": -1.65,
+        "naca4412_wingbox_size_span3000": -4.8,
+        "naca4412_wingbox_sweep40": -30.97,
+        "naca4412_wingbox_taper040": -11.77,
+        "naca4412_wingbox_web2": 14.22
+      },
+      "val_mape": 9.75,
+      "test": {
+        "naca4412_wingbox_n_ribs7_chord800": -2.66,
+        "naca4412_wingbox_size_span2400_skin2": -2.87,
+        "naca4412_wingbox_size_span3000_skin1p5": -5.8,
+        "naca4412_wingbox_str3_T": 4.97,
+        "naca4412_wingbox_sweep20_taper060": 20.63,
+        "naca4412_wingbox_sweep40_taper040": -17.2,
+        "naca4412_wingbox_web1_offcentre": -6.23
+      },
+      "test_mape": 8.62
+    },
+    "powsec@ridge": {
+      "form": "powsec",
+      "hybrid": false,
+      "alpha": 0.001,
+      "loo_mape": 2.677,
+      "cond_number": 1.7,
+      "identifiable": true,
+      "dropped_cols": [
+        "is_T",
+        "n_web"
+      ],
+      "n_free_directions": 8,
+      "sweep_coef": {
+        "sw:logsec": 4.348061
+      },
+      "const_features": [
+        "is_T"
+      ],
+      "loo_station_ape_pct": {
+        "10deg": -2.29,
+        "20deg": -2.38,
+        "30deg": 7.15
+      },
+      "val": {
+        "naca4412_wingbox_n_ribs7_chord1000": 0.41,
+        "naca4412_wingbox_n_ribs9_chord1000": 0.6,
+        "naca4412_wingbox_size_skin1p5": 0.2,
+        "naca4412_wingbox_size_span3000": -1.7,
+        "naca4412_wingbox_sweep40": 7.7,
+        "naca4412_wingbox_taper040": -11.95,
+        "naca4412_wingbox_web2": 14.05
+      },
+      "val_mape": 5.23,
+      "test": {
+        "naca4412_wingbox_n_ribs7_chord800": 0.26,
+        "naca4412_wingbox_size_span2400_skin2": -0.41,
+        "naca4412_wingbox_size_span3000_skin1p5": -1.89,
+        "naca4412_wingbox_str3_T": 5.19,
+        "naca4412_wingbox_sweep20_taper060": 10.29,
+        "naca4412_wingbox_sweep40_taper040": 27.62,
+        "naca4412_wingbox_web1_offcentre": -5.95
+      },
+      "test_mape": 7.37
+    },
+    "quad@ridge": {
+      "form": "quad",
+      "hybrid": false,
+      "alpha": 0.01778279410038923,
+      "loo_mape": 2.142,
+      "cond_number": 8.5,
+      "identifiable": true,
+      "dropped_cols": [
+        "is_T",
+        "n_web"
+      ],
+      "n_free_directions": 9,
+      "sweep_coef": {
+        "sw:s": 0.067176,
+        "sw:s2": 0.229557
+      },
+      "const_features": [
+        "is_T"
+      ],
+      "loo_station_ape_pct": {
+        "10deg": -0.1,
+        "20deg": 0.5,
+        "30deg": -1.31
+      },
+      "val": {
+        "naca4412_wingbox_n_ribs7_chord1000": -0.31,
+        "naca4412_wingbox_n_ribs9_chord1000": -0.43,
+        "naca4412_wingbox_size_skin1p5": -0.14,
+        "naca4412_wingbox_size_span3000": -2.29,
+        "naca4412_wingbox_sweep40": -3.55,
+        "naca4412_wingbox_taper040": -11.62,
+        "naca4412_wingbox_web2": 14.23
+      },
+      "val_mape": 4.65,
+      "test": {
+        "naca4412_wingbox_n_ribs7_chord800": -0.26,
+        "naca4412_wingbox_size_span2400_skin2": -0.86,
+        "naca4412_wingbox_size_span3000_skin1p5": -2.41,
+        "naca4412_wingbox_str3_T": 5.07,
+        "naca4412_wingbox_sweep20_taper060": 13.35,
+        "naca4412_wingbox_sweep40_taper040": 15.19,
+        "naca4412_wingbox_web1_offcentre": -6.01
+      },
+      "test_mape": 6.16
+    },
+    "cubic@ridge": {
+      "form": "cubic",
+      "hybrid": false,
+      "alpha": 0.03162277660168379,
+      "loo_mape": 2.473,
+      "cond_number": 66.0,
+      "identifiable": true,
+      "dropped_cols": [
+        "is_T",
+        "n_web"
+      ],
+      "n_free_directions": 10,
+      "sweep_coef": {
+        "sw:s": 0.117392,
+        "sw:s2": 0.124917,
+        "sw:s3": 0.048112
+      },
+      "const_features": [
+        "is_T"
+      ],
+      "loo_station_ape_pct": {
+        "10deg": 1.07,
+        "20deg": -1.31,
+        "30deg": 5.47
+      },
+      "val": {
+        "naca4412_wingbox_n_ribs7_chord1000": -0.34,
+        "naca4412_wingbox_n_ribs9_chord1000": -0.49,
+        "naca4412_wingbox_size_skin1p5": -0.19,
+        "naca4412_wingbox_size_span3000": -2.37,
+        "naca4412_wingbox_sweep40": 3.11,
+        "naca4412_wingbox_taper040": -11.66,
+        "naca4412_wingbox_web2": 14.22
+      },
+      "val_mape": 4.62,
+      "test": {
+        "naca4412_wingbox_n_ribs7_chord800": -0.35,
+        "naca4412_wingbox_size_span2400_skin2": -0.93,
+        "naca4412_wingbox_size_span3000_skin1p5": -2.55,
+        "naca4412_wingbox_str3_T": 5.07,
+        "naca4412_wingbox_sweep20_taper060": 12.61,
+        "naca4412_wingbox_sweep40_taper040": 23.1,
+        "naca4412_wingbox_web1_offcentre": -6.02
+      },
+      "test_mape": 7.23
+    },
+    "lin@phys": {
+      "form": "lin",
+      "hybrid": true,
+      "alpha": 1.7782794100389228,
+      "loo_mape": 4.188,
+      "cond_number": 1.8,
+      "identifiable": true,
+      "dropped_cols": [
+        "is_T",
+        "n_web"
+      ],
+      "n_free_directions": 8,
+      "sweep_coef": {
+        "sw:s": 0.329739
+      },
+      "const_features": [
+        "is_T"
+      ],
+      "loo_station_ape_pct": {
+        "10deg": 9.27,
+        "20deg": 6.5,
+        "30deg": -22.14
+      },
+      "val": {
+        "naca4412_wingbox_n_ribs7_chord1000": 0.76,
+        "naca4412_wingbox_n_ribs9_chord1000": 1.16,
+        "naca4412_wingbox_size_skin1p5": 0.33,
+        "naca4412_wingbox_size_span3000": -1.09,
+        "naca4412_wingbox_sweep40": -34.54,
+        "naca4412_wingbox_taper040": -15.54,
+        "naca4412_wingbox_web2": 12.39
+      },
+      "val_mape": 9.4,
+      "test": {
+        "naca4412_wingbox_n_ribs7_chord800": 0.75,
+        "naca4412_wingbox_size_span2400_skin2": -0.06,
+        "naca4412_wingbox_size_span3000_skin1p5": -1.3,
+        "naca4412_wingbox_str3_T": 5.78,
+        "naca4412_wingbox_sweep20_taper060": 13.88,
+        "naca4412_wingbox_sweep40_taper040": -25.7,
+        "naca4412_wingbox_web1_offcentre": -6.74
+      },
+      "test_mape": 7.74
+    },
+    "powsec@phys": {
+      "form": "powsec",
+      "hybrid": true,
+      "alpha": 0.001,
+      "loo_mape": 2.677,
+      "cond_number": 1.7,
+      "identifiable": true,
+      "dropped_cols": [
+        "is_T",
+        "n_web"
+      ],
+      "n_free_directions": 8,
+      "sweep_coef": {
+        "sw:logsec": 4.34811
+      },
+      "const_features": [
+        "is_T"
+      ],
+      "loo_station_ape_pct": {
+        "10deg": -2.29,
+        "20deg": -2.38,
+        "30deg": 7.15
+      },
+      "val": {
+        "naca4412_wingbox_n_ribs7_chord1000": 0.41,
+        "naca4412_wingbox_n_ribs9_chord1000": 0.61,
+        "naca4412_wingbox_size_skin1p5": 0.2,
+        "naca4412_wingbox_size_span3000": -1.69,
+        "naca4412_wingbox_sweep40": 7.7,
+        "naca4412_wingbox_taper040": -11.95,
+        "naca4412_wingbox_web2": 14.05
+      },
+      "val_mape": 5.23,
+      "test": {
+        "naca4412_wingbox_n_ribs7_chord800": 0.26,
+        "naca4412_wingbox_size_span2400_skin2": -0.4,
+        "naca4412_wingbox_size_span3000_skin1p5": -1.88,
+        "naca4412_wingbox_str3_T": 5.19,
+        "naca4412_wingbox_sweep20_taper060": 10.29,
+        "naca4412_wingbox_sweep40_taper040": 27.63,
+        "naca4412_wingbox_web1_offcentre": -5.95
+      },
+      "test_mape": 7.37
+    },
+    "quad@phys": {
+      "form": "quad",
+      "hybrid": true,
+      "alpha": 0.001,
+      "loo_mape": 2.143,
+      "cond_number": 8.5,
+      "identifiable": true,
+      "dropped_cols": [
+        "is_T",
+        "n_web"
+      ],
+      "n_free_directions": 9,
+      "sweep_coef": {
+        "sw:s": 0.063864,
+        "sw:s2": 0.232214
+      },
+      "const_features": [
+        "is_T"
+      ],
+      "loo_station_ape_pct": {
+        "10deg": -0.34,
+        "20deg": 0.36,
+        "30deg": -1.07
+      },
+      "val": {
+        "naca4412_wingbox_n_ribs7_chord1000": -0.28,
+        "naca4412_wingbox_n_ribs9_chord1000": -0.37,
+        "naca4412_wingbox_size_skin1p5": -0.08,
+        "naca4412_wingbox_size_span3000": -2.18,
+        "naca4412_wingbox_sweep40": -3.17,
+        "naca4412_wingbox_taper040": -11.58,
+        "naca4412_wingbox_web2": 14.25
+      },
+      "val_mape": 4.56,
+      "test": {
+        "naca4412_wingbox_n_ribs7_chord800": -0.15,
+        "naca4412_wingbox_size_span2400_skin2": -0.78,
+        "naca4412_wingbox_size_span3000_skin1p5": -2.24,
+        "naca4412_wingbox_str3_T": 5.06,
+        "naca4412_wingbox_sweep20_taper060": 13.31,
+        "naca4412_wingbox_sweep40_taper040": 15.7,
+        "naca4412_wingbox_web1_offcentre": -6.0
+      },
+      "test_mape": 6.18
+    },
+    "cubic@phys": {
+      "form": "cubic",
+      "hybrid": true,
+      "alpha": 0.31622776601683794,
+      "loo_mape": 2.377,
+      "cond_number": 66.0,
+      "identifiable": true,
+      "dropped_cols": [
+        "is_T",
+        "n_web"
+      ],
+      "n_free_directions": 10,
+      "sweep_coef": {
+        "sw:s": 0.127294,
+        "sw:s2": 0.098103,
+        "sw:s3": 0.060453
+      },
+      "const_features": [
+        "is_T"
+      ],
+      "loo_station_ape_pct": {
+        "10deg": 0.96,
+        "20deg": -1.29,
+        "30deg": 6.02
+      },
+      "val": {
+        "naca4412_wingbox_n_ribs7_chord1000": -0.0,
+        "naca4412_wingbox_n_ribs9_chord1000": 0.04,
+        "naca4412_wingbox_size_skin1p5": 0.03,
+        "naca4412_wingbox_size_span3000": -1.92,
+        "naca4412_wingbox_sweep40": 4.43,
+        "naca4412_wingbox_taper040": -12.4,
+        "naca4412_wingbox_web2": 13.88
+      },
+      "val_mape": 4.67,
+      "test": {
+        "naca4412_wingbox_n_ribs7_chord800": 0.07,
+        "naca4412_wingbox_size_span2400_skin2": -0.6,
+        "naca4412_wingbox_size_span3000_skin1p5": -2.02,
+        "naca4412_wingbox_str3_T": 5.21,
+        "naca4412_wingbox_sweep20_taper060": 11.52,
+        "naca4412_wingbox_sweep40_taper040": 23.45,
+        "naca4412_wingbox_web1_offcentre": -6.13
+      },
+      "test_mape": 7.0
+    }
+  },
+  "chosen": "quad@phys",
+  "fails": [],
+  "verdict": "PASS"
+}

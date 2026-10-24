@@ -1,0 +1,75 @@
+{
+  "root": "..\\FEM-Bench-Aero",
+  "apply": false,
+  "trees": {
+    "modeling": [],
+    "_xval": []
+  },
+  "removed": [],
+  "n_groups": 0,
+  "n_removed": 0,
+  "duplicate_group": {
+    "cases": [
+      "naca4412_wingbox",
+      "naca4412_wingbox_n_ribs5_chord1000"
+    ],
+    "model_msh_sha256_prefix": "29faefe3f88855e9",
+    "why": "model.msh byte-identical; the only spec difference is chord written as 1000.0 vs 1000",
+    "survivor": "naca4412_wingbox",
+    "survivor_rule": "pinned by dataset-design choice, not by the tool's default sort"
+  },
+  "history": [
+    {
+      "date": "2026-10-02",
+      "note": "M2 - RECONSTRUCTED from the M2 console output and changelog. This run's own snapshot was overwritten before the history mechanism existed (see the note at the bottom).",
+      "removed": [
+        "modeling/naca4412_wingbox_n_ribs5_chord1000",
+        "_xval/naca4412_wingbox_n_ribs5_chord1000"
+      ],
+      "keep": {
+        "modeling": [
+          "naca4412_wingbox"
+        ],
+        "_xval": [
+          "naca4412_wingbox"
+        ]
+      },
+      "n_groups": 2
+    },
+    {
+      "date": "2026-10-03",
+      "note": "M3/T2 - the duplicate reappeared because make_dataset.py re-imports it from outputs/, where the source case is deliberately kept for provenance. Removing it a second time is expected behaviour, not a regression.",
+      "removed": [
+        "modeling/naca4412_wingbox_n_ribs5_chord1000",
+        "_xval/naca4412_wingbox_n_ribs5_chord1000"
+      ],
+      "keep": {
+        "modeling": [
+          "naca4412_wingbox"
+        ],
+        "_xval": [
+          "naca4412_wingbox"
+        ]
+      },
+      "n_groups": 2
+    },
+    {
+      "date": "2026-10-04",
+      "note": "M5/T1 - re-export after AirfoilSpec grew tip_chord_ratio/sweep_deg (D14); the same duplicate reappears from outputs/ and is removed again, as documented in the M3 note",
+      "removed": [
+        "modeling/naca4412_wingbox_n_ribs5_chord1000",
+        "_xval/naca4412_wingbox_n_ribs5_chord1000"
+      ],
+      "keep": {
+        "modeling": [
+          "naca4412_wingbox"
+        ],
+        "_xval": [
+          "naca4412_wingbox"
+        ]
+      },
+      "n_groups": 2
+    }
+  ],
+  "note": "dedup_report.json is written as a snapshot by default, so refreshing it with --json after the fact erases the record of what was removed - which is the one thing a reader comes here for. On 2026-10-03 that actually happened (the M2 entry above had to be reconstructed by hand), and dedup_dataset.py now appends to 'history' instead of overwriting whenever --apply removed something."
+}

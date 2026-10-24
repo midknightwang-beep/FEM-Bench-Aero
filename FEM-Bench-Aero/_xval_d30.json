@@ -1,0 +1,66 @@
+{
+  "purpose": "D30 双码交叉：位移差 + 孔边逐节点 vM 中位差（闸门口径）",
+  "gate": "max|u| < 1 %；孔边逐节点 vM 中位差 < 5 %（verify_solvers 口径）",
+  "rows": [
+    {
+      "case": "cfrp45s",
+      "n_hole_edge_nodes": 72,
+      "median_abs_dvm_pct": 1.6341,
+      "worst_node_pct": 20.24,
+      "peak_ccx": {
+        "vm": 42.8114,
+        "node": 4,
+        "angle_deg": 153.43
+      },
+      "peak_abaqus": {
+        "vm": 56.7347,
+        "node": "4",
+        "angle_deg": 153.43
+      },
+      "peak_gap_pct": 24.541,
+      "max_disp_ccx": 0.225849879,
+      "max_disp_abaqus": 0.225857307,
+      "verdict": "median < 5 % -> field agrees"
+    },
+    {
+      "case": "cfrpqi",
+      "n_hole_edge_nodes": 72,
+      "median_abs_dvm_pct": 2.3245,
+      "worst_node_pct": 10.737,
+      "peak_ccx": {
+        "vm": 30.3105,
+        "node": 59,
+        "angle_deg": 270.0
+      },
+      "peak_abaqus": {
+        "vm": 29.7843,
+        "node": "59",
+        "angle_deg": 270.0
+      },
+      "peak_gap_pct": 1.767,
+      "max_disp_ccx": 0.077763825,
+      "max_disp_abaqus": 0.077892136,
+      "verdict": "median < 5 % -> field agrees"
+    },
+    {
+      "case": "cfrp45s_d40",
+      "n_hole_edge_nodes": 72,
+      "median_abs_dvm_pct": 2.4244,
+      "worst_node_pct": 14.865,
+      "peak_ccx": {
+        "vm": 41.4131,
+        "node": 2,
+        "angle_deg": 206.57
+      },
+      "peak_abaqus": {
+        "vm": 54.9737,
+        "node": "2",
+        "angle_deg": 206.57
+      },
+      "peak_gap_pct": 24.667,
+      "max_disp_ccx": 0.232702028,
+      "max_disp_abaqus": 0.232733647,
+      "verdict": "median < 5 % -> field agrees"
+    }
+  ]
+}

@@ -1,0 +1,327 @@
+{
+ "note": "同一 6 条 test 集，四种训练集；超参用 baseline._alpha_grid()",
+ "test_cases": [
+  "naca4412_wingbox_n_ribs7_chord800",
+  "naca4412_wingbox_size_span2400_skin2",
+  "naca4412_wingbox_size_span3000_skin1p5",
+  "naca4412_wingbox_str3_T",
+  "naca4412_wingbox_sweep40_taper040",
+  "naca4412_wingbox_web1_offcentre"
+ ],
+ "boot": 4000,
+ "seed": 20261024,
+ "by_target": {
+  "max_disp": {
+   "A_d34": {
+    "n_train": 18,
+    "alpha": 0.01778279410038923,
+    "loo_mape": 2.142,
+    "test_mape": 4.965990260131798,
+    "ci95": [
+     1.537271379361623,
+     9.48195386576441
+    ],
+    "max_ape": 15.185115160916073,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": -0.26,
+     "naca4412_wingbox_size_span2400_skin2": -0.86,
+     "naca4412_wingbox_size_span3000_skin1p5": -2.41,
+     "naca4412_wingbox_str3_T": 5.07,
+     "naca4412_wingbox_sweep40_taper040": 15.19,
+     "naca4412_wingbox_web1_offcentre": -6.01
+    }
+   },
+   "B_moved_only": {
+    "n_train": 19,
+    "alpha": 0.1,
+    "loo_mape": 4.009,
+    "test_mape": 3.5840122828844363,
+    "ci95": [
+     1.4819518741213213,
+     5.783324432565543
+    ],
+    "max_ape": 7.252171316937295,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 0.28,
+     "naca4412_wingbox_size_span2400_skin2": -0.33,
+     "naca4412_wingbox_size_span3000_skin1p5": -2.31,
+     "naca4412_wingbox_str3_T": 5.41,
+     "naca4412_wingbox_sweep40_taper040": 7.25,
+     "naca4412_wingbox_web1_offcentre": -5.92
+    }
+   },
+   "C_moved_plus_new": {
+    "n_train": 20,
+    "alpha": 0.1778279410038923,
+    "loo_mape": 3.736,
+    "test_mape": 3.0065211169186687,
+    "ci95": [
+     1.2415726007932817,
+     4.795365089657115
+    ],
+    "max_ape": 5.933847231796808,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": -0.03,
+     "naca4412_wingbox_size_span2400_skin2": -0.57,
+     "naca4412_wingbox_size_span3000_skin1p5": -2.86,
+     "naca4412_wingbox_str3_T": 5.47,
+     "naca4412_wingbox_sweep40_taper040": -3.18,
+     "naca4412_wingbox_web1_offcentre": -5.93
+    }
+   },
+   "D_new_only": {
+    "n_train": 19,
+    "alpha": 0.03162277660168379,
+    "loo_mape": 3.199,
+    "test_mape": 2.4212191483054495,
+    "ci95": [
+     0.6658123972088241,
+     4.323990798256857
+    ],
+    "max_ape": 5.9657481481474655,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 0.06,
+     "naca4412_wingbox_size_span2400_skin2": -0.57,
+     "naca4412_wingbox_size_span3000_skin1p5": -2.2,
+     "naca4412_wingbox_str3_T": 5.19,
+     "naca4412_wingbox_sweep40_taper040": 0.54,
+     "naca4412_wingbox_web1_offcentre": -5.97
+    }
+   }
+  },
+  "max_w": {
+   "A_d34": {
+    "n_train": 18,
+    "alpha": 0.1,
+    "loo_mape": 1.742,
+    "test_mape": 12.828198807339103,
+    "ci95": [
+     1.577008382105229,
+     33.94327929833363
+    ],
+    "max_ape": 64.92990489609791,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": -0.73,
+     "naca4412_wingbox_size_span2400_skin2": -1.04,
+     "naca4412_wingbox_size_span3000_skin1p5": -2.38,
+     "naca4412_wingbox_str3_T": 4.65,
+     "naca4412_wingbox_sweep40_taper040": 64.93,
+     "naca4412_wingbox_web1_offcentre": 3.25
+    }
+   },
+   "B_moved_only": {
+    "n_train": 19,
+    "alpha": 0.1778279410038923,
+    "loo_mape": 4.663,
+    "test_mape": 9.823566616295592,
+    "ci95": [
+     1.017907226460002,
+     25.567309700680752
+    ],
+    "max_ape": 48.181712045606,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 0.31,
+     "naca4412_wingbox_size_span2400_skin2": -0.12,
+     "naca4412_wingbox_size_span3000_skin1p5": -1.78,
+     "naca4412_wingbox_str3_T": 5.09,
+     "naca4412_wingbox_sweep40_taper040": 48.18,
+     "naca4412_wingbox_web1_offcentre": 3.46
+    }
+   },
+   "C_moved_plus_new": {
+    "n_train": 20,
+    "alpha": 0.31622776601683794,
+    "loo_mape": 5.819,
+    "test_mape": 4.258273821425427,
+    "ci95": [
+     1.1750851944967555,
+     8.437822406807493
+    ],
+    "max_ape": 13.905171332649257,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 0.14,
+     "naca4412_wingbox_size_span2400_skin2": -0.32,
+     "naca4412_wingbox_size_span3000_skin1p5": -2.41,
+     "naca4412_wingbox_str3_T": 5.23,
+     "naca4412_wingbox_sweep40_taper040": 13.91,
+     "naca4412_wingbox_web1_offcentre": 3.54
+    }
+   },
+   "D_new_only": {
+    "n_train": 19,
+    "alpha": 0.31622776601683794,
+    "loo_mape": 5.311,
+    "test_mape": 5.034016027389077,
+    "ci95": [
+     1.625595772162075,
+     10.073433188648623
+    ],
+    "max_ape": 17.03260429032445,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": -0.6,
+     "naca4412_wingbox_size_span2400_skin2": -0.99,
+     "naca4412_wingbox_size_span3000_skin1p5": -3.11,
+     "naca4412_wingbox_str3_T": 5.01,
+     "naca4412_wingbox_sweep40_taper040": 17.03,
+     "naca4412_wingbox_web1_offcentre": 3.45
+    }
+   }
+  },
+  "max_von_mises": {
+   "A_d34": {
+    "n_train": 18,
+    "alpha": 0.001,
+    "loo_mape": 2.601,
+    "test_mape": 10.187140978545244,
+    "ci95": [
+     2.1032256678934975,
+     22.137993226117068
+    ],
+    "max_ape": 37.70849021465412,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 0.67,
+     "naca4412_wingbox_size_span2400_skin2": -0.45,
+     "naca4412_wingbox_size_span3000_skin1p5": -1.07,
+     "naca4412_wingbox_str3_T": -9.32,
+     "naca4412_wingbox_sweep40_taper040": 37.71,
+     "naca4412_wingbox_web1_offcentre": -11.91
+    }
+   },
+   "B_moved_only": {
+    "n_train": 19,
+    "alpha": 0.1778279410038923,
+    "loo_mape": 5.556,
+    "test_mape": 6.247706896309733,
+    "ci95": [
+     2.0629776926635963,
+     10.858397579946544
+    ],
+    "max_ape": 14.384316969397236,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 1.21,
+     "naca4412_wingbox_size_span2400_skin2": 0.12,
+     "naca4412_wingbox_size_span3000_skin1p5": -0.99,
+     "naca4412_wingbox_str3_T": -8.95,
+     "naca4412_wingbox_sweep40_taper040": 14.38,
+     "naca4412_wingbox_web1_offcentre": -11.83
+    }
+   },
+   "C_moved_plus_new": {
+    "n_train": 20,
+    "alpha": 0.1778279410038923,
+    "loo_mape": 4.397,
+    "test_mape": 5.288889013228978,
+    "ci95": [
+     1.8971349159041102,
+     9.025814206640206
+    ],
+    "max_ape": 11.834642020381203,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 1.17,
+     "naca4412_wingbox_size_span2400_skin2": 0.08,
+     "naca4412_wingbox_size_span3000_skin1p5": -1.0,
+     "naca4412_wingbox_str3_T": -8.98,
+     "naca4412_wingbox_sweep40_taper040": 8.67,
+     "naca4412_wingbox_web1_offcentre": -11.83
+    }
+   },
+   "D_new_only": {
+    "n_train": 19,
+    "alpha": 0.001,
+    "loo_mape": 3.043,
+    "test_mape": 7.403511363315281,
+    "ci95": [
+     1.9964942741765264,
+     13.96231101211908
+    ],
+    "max_ape": 21.43064330183664,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 1.05,
+     "naca4412_wingbox_size_span2400_skin2": -0.11,
+     "naca4412_wingbox_size_span3000_skin1p5": -0.75,
+     "naca4412_wingbox_str3_T": -9.22,
+     "naca4412_wingbox_sweep40_taper040": 21.43,
+     "naca4412_wingbox_web1_offcentre": -11.87
+    }
+   }
+  },
+  "max_von_mises_midsurface": {
+   "A_d34": {
+    "n_train": 18,
+    "alpha": 0.001,
+    "loo_mape": 2.032,
+    "test_mape": 9.297513271505593,
+    "ci95": [
+     1.5709990457622742,
+     20.868625471553894
+    ],
+    "max_ape": 36.62384671597203,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 0.17,
+     "naca4412_wingbox_size_span2400_skin2": -0.34,
+     "naca4412_wingbox_size_span3000_skin1p5": -0.82,
+     "naca4412_wingbox_str3_T": -7.59,
+     "naca4412_wingbox_sweep40_taper040": 36.62,
+     "naca4412_wingbox_web1_offcentre": -10.25
+    }
+   },
+   "B_moved_only": {
+    "n_train": 19,
+    "alpha": 0.1778279410038923,
+    "loo_mape": 5.114,
+    "test_mape": 5.473073056947512,
+    "ci95": [
+     1.6398247473014032,
+     9.791046074782301
+    ],
+    "max_ape": 13.8251677579327,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 0.7,
+     "naca4412_wingbox_size_span2400_skin2": 0.2,
+     "naca4412_wingbox_size_span3000_skin1p5": -0.76,
+     "naca4412_wingbox_str3_T": -7.22,
+     "naca4412_wingbox_sweep40_taper040": 13.83,
+     "naca4412_wingbox_web1_offcentre": -10.13
+    }
+   },
+   "C_moved_plus_new": {
+    "n_train": 20,
+    "alpha": 0.1778279410038923,
+    "loo_mape": 3.86,
+    "test_mape": 4.677450315488635,
+    "ci95": [
+     1.6022298947039177,
+     7.955157716694412
+    ],
+    "max_ape": 10.141361947552296,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 0.64,
+     "naca4412_wingbox_size_span2400_skin2": 0.15,
+     "naca4412_wingbox_size_span3000_skin1p5": -0.78,
+     "naca4412_wingbox_str3_T": -7.25,
+     "naca4412_wingbox_sweep40_taper040": 9.1,
+     "naca4412_wingbox_web1_offcentre": -10.14
+    }
+   },
+   "D_new_only": {
+    "n_train": 19,
+    "alpha": 0.01,
+    "loo_mape": 2.426,
+    "test_mape": 6.655176166005193,
+    "ci95": [
+     1.5010626156098015,
+     13.38166486923282
+    ],
+    "max_ape": 21.075023904753266,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 0.44,
+     "naca4412_wingbox_size_span2400_skin2": -0.1,
+     "naca4412_wingbox_size_span3000_skin1p5": -0.6,
+     "naca4412_wingbox_str3_T": -7.5,
+     "naca4412_wingbox_sweep40_taper040": 21.08,
+     "naca4412_wingbox_web1_offcentre": -10.21
+    }
+   }
+  }
+ }
+}

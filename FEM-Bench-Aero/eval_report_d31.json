@@ -1,0 +1,247 @@
+{
+  "root": "..\\FEM-Bench-Aero",
+  "manifest": "..\\FEM-Bench-Aero\\manifest.json",
+  "checks": [
+    {
+      "key": "case_set_matches",
+      "pass": true,
+      "detail": "manifest 52 vs disk 52; only-in-manifest=[] only-on-disk=[]"
+    },
+    {
+      "key": "recompute spec_sha256",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "truth.json spec_sha256 self-consistent",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "recompute mesh_sha256",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "recompute geometry_class",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "recompute role",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "recompute split",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "recompute family",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "recompute completeness",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "recompute files",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "recompute readings.n_nodes",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "recompute readings.max_disp",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "recompute readings.max_von_mises",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "recompute readings.n_tri3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "recompute readings.min_jacobian",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "equivalence_whitelist_eq_blacklist",
+      "pass": true,
+      "detail": "whitelist has 51 class(es), blacklist 51"
+    },
+    {
+      "key": "same_class_same_design",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "no_class_spans_splits",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "every_family_has_test",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "every_case_assigned",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "rule_reproduces_D12",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "no_duplicate_models",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "key": "manifest_summary.n_cases",
+      "pass": true,
+      "detail": "manifest 52 vs recomputed 52"
+    },
+    {
+      "key": "manifest_summary.n_geometry_classes",
+      "pass": true,
+      "detail": "manifest 51 vs recomputed 51"
+    },
+    {
+      "key": "manifest_summary.n_leaky_classes",
+      "pass": true,
+      "detail": "manifest 0 vs recomputed 0"
+    },
+    {
+      "key": "manifest_summary.n_duplicate_models",
+      "pass": true,
+      "detail": "manifest 0 vs recomputed 0"
+    },
+    {
+      "key": "manifest_summary.roles",
+      "pass": true,
+      "detail": "manifest {'ablation': 1, 'baseline': 3, 'degenerate': 2, 'feature': 8, 'sweep': 38} vs recomputed {'ablation': 1, 'baseline': 3, 'degenerate': 2, 'feature': 8, 'sweep': 38}"
+    },
+    {
+      "key": "manifest_summary.by_family",
+      "pass": true,
+      "detail": "manifest {'fuselage_barrel': {'train': 1, 'val': 3, 'test': 2}, 'wingbox': {'train': 17, 'val': 7, 'test': 7}, 'open_hole_panel': {'train': 2, 'val': 5, 'test': 4}, 'stiffened_panel': {'train': 1, 'val': 2, 'test': 1}} vs recomputed {'fuselage_barrel': {'train': 1, 'val': 3, 'test': 2}, 'open_hole_panel': {'train': 2, 'val': 5, 'test': 4}, 'stiffened_panel': {'train': 1, 'val': 2, 'test': 1}, 'wingbox': {'train': 17, 'val': 7, 'test': 7}}"
+    },
+    {
+      "key": "manifest_summary.splits",
+      "pass": true,
+      "detail": "manifest {'train': 21, 'val': 17, 'test': 14} vs recomputed {'test': 14, 'train': 21, 'val': 17}"
+    }
+  ],
+  "summary": {
+    "n_cases": 52,
+    "n_geometry_classes": 51,
+    "splits": {
+      "test": [
+        "fuselage_barrel_d1600_l1600_str8_frm3",
+        "fuselage_barrel_d2000_l2000_str12_frm4",
+        "naca4412_wingbox_n_ribs7_chord800",
+        "naca4412_wingbox_size_span2400_skin2",
+        "naca4412_wingbox_size_span3000_skin1p5",
+        "naca4412_wingbox_str3_T",
+        "naca4412_wingbox_sweep20_taper060",
+        "naca4412_wingbox_sweep40_taper040",
+        "naca4412_wingbox_web1_offcentre",
+        "open_hole_panel_400x200_d20_cfrp45s_d40",
+        "open_hole_panel_400x200_d20_offcentre",
+        "open_hole_panel_400x200_d40_offcentre",
+        "open_hole_panel_600x300_d60",
+        "stiffened_panel_600x600_str3"
+      ],
+      "train": [
+        "fuselage_barrel_d2000_l2000_str8_frm3",
+        "naca4412_wingbox",
+        "naca4412_wingbox_n_ribs3_chord1000",
+        "naca4412_wingbox_n_ribs3_chord800",
+        "naca4412_wingbox_n_ribs5_chord800",
+        "naca4412_wingbox_recombination_algorithm3",
+        "naca4412_wingbox_size_skin2",
+        "naca4412_wingbox_size_skin4",
+        "naca4412_wingbox_size_span1600",
+        "naca4412_wingbox_size_span2400",
+        "naca4412_wingbox_str3",
+        "naca4412_wingbox_str5",
+        "naca4412_wingbox_sweep10",
+        "naca4412_wingbox_sweep20",
+        "naca4412_wingbox_taper060",
+        "naca4412_wingbox_taper080",
+        "naca4412_wingbox_taper090",
+        "naca4412_wingbox_web1",
+        "open_hole_panel_400x200_d20",
+        "open_hole_panel_400x200_d20_cfrp090s",
+        "stiffened_panel_600x600"
+      ],
+      "val": [
+        "fuselage_barrel_d1800_l2000_str8_frm3",
+        "fuselage_barrel_d2000_l1600_str8_frm3",
+        "fuselage_barrel_d2000_l2000_t2_str8_frm3",
+        "naca4412_wingbox_n_ribs7_chord1000",
+        "naca4412_wingbox_n_ribs9_chord1000",
+        "naca4412_wingbox_size_skin1p5",
+        "naca4412_wingbox_size_span3000",
+        "naca4412_wingbox_sweep40",
+        "naca4412_wingbox_taper040",
+        "naca4412_wingbox_web2",
+        "open_hole_panel_400x200_d20_cfrp45s",
+        "open_hole_panel_400x200_d20_cfrpqi",
+        "open_hole_panel_400x200_d40",
+        "open_hole_panel_400x200_d50",
+        "open_hole_panel_600x300_d30",
+        "stiffened_panel_800x600",
+        "stiffened_panel_800x600_str3"
+      ]
+    },
+    "by_family": {
+      "fuselage_barrel": {
+        "train": 1,
+        "val": 3,
+        "test": 2
+      },
+      "open_hole_panel": {
+        "train": 2,
+        "val": 5,
+        "test": 4
+      },
+      "stiffened_panel": {
+        "train": 1,
+        "val": 2,
+        "test": 1
+      },
+      "wingbox": {
+        "train": 17,
+        "val": 7,
+        "test": 7
+      }
+    },
+    "roles": {
+      "ablation": 1,
+      "baseline": 3,
+      "degenerate": 2,
+      "feature": 8,
+      "sweep": 38
+    },
+    "n_leaky_classes": 0,
+    "n_duplicate_models": 0
+  },
+  "failures": []
+}

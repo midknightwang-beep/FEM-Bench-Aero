@@ -1,0 +1,42 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 28, right: 80 }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>三条设计原则与数据集定位</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 130, width: 690, flexDirection: 'column', gap: 18 }}>
+    {[
+      { n: '一', t: '契约唯一', d: '全链路只认一份声明式契约 FEASpec，几何、网格、材料、载荷、边界、求解器一次声明、全局生效——从根源消灭"多处定义、互相打架"' },
+      { n: '二', t: '求解器先于输入卡', d: '求解器选择在契约层锁定、在写卡前生效，CalculiX 与 Abaqus 双后端输出由同一契约派生，保证双码模型严格同构' },
+      { n: '三', t: '闸即标准', d: '数据集入库的质量闸与生成模型放行的质量闸是同一套代码——数据集的可信度标准直接平移为生成结果的可信度标准' },
+    ].map((p, i) => (
+      <Box key={i} style={{ background: '#F1F5F9', borderRadius: 10, padding: '18px 22px', borderLeft: '5px solid #1565C0' }}>
+        <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 6 }}>
+          <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#FFFFFF', background: '#1565C0', borderRadius: 14, padding: '2px 12px' }}>原则 {p.n}</Text>
+          <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#1A1A1A' }}>{p.t}</Text>
+        </Box>
+        <Text style={{ fontSize: 16, color: '#334155', lineHeight: 1.6 }}>{p.d}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', right: 80, top: 130, width: 380, height: 460, background: '#0F172A', borderRadius: 12, padding: 30 }}>
+    <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 4 }}>数据集的定位</Text>
+    <Text style={{ fontSize: 15, color: '#06B6D4', fontWeight: 'bold', marginBottom: 18 }}>标尺与地基，不是附属产物</Text>
+    {[
+      { t: '交互层', d: '靠它评测 NL → spec' },
+      { t: '生成层', d: '靠它校准网格与建面' },
+      { t: '验证层', d: '靠它对照真值打分' },
+    ].map((r, i) => (
+      <Box key={i} style={{ marginBottom: 16, background: 'rgba(255,255,255,0.06)', borderRadius: 8, padding: '12px 16px' }}>
+        <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 3 }}>{r.t}</Text>
+        <Text style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>{r.d}</Text>
+      </Box>
+    ))}
+    <Text style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, marginTop: 'auto' }}>
+      没有数据集，生成无法回答"对不对"；有了数据集，每次生成都能量化偏差
+    </Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>基于大模型的飞机有限元模型智能生成技术</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>05 / 15</Text>
+  </Box>
+</Slide>

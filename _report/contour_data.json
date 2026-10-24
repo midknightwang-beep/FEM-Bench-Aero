@@ -1,0 +1,160 @@
+{
+ "meta": {
+  "generated_at": "2026-10-06 10:18",
+  "geometry_source": "FEM-Bench-Aero/modeling/<case>/model.msh (gmsh)",
+  "field_source": "feagpt_repro/<tree>/<case>/<case>.odb.json (Abaqus ODB extract)",
+  "field_blocks": {
+   "STRESS": "outermost section points, node-averaged (membrane)",
+   "STRESS_PEAK": "max von Mises over section points & elements (sizing, D8)",
+   "DISP": "nodal displacement U",
+   "ur": "radial component ux*cos(t)+uy*sin(t), t=atan2(y,x)"
+  },
+  "vm_formula": "sqrt(0.5*((s11-s22)^2+(s22-s33)^2+(s33-s11)^2)+3*(s12^2+s13^2+s23^2))",
+  "deformation_note": "displacement drawn as x + scale*u; scale chosen so max|u| spans 6% of the model's largest extent"
+ },
+ "cases": {
+  "naca4412_wingbox": {
+   "n_elems": 5144,
+   "max_umag": 2.3738960041929107,
+   "max_vm_node": 8.454058904563793,
+   "max_vm_elem": 7.994834603253054,
+   "max_peak_node": 11.780898280710014,
+   "max_peak_elem": 10.04702697343751,
+   "ur_min": -0.2001899570502208,
+   "ur_max": 0.8423128539519112,
+   "defo_scale": 50.54981338190432
+  },
+  "naca4412_wingbox_sweep40": {
+   "n_elems": 5767,
+   "max_umag": 7.026717742880465,
+   "max_vm_node": 13.737130619730284,
+   "max_vm_elem": 13.092836101781938,
+   "max_peak_node": 18.96550108923645,
+   "max_peak_elem": 17.209709129940112,
+   "ur_min": -0.019889034798227366,
+   "ur_max": 0.22896017636989435,
+   "defo_scale": 18.17234737664712
+  },
+  "naca4412_wingbox_taper060": {
+   "n_elems": 8026,
+   "max_umag": 3.3914620763235805,
+   "max_vm_node": 9.112664350219077,
+   "max_vm_elem": 8.750638067966188,
+   "max_peak_node": 12.695837204100416,
+   "max_peak_elem": 10.86722445422306,
+   "ur_min": -0.30485730935070443,
+   "ur_max": 1.2254063019507488,
+   "defo_scale": 35.382969733833114
+  },
+  "stiffened_panel_800x600_str3": {
+   "n_elems": 67300,
+   "max_umag": 0.028988757591019938,
+   "max_vm_node": 2.3640586574408524,
+   "max_vm_elem": 2.018975294823191,
+   "max_peak_node": 2.583655637610804,
+   "max_peak_elem": 2.1453591468950743,
+   "ur_min": -0.001810588794497477,
+   "ur_max": 0.0012915149569514297,
+   "defo_scale": 1655.8143221311877
+  },
+  "fuselage_barrel_d2000_l2000_str8_frm3": {
+   "n_elems": 157972,
+   "max_umag": 2.685233649824806,
+   "max_vm_node": 109.66013152107536,
+   "max_vm_elem": 102.79253030589064,
+   "max_peak_node": 281.0579209266885,
+   "max_peak_elem": 274.9583075649113,
+   "ur_min": -1.5270586622378841,
+   "ur_max": 1.6965638660286981,
+   "defo_scale": 44.68884858784233
+  },
+  "naca4412_wingbox_n_ribs3_chord800": {
+   "n_elems": 3696,
+   "max_umag": 4.550353828916151,
+   "max_vm_node": 12.727542516205512,
+   "max_vm_elem": 12.349775825308324,
+   "max_peak_node": 17.332039408912117,
+   "max_peak_elem": 14.984338824884968,
+   "ur_min": -0.3891743073845018,
+   "ur_max": 1.6220329616402658,
+   "defo_scale": 26.371575598678852
+  },
+  "naca4412_wingbox_n_ribs9_chord1000": {
+   "n_elems": 5872,
+   "max_umag": 2.363437997556635,
+   "max_vm_node": 8.444676903559534,
+   "max_vm_elem": 7.946293941391659,
+   "max_peak_node": 11.94323499022196,
+   "max_peak_elem": 10.171540371281424,
+   "ur_min": -0.19928981094791526,
+   "ur_max": 0.8384725374091653,
+   "defo_scale": 50.773491889382406
+  },
+  "naca4412_wingbox_str3": {
+   "n_elems": 7517,
+   "max_umag": 2.22557264527261,
+   "max_vm_node": 8.207721753313997,
+   "max_vm_elem": 7.771584678124027,
+   "max_peak_node": 11.28189221381298,
+   "max_peak_elem": 9.79472713675773,
+   "ur_min": -0.18625754367857358,
+   "ur_max": 0.7885170413406652,
+   "defo_scale": 53.91870728412067
+  },
+  "naca4412_wingbox_str5": {
+   "n_elems": 8367,
+   "max_umag": 2.1411447756504858,
+   "max_vm_node": 7.891870477399704,
+   "max_vm_elem": 7.404365625341006,
+   "max_peak_node": 11.250319025494377,
+   "max_peak_elem": 9.511511595467589,
+   "ur_min": -0.17829179638905177,
+   "ur_max": 0.7579375649911245,
+   "defo_scale": 56.04478565142508
+  },
+  "naca4412_wingbox_sweep20": {
+   "n_elems": 5292,
+   "max_umag": 3.1776258561868236,
+   "max_vm_node": 8.218960061819304,
+   "max_vm_elem": 7.7131625425062165,
+   "max_peak_node": 10.941072345441729,
+   "max_peak_elem": 9.759554702077015,
+   "ur_min": -0.003172604497285204,
+   "ur_max": 0.2616612652695594,
+   "defo_scale": 37.7640431664919
+  },
+  "naca4412_wingbox_taper080": {
+   "n_elems": 5191,
+   "max_umag": 2.7610115114339733,
+   "max_vm_node": 8.599062107911822,
+   "max_vm_elem": 8.11017315352969,
+   "max_peak_node": 11.954510262439012,
+   "max_peak_elem": 10.146173131708455,
+   "ur_min": -0.24264561926274975,
+   "ur_max": 0.9932832369966265,
+   "defo_scale": 43.462332374585515
+  },
+  "naca4412_wingbox_sweep20_taper060": {
+   "n_elems": 7847,
+   "max_umag": 3.9687270194562543,
+   "max_vm_node": 7.850855248101673,
+   "max_vm_elem": 7.7032960314606385,
+   "max_peak_node": 10.309450788170087,
+   "max_peak_elem": 9.168151546070261,
+   "ur_min": -0.0029998383197986115,
+   "ur_max": 0.24970295012933455,
+   "defo_scale": 30.23639555245624
+  },
+  "naca4412_wingbox_sweep40_taper040": {
+   "n_elems": 15780,
+   "max_umag": 9.874359668238789,
+   "max_vm_node": 13.243995372968145,
+   "max_vm_elem": 12.793764424231838,
+   "max_peak_node": 16.939554030113005,
+   "max_peak_elem": 15.971795530352288,
+   "ur_min": -0.014462756394223368,
+   "ur_max": 0.19995696259256387,
+   "defo_scale": 12.152686759626961
+  }
+ }
+}

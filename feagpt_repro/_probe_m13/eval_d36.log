@@ -1,0 +1,40 @@
+=== manifest vs recomputation (29 checks)
+  [OK  ] case_set_matches  :: manifest 55 vs disk 55; only-in-manifest=[] only-on-disk=[]
+  [OK  ] recompute spec_sha256
+  [OK  ] truth.json spec_sha256 self-consistent
+  [OK  ] recompute mesh_sha256
+  [OK  ] recompute geometry_class
+  [OK  ] recompute role
+  [OK  ] recompute split
+  [OK  ] recompute family
+  [OK  ] recompute completeness
+  [OK  ] recompute files
+  [OK  ] recompute readings.n_nodes
+  [OK  ] recompute readings.max_disp
+  [OK  ] recompute readings.max_von_mises
+  [OK  ] recompute readings.n_tri3
+  [OK  ] recompute readings.min_jacobian
+  [OK  ] equivalence_whitelist_eq_blacklist  :: whitelist has 54 class(es), blacklist 54
+  [OK  ] same_class_same_design
+  [OK  ] no_class_spans_splits
+  [OK  ] every_family_has_test
+  [OK  ] every_case_assigned
+  [OK  ] rule_reproduces_D12
+  [OK  ] no_duplicate_models
+  [OK  ] manifest_summary.n_cases  :: manifest 55 vs recomputed 55
+  [OK  ] manifest_summary.n_geometry_classes  :: manifest 54 vs recomputed 54
+  [OK  ] manifest_summary.n_leaky_classes  :: manifest 0 vs recomputed 0
+  [OK  ] manifest_summary.n_duplicate_models  :: manifest 0 vs recomputed 0
+  [OK  ] manifest_summary.roles  :: manifest {'ablation': 1, 'baseline': 3, 'degenerate': 2, 'feature': 8, 'sweep': 41} vs recomputed {'ablation': 1, 'baseline': 3, 'degenerate': 2, 'feature': 8, 'sweep': 41}
+  [OK  ] manifest_summary.by_family  :: manifest {'fuselage_barrel': {'train': 1, 'val': 3, 'test': 2}, 'wingbox': {'train': 21, 'val': 7, 'test': 6}, 'open_hole_panel': {'train': 2, 'val': 5, 'test': 4}, 'stiffened_panel': {'train': 1, 'val': 2, 'test': 1}} vs recomputed {'fuselage_barrel': {'train': 1, 'val': 3, 'test': 2}, 'open_hole_panel': {'train': 2, 'val': 5, 'test': 4}, 'stiffened_panel': {'train': 1, 'val': 2, 'test': 1}, 'wingbox': {'train': 21, 'val': 7, 'test': 6}}
+  [OK  ] manifest_summary.splits  :: manifest {'train': 25, 'val': 17, 'test': 13} vs recomputed {'test': 13, 'train': 25, 'val': 17}
+
+cases 55  classes 54  splits {test:13, train:25, val:17}
+  fuselage_barrel: {train:1, val:3, test:2}
+  open_hole_panel: {train:2, val:5, test:4}
+  stiffened_panel: {train:1, val:2, test:1}
+  wingbox: {train:21, val:7, test:6}
+roles {'ablation': 1, 'baseline': 3, 'degenerate': 2, 'feature': 8, 'sweep': 41}
+
+VERDICT: PASS
+report -> _probe_m13/eval_report_d36.json

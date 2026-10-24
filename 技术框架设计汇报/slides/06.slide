@@ -1,0 +1,49 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 48, right: 80 }}>
+    <Text style={{ fontSize: 15, color: '#1565C0', letterSpacing: 2 }}>03 设计思路</Text>
+    <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#1A1A1A', marginTop: 6 }}>三条原则，对应三类高频失效</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 170, right: 80, flexDirection: 'row', gap: 18 }}>
+    {[
+      { p: '契约唯一', m: 'FEASpec 是唯一真相源\n输入卡只是投影', e: '多求解器口径统一\n过程可追溯', s: '同一结构多套模型', c: '#1565C0' },
+      { p: '求解器先于写卡', m: '契约内声明求解器\n写卡按声明分派', e: '不为迁就语法\n而扭曲模型定义', s: '模型被语法带偏', c: '#00897B' },
+      { p: '闸即标准', m: '入库闸 = 放行闸\n同代码同阈值同版本', e: '训练合格→上线合格\n漂移可被察觉', s: '数据集与系统两张皮', c: '#E65100' },
+    ].map((x, i) => (
+      <Box key={i} style={{ flex: 1, height: 342, flexDirection: 'column' }}>
+        <Box style={{ height: 62, background: x.c, borderRadius: 8, padding: '0 16px', justifyContent: 'center' }}>
+          <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#FFFFFF' }}>{x.p}</Text>
+        </Box>
+        <Box style={{ height: 96, background: '#F8FAFC', borderRadius: 8, padding: '14px 16px', marginTop: 10 }}>
+          <Text style={{ fontSize: 13, color: '#1A1A1A', lineHeight: 1.65 }}>{x.m}</Text>
+        </Box>
+        <Box style={{ height: 88, background: '#F0F9F7', borderRadius: 8, padding: '14px 16px', marginTop: 10 }}>
+          <Text style={{ fontSize: 13, color: '#00695C', lineHeight: 1.65 }}>{x.e}</Text>
+        </Box>
+        <Box style={{ height: 56, background: '#FEF2F2', borderRadius: 8, padding: '12px 16px', marginTop: 10 }}>
+          <Text style={{ fontSize: 12, color: '#B91C1C' }}>反例：{x.s}</Text>
+        </Box>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 528, right: 80 }}>
+    <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#0D47A1' }}>四处关键取舍（都有明确代价）</Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 566, right: 80, flexDirection: 'row', gap: 14 }}>
+    {[
+      { t: '复材：等效单层', d: '不做真分层，代价是无层间应力' },
+      { t: '生成：检索+约束', d: '不先上微调，代价受检索覆盖限制' },
+      { t: '编排：单流程+工具', d: '不做自由多智能体，代价灵活性略低' },
+      { t: '校验：每步机器闸', d: '不做人工抽查，代价前置开发成本' },
+    ].map((x, i) => (
+      <Box key={i} style={{ flex: 1, height: 92, background: '#FFF8E1', borderRadius: 8, padding: '12px 14px', borderLeft: '3px solid #F9A825' }}>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#7C4A03' }}>{x.t}</Text>
+        <Text style={{ fontSize: 12, color: '#7C4A03', marginTop: 6, lineHeight: 1.5 }}>{x.d}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>技术框架设计报告</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>06 / 12</Text>
+  </Box>
+</Slide>

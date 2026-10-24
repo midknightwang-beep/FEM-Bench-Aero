@@ -1,0 +1,59 @@
+{
+  "pairs": {
+    "baseline_400x200_d20": {
+      "ccx": {
+        "lambda": 0.1,
+        "sigma_max": 30.379912849830227,
+        "Kt_gross": 3.037991284983023,
+        "Kt_net": 2.7341921564847205,
+        "howland_net": 2.72207,
+        "howland_gross": 3.024522222222222,
+        "n_edge": 72
+      },
+      "abaqus": {
+        "lambda": 0.1,
+        "sigma_max": 29.79668233054995,
+        "Kt_gross": 2.979668233054995,
+        "Kt_net": 2.6817014097494956,
+        "howland_net": 2.72207,
+        "howland_gross": 3.024522222222222,
+        "n_edge": 72
+      }
+    },
+    "b7_600x300_d30": {
+      "ccx": {
+        "lambda": 0.1,
+        "sigma_max": 30.190029540399312,
+        "Kt_gross": 3.019002954039931,
+        "Kt_net": 2.7171026586359384,
+        "howland_net": 2.72207,
+        "howland_gross": 3.024522222222222,
+        "n_edge": 72
+      },
+      "abaqus": {
+        "lambda": 0.1,
+        "sigma_max": 29.34516180953875,
+        "Kt_gross": 2.9345161809538753,
+        "Kt_net": 2.641064562858488,
+        "howland_net": 2.72207,
+        "howland_gross": 3.024522222222222,
+        "n_edge": 72
+      }
+    }
+  },
+  "baseline_vs_size_point_pct": {
+    "ccx": 0.62896,
+    "abaqus": 1.53865
+  },
+  "size_point_vs_howland_pct": {
+    "ccx": 0.18248,
+    "abaqus": 2.97588
+  },
+  "baseline_vs_howland_pct": {
+    "ccx": 0.44533,
+    "abaqus": 1.48301
+  },
+  "howland_gate_side": "ccx",
+  "tol_pct": 2.0,
+  "pass": true
+}

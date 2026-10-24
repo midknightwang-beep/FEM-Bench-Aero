@@ -1,0 +1,59 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 28, right: 80 }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>六个里程碑的执行逻辑</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 132, width: 380, flexDirection: 'column', gap: 20 }}>
+    <Text style={{ fontSize: 18, color: '#1A1A1A', lineHeight: 1.7 }}>
+      执行顺序经过专门设计：<span style={{ fontWeight: 'bold' }}>先建契约与基线，再扩形式，再定划分规则，最后放量与补维</span>。
+      若顺序颠倒，新结构形式会在旧机制下"跑通但分组错"，而数值门禁全部不报警。
+    </Text>
+    <Box style={{ background: '#F1F5F9', borderRadius: 10, padding: '16px 20px', borderLeft: '4px solid #E65100' }}>
+      <Text style={{ fontSize: 16, color: '#334155', lineHeight: 1.6 }}>
+        执行纪律：每种新结构形式必须自带<span style={{ fontWeight: 'bold' }}>退化自检</span>——参数趋零时必须退化回已信任的简单形式
+      </Text>
+    </Box>
+    <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.7 }}>
+      29 项技术决议（D1–D29）全部留档：覆盖应力口径、网格策略、划分规则、材料维架构
+    </Text>
+  </Box>
+  <svg width={700} height={480} viewBox='0 0 700 480' style={{ position: 'absolute', right: 80, top: 140 }}>
+    <line x1='40' y1='70' x2='660' y2='70' stroke='#E2E8F0' strokeWidth='3' />
+    {[
+      { x: 70, m: 'M1–M2', t: '契约与基线', d: 'FEASpec 唯一契约\n翼盒基准 5074 节点', hot: false },
+      { x: 180, m: 'M3', t: '形式扩展', d: '加筋壁板 T5\n含长桁平板 T2', hot: false },
+      { x: 290, m: 'M4', t: '划分规则化', d: '等价类防泄漏\n冻结口径断言', hot: false },
+      { x: 400, m: 'M5', t: '放量与补全', d: 'T1/T3/T4/T6 落地\n尺寸·壁厚维', hot: true },
+      { x: 510, m: 'M6', t: '材料维 T7', d: 'CLT 等效单层\n复材打样入库', hot: true },
+      { x: 620, m: '成果', t: '41 条 × 2 树', d: '7 种结构形式\n九道闸全绿', hot: false },
+    ].map((n, i) => (
+      <g key={i}>
+        <circle cx={n.x} cy='70' r={n.hot ? 13 : 9} fill={n.hot ? '#E65100' : '#1565C0'} />
+        {n.hot && <circle cx={n.x} cy='70' r='19' fill='none' stroke='#E65100' strokeWidth='1.5' opacity='0.5' />}
+        <text x={n.x} y='30' textAnchor='middle' fontSize='15' fontWeight='bold' fill='#1A1A1A' fontFamily='Microsoft YaHei'>{n.m}</text>
+        <text x={n.x} y='48' textAnchor='middle' fontSize='12' fill='#1565C0' fontWeight='bold' fontFamily='Microsoft YaHei'>{n.t}</text>
+        {n.d.split('\n').map((line, j) => (
+          <text key={j} x={n.x} y={104 + j * 20} textAnchor='middle' fontSize='11.5' fill='#64748B' fontFamily='Microsoft YaHei'>{line}</text>
+        ))}
+      </g>
+    ))}
+    <rect x='40' y='190' width='620' height='270' rx='10' fill='#F1F5F9' />
+    <text x='350' y='222' textAnchor='middle' fontSize='15' fontWeight='bold' fill='#1A1A1A' fontFamily='Microsoft YaHei'>关键实测动作（全部落盘可溯源）</text>
+    {[
+      '等直翼盒基准：5144 单元 / 5074 节点 / minJ 0.6249，作为回归锚点',
+      '开孔板 Kt 与 Howland 解对照：毛/净截面口径差 11.1% ⇒ 口径必须声明',
+      '尺寸不变性探针：同 λ 跨算例 Kt 偏差 ccx 0.629% / Abaqus 1.539% < 2%',
+      '多闭室翼盒：剪流为决定性可观测量，扭转率用面内刚性转动 LSQ 拟合',
+      '柱壳尺寸维：实测内存墙 158,548 节点 ⇒ 外推只朝收缩方向',
+    ].map((line, i) => (
+      <g key={i}>
+        <circle cx='70' cy={256 + i * 40} r='4' fill='#06B6D4' />
+        <text x='90' y={261 + i * 40} fontSize='13.5' fill='#334155' fontFamily='Microsoft YaHei'>{line}</text>
+      </g>
+    ))}
+  </svg>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>基于大模型的飞机有限元模型智能生成技术</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>07 / 15</Text>
+  </Box>
+</Slide>

@@ -1,0 +1,20 @@
+[level] size_chord=12.0 size_span=24.0
+  $ F:\AI FEA Modeling DataSets\feagpt_repro\run_pipeline.py --spec F:\AI FEA Modeling DataSets\feagpt_repro\_probe_m14\naca4412_wingbox_h12x24.spec.json --out F:\AI FEA Modeling DataSets\feagpt_repro\_probe_m14\outputs --solver ccx
+[level] size_chord=8.0 size_span=16.0
+  $ F:\AI FEA Modeling DataSets\feagpt_repro\run_pipeline.py --spec F:\AI FEA Modeling DataSets\feagpt_repro\_probe_m14\naca4412_wingbox_h8x16.spec.json --out F:\AI FEA Modeling DataSets\feagpt_repro\_probe_m14\outputs --solver ccx
+[level] size_chord=6.0 size_span=12.0
+  $ F:\AI FEA Modeling DataSets\feagpt_repro\run_pipeline.py --spec F:\AI FEA Modeling DataSets\feagpt_repro\_probe_m14\naca4412_wingbox_h6x12.spec.json --out F:\AI FEA Modeling DataSets\feagpt_repro\_probe_m14\outputs --solver ccx
+
+=== levels ===
+  h=12.0  nodes=5569    max_disp=2.36580432  max_w=0.109690  vM_mid=10.4130
+  h=8.0   nodes=12017   max_disp=2.36808184  max_w=0.109877  vM_mid=11.0328
+  h=6.0   nodes=19958   max_disp=2.36978502  max_w=0.109915  vM_mid=11.5906
+
+=== successive ===
+  12.0->8.0: +0.0963 %  (nodes x2.16)
+  8.0->6.0: +0.0719 %  (nodes x1.66)
+
+=== order === {"e_coarse_mid": 0.002277526710996458, "e_mid_fine": 0.001703170656865094, "error_ratio": 1.3372275419472883, "h_ratio": 1.5, "p_est": 0.7167040178562647}
+monotone: True
+richardson: {"u_inf": 2.377223157979753, "baseline_12mm_error_pct": -0.4803436167710753, "finest_error_pct": -0.3128920523481338}
+written -> _probe_m14/h_convergence.json

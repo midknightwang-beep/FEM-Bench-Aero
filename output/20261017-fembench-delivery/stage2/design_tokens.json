@@ -1,0 +1,33 @@
+{
+  "genre": "business-report",
+  "theme_name": "business-modern",
+  "theme_file": "tokens/themes/business-modern.json",
+  "css_variables": {
+    "--typography-fontFamily-heading": "微软雅黑, Microsoft YaHei, PingFang SC",
+    "--typography-fontSize-h1": "20pt",
+    "--typography-fontSize-sectionHeader": "13pt",
+    "--typography-fontSize-h2": "11pt",
+    "--typography-fontSize-coverCategory": "14pt",
+    "--typography-lineHeight-body": "1.6",
+    "--typography-fontWeight-heading": "600",
+    "--color-primary": "#1565C0",
+    "--color-heading": "#1A237E",
+    "--color-accent": "#00897B",
+    "--color-text": "#212121",
+    "--color-muted": "#616161",
+    "--color-border": "#E0E0E0",
+    "--color-background": "#FFFFFF",
+    "--color-surface": "#F5F7FA",
+    "--color-emphasis": "#C62828",
+    "--color-success": "#2E7D32",
+    "--color-warning": "#E65100",
+    "--color-info": "#01579B",
+    "--spacing-paragraph": "0.75em",
+    "--spacing-section": "2.5em",
+    "--spacing-block": "1em",
+    "--margin-page": "2.5cm",
+    "--layout-pageSize": "A4",
+    "--layout-maxContentWidth": "160mm"
+  },
+  "notes": "正文按 doc-formatter §2.5 硬约束采用宋体 12pt 首行缩进 2em（覆盖 token 的 9pt 雅黑，转换层取 font-family 第一项为 eastAsia 字体）；标题与强调色沿用 business-modern token。"
+}

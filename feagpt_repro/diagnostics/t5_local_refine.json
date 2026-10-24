@@ -1,0 +1,143 @@
+[
+ {
+  "n_faces": 117,
+  "ok": false,
+  "error": "1D mesh cannot be divided by 2",
+  "label": "T30 baseline (no field)",
+  "kind": "T",
+  "width": 30.0,
+  "field": null,
+  "extra": {}
+ },
+ {
+  "n_faces": 117,
+  "ok": true,
+  "n_nodes": 40237,
+  "n_elements": 40080,
+  "etypes": {
+   "quad4": 40080
+  },
+  "minJ": 0.3854,
+  "meanJ": 0.9347,
+  "label": "T30 field size 7.5 dist 12",
+  "kind": "T",
+  "width": 30.0,
+  "field": [
+   7.5,
+   12.0
+  ],
+  "extra": {}
+ },
+ {
+  "n_faces": 117,
+  "ok": true,
+  "n_nodes": 83876,
+  "n_elements": 83832,
+  "etypes": {
+   "quad4": 83832
+  },
+  "minJ": 0.4423,
+  "meanJ": 0.928,
+  "label": "T30 field size 5.0 dist 12",
+  "kind": "T",
+  "width": 30.0,
+  "field": [
+   5.0,
+   12.0
+  ],
+  "extra": {}
+ },
+ {
+  "n_faces": 117,
+  "ok": true,
+  "n_nodes": 83114,
+  "n_elements": 83076,
+  "etypes": {
+   "quad4": 83076
+  },
+  "minJ": 0.4319,
+  "meanJ": 0.9458,
+  "label": "T30 field size 5.0 dist 25",
+  "kind": "T",
+  "width": 30.0,
+  "field": [
+   5.0,
+   25.0
+  ],
+  "extra": {}
+ },
+ {
+  "n_faces": 117,
+  "ok": true,
+  "n_nodes": 184466,
+  "n_elements": 184590,
+  "etypes": {
+   "quad4": 184590
+  },
+  "minJ": 0.3242,
+  "meanJ": 0.933,
+  "label": "T30 field size 3.0 dist 12",
+  "kind": "T",
+  "width": 30.0,
+  "field": [
+   3.0,
+   12.0
+  ],
+  "extra": {}
+ },
+ {
+  "n_faces": 117,
+  "ok": true,
+  "n_nodes": 20861,
+  "n_elements": 20673,
+  "etypes": {
+   "quad4": 20673
+  },
+  "minJ": 0.3744,
+  "meanJ": 0.9044,
+  "label": "T30 global max 15",
+  "kind": "T",
+  "width": 30.0,
+  "field": null,
+  "extra": {
+   "Mesh.MeshSizeMax": 15.0
+  }
+ },
+ {
+  "n_faces": 117,
+  "ok": true,
+  "n_nodes": 29891,
+  "n_elements": 29733,
+  "etypes": {
+   "quad4": 29733
+  },
+  "minJ": 0.5332,
+  "meanJ": 0.9351,
+  "label": "T30 global max 12",
+  "kind": "T",
+  "width": 30.0,
+  "field": null,
+  "extra": {
+   "Mesh.MeshSizeMax": 12.0
+  }
+ },
+ {
+  "n_faces": 69,
+  "ok": true,
+  "n_nodes": 59886,
+  "n_elements": 59638,
+  "etypes": {
+   "quad4": 59638
+  },
+  "minJ": 0.3896,
+  "meanJ": 0.9365,
+  "label": "blade + field (must stay OK)",
+  "kind": "blade",
+  "width": 30.0,
+  "field": [
+   5.0,
+   12.0
+  ],
+  "extra": {}
+ }
+]

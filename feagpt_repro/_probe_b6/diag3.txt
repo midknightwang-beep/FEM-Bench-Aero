@@ -1,0 +1,54 @@
+﻿=== AppInit_DLLs 64 ===
+HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows
+  AppInit_DLLs = []
+  LoadAppInit_DLLs = 0
+HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows NT\CurrentVersion\Windows
+  AppInit_DLLs = []
+  LoadAppInit_DLLs = 0
+=== WER report dirs ===
+C:\Users\22207\AppData\Local\Microsoft\Windows\WER exists=False
+C:\ProgramData\Microsoft\Windows\WER exists=True
+C:\Users\22207\AppData\Local\CrashDumps exists=True
+=== newest WER report mentioning pre.exe ===
+candidate dirs=32
+NEWEST: C:\ProgramData\Microsoft\Windows\WER\ReportArchive\AppCrash_pre.exe_8594d8adda86a5915839464531b1b602b2877e4_76ecce7b_c6c18d58-74c2-4da3-9554-46eb685cf57d
+Sig[0].Name=应用程序名
+Sig[0].Value=pre.exe
+Sig[1].Name=应用程序版本
+Sig[1].Value=6.428.0.25234
+Sig[2].Name=应用程序时间戳
+Sig[2].Value=68a963cc
+Sig[3].Name=故障模块名称
+Sig[3].Value=tsbx.dll
+Sig[4].Name=故障模块版本
+Sig[4].Value=0.0.0.0
+Sig[5].Name=故障模块时间戳
+Sig[5].Value=6abb8245
+Sig[6].Name=异常偏移
+Sig[6].Value=000000000006935d
+Sig[7].Name=异常代码
+Sig[7].Value=c0000409
+Sig[8].Name=异常数据
+Sig[8].Value=0000000000000007
+DynamicSig[1].Name=OS 版本
+DynamicSig[1].Value=10.0.26200.2.0.0.768.99
+DynamicSig[2].Name=区域设置 ID
+DynamicSig[2].Value=2052
+DynamicSig[22].Name=其他信息 1
+DynamicSig[22].Value=9d47
+DynamicSig[23].Name=其他信息 2
+DynamicSig[23].Value=9d4743998099a0572df3aee814f0b75c
+DynamicSig[24].Name=其他信息 3
+DynamicSig[24].Value=35bc
+DynamicSig[25].Name=其他信息 4
+DynamicSig[25].Value=35bcfd6ae778e41fb5d2beef1597e01c
+LoadedModule[0]=D:\Program Files\SIMULIA\EstProducts\2026\win_b64\code\bin\pre.exe
+LoadedModule[1]=C:\WINDOWS\SYSTEM32\ntdll.dll
+LoadedModule[2]=C:\WINDOWS\System32\KERNEL32.DLL
+LoadedModule[3]=C:\WINDOWS\System32\KERNELBASE.dll
+LoadedModule[4]=C:\WINDOWS\SYSTEM32\apphelp.dll
+LoadedModule[5]=C:\WINDOWS\System32\ucrtbase.dll
+LoadedModule[6]=C:\WINDOWS\System32\COMDLG32.dll
+LoadedModule[7]=C:\WINDOWS\System32\msvcp_win.dll
+LoadedModule[8]=C:\WINDOWS\System32\combase.dll
+LoadedModule[9]=C:\WINDOWS\System32\RPCRT4.dll

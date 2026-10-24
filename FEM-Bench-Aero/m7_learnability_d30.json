@@ -1,0 +1,86 @@
+{
+ "family": "wingbox",
+ "n": {
+  "train": 13,
+  "val": 5,
+  "test": 5
+ },
+ "targets": {
+  "u": {
+   "M0 constant": {
+    "val_mape": 28.674,
+    "test_mape": 34.954,
+    "test_max_pct": 70.44,
+    "train_loo_mape": null
+   },
+   "M1 beam scaling": {
+    "val_mape": 26.907,
+    "test_mape": 31.601,
+    "test_max_pct": 73.89,
+    "train_loo_mape": null
+   },
+   "M2 beam+shape(3p)": {
+    "val_mape": 11.959,
+    "test_mape": 14.84,
+    "test_max_pct": 32.9,
+    "train_loo_mape": null
+   },
+   "M3 ridge(10f)": {
+    "val_mape": 14.383,
+    "test_mape": 10.72,
+    "test_max_pct": 29.19,
+    "train_loo_mape": 3.972
+   },
+   "M4 GP-RBF(10f)": {
+    "val_mape": 14.375,
+    "test_mape": 13.947,
+    "test_max_pct": 47.79,
+    "train_loo_mape": 5.752
+   },
+   "M5 hybrid beam+ridge": {
+    "val_mape": 14.152,
+    "test_mape": 10.633,
+    "test_max_pct": 32.83,
+    "train_loo_mape": 3.796
+   }
+  },
+  "vm": {
+   "M0 constant": {
+    "val_mape": 11.917,
+    "test_mape": 19.709,
+    "test_max_pct": 28.03,
+    "train_loo_mape": null
+   },
+   "M1 beam scaling": {
+    "val_mape": 13.465,
+    "test_mape": 16.097,
+    "test_max_pct": 33.54,
+    "train_loo_mape": null
+   },
+   "M2 beam+shape(3p)": {
+    "val_mape": 12.948,
+    "test_mape": 16.762,
+    "test_max_pct": 30.76,
+    "train_loo_mape": null
+   },
+   "M3 ridge(10f)": {
+    "val_mape": 15.172,
+    "test_mape": 13.85,
+    "test_max_pct": 28.61,
+    "train_loo_mape": 3.988
+   },
+   "M4 GP-RBF(10f)": {
+    "val_mape": 10.562,
+    "test_mape": 15.55,
+    "test_max_pct": 27.31,
+    "train_loo_mape": 5.827
+   },
+   "M5 hybrid beam+ridge": {
+    "val_mape": 13.986,
+    "test_mape": 14.211,
+    "test_max_pct": 31.09,
+    "train_loo_mape": 3.7
+   }
+  }
+ }
+}

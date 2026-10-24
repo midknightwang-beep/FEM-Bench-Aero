@@ -1,0 +1,49 @@
+# ============================================================
+# FEM-Bench-Aero 仓库 .gitignore（2026-10-24 W1-1，ROADMAP W1）
+# 原则：入库 = 代码 + 文档 + 关键 JSON 证据；排除 = 可复现求解产物 +
+#        第三方数据/二进制。数据集本体（modeling/_xval）由 pipeline
+#        可复现，manifest.json 记录 digest，DVC/LFS 另议（ROADMAP W1）。
+# ============================================================
+
+# ---- 求解产物（可由 run_pipeline.py 复现）----
+**/outputs/
+**/outputs_*/
+**/out/
+**/*_abaqus/
+**/*_retired*/
+_m5_probe/
+
+# ccx/abaqus 原始求解文件（任何位置的散落产物）
+*.frd
+*.12d
+*.cvg
+*.sta
+*.023
+*.odb
+*.lck
+*.sim
+*.mdl
+*.stt
+*.prt
+*.com
+*.msg
+
+# ---- 数据集本体（大文件，digest 见 manifest.json）----
+FEM-Bench-Aero/modeling/
+FEM-Bench-Aero/_xval/
+
+# ---- 第三方数据与二进制（许可/体积原因不入库）----
+datasets/
+_probe_d8/
+tools/calculix/
+tools/calculix_2.23_4win.zip
+tools/wheels/
+
+# ---- 临时与系统 ----
+__pycache__/
+*.pyc
+.venv/
+Thumbs.db
+desktop.ini
+~$*
+*.tmp

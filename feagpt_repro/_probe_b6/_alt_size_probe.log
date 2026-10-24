@@ -1,0 +1,7 @@
+case                                   split     area(mm2)    nodes   eq(est)  verdict
+  fuselage_barrel_d2000_l1600_str8_frm3 val      10,930,101  129,656 1,935,764  ok (<=158.5k measured ok)
+  fuselage_barrel_d1600_l1600_str8_frm3 test      8,806,384  103,739 1,548,823  ok (<=158.5k measured ok)
+  fuselage_barrel_d2000_l2400_str8_frm3 val      16,116,649  188,555 2,815,126  RISK (between the two measured walls)
+  fuselage_barrel_d2200_l2000_str8_frm3 val      14,836,561  174,563 2,606,226  RISK (between the two measured walls)
+
+-> F:\AI FEA Modeling DataSets\feagpt_repro\_probe_b6\_alt_size_probe.json

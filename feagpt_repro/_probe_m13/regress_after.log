@@ -1,0 +1,22 @@
+  fingerprinted naca4412_wingbox
+  fingerprinted naca4412_wingbox_n_ribs3_chord1000
+  fingerprinted naca4412_wingbox_n_ribs3_chord800
+  fingerprinted naca4412_wingbox_n_ribs5_chord1000
+  fingerprinted naca4412_wingbox_n_ribs5_chord800
+  fingerprinted naca4412_wingbox_n_ribs7_chord1000
+  fingerprinted naca4412_wingbox_n_ribs7_chord800
+  fingerprinted naca4412_wingbox_recombination_algorithm3
+  fingerprinted naca4412_wingbox_str3
+fingerprints -> _probe_m13/regress_groups_d36_after.json
+  [SAME] naca4412_wingbox
+  [SAME] naca4412_wingbox_n_ribs3_chord1000
+  [SAME] naca4412_wingbox_n_ribs3_chord800
+  [SAME] naca4412_wingbox_n_ribs5_chord1000
+  [SAME] naca4412_wingbox_n_ribs5_chord800
+  [SAME] naca4412_wingbox_n_ribs7_chord1000
+  [SAME] naca4412_wingbox_n_ribs7_chord800
+  [SAME] naca4412_wingbox_recombination_algorithm3
+  [SAME] naca4412_wingbox_str3
+
+grouping regression: 9/9 identical
+VERDICT: PASS

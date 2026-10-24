@@ -1,0 +1,14 @@
+# feagpt_repro runtime requirements
+#
+# Geometry + meshing go through the Gmsh Python API, which bundles the
+# OpenCASCADE kernel and the Gmsh mesher.  numpy is only needed for the
+# airfoil coordinate maths and the verification script.
+#
+# CalculiX is NOT a pip package: ccx must be on PATH, or dropped under
+# tools/calculix/<version>/, or pointed at with FEAGPT_CCX.
+# The official Windows build is http://www.dhondt.de/calculix_2.23_4win.zip
+
+numpy>=1.26
+gmsh>=4.11
+# optional: only used to cross-check mesh I/O (VTK/MSH) in post-processing
+meshio>=5.3

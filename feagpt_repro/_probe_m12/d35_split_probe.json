@@ -1,0 +1,25 @@
+{
+ "n_cases": 53,
+ "moved": [
+  {
+   "case": "naca4412_wingbox_sweep20_taper060",
+   "family": "wingbox",
+   "old": "test",
+   "new": "train",
+   "old_reason": "新平面形状组合（后掠 20° × 锥度 0.6 兼具；train 中两个自由度各只有单变量）",
+   "new_reason": "落在训练包络内（未命中任何留出区域）"
+  }
+ ],
+ "candidate": {
+  "name": "stiffened_panel_800x600_str3",
+  "sweep": 0.0,
+  "taper": 1.0,
+  "split": "train",
+  "reason": "落在训练包络内（未命中任何留出区域）"
+ },
+ "counts_after": {
+  "test": 13,
+  "train": 24,
+  "val": 17
+ }
+}

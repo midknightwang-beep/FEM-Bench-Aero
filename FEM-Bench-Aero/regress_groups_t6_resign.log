@@ -1,0 +1,10 @@
+  fingerprinted naca4412_wingbox
+  fingerprinted naca4412_wingbox_n_ribs3_chord1000
+  fingerprinted naca4412_wingbox_n_ribs3_chord800
+  fingerprinted naca4412_wingbox_n_ribs5_chord1000
+  fingerprinted naca4412_wingbox_n_ribs5_chord800
+  fingerprinted naca4412_wingbox_n_ribs7_chord1000
+  fingerprinted naca4412_wingbox_n_ribs7_chord800
+  fingerprinted naca4412_wingbox_recombination_algorithm3
+  fingerprinted naca4412_wingbox_str3
+reference saved -> regress_baseline_groups.json (9 cases)

@@ -1,0 +1,178 @@
+[
+ {
+  "cap": 8.0,
+  "ok": true,
+  "n_nodes": 63131,
+  "etypes": {
+   "quad4": 63105
+  },
+  "minJ": 0.485,
+  "setting": "adaptive 0.8*half",
+  "width": 20.0,
+  "flange_half": 10.0
+ },
+ {
+  "cap": 12.0,
+  "ok": true,
+  "n_nodes": 29891,
+  "etypes": {
+   "quad4": 29733
+  },
+  "minJ": 0.5332,
+  "setting": "adaptive 0.8*half",
+  "width": 30.0,
+  "flange_half": 15.0
+ },
+ {
+  "cap": 16.0,
+  "ok": true,
+  "n_nodes": 18142,
+  "etypes": {
+   "quad4": 17954
+  },
+  "minJ": 0.4326,
+  "setting": "adaptive 0.8*half",
+  "width": 40.0,
+  "flange_half": 20.0
+ },
+ {
+  "cap": 20.0,
+  "ok": true,
+  "n_nodes": 13859,
+  "etypes": {
+   "quad4": 13641
+  },
+  "minJ": 0.2254,
+  "setting": "adaptive 0.8*half",
+  "width": 50.0,
+  "flange_half": 25.0
+ },
+ {
+  "cap": 24.0,
+  "ok": true,
+  "n_nodes": 11115,
+  "etypes": {
+   "quad4": 10897
+  },
+  "minJ": 0.5937,
+  "setting": "adaptive 0.8*half",
+  "width": 60.0,
+  "flange_half": 30.0
+ },
+ {
+  "cap": 12.0,
+  "ok": true,
+  "n_nodes": 30901,
+  "etypes": {
+   "quad4": 30743
+  },
+  "minJ": 0.5041,
+  "setting": "fixed max 12",
+  "width": 20.0,
+  "flange_half": 10.0
+ },
+ {
+  "cap": 12.0,
+  "ok": true,
+  "n_nodes": 29891,
+  "etypes": {
+   "quad4": 29733
+  },
+  "minJ": 0.5332,
+  "setting": "fixed max 12",
+  "width": 30.0,
+  "flange_half": 15.0
+ },
+ {
+  "cap": 12.0,
+  "ok": true,
+  "n_nodes": 29221,
+  "etypes": {
+   "quad4": 29063
+  },
+  "minJ": 0.4929,
+  "setting": "fixed max 12",
+  "width": 40.0,
+  "flange_half": 20.0
+ },
+ {
+  "cap": 12.0,
+  "ok": true,
+  "n_nodes": 36019,
+  "etypes": {
+   "quad4": 35957
+  },
+  "minJ": 0.5269,
+  "setting": "fixed max 12",
+  "width": 50.0,
+  "flange_half": 25.0
+ },
+ {
+  "cap": 12.0,
+  "ok": true,
+  "n_nodes": 34594,
+  "etypes": {
+   "quad4": 34532
+  },
+  "minJ": 0.5321,
+  "setting": "fixed max 12",
+  "width": 60.0,
+  "flange_half": 30.0
+ },
+ {
+  "cap": 15.0,
+  "ok": false,
+  "error": "1D mesh cannot be divided by 2",
+  "setting": "fixed max 15",
+  "width": 20.0,
+  "flange_half": 10.0
+ },
+ {
+  "cap": 15.0,
+  "ok": true,
+  "n_nodes": 20861,
+  "etypes": {
+   "quad4": 20673
+  },
+  "minJ": 0.3744,
+  "setting": "fixed max 15",
+  "width": 30.0,
+  "flange_half": 15.0
+ },
+ {
+  "cap": 15.0,
+  "ok": true,
+  "n_nodes": 20066,
+  "etypes": {
+   "quad4": 19878
+  },
+  "minJ": 0.4326,
+  "setting": "fixed max 15",
+  "width": 40.0,
+  "flange_half": 20.0
+ },
+ {
+  "cap": 15.0,
+  "ok": true,
+  "n_nodes": 20069,
+  "etypes": {
+   "quad4": 19881
+  },
+  "minJ": 0.3963,
+  "setting": "fixed max 15",
+  "width": 50.0,
+  "flange_half": 25.0
+ },
+ {
+  "cap": 15.0,
+  "ok": true,
+  "n_nodes": 23370,
+  "etypes": {
+   "quad4": 23182
+  },
+  "minJ": 0.4033,
+  "setting": "fixed max 15",
+  "width": 60.0,
+  "flange_half": 30.0
+ }
+]

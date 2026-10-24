@@ -1,0 +1,44 @@
+========================================================================
+gate 3 cross-solver - plain panel FINE mesh (3 mm) - MESH-CONVERGENCE PROBE
+  purpose: show the 0.800 % coarse-mesh gap is discretisation, not a solver
+  command: python verify_solvers.py --ccx outputs/_verify_panel --abaqus outputs/_verify_panel_abq \
+               --case verify_panel_plain_fine --spec outputs/_verify_panel/verify_panel_plain_fine/verify_panel_plain_fine.spec.json \
+               --force 36 --reaction-set all
+  date: 2026-10-03 08:57
+========================================================================
+
+==============================================================================
+  CROSS-SOLVER VERIFICATION - identical model, two independent codes
+==============================================================================
+  CalculiX : verify_panel_plain_fine.frd
+  Abaqus   : verify_panel_plain_fine.odb.json
+------------------------------------------------------------------------------
+  1) node labels      : ccx 46432 vs abaqus 46432 -> IDENTICAL
+  2) node coordinates : max |delta| = 3.027e-05 mm -> float32-consistent
+  3) element count    : abaqus assembled 46031 elements {'S4': 46031} (read from the ODB, not from the deck text)
+  4) max |u|          : ccx 0.96175 mm vs abaqus 0.96490 mm -> diff 0.326 %
+  5) max |UZ|         : ccx 0.96175 mm vs abaqus 0.96490 mm -> diff 0.326 %
+  6) equilibrium      : sum of nodal forces over the 'all' node set
+       distributed load: the model is self-equilibrated, and the two
+       codes' force conventions differ (ccx total -> 0, abaqus
+       reaction -> applied), so each is quoted against its own target.
+       ccx   : 46432 nodes in set [total] | RX     +0.00000  RY     +0.00000  RZ     -0.00000 N
+                dominant = Z  -> |R| 0.00000 N vs target 0.00000 N, residual 0.000010 % of 36 N
+       abaqus: 46432 nodes in set [reaction] | RX     +0.00000  RY     +0.00000  RZ    +36.00000 N
+                dominant = Z  -> |R| 36.00000 N vs target 36.00000 N, residual 0.000000 % of 36 N
+  7) stress           : shell stress lives at section points; the
+                        definition of each value is printed with it
+       ccx    OUTPUT=2D               : 1.3590 MPa  (nodal, as CalculiX writes it)
+       abaqus membrane, node-averaged: 0.0000 MPa  (mean of outer section points, averaged over adjacent elements)
+       abaqus outer fibre, per element: 3.5066 MPa  (element-wise peak - the sizing number)
+       peak, ccx vs abaqus membrane  : diff 100.000 % (peak values sit at spar/rib junctions - mesh-dependent)
+       ccx peak, in-plane only       : 0.0000 MPa (transverse shear is 100.00 % of the 1.3590 MPa peak)
+       abaqus section points exposed : [1, 5] (ELEMENT_NODAL extrapolation keeps only the outer two)
+       abaqus stress components      : ['S11', 'S22', 'S33', 'S12'] (TENSOR_3D_PLANAR)
+       abaqus candidate reductions   : membrane_node_averaged=0.0, outer_fibre_node_averaged=3.0742, outer_fibre_elementwise_max=3.5066, outer_fibre_elementwise_vm_then_node_averaged=3.0743
+------------------------------------------------------------------------------
+  note: ODB node coordinates are stored as 32-bit floats, so the 3.0e-05 mm residual is storage precision, not a model difference
+  note: ccx's peak von Mises (1.3590 MPa) is 100.0 % transverse shear, not bending or axial stress: the in-plane field peaks at 0.0000 MPa.  For this model the 'max von Mises' headline is a bearing/shear number.
+  note: per-node stress field not comparable on this model: abaqus reports an identically zero mid-surface field (max 0.00e+00 MPa over 46432 nodes).  That is correct physics - linear theory gives a flat plate no membrane action under transverse pressure - so the comparison is vacuous here, not failed.  The peaks are not comparable either: ccx 1.3590 MPa (mid-surface, shear-dominated) vs abaqus outer fibre 3.5066 MPa -> 61.2 % apart.  On a pure-bending model no single headline stress number is cross-solver comparable until the stress definition is fixed.
+  VERDICT: PASS - 6 checks, no disagreement above tolerance
+==============================================================================

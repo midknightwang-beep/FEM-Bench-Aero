@@ -1,0 +1,6696 @@
+{
+  "n_cases": 110,
+  "n_pass": 110,
+  "cases": [
+    {
+      "case": "fuselage_barrel_d1600_l1600_str8_frm3",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_frame_faces",
+          "expected": 24,
+          "actual": 24,
+          "pass": true
+        },
+        {
+          "key": "n_frame_z_planes",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "stringer_angles",
+          "expected": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "actual": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 56,
+          "actual": 56,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "fuselage_barrel_d1800_l2000_str8_frm3",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_frame_faces",
+          "expected": 24,
+          "actual": 24,
+          "pass": true
+        },
+        {
+          "key": "n_frame_z_planes",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "stringer_angles",
+          "expected": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "actual": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 56,
+          "actual": 56,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "fuselage_barrel_d2000_l1600_str8_frm3",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_frame_faces",
+          "expected": 24,
+          "actual": 24,
+          "pass": true
+        },
+        {
+          "key": "n_frame_z_planes",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "stringer_angles",
+          "expected": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "actual": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 56,
+          "actual": 56,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "fuselage_barrel_d2000_l2000_str12_frm4",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 36,
+          "actual": 36,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 36,
+          "actual": 36,
+          "pass": true
+        },
+        {
+          "key": "n_frame_faces",
+          "expected": 48,
+          "actual": 48,
+          "pass": true
+        },
+        {
+          "key": "n_frame_z_planes",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "stringer_angles",
+          "expected": [
+            0.0,
+            0.523598776,
+            1.047197551,
+            1.570796327,
+            2.094395102,
+            2.617993878,
+            3.141592654,
+            3.665191429,
+            4.188790205,
+            4.71238898,
+            5.235987756,
+            5.759586532
+          ],
+          "actual": [
+            0.0,
+            0.523598776,
+            1.047197551,
+            1.570796327,
+            2.094395102,
+            2.617993878,
+            3.141592654,
+            3.665191429,
+            4.188790205,
+            4.71238898,
+            5.235987756,
+            5.759586532
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 120,
+          "actual": 120,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "fuselage_barrel_d2000_l2000_str8_frm3",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_frame_faces",
+          "expected": 24,
+          "actual": 24,
+          "pass": true
+        },
+        {
+          "key": "n_frame_z_planes",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "stringer_angles",
+          "expected": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "actual": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 56,
+          "actual": 56,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "fuselage_barrel_d2000_l2000_t2_str8_frm3",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_frame_faces",
+          "expected": 24,
+          "actual": 24,
+          "pass": true
+        },
+        {
+          "key": "n_frame_z_planes",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "stringer_angles",
+          "expected": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "actual": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 56,
+          "actual": 56,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_n_ribs3_chord1000",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 2,
+          "actual": 2,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 2,
+          "actual": 2,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 11,
+          "actual": 11,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_n_ribs3_chord800",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 2,
+          "actual": 2,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 2,
+          "actual": 2,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 11,
+          "actual": 11,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_n_ribs5_chord800",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_n_ribs7_chord1000",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 12,
+          "actual": 12,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 6,
+          "actual": 6,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 6,
+          "actual": 6,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 7,
+          "actual": 7,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 7,
+          "actual": 7,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 31,
+          "actual": 31,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_n_ribs7_chord800",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 12,
+          "actual": 12,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 6,
+          "actual": 6,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 6,
+          "actual": 6,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 7,
+          "actual": 7,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 7,
+          "actual": 7,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 31,
+          "actual": 31,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_n_ribs9_chord1000",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 9,
+          "actual": 9,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 9,
+          "actual": 9,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 41,
+          "actual": 41,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_recombination_algorithm3",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_skin1p5",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_skin2",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_skin4",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_span1600",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_span2400",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_span2400_skin2",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_span3000",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_span3000_skin1p5",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_str3",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 12,
+          "actual": 12,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 12,
+          "actual": 12,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 69,
+          "actual": 69,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_str3_T",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 36,
+          "actual": 36,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 36,
+          "actual": 36,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 117,
+          "actual": 117,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_str5",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 24,
+          "actual": 24,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 24,
+          "actual": 24,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 20,
+          "actual": 20,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 20,
+          "actual": 20,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 101,
+          "actual": 101,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep10",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep20",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep20_taper060",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep30",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep30_taper080",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep35",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep40",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep40_taper040",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_taper040",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_taper060",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_taper080",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_taper090",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_web1",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 10,
+          "actual": 10,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [
+            475.0
+          ],
+          "actual": [
+            475.0
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 38,
+          "actual": 38,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_web1_offcentre",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 10,
+          "actual": 10,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [
+            350.0
+          ],
+          "actual": [
+            350.0
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 38,
+          "actual": 38,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_web2",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 12,
+          "actual": 12,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 12,
+          "actual": 12,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 15,
+          "actual": 15,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [
+            400.0,
+            550.0
+          ],
+          "actual": [
+            400.0,
+            550.0
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 55,
+          "actual": 55,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d20",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 20.0,
+          "actual": 20.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            200.0,
+            100.0
+          ],
+          "actual": [
+            200.0,
+            100.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d20_cfrp090s",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 20.0,
+          "actual": 20.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            200.0,
+            100.0
+          ],
+          "actual": [
+            200.0,
+            100.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d20_cfrp45s",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 20.0,
+          "actual": 20.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            200.0,
+            100.0
+          ],
+          "actual": [
+            200.0,
+            100.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d20_cfrp45s_d40",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 40.0,
+          "actual": 40.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            200.0,
+            100.0
+          ],
+          "actual": [
+            200.0,
+            100.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d20_cfrpqi",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 20.0,
+          "actual": 20.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            200.0,
+            100.0
+          ],
+          "actual": [
+            200.0,
+            100.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d20_offcentre",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 20.0,
+          "actual": 20.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            120.0,
+            60.0
+          ],
+          "actual": [
+            120.0,
+            60.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d40",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 40.0,
+          "actual": 40.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            200.0,
+            100.0
+          ],
+          "actual": [
+            200.0,
+            100.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d40_offcentre",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 40.0,
+          "actual": 40.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            120.0,
+            60.0
+          ],
+          "actual": [
+            120.0,
+            60.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d50",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 50.0,
+          "actual": 50.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            200.0,
+            100.0
+          ],
+          "actual": [
+            200.0,
+            100.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_600x300_d30",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 30.0,
+          "actual": 30.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            300.0,
+            150.0
+          ],
+          "actual": [
+            300.0,
+            150.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_600x300_d60",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 60.0,
+          "actual": 60.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            300.0,
+            150.0
+          ],
+          "actual": [
+            300.0,
+            150.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "stiffened_panel_600x600",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "stringer_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "stiffened_panel_600x600_str3",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "stringer_stations",
+          "expected": [
+            150.0,
+            300.0,
+            450.0
+          ],
+          "actual": [
+            150.0,
+            300.0,
+            450.0
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 7,
+          "actual": 7,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "stiffened_panel_800x600",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "stringer_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "stiffened_panel_800x600_str3",
+      "solver": "abaqus",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "stringer_stations",
+          "expected": [
+            200.0,
+            400.0,
+            600.0
+          ],
+          "actual": [
+            200.0,
+            400.0,
+            600.0
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 7,
+          "actual": 7,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "fuselage_barrel_d1600_l1600_str8_frm3",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_frame_faces",
+          "expected": 24,
+          "actual": 24,
+          "pass": true
+        },
+        {
+          "key": "n_frame_z_planes",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "stringer_angles",
+          "expected": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "actual": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 56,
+          "actual": 56,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "fuselage_barrel_d1800_l2000_str8_frm3",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_frame_faces",
+          "expected": 24,
+          "actual": 24,
+          "pass": true
+        },
+        {
+          "key": "n_frame_z_planes",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "stringer_angles",
+          "expected": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "actual": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 56,
+          "actual": 56,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "fuselage_barrel_d2000_l1600_str8_frm3",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_frame_faces",
+          "expected": 24,
+          "actual": 24,
+          "pass": true
+        },
+        {
+          "key": "n_frame_z_planes",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "stringer_angles",
+          "expected": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "actual": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 56,
+          "actual": 56,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "fuselage_barrel_d2000_l2000_str12_frm4",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 36,
+          "actual": 36,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 36,
+          "actual": 36,
+          "pass": true
+        },
+        {
+          "key": "n_frame_faces",
+          "expected": 48,
+          "actual": 48,
+          "pass": true
+        },
+        {
+          "key": "n_frame_z_planes",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "stringer_angles",
+          "expected": [
+            0.0,
+            0.523598776,
+            1.047197551,
+            1.570796327,
+            2.094395102,
+            2.617993878,
+            3.141592654,
+            3.665191429,
+            4.188790205,
+            4.71238898,
+            5.235987756,
+            5.759586532
+          ],
+          "actual": [
+            0.0,
+            0.523598776,
+            1.047197551,
+            1.570796327,
+            2.094395102,
+            2.617993878,
+            3.141592654,
+            3.665191429,
+            4.188790205,
+            4.71238898,
+            5.235987756,
+            5.759586532
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 120,
+          "actual": 120,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "fuselage_barrel_d2000_l2000_str8_frm3",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_frame_faces",
+          "expected": 24,
+          "actual": 24,
+          "pass": true
+        },
+        {
+          "key": "n_frame_z_planes",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "stringer_angles",
+          "expected": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "actual": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 56,
+          "actual": 56,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "fuselage_barrel_d2000_l2000_t2_str8_frm3",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_frame_faces",
+          "expected": 24,
+          "actual": 24,
+          "pass": true
+        },
+        {
+          "key": "n_frame_z_planes",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "stringer_angles",
+          "expected": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "actual": [
+            0.0,
+            0.785398163,
+            1.570796327,
+            2.35619449,
+            3.141592654,
+            3.926990817,
+            4.71238898,
+            5.497787144
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 56,
+          "actual": 56,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_n_ribs3_chord1000",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 2,
+          "actual": 2,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 2,
+          "actual": 2,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 11,
+          "actual": 11,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_n_ribs3_chord800",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 2,
+          "actual": 2,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 2,
+          "actual": 2,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 11,
+          "actual": 11,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_n_ribs5_chord800",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_n_ribs7_chord1000",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 12,
+          "actual": 12,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 6,
+          "actual": 6,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 6,
+          "actual": 6,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 7,
+          "actual": 7,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 7,
+          "actual": 7,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 31,
+          "actual": 31,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_n_ribs7_chord800",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 12,
+          "actual": 12,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 6,
+          "actual": 6,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 6,
+          "actual": 6,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 7,
+          "actual": 7,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 7,
+          "actual": 7,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 31,
+          "actual": 31,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_n_ribs9_chord1000",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 9,
+          "actual": 9,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 9,
+          "actual": 9,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 41,
+          "actual": 41,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_recombination_algorithm3",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_skin1p5",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_skin2",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_skin4",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_span1600",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_span2400",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_span2400_skin2",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_span3000",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_size_span3000_skin1p5",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_str3",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 12,
+          "actual": 12,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 12,
+          "actual": 12,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 69,
+          "actual": 69,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_str3_T",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 16,
+          "actual": 16,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 36,
+          "actual": 36,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 36,
+          "actual": 36,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 117,
+          "actual": 117,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_str5",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 24,
+          "actual": 24,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 24,
+          "actual": 24,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 20,
+          "actual": 20,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 20,
+          "actual": 20,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 101,
+          "actual": 101,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep10",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep20",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep20_taper060",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep30",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep30_taper080",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep35",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep40",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_sweep40_taper040",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_taper040",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_taper060",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_taper080",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_taper090",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 21,
+          "actual": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_web1",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 10,
+          "actual": 10,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [
+            475.0
+          ],
+          "actual": [
+            475.0
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 38,
+          "actual": 38,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_web1_offcentre",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 10,
+          "actual": 10,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [
+            350.0
+          ],
+          "actual": [
+            350.0
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 38,
+          "actual": 38,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "naca4412_wingbox_web2",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_spar_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_upper",
+          "expected": 12,
+          "actual": 12,
+          "pass": true
+        },
+        {
+          "key": "n_skin_faces_lower",
+          "expected": 12,
+          "actual": 12,
+          "pass": true
+        },
+        {
+          "key": "n_rib_faces",
+          "expected": 15,
+          "actual": 15,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_upper",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces_lower",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "n_web_faces",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        },
+        {
+          "key": "n_rib_z_planes",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "web_stations",
+          "expected": [
+            400.0,
+            550.0
+          ],
+          "actual": [
+            400.0,
+            550.0
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 55,
+          "actual": 55,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d20",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 20.0,
+          "actual": 20.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            200.0,
+            100.0
+          ],
+          "actual": [
+            200.0,
+            100.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d20_cfrp090s",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 20.0,
+          "actual": 20.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            200.0,
+            100.0
+          ],
+          "actual": [
+            200.0,
+            100.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d20_cfrp45s",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 20.0,
+          "actual": 20.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            200.0,
+            100.0
+          ],
+          "actual": [
+            200.0,
+            100.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d20_cfrp45s_d40",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 40.0,
+          "actual": 40.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            200.0,
+            100.0
+          ],
+          "actual": [
+            200.0,
+            100.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d20_cfrpqi",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 20.0,
+          "actual": 20.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            200.0,
+            100.0
+          ],
+          "actual": [
+            200.0,
+            100.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d20_offcentre",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 20.0,
+          "actual": 20.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            120.0,
+            60.0
+          ],
+          "actual": [
+            120.0,
+            60.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d40",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 40.0,
+          "actual": 40.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            200.0,
+            100.0
+          ],
+          "actual": [
+            200.0,
+            100.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d40_offcentre",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 40.0,
+          "actual": 40.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            120.0,
+            60.0
+          ],
+          "actual": [
+            120.0,
+            60.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_400x200_d50",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 50.0,
+          "actual": 50.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            200.0,
+            100.0
+          ],
+          "actual": [
+            200.0,
+            100.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_600x300_d30",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 30.0,
+          "actual": 30.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            300.0,
+            150.0
+          ],
+          "actual": [
+            300.0,
+            150.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "open_hole_panel_600x300_d60",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_panel_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_curves_total",
+          "expected": 5,
+          "actual": 5,
+          "pass": true
+        },
+        {
+          "key": "n_hole_curves",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "hole_d_measured",
+          "expected": 60.0,
+          "actual": 60.0,
+          "pass": true
+        },
+        {
+          "key": "hole_center_measured",
+          "expected": [
+            300.0,
+            150.0
+          ],
+          "actual": [
+            300.0,
+            150.0
+          ],
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "stiffened_panel_600x600",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "stringer_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "stiffened_panel_600x600_str3",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "stringer_stations",
+          "expected": [
+            150.0,
+            300.0,
+            450.0
+          ],
+          "actual": [
+            150.0,
+            300.0,
+            450.0
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 7,
+          "actual": 7,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "stiffened_panel_800x600",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "key": "stringer_stations",
+          "expected": [],
+          "actual": [],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "stiffened_panel_800x600_str3",
+      "solver": "ccx",
+      "pass": true,
+      "checks": [
+        {
+          "key": "n_skin_faces",
+          "expected": 4,
+          "actual": 4,
+          "pass": true
+        },
+        {
+          "key": "n_stringer_faces",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "key": "stringer_stations",
+          "expected": [
+            200.0,
+            400.0,
+            600.0
+          ],
+          "actual": [
+            200.0,
+            400.0,
+            600.0
+          ],
+          "pass": true
+        },
+        {
+          "key": "n_surfaces",
+          "expected": 7,
+          "actual": 7,
+          "pass": true
+        }
+      ]
+    }
+  ]
+}

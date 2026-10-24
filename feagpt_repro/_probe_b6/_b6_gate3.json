@@ -1,0 +1,72 @@
+{
+  "fuselage_barrel_d1800_l2000_str8_frm3": {
+    "structure_ccx": 1.408836,
+    "structure_abaqus": 1.420455,
+    "structure_nodes": [
+      140455,
+      140455
+    ],
+    "gate3_pct": 0.81799,
+    "profile_pct_of_tip": 0.19389,
+    "tip_ccx": 0.657927,
+    "tip_abaqus": 0.657761,
+    "pass": true,
+    "retired": false
+  },
+  "fuselage_barrel_d2000_l1600_str8_frm3": {
+    "structure_ccx": 1.268096,
+    "structure_abaqus": 1.270498,
+    "structure_nodes": [
+      127262,
+      127262
+    ],
+    "gate3_pct": 0.18902,
+    "profile_pct_of_tip": 0.17825,
+    "tip_ccx": 0.541435,
+    "tip_abaqus": 0.541215,
+    "pass": true,
+    "retired": false
+  },
+  "fuselage_barrel_d2000_l2000_t2_str8_frm3": {
+    "structure_ccx": 1.821722,
+    "structure_abaqus": 1.828679,
+    "structure_nodes": [
+      155525,
+      155525
+    ],
+    "gate3_pct": 0.38044,
+    "profile_pct_of_tip": 0.29573,
+    "tip_ccx": 0.818975,
+    "tip_abaqus": 0.816843,
+    "pass": true,
+    "retired": false
+  },
+  "fuselage_barrel_d1600_l1600_str8_frm3": {
+    "structure_ccx": 1.246529,
+    "structure_abaqus": 1.255497,
+    "structure_nodes": [
+      101346,
+      101346
+    ],
+    "gate3_pct": 0.71428,
+    "profile_pct_of_tip": 0.23957,
+    "tip_ccx": 0.58703,
+    "tip_abaqus": 0.586754,
+    "pass": true,
+    "retired": false
+  },
+  "fuselage_barrel_d1600_l2000_str8_frm3": {
+    "structure_ccx": 1.40805,
+    "structure_abaqus": 1.424213,
+    "structure_nodes": [
+      125087,
+      125087
+    ],
+    "gate3_pct": 1.13493,
+    "profile_pct_of_tip": 0.14276,
+    "tip_ccx": 0.719071,
+    "tip_abaqus": 0.719062,
+    "pass": false,
+    "retired": true
+  }
+}

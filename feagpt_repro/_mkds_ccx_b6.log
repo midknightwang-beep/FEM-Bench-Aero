@@ -1,0 +1,7 @@
+[ccx] 4 case(s) -> ..\FEM-Bench-Aero\modeling
+  [OK ] fuselage_barrel_d1600_l1600_str8_frm3          6 checks  nodes=103715  max|u|=3.0070 mm
+  [OK ] fuselage_barrel_d1800_l2000_str8_frm3          6 checks  nodes=143402  max|u|=2.8016 mm
+  [OK ] fuselage_barrel_d2000_l1600_str8_frm3          6 checks  nodes=129632  max|u|=2.5511 mm
+  [OK ] fuselage_barrel_d2000_l2000_t2_str8_frm3       6 checks  nodes=158524  max|u|=4.6787 mm
+gate4 semantic: 4/4 PASS
+CCX RC=0

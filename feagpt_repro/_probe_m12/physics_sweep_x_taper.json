@@ -1,0 +1,70 @@
+{
+ "note": "log 空间可加分解 H = ln(u(s,t)/u0) - A(s) - B(t)；B(0.4) 只由 sweep 中性的 val 点 taper040 提供",
+ "u0": 2.3654390542892276,
+ "single_axis_log": {
+  "sweep": {
+   "10": 0.08976797573883705,
+   "20": 0.29256006126259476,
+   "30": 0.6170753086212258,
+   "40": 1.0869926689519085
+  },
+  "taper": {
+   "0.4": 0.6406346225855505,
+   "0.6": 0.35813974934062415,
+   "0.8": 0.15139654099411065,
+   "0.9": 0.06976494397887877
+  }
+ },
+ "combos": [
+  {
+   "case": "naca4412_wingbox_sweep20_taper060",
+   "sweep": 20.0,
+   "taper": 0.6,
+   "measured": 3.9610402229969455,
+   "multiplicative": 4.534267105197651,
+   "interaction_log": -0.13515678860448566,
+   "interaction_pct": -12.642106627190387
+  },
+  {
+   "case": "naca4412_wingbox_sweep30_taper080",
+   "sweep": 30.0,
+   "taper": 0.8,
+   "measured": 4.705019121412395,
+   "multiplicative": 5.100994399218124,
+   "interaction_log": -0.08080566387172144,
+   "interaction_pct": -7.76270755887174
+  },
+  {
+   "case": "naca4412_wingbox_sweep40_taper040",
+   "sweep": 40.0,
+   "taper": 0.4,
+   "measured": 9.867346144431435,
+   "multiplicative": 13.3110024202088,
+   "interaction_log": -0.29936000660465034,
+   "interaction_pct": -25.870750880107995
+  }
+ ],
+ "interaction_trend": {
+  "same_sign": true,
+  "deltas_pct": [
+   -12.64,
+   -7.76,
+   -25.87
+  ]
+ },
+ "off_axis_points": [],
+ "u": {
+  "naca4412_wingbox": 2.3654390542892276,
+  "naca4412_wingbox_sweep10": 2.587602126746103,
+  "naca4412_wingbox_sweep20": 3.169341103852119,
+  "naca4412_wingbox_sweep30": 4.384339379992175,
+  "naca4412_wingbox_sweep40": 7.014337862568018,
+  "naca4412_wingbox_taper090": 2.53635648204659,
+  "naca4412_wingbox_taper080": 2.7520888147218887,
+  "naca4412_wingbox_taper060": 3.3841521444874867,
+  "naca4412_wingbox_taper040": 4.488857764398142,
+  "naca4412_wingbox_sweep20_taper060": 3.9610402229969455,
+  "naca4412_wingbox_sweep30_taper080": 4.705019121412395,
+  "naca4412_wingbox_sweep40_taper040": 9.867346144431435
+ }
+}

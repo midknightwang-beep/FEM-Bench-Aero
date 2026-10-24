@@ -1,0 +1,31 @@
+<Slide style={{ width: 1280, height: 720, background: '#0D47A1', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 96, top: 96, right: 96 }}>
+    <Text style={{ fontSize: 15, color: '#90CAF9', letterSpacing: 3 }}>结论</Text>
+    <Text style={{ fontSize: 36, fontWeight: 'bold', color: '#FFFFFF', marginTop: 12 }}>框架可用的前提，是这三件事同时成立</Text>
+    <Box style={{ width: 72, height: 4, background: '#4DB6AC', marginTop: 16 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 96, top: 268, right: 96, flexDirection: 'row', gap: 20 }}>
+    {[
+      { t: '约束', d: '契约限定生成空间\n幻觉无法通过结构校验', c: '#4DB6AC' },
+      { t: '独立', d: '验证不依赖生成模型\n几何/守恒/解析解/双码', c: '#90CAF9' },
+      { t: '同源', d: '入库闸与放行闸同源\n标准不漂移、能力可度量', c: '#FFB74D' },
+    ].map((x, i) => (
+      <Box key={i} style={{ flex: 1, height: 190, background: 'rgba(255,255,255,0.08)', borderRadius: 12, padding: '22px 24px', borderTop: `4px solid ${x.c}` }}>
+        <Text style={{ fontSize: 26, fontWeight: 'bold', color: x.c }}>{x.t}</Text>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.86)', marginTop: 10, lineHeight: 1.8 }}>{x.d}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 96, top: 504, right: 96 }}>
+    <Text style={{ fontSize: 17, color: '#E3F2FD', lineHeight: 1.8 }}>
+      演进沿三个正交维度：<span style={{ fontWeight: 'bold', color: '#4DB6AC' }}>结构族</span> ·
+      <span style={{ fontWeight: 'bold', color: '#4DB6AC' }}> 材料 </span>·
+      <span style={{ fontWeight: 'bold', color: '#4DB6AC' }}> 求解器</span>，每次扩展前置退化自检——
+      新能力不得以牺牲既有能力为代价。
+    </Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 96, bottom: 52, right: 96, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>基于大模型的交互式飞机有限元模型智能生成技术 · 技术框架设计报告</Text>
+    <Text style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)' }}>12 / 12</Text>
+  </Box>
+</Slide>

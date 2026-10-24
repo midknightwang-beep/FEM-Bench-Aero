@@ -1,0 +1,12 @@
+[abaqus] 10 case(s) -> ..\FEM-Bench-Aero\_xval
+  [OK ] naca4412_wingbox                               8 checks  nodes=5074  max|u|=2.3739 mm
+  [OK ] naca4412_wingbox_n_ribs3_chord1000             8 checks  nodes=4668  max|u|=2.3786 mm
+  [OK ] naca4412_wingbox_n_ribs3_chord800              8 checks  nodes=3679  max|u|=4.5504 mm
+  [OK ] naca4412_wingbox_n_ribs5_chord1000             8 checks  nodes=5074  max|u|=2.3739 mm
+  [OK ] naca4412_wingbox_n_ribs5_chord800              8 checks  nodes=4057  max|u|=4.5429 mm
+  [OK ] naca4412_wingbox_n_ribs7_chord1000             8 checks  nodes=5593  max|u|=2.3688 mm
+  [OK ] naca4412_wingbox_n_ribs7_chord800              8 checks  nodes=4352  max|u|=4.5352 mm
+  [OK ] naca4412_wingbox_recombination_algorithm3      8 checks  nodes=5281  max|u|=2.3724 mm
+  [OK ] naca4412_wingbox_str3                          8 checks  nodes=7387  max|u|=2.2256 mm
+  [OK ] naca4412_wingbox_str3_T                        8 checks  nodes=29447  max|u|=2.1181 mm
+gate4 semantic: 10/10 PASS

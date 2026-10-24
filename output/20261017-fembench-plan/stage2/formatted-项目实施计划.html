@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="docx-page-size" content="A4">
+  <title>基于大模型的交互式飞机有限元模型智能生成技术——项目执行交付文档</title>
+  <style>
+  /* 页面规则：正文页脚居中页码；封面与目录节无页码 */
+  @page {
+    @bottom-center { content: counter(page); }
+  }
+  @page cover {
+    @bottom-center { content: none; }
+  }
+  section[role="cover"] { page: cover; }
+
+  :root {
+    /* Design tokens: business-modern（design-token skill 预编译产物） */
+    --typography-fontFamily-heading: "微软雅黑", "Microsoft YaHei", "PingFang SC", sans-serif;
+    --typography-fontSize-h1: 20pt;
+    --typography-fontSize-sectionHeader: 13pt;
+    --typography-fontSize-h2: 11pt;
+    --typography-lineHeight-body: 1.6;
+    --typography-fontWeight-heading: 600;
+    --color-primary: #1565C0;
+    --color-heading: #1A237E;
+    --color-accent: #00897B;
+    --color-text: #212121;
+    --color-muted: #616161;
+    --color-border: #E0E0E0;
+    --color-background: #FFFFFF;
+    --color-surface: #F5F7FA;
+    --color-emphasis: #C62828;
+    --color-success: #2E7D32;
+    --color-warning: #E65100;
+    --color-info: #01579B;
+    --spacing-paragraph: 0.75em;
+    --spacing-section: 2.5em;
+    --spacing-block: 1em;
+    --margin-page: 2.5cm;
+    --page-content-width: 15.6cm;
+
+    /* 本地别名 */
+    --ff-heading: var(--typography-fontFamily-heading);
+    --ff-body: var(--docx-body-font, "SimSun", "宋体", serif);
+    --fs-h1: var(--typography-fontSize-h1);
+    --fs-h2: var(--typography-fontSize-sectionHeader);
+    --fs-h3: var(--typography-fontSize-h2);
+    --fs-body: var(--docx-body-size, 12pt);
+    --fs-small: var(--docx-small-size, 10pt);
+    --fs-table: var(--docx-table-size, 10.5pt);
+    --lh-body: var(--typography-lineHeight-body);
+    --fw-heading: var(--typography-fontWeight-heading);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--ff-body);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--color-text);
+    background: var(--color-background);
+    max-width: var(--page-content-width);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* 封面 */
+  .cover-category {
+    text-align: left;
+    font-family: var(--ff-heading);
+    font-size: var(--typography-fontSize-coverCategory, 14pt);
+    font-weight: var(--fw-heading);
+    color: var(--color-primary);
+    letter-spacing: 0.08em;
+    margin-bottom: var(--spacing-paragraph, 0.8em);
+    padding: var(--margin-page) var(--margin-page) 0 var(--margin-page);
+  }
+  .cover-title {
+    text-align: left;
+    font-family: var(--ff-heading);
+    font-size: var(--docx-cover-title, 22pt);
+    font-weight: var(--fw-heading);
+    color: var(--color-heading);
+    line-height: 1.35;
+    margin-bottom: var(--spacing-block, 0.6em);
+    padding: 0 var(--margin-page);
+  }
+  .cover-subtitle {
+    text-align: left;
+    font-family: var(--ff-heading);
+    font-size: var(--typography-fontSize-sectionHeader, 13pt);
+    color: var(--color-muted);
+    margin-bottom: var(--spacing-section, 3em);
+    padding: 0 var(--margin-page);
+  }
+  .cover-meta {
+    text-align: left;
+    font-size: var(--fs-small);
+    color: var(--color-muted);
+    padding: 0 var(--margin-page);
+  }
+  .cover-body-pad { padding: var(--spacing-cover-top, 3.5em) 0 0 0; }
+
+  /* 目录 */
+  .doc-toc { padding: var(--margin-page); }
+  .toc-title {
+    font-family: var(--ff-heading);
+    font-size: var(--docx-toc-title, 16pt);
+    font-weight: var(--fw-heading);
+    color: var(--color-heading);
+    text-align: center;
+    margin-bottom: var(--spacing-block, 1em);
+  }
+  .toc-list, .toc-list ol, .toc-list ul { list-style: none; list-style-type: none; }
+  .toc-list { padding-left: var(--spacing-toc-pad, 0.5em); }
+  .toc-list > li { margin-bottom: var(--spacing-toc-li, 0.55em); }
+  .toc-list a { color: var(--color-text); text-decoration: none; }
+  .toc-list ol { padding-left: var(--spacing-toc-ol, 2em); margin-top: var(--spacing-toc-ol-top, 0.35em); }
+  .toc-list ol li { margin-bottom: var(--spacing-toc-li2, 0.3em); font-size: var(--fs-small); color: var(--color-muted); }
+  .toc-list ol a { color: var(--color-muted); }
+
+  /* 正文标题 */
+  h1.chapter {
+    font-family: var(--ff-heading);
+    font-size: var(--fs-h1);
+    font-weight: var(--fw-heading);
+    color: var(--color-heading);
+    border-left: 5px solid var(--color-primary);
+    padding-left: var(--spacing-h1-pad, 0.6em);
+    margin: var(--spacing-section) 0 var(--spacing-block) 0;
+  }
+  h2.sub {
+    font-family: var(--ff-heading);
+    font-size: var(--fs-h2);
+    font-weight: var(--fw-heading);
+    color: var(--color-primary);
+    margin: var(--spacing-block) 0 var(--spacing-paragraph) 0;
+  }
+
+  /* 正文段落与列表 */
+  p { margin-bottom: var(--spacing-paragraph); text-indent: 2em; }
+  ul, ol { margin: 0 0 var(--spacing-paragraph) 0; padding-left: var(--spacing-ol-pad, 2.5em); }
+  li { margin-bottom: var(--spacing-li, 0.35em); }
+
+  /* 表格 */
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--spacing-paragraph) 0;
+    font-size: var(--fs-table);
+  }
+  table.data caption {
+    font-family: var(--ff-heading);
+    font-size: var(--fs-small);
+    color: var(--color-muted);
+    margin-bottom: var(--spacing-cap, 0.4em);
+  }
+  table.data th {
+    background: var(--color-surface);
+    color: var(--color-heading);
+    font-family: var(--ff-heading);
+    font-weight: var(--fw-heading);
+    padding: var(--spacing-cell, 0.5em 0.7em);
+    border: 1px solid var(--color-border);
+    text-align: left;
+  }
+  table.data td {
+    padding: var(--spacing-cell, 0.5em 0.7em);
+    border: 1px solid var(--color-border);
+    vertical-align: top;
+  }
+
+  /* 数据强调与组件 */
+  .data-emphasis { color: var(--color-emphasis); font-weight: 700; }
+  .summary-highlights { text-align: left; text-indent: 0; margin-bottom: var(--spacing-block); }
+  [data-component="data-card"] {
+    text-align: left;
+    text-indent: 0;
+    padding: var(--spacing-block);
+    background: var(--color-background);
+    border-top: 3px solid var(--color-primary);
+    margin-bottom: var(--spacing-card-gap, 0.6em);
+  }
+  [data-component="data-card"][data-color="success"] { border-top-color: var(--color-success); }
+  [data-component="data-card"][data-color="warning"] { border-top-color: var(--color-warning); }
+  .card-title { font-size: var(--fs-small); color: var(--color-muted); margin-bottom: var(--spacing-card-title, 0.2em); text-indent: 0; }
+  .card-value { font-family: var(--ff-heading); font-size: var(--docx-card-value, 16pt); font-weight: var(--fw-heading); color: var(--color-primary); text-indent: 0; }
+  [data-component="data-card"][data-color="success"] .card-value { color: var(--color-success); }
+  [data-component="data-card"][data-color="warning"] .card-value { color: var(--color-warning); }
+  [data-component="callout"] {
+    text-indent: 0;
+    padding: var(--spacing-block);
+    margin: var(--spacing-paragraph) 0;
+    border-left: 4px solid var(--color-info);
+    background: var(--color-surface);
+  }
+  [data-component="callout"] p { text-indent: 0; margin-bottom: var(--spacing-callout-p, 0.3em); }
+  [data-component="callout"][data-variant="success"] { border-left-color: var(--color-success); }
+
+  /* 执行摘要框 */
+  .executive-summary {
+    border-left: 4px solid var(--color-primary);
+    background: var(--color-surface);
+    padding: var(--spacing-block);
+    margin-bottom: var(--spacing-block);
+  }
+  .executive-summary p { text-indent: 2em; }
+  .executive-summary p:first-of-type { text-indent: 0; font-family: var(--ff-heading); font-weight: var(--fw-heading); }
+  </style>
+</head>
+<body>
+  <section role="cover">
+    <div class="cover-body-pad"></div>
+    <p class="cover-category">项目实施计划</p>
+    <p class="cover-title">数据集初步构建完成之后的项目实施计划<br>——基于大模型的交互式飞机有限元模型智能生成技术</p>
+    <p class="cover-subtitle">先定怎么考 · 再教怎么生成 · 双重验收 · 闭环生长</p>
+    <p class="cover-meta">2026 年 10 月 ｜ 版本 V1.0 ｜ 面向项目汇报与评审</p>
+  </section>
+
+  <section role="cover">
+    <nav class="doc-toc" aria-label="文档目录">
+      <p class="toc-title">目 录</p>
+      <ol class="toc-list">
+        <li><a href="#section-1">一、执行摘要</a></li>
+        <li><a href="#section-2">二、现状与起点</a>
+          <ol>
+            <li><a href="#section-2-1">（一）已完成的核心资产</a></li>
+            <li><a href="#section-2-2">（二）数据集在项目中的定位</a></li>
+          </ol>
+        </li>
+        <li><a href="#section-3">三、总体路线</a>
+          <ol>
+            <li><a href="#section-3-1">（一）五阶段路线</a></li>
+            <li><a href="#section-3-2">（二）与主流成熟做法的对齐</a></li>
+          </ol>
+        </li>
+        <li><a href="#section-4">四、各阶段实施计划</a>
+          <ol>
+            <li><a href="#section-4-1">（一）P1 评测基线：先定怎么考</a></li>
+            <li><a href="#section-4-2">（二）P2 算法开发：教怎么生成</a></li>
+            <li><a href="#section-4-3">（三）P3 验证评估：双重验收</a></li>
+            <li><a href="#section-4-4">（四）P4 集成部署：落地</a></li>
+            <li><a href="#section-4-5">（五）P5 迭代推广：闭环生长</a></li>
+          </ol>
+        </li>
+        <li><a href="#section-5">五、风险与对策</a></li>
+        <li><a href="#section-6">六、节奏与里程碑建议</a></li>
+        <li><a href="#section-7">七、保障机制</a></li>
+        <li><a href="#section-8">八、结语</a></li>
+      </ol>
+    </nav>
+  </section>
+
+  <section>
+    <h1 class="chapter" id="section-1">一、执行摘要</h1>
+    <div class="executive-summary">
+      <p>一句话总纲</p>
+      <p>数据集建成的意义是为整个项目立起了"考卷与标尺"；后续工作按"先定怎么考 → 再教怎么生成 → 自动与专家双重验收 → 集成落地 → 数据闭环迭代"五个阶段推进，每阶段均有可验收交付物，便于按里程碑考核。</p>
+    </div>
+    <p>本项目已完成数据集（FEM-Bench-Aero）的初步构建：形成 <span class="data-emphasis">41 条算例 × 2 棵求解器树</span>（CalculiX 发布树 + Abaqus 交叉验证树）、覆盖 4 个结构族 <span class="data-emphasis">7 种典型飞机结构形式</span>、按物理维度划分为 <span class="data-emphasis">40 个几何等价类</span>（train 17 / val 13 / test 11），全部数据通过九道质量闸验证，并实测取得双求解器等效模量偏差 <span class="data-emphasis">0.003%</span> 的标签可信度背书。</p>
+    <p>本计划回答"数据集初步构建完成之后接下来做什么"，按五个阶段展开：</p>
+    <table class="data"><thead><tr><th style="width:14%">阶段</th><th style="width:30%">定位</th><th style="width:34%">标志性交付</th><th style="width:22%">验收方式</th></tr></thead><tbody><tr><td>P1 评测基线</td><td>先定"怎么考"——评测协议与基线系统</td><td>评测协议、基线成绩单</td><td>评测可一键复跑</td></tr><tr><td>P2 算法开发</td><td>教"怎么生成"——检索、约束、自修复</td><td>生成算法模块、消融报告</td><td>冻结考卷上量化提升</td></tr><tr><td>P3 验证评估</td><td>自动评测 + 专家盲评双重验收</td><td>评测报告、典型案例集</td><td>指标达标 + 盲评认可</td></tr><tr><td>P4 集成部署</td><td>从脚本到交互式原型系统</td><td>原型系统 V1、现场演示</td><td>端到端演示跑通</td></tr><tr><td>P5 迭代推广</td><td>失败回流、数据放量、真实试点</td><td>系统 V2、试点报告</td><td>效率收益可量化</td></tr></tbody></table>
+    <p>该路线与当前本领域国际主流工作（ALL-FEM、AbaqusAgent、ModiGen 等）的成熟路径一致，且本项目在数据质量体系（九道闸、双求解器交叉验证）上比多数公开工作更严格。</p>
+  </section>
+
+  <section>
+    <h1 class="chapter" id="section-2">二、现状与起点</h1>
+    <h2 class="sub" id="section-2-1">（一）已完成的核心资产</h2>
+    <p><b>（1）数据集 FEM-Bench-Aero（主要成果）。</b>规模：41 条算例 × 2 棵树，跨树模型逐字节同构；覆盖：翼盒（含后掠/锥形平面形状、多闭室）、加筋平板壁板、机身柱壳（含尺寸·壁厚维）、开孔板（含材料维复材层合），7 种典型飞机结构形式全部落地；划分：train 17 / val 13 / test 11，按"规则化谓词 + 几何等价类"划分，物理维度外推式评测，杜绝随机抽样的信息泄漏。</p>
+    <p><b>（2）质量体系。</b>九道闸全绿：网格质量（min Jacobian ≥ 0.30 且零三角形）、双求解器交叉（位移差＜1%、应力中位差＜5%）、语义门禁（派生预期与几何实测精确相等）、载荷-反力平衡（残差＜1e-3%）、退化自检 50/50、去重指纹、分组回归 9/9 等。</p>
+    <p><b>（3）生成与求解链路（配套资产）。</b>自然语言契约（FEASpec）→ 参数化建面 → 全四边形网格 → 双后端求解器 deck 自动写卡 → 结果提取与闸验收；独立验证线含解析解对标（Howland 开孔应力集中、CLT 复材等效模量等）与双求解器互证，标签可信度有实测背书（双码等效模量偏差 0.003%）。</p>
+    <h2 class="sub" id="section-2-2">（二）数据集在项目中的定位</h2>
+    <p>数据集不是附属产物，而是整个技术框架的标尺与地基，在后续每个阶段都承担明确角色：</p>
+    <table class="data"><thead><tr><th style="width:18%">角色</th><th style="width:82%">机制</th></tr></thead><tbody><tr><td>考卷</td><td>val/test 规则化划分定义评测集，等价类定义能力边界</td></tr><tr><td>教材</td><td>train 集作检索示范库 / 微调语料</td></tr><tr><td>标尺</td><td>闭式解真值 + 双求解器交叉标签，给每次生成自动打分</td></tr><tr><td>闸门</td><td>数据集入库闸与生成结果放行闸同一套代码，同源复用</td></tr></tbody></table>
+  </section>
+
+  <section>
+    <h1 class="chapter" id="section-3">三、总体路线</h1>
+    <h2 class="sub" id="section-3-1">（一）五阶段路线</h2>
+    <p>P0（数据集初步构建，已完成）之后，项目按 P1 评测基线 → P2 算法开发 → P3 验证评估 → P4 集成部署主线推进，P5 迭代推广与主线构成闭环：每轮迭代回到数据集，失败样本回流、能力覆盖扩展，系统越用越强。</p>
+    <p>顺序关系有三条纪律：<b>其一，P1 → P2 → P3 严格串行</b>——没有冻结的考卷，模型改进就无法量化；<b>其二，P4 与 P3 后半可并行</b>——集成开发不阻塞评估收口；<b>其三，P5 与 P1–P4 构成循环</b>——每轮迭代回到数据集。</p>
+    <h2 class="sub" id="section-3-2">（二）与主流成熟做法的对齐</h2>
+    <p>本路线并非自创流程，而是与当前本领域国际主流工作的成熟路径对齐，且在数据质量体系上更严格：</p>
+    <table class="data"><thead><tr><th style="width:22%">主流做法</th><th style="width:44%">代表工作实测结论（公开文献）</th><th style="width:34%">本项目对应</th></tr></thead><tbody><tr><td>评测基准先行</td><td>ALL-FEM 以 39 个基准验收系统（代码级成功 71.8%）</td><td>P1 冻结 val/test 考卷与指标</td></tr><tr><td>检索增强（RAG）</td><td>AbaqusAgent：RAG 覆盖内成功率 92.5%，覆盖外 60%</td><td>P2 以 train 集等价类建检索库</td></tr><tr><td>自修复闭环</td><td>同类系统实测：去掉审查修复环节，成功率 90% 降至 45%</td><td>P2 闸报错→归因→修复闭环</td></tr><tr><td>结构化约束生成</td><td>领域实践：schema 约束 + 确定性渲染显著降低幻觉</td><td>P2 契约（FEASpec）限定生成空间</td></tr><tr><td>领域微调（按需）</td><td>ModiGen：微调+检索+反馈使小模型超过前沿大模型零样本</td><td>P2 消融后视需要轻量微调（LoRA）</td></tr><tr><td>专家盲评 + 解析解对标</td><td>领域通行验收方式</td><td>P3 双重验收</td></tr></tbody></table>
+    <div data-component="callout" data-variant="success">
+      <p><b>差异化优势</b>：本项目数据集带九道闸与双求解器交叉标签，"闸即标准"同源复用——生成结果的放行标准与数据集构建标准完全一致，这是多数公开工作不具备的。</p>
+    </div>
+  </section>
+
+  <section>
+    <h1 class="chapter" id="section-4">四、各阶段实施计划</h1>
+
+    <h2 class="sub" id="section-4-1">（一）P1 评测基线：先定怎么考</h2>
+    <p><b>目标</b>：让"生成得好不好"可量化、可复现、可对比。</p>
+    <p><b>主要任务</b>：</p>
+    <ol>
+      <li>制定评测协议：定义指标体系（一次通过率、语法/物理合法率、与真值偏差、交互轮次效率、修复收敛轮数），冻结 val/test 考卷；</li>
+      <li>搭建端到端基线系统：通用大模型 + 提示词工程直连现有建模流水线（spec → 建面 → 网格 → deck → 求解 → 闸验收）；</li>
+      <li>首轮全量评测：产出基线成绩单，明确当前能力底座与差距分布。</li>
+    </ol>
+    <p><b>交付物</b>：评测协议文档、基线系统、基线成绩单。<br>
+    <b>验收标准</b>：评测可一键复跑、成绩单数字可溯源到命令与产物路径。<br>
+    <b>数据集角色</b>：val/test 定考卷；train 只做示范，划分规则化防泄漏。</p>
+
+    <h2 class="sub" id="section-4-2">（二）P2 算法开发：教怎么生成</h2>
+    <p><b>目标</b>：在基线之上显著提升合法率与一次通过率，重点是"物理正确"而非"看起来对"。</p>
+    <p><b>主要任务</b>：</p>
+    <ol>
+      <li>检索增强（RAG）：以 train 集等价类为检索库，为生成提供结构相似的示范样本；</li>
+      <li>约束生成：以契约 schema 限定输出空间（参数类型、枚举、取值范围、依赖关系），从源头压制幻觉；</li>
+      <li>自修复闭环：闸报错 → 自动归因（语法/网格/物理分类）→ 迭代修复，形成"生成—验收—修复"循环；</li>
+      <li>消融实验：逐项量化各机制贡献（检索/约束/修复），据此决定是否引入领域微调（优先轻量 LoRA 路线）。</li>
+    </ol>
+    <p><b>交付物</b>：生成算法模块（含检索库、约束层、修复循环）、消融对比报告。<br>
+    <b>验收标准</b>：每轮迭代在冻结考卷上成绩可量化提升；消融结论有数据支撑。<br>
+    <b>数据集角色</b>：train 集做检索库与（可选）微调语料；等价类定义"会什么"。</p>
+
+    <h2 class="sub" id="section-4-3">（三）P3 验证评估：双重验收</h2>
+    <p><b>目标</b>：证明可信——不止自说自话，用自动标尺与领域专家双重背书。</p>
+    <p><b>主要任务</b>：</p>
+    <ol>
+      <li>全量自动评测：val/test 全量跑"生成→求解→闸验收"流水线，对标闭式解真值与双求解器交叉标签；</li>
+      <li>专家盲评：邀请结构强度工程师对生成模型与人工模型做盲评对比（可建模性、可复用性、结果可信度）；</li>
+      <li>效率对比：同一典型任务的人工建模耗时与系统生成耗时对比（行业公开数据：同类系统单模型 6–25 分钟，人工约 25 分钟）。</li>
+    </ol>
+    <p><b>交付物</b>：评测报告、专家意见记录、典型案例集（含失败案例归因）。<br>
+    <b>验收标准</b>：自动指标达标 + 专家盲评认可；失败案例全部有归因与改进项。<br>
+    <b>数据集角色</b>：真值标签自动打分（背书：双码偏差 0.003%）；九道闸做放行闸。</p>
+
+    <h2 class="sub" id="section-4-4">（四）P4 集成部署：落地</h2>
+    <p><b>目标</b>：从脚本原型到可演示、可使用的交互式系统。</p>
+    <p><b>主要任务</b>：</p>
+    <ol>
+      <li>流水线服务化：建模—求解—验收链路封装为服务，支持排队与并发控制（求解器许可约束）；</li>
+      <li>交互界面原型：自然语言输入 → 澄清追问 → 模型生成 → 结果可视化（应力/位移云图、关键读数）→ 报告导出；</li>
+      <li>工程工具链对接：与现有强度分析流程（含 Abaqus 工作流）打通，输出可直接复用的模型与读数。</li>
+    </ol>
+    <p><b>交付物</b>：原型系统 V1、现场演示、接口文档。<br>
+    <b>验收标准</b>：现场演示端到端跑通典型任务；生成结果通过同一套九道闸。<br>
+    <b>数据集角色</b>：生成结果直接进数据集同款闸门验收，标准不漂移。</p>
+
+    <h2 class="sub" id="section-4-5">（五）P5 迭代推广：闭环生长</h2>
+    <p><b>目标</b>：系统越用越强、覆盖越来越广，形成数据飞轮。</p>
+    <p><b>主要任务</b>：</p>
+    <ol>
+      <li>失败样本回流：评测与试用中的失败案例经专家确认后回流数据集（难题挖掘），下一轮训练/检索即覆盖；</li>
+      <li>数据集放量：按物理维度扩展——铺层族与厚度维（复材）、更多结构形式，每次放量先声明划分再入库；</li>
+      <li>真实项目试点：选取 1–2 个真实型号预研任务做受控试点，量化效率与质量收益，修订后推广。</li>
+    </ol>
+    <p><b>交付物</b>：系统 V2、放量后数据集、试点总结报告。<br>
+    <b>验收标准</b>：试点任务效率收益可量化；数据集规模与等价类覆盖增长可查。<br>
+    <b>数据集角色</b>：数据集随应用持续生长——这是"标尺"长期保持有效的关键。</p>
+  </section>
+
+  <section>
+    <h1 class="chapter" id="section-5">五、风险与对策</h1>
+    <table class="data"><thead><tr><th style="width:26%">风险</th><th style="width:24%">影响</th><th style="width:50%">对策</th></tr></thead><tbody><tr><td>大模型生成"看着对、物理错"</td><td>错误模型流入工程环节</td><td>不依赖模型自觉，九道闸硬性拦截；闸已实测能咬住指纹撞车、公式错误等真问题</td></tr><tr><td>覆盖面不足（7 种形式之外不会做）</td><td>试用受挫、预期落差</td><td>P5 失败回流 + 按物理维度放量；对外明确声明能力边界（数据集 manifest 已记账）</td></tr><tr><td>评测泄漏（考题混入训练）</td><td>评测虚高、误导决策</td><td>划分规则化 + 等价类互验断言；val/test 冻结，考卷不参与任何训练/检索</td></tr><tr><td>微调成本高、周期长</td><td>拖累进度</td><td>检索 + 约束 + 自修复先行（主流实证已够用），微调仅在消融证明必要时上轻量路线</td></tr><tr><td>求解器许可与算力约束</td><td>评测与试跑排队</td><td>并发排队与算例规模分级；开源求解器承载批量评测，商业求解器承载抽检</td></tr></tbody></table>
+  </section>
+
+  <section>
+    <h1 class="chapter" id="section-6">六、节奏与里程碑建议</h1>
+    <table class="data"><thead><tr><th style="width:22%">节点</th><th style="width:38%">内容</th><th style="width:40%">标志性交付</th></tr></thead><tbody><tr><td>T0 + 1 个月</td><td>P1 收口</td><td>基线成绩单（首份量化能力底座）</td></tr><tr><td>T0 + 2–3 个月</td><td>P2 两至三轮迭代</td><td>每轮全量评测对比，关键指标显著提升</td></tr><tr><td>T0 + 3–4 个月</td><td>P3 首次专家盲评</td><td>评测报告 + 专家意见</td></tr><tr><td>T0 + 4–5 个月</td><td>P4 原型演示</td><td>端到端现场演示</td></tr><tr><td>T0 + 6 个月起</td><td>P5 常态迭代</td><td>试点报告 + 数据集放量版本</td></tr></tbody></table>
+    <p>说明：各节点时长为建议值，可按资源投入与许可约束调整。每个节点均有可验收交付物，支持按里程碑考核与动态纠偏。</p>
+  </section>
+
+  <section>
+    <h1 class="chapter" id="section-7">七、保障机制</h1>
+    <ol>
+      <li><b>闸即标准</b>：数据集九道闸与生成结果放行闸同一套代码，标准同源、永不漂移；任何判据改动必须留档重签（D 系列决议 29 条全部可溯源）。</li>
+      <li><b>防泄漏纪律</b>：划分规则化 + 等价类黑名单互验，已入库断言；评测考卷冻结。</li>
+      <li><b>可复现纪律</b>：每个结论绑定"命令 + 实测数字 + 产物路径"，评审可逐条复核。</li>
+      <li><b>能力边界声明</b>：数据集 manifest 显式记账未覆盖维度（如层间/逐层应力、接触、非线性外形），不做过头承诺。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h1 class="chapter" id="section-8">八、结语</h1>
+    <p>数据集初步构建完成，标志着项目从"打地基"进入"起楼房"阶段。本计划以"先定怎么考、再教怎么生成、双重验收、闭环生长"为主线，五个阶段环环相扣、每个阶段可验收，且与国际主流成熟路径对齐、在数据质量体系上更严。恳请领导审阅，如获批准，将按 P1 评测基线启动实施。</p>
+    <div data-component="callout">
+      <p><b>附注</b>：本计划中本项目数据均取自 FEM-Bench-Aero 数据集落盘实测记录（manifest.json、九道闸报告、评测报告等，可溯源复核）；行业对照数据取自公开发表文献（ALL-FEM，Computer Methods in Applied Mechanics and Engineering 2026；AbaqusAgent；ModiGen 等）。</p>
+    </div>
+  </section>
+</body>
+</html>

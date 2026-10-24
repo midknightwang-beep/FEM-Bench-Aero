@@ -1,0 +1,60 @@
+﻿=== AppCrash_pre.exe_8594d8adda86a5915839464531b1b602b2877e4_76ecce7b_b6128890-cc0c-45ff-8ed6-5a50238c68df  mtime=10/06/2026 21:16:52
+   EventTime=134357662051917988
+   Sig[3].Name=故障模块名称
+   Sig[3].Value=tsbx.dll
+   Sig[5].Name=故障模块时间戳
+   Sig[5].Value=6abb8245
+   Sig[7].Name=异常代码
+   Sig[7].Value=c0000409
+   HAS-> Sig[3].Value=tsbx.dll
+   HAS-> LoadedModule[208]=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+=== AppCrash_pre.exe_8594d8adda86a5915839464531b1b602b2877e4_76ecce7b_47bcb66d-4ab7-4a58-bac2-b6f24ddd027f  mtime=10/06/2026 21:15:50
+   EventTime=134357661431436111
+   Sig[3].Name=故障模块名称
+   Sig[3].Value=tsbx.dll
+   Sig[5].Name=故障模块时间戳
+   Sig[5].Value=6abb8245
+   Sig[7].Name=异常代码
+   Sig[7].Value=c0000409
+   HAS-> Sig[3].Value=tsbx.dll
+   HAS-> LoadedModule[208]=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+=== AppCrash_pre.exe_8594d8adda86a5915839464531b1b602b2877e4_76ecce7b_c6c18d58-74c2-4da3-9554-46eb685cf57d  mtime=10/06/2026 21:00:52
+   EventTime=134357652452934963
+   Sig[3].Name=故障模块名称
+   Sig[3].Value=tsbx.dll
+   Sig[5].Name=故障模块时间戳
+   Sig[5].Value=6abb8245
+   Sig[7].Name=异常代码
+   Sig[7].Value=c0000409
+   HAS-> Sig[3].Value=tsbx.dll
+   HAS-> LoadedModule[208]=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+=== AppCrash_pre.exe_8594d8adda86a5915839464531b1b602b2877e4_76ecce7b_dfaad905-7075-40d7-9c30-d7fca6cc8bf7  mtime=10/06/2026 21:00:01
+   EventTime=134357651942538384
+   Sig[3].Name=故障模块名称
+   Sig[3].Value=tsbx.dll
+   Sig[5].Name=故障模块时间戳
+   Sig[5].Value=6abb8245
+   Sig[7].Name=异常代码
+   Sig[7].Value=c0000409
+   HAS-> Sig[3].Value=tsbx.dll
+   HAS-> LoadedModule[208]=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+=== AppCrash_pre.exe_8594d8adda86a5915839464531b1b602b2877e4_76ecce7b_7af77a6f-4263-4511-acbe-a0a6b4630a37  mtime=10/06/2026 20:57:46
+   EventTime=134357650587890632
+   Sig[3].Name=故障模块名称
+   Sig[3].Value=tsbx.dll
+   Sig[5].Name=故障模块时间戳
+   Sig[5].Value=6abb8245
+   Sig[7].Name=异常代码
+   Sig[7].Value=c0000409
+   HAS-> Sig[3].Value=tsbx.dll
+   HAS-> LoadedModule[208]=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll
+=== AppCrash_pre.exe_8594d8adda86a5915839464531b1b602b2877e4_76ecce7b_2a616151-0db4-4522-b25b-c19b7e7e2e2f  mtime=10/06/2026 20:55:21
+   EventTime=134357649137477442
+   Sig[3].Name=故障模块名称
+   Sig[3].Value=tsbx.dll
+   Sig[5].Name=故障模块时间戳
+   Sig[5].Value=6abb8245
+   Sig[7].Name=异常代码
+   Sig[7].Value=c0000409
+   HAS-> Sig[3].Value=tsbx.dll
+   HAS-> LoadedModule[208]=E:\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox\5.7.10\tsbx.dll

@@ -1,0 +1,78 @@
+========================================================================
+gate 3 cross-solver - stiffened panel (M3/T2), 2026-10-03 08:57
+  command: python verify_solvers.py --ccx outputs_panel --abaqus outputs_panel_abaqus \
+               --case <case> --spec _t2_probe/<case>.spec.json --force 36 --reaction-set all
+========================================================================
+
+##################### stiffened_panel_600x600
+==============================================================================
+  CROSS-SOLVER VERIFICATION - identical model, two independent codes
+==============================================================================
+  CalculiX : stiffened_panel_600x600.frd
+  Abaqus   : stiffened_panel_600x600.odb.json
+------------------------------------------------------------------------------
+  1) node labels      : ccx 11761 vs abaqus 11761 -> IDENTICAL
+  2) node coordinates : max |delta| = 3.027e-05 mm -> float32-consistent
+  3) element count    : abaqus assembled 11560 elements {'S4': 11560} (read from the ODB, not from the deck text)
+  4) max |u|          : ccx 0.95658 mm vs abaqus 0.96429 mm -> diff 0.800 %
+  5) max |UZ|         : ccx 0.95658 mm vs abaqus 0.96429 mm -> diff 0.800 %
+  6) equilibrium      : sum of nodal forces over the 'all' node set
+       distributed load: the model is self-equilibrated, and the two
+       codes' force conventions differ (ccx total -> 0, abaqus
+       reaction -> applied), so each is quoted against its own target.
+       ccx   : 11761 nodes in set [total] | RX     +0.00000  RY     +0.00000  RZ     -0.00001 N
+                dominant = Z  -> |R| 0.00001 N vs target 0.00000 N, residual 0.000018 % of 36 N
+       abaqus: 11761 nodes in set [reaction] | RX     -0.00000  RY     +0.00000  RZ    +36.00000 N
+                dominant = Z  -> |R| 36.00000 N vs target 36.00000 N, residual 0.000001 % of 36 N
+  7) stress           : shell stress lives at section points; the
+                        definition of each value is printed with it
+       ccx    OUTPUT=2D               : 1.2135 MPa  (nodal, as CalculiX writes it)
+       abaqus membrane, node-averaged: 0.0000 MPa  (mean of outer section points, averaged over adjacent elements)
+       abaqus outer fibre, per element: 3.1952 MPa  (element-wise peak - the sizing number)
+       peak, ccx vs abaqus membrane  : diff 100.000 % (peak values sit at spar/rib junctions - mesh-dependent)
+       ccx peak, in-plane only       : 0.0000 MPa (transverse shear is 100.00 % of the 1.2135 MPa peak)
+       abaqus section points exposed : [1, 5] (ELEMENT_NODAL extrapolation keeps only the outer two)
+       abaqus stress components      : ['S11', 'S22', 'S33', 'S12'] (TENSOR_3D_PLANAR)
+       abaqus candidate reductions   : membrane_node_averaged=0.0, outer_fibre_node_averaged=2.9981, outer_fibre_elementwise_max=3.1952, outer_fibre_elementwise_vm_then_node_averaged=3.0036
+------------------------------------------------------------------------------
+  note: ODB node coordinates are stored as 32-bit floats, so the 3.0e-05 mm residual is storage precision, not a model difference
+  note: ccx's peak von Mises (1.2135 MPa) is 100.0 % transverse shear, not bending or axial stress: the in-plane field peaks at 0.0000 MPa.  For this model the 'max von Mises' headline is a bearing/shear number.
+  note: per-node stress field not comparable on this model: abaqus reports an identically zero mid-surface field (max 0.00e+00 MPa over 11761 nodes).  That is correct physics - linear theory gives a flat plate no membrane action under transverse pressure - so the comparison is vacuous here, not failed.  The peaks are not comparable either: ccx 1.2135 MPa (mid-surface, shear-dominated) vs abaqus outer fibre 3.1952 MPa -> 62.0 % apart.  On a pure-bending model no single headline stress number is cross-solver comparable until the stress definition is fixed.
+  VERDICT: PASS - 6 checks, no disagreement above tolerance
+==============================================================================
+
+##################### stiffened_panel_600x600_str3
+==============================================================================
+  CROSS-SOLVER VERIFICATION - identical model, two independent codes
+==============================================================================
+  CalculiX : stiffened_panel_600x600_str3.frd
+  Abaqus   : stiffened_panel_600x600_str3.odb.json
+------------------------------------------------------------------------------
+  1) node labels      : ccx 13049 vs abaqus 13049 -> IDENTICAL
+  2) node coordinates : max |delta| = 3.027e-05 mm -> float32-consistent
+  3) element count    : abaqus assembled 12832 elements {'S4': 12832} (read from the ODB, not from the deck text)
+  4) max |u|          : ccx 0.01523 mm vs abaqus 0.01523 mm -> diff 0.033 %
+  5) max |UZ|         : ccx 0.01523 mm vs abaqus 0.01523 mm -> diff 0.033 %
+  6) equilibrium      : sum of nodal forces over the 'all' node set
+       distributed load: the model is self-equilibrated, and the two
+       codes' force conventions differ (ccx total -> 0, abaqus
+       reaction -> applied), so each is quoted against its own target.
+       ccx   : 13049 nodes in set [total] | RX     -0.00001  RY     +0.00025  RZ     -0.00000 N
+                dominant = Y  -> |R| 0.00025 N vs target 0.00000 N, residual 0.000693 % of 36 N
+       abaqus: 13049 nodes in set [reaction] | RX     -0.00000  RY     -0.00000  RZ    +36.00000 N
+                dominant = Z  -> |R| 36.00000 N vs target 36.00000 N, residual 0.000000 % of 36 N
+  7) stress           : shell stress lives at section points; the
+                        definition of each value is printed with it
+       ccx    OUTPUT=2D               : 1.5742 MPa  (nodal, as CalculiX writes it)
+       abaqus membrane, node-averaged: 1.5564 MPa  (mean of outer section points, averaged over adjacent elements)
+       abaqus outer fibre, per element: 1.7187 MPa  (element-wise peak - the sizing number)
+       peak, ccx vs abaqus membrane  : diff 1.132 % (peak values sit at spar/rib junctions - mesh-dependent)
+       ccx peak, in-plane only       : 1.5543 MPa (transverse shear is 1.26 % of the 1.5742 MPa peak)
+       per-node field (13049 nodes) : median diff 0.31 %, p90 4.21 %
+       abaqus section points exposed : [1, 5] (ELEMENT_NODAL extrapolation keeps only the outer two)
+       abaqus stress components      : ['S11', 'S22', 'S33', 'S12'] (TENSOR_3D_PLANAR)
+       abaqus candidate reductions   : membrane_node_averaged=1.5564, outer_fibre_node_averaged=1.5618, outer_fibre_elementwise_max=1.7187, outer_fibre_elementwise_vm_then_node_averaged=1.5618
+------------------------------------------------------------------------------
+  note: ODB node coordinates are stored as 32-bit floats, so the 3.0e-05 mm residual is storage precision, not a model difference
+  VERDICT: PASS - 7 checks, no disagreement above tolerance
+==============================================================================

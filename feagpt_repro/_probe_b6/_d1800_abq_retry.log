@@ -1,0 +1,10 @@
+RETRY start 22:26:52
+  File "F:\AI FEA Modeling DataSets\feagpt_repro\feagpt\abaqus_odb.py", line 140, in extract
+    frame = step.frames[-1]
+<unknown>.AbaqusException: 0
+
+--- Abaqus diagnostics ---
+(none reported)
+
+0/1 case(s) completed. Summary -> outputs_b6_probe_abaqus\batch_summary.json
+abaqus rc=1  22:27:59

@@ -1,0 +1,320 @@
+{
+  "tolerance_pct": 1.0,
+  "bands_mm": [
+    0.0,
+    25.0,
+    50.0,
+    100.0,
+    150.0,
+    200.0,
+    300.0
+  ],
+  "cases": {
+    "b6 D1600      ": {
+      "0.0": {
+        "ccx": 3.065486,
+        "abq": 3.16383,
+        "pct": 3.10838,
+        "same_node": false,
+        "pass": false
+      },
+      "25.0": {
+        "ccx": 1.240399,
+        "abq": 1.255604,
+        "pct": 1.21095,
+        "same_node": true,
+        "pass": false
+      },
+      "50.0": {
+        "ccx": 1.090017,
+        "abq": 1.103874,
+        "pct": 1.25533,
+        "same_node": true,
+        "pass": false
+      },
+      "100.0": {
+        "ccx": 0.867049,
+        "abq": 0.878793,
+        "pct": 1.33638,
+        "same_node": true,
+        "pass": false
+      },
+      "150.0": {
+        "ccx": 0.732884,
+        "abq": 0.742273,
+        "pct": 1.26499,
+        "same_node": false,
+        "pass": false
+      },
+      "200.0": {
+        "ccx": 0.687667,
+        "abq": 0.690769,
+        "pct": 0.44902,
+        "same_node": true,
+        "pass": true
+      },
+      "300.0": {
+        "ccx": 0.652376,
+        "abq": 0.651383,
+        "pct": 0.15225,
+        "same_node": true,
+        "pass": true
+      }
+    },
+    "b6 L1600      ": {
+      "0.0": {
+        "ccx": 2.55112,
+        "abq": 2.613124,
+        "pct": 2.37278,
+        "same_node": false,
+        "pass": false
+      },
+      "25.0": {
+        "ccx": 1.114671,
+        "abq": 1.116893,
+        "pct": 0.19899,
+        "same_node": true,
+        "pass": true
+      },
+      "50.0": {
+        "ccx": 0.971503,
+        "abq": 0.973344,
+        "pct": 0.18922,
+        "same_node": true,
+        "pass": true
+      },
+      "100.0": {
+        "ccx": 0.749483,
+        "abq": 0.75054,
+        "pct": 0.14091,
+        "same_node": true,
+        "pass": true
+      },
+      "150.0": {
+        "ccx": 0.609995,
+        "abq": 0.610255,
+        "pct": 0.04258,
+        "same_node": true,
+        "pass": true
+      },
+      "200.0": {
+        "ccx": 0.539136,
+        "abq": 0.536847,
+        "pct": 0.4246,
+        "same_node": true,
+        "pass": true
+      },
+      "300.0": {
+        "ccx": 0.502873,
+        "abq": 0.500251,
+        "pct": 0.52147,
+        "same_node": false,
+        "pass": true
+      }
+    },
+    "b6 t2         ": {
+      "0.0": {
+        "ccx": 4.678703,
+        "abq": 4.867503,
+        "pct": 3.87879,
+        "same_node": false,
+        "pass": false
+      },
+      "25.0": {
+        "ccx": 1.653975,
+        "abq": 1.661095,
+        "pct": 0.42861,
+        "same_node": true,
+        "pass": true
+      },
+      "50.0": {
+        "ccx": 1.504256,
+        "abq": 1.510468,
+        "pct": 0.41123,
+        "same_node": true,
+        "pass": true
+      },
+      "100.0": {
+        "ccx": 1.24312,
+        "abq": 1.247124,
+        "pct": 0.32099,
+        "same_node": true,
+        "pass": true
+      },
+      "150.0": {
+        "ccx": 1.075753,
+        "abq": 1.072605,
+        "pct": 0.29257,
+        "same_node": true,
+        "pass": true
+      },
+      "200.0": {
+        "ccx": 0.997505,
+        "abq": 0.994643,
+        "pct": 0.28696,
+        "same_node": true,
+        "pass": true
+      },
+      "300.0": {
+        "ccx": 0.962891,
+        "abq": 0.963319,
+        "pct": 0.04438,
+        "same_node": true,
+        "pass": true
+      }
+    },
+    "b6 D1600+L1600": {
+      "0.0": {
+        "ccx": 3.006972,
+        "abq": 3.081592,
+        "pct": 2.42149,
+        "same_node": false,
+        "pass": false
+      },
+      "25.0": {
+        "ccx": 1.080127,
+        "abq": 1.088415,
+        "pct": 0.76148,
+        "same_node": true,
+        "pass": true
+      },
+      "50.0": {
+        "ccx": 0.932159,
+        "abq": 0.939321,
+        "pct": 0.76246,
+        "same_node": true,
+        "pass": true
+      },
+      "100.0": {
+        "ccx": 0.705066,
+        "abq": 0.710416,
+        "pct": 0.75305,
+        "same_node": true,
+        "pass": true
+      },
+      "150.0": {
+        "ccx": 0.572219,
+        "abq": 0.576516,
+        "pct": 0.74527,
+        "same_node": true,
+        "pass": true
+      },
+      "200.0": {
+        "ccx": 0.520797,
+        "abq": 0.524121,
+        "pct": 0.63431,
+        "same_node": true,
+        "pass": true
+      },
+      "300.0": {
+        "ccx": 0.487046,
+        "abq": 0.487985,
+        "pct": 0.19242,
+        "same_node": true,
+        "pass": true
+      }
+    },
+    "b3 str8_frm3  ": {
+      "0.0": {
+        "ccx": 2.631031,
+        "abq": 2.685234,
+        "pct": 2.01856,
+        "same_node": true,
+        "pass": false
+      },
+      "25.0": {
+        "ccx": 1.235093,
+        "abq": 1.240777,
+        "pct": 0.45815,
+        "same_node": true,
+        "pass": true
+      },
+      "50.0": {
+        "ccx": 1.095439,
+        "abq": 1.100469,
+        "pct": 0.45709,
+        "same_node": true,
+        "pass": true
+      },
+      "100.0": {
+        "ccx": 0.874098,
+        "abq": 0.878195,
+        "pct": 0.46657,
+        "same_node": true,
+        "pass": true
+      },
+      "150.0": {
+        "ccx": 0.734626,
+        "abq": 0.737344,
+        "pct": 0.36863,
+        "same_node": true,
+        "pass": true
+      },
+      "200.0": {
+        "ccx": 0.666001,
+        "abq": 0.664958,
+        "pct": 0.15661,
+        "same_node": true,
+        "pass": true
+      },
+      "300.0": {
+        "ccx": 0.624414,
+        "abq": 0.623482,
+        "pct": 0.14923,
+        "same_node": true,
+        "pass": true
+      }
+    },
+    "b3 str12_frm4 ": {
+      "0.0": {
+        "ccx": 2.569232,
+        "abq": 2.65814,
+        "pct": 3.34477,
+        "same_node": false,
+        "pass": false
+      },
+      "25.0": {
+        "ccx": 1.281229,
+        "abq": 1.291824,
+        "pct": 0.82014,
+        "same_node": true,
+        "pass": true
+      },
+      "50.0": {
+        "ccx": 1.115049,
+        "abq": 1.124533,
+        "pct": 0.84331,
+        "same_node": true,
+        "pass": true
+      },
+      "100.0": {
+        "ccx": 0.896112,
+        "abq": 0.903668,
+        "pct": 0.83611,
+        "same_node": true,
+        "pass": true
+      },
+      "150.0": {
+        "ccx": 0.759655,
+        "abq": 0.765117,
+        "pct": 0.71386,
+        "same_node": true,
+        "pass": true
+      },
+      "200.0": {
+        "ccx": 0.679835,
+        "abq": 0.683883,
+        "pct": 0.592,
+        "same_node": false,
+        "pass": true
+      },
+      "300.0": {
+        "ccx": 0.617579,
+        "abq": 0.619472,
+        "pct": 0.30557,
+        "same_node": true,
+        "pass": true
+      }
+    }
+  }
+}

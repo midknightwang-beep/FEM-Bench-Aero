@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="docx-page-size" content="A4">
+  <title>基于大模型的交互式飞机有限元模型智能生成技术——项目执行交付文档</title>
+  <style>
+  /* 页面规则：正文页脚居中页码；封面与目录节无页码 */
+  @page {
+    @bottom-center { content: counter(page); }
+  }
+  @page cover {
+    @bottom-center { content: none; }
+  }
+  section[role="cover"] { page: cover; }
+
+  :root {
+    /* Design tokens: business-modern（design-token skill 预编译产物） */
+    --typography-fontFamily-heading: "微软雅黑", "Microsoft YaHei", "PingFang SC", sans-serif;
+    --typography-fontSize-h1: 20pt;
+    --typography-fontSize-sectionHeader: 13pt;
+    --typography-fontSize-h2: 11pt;
+    --typography-lineHeight-body: 1.6;
+    --typography-fontWeight-heading: 600;
+    --color-primary: #1565C0;
+    --color-heading: #1A237E;
+    --color-accent: #00897B;
+    --color-text: #212121;
+    --color-muted: #616161;
+    --color-border: #E0E0E0;
+    --color-background: #FFFFFF;
+    --color-surface: #F5F7FA;
+    --color-emphasis: #C62828;
+    --color-success: #2E7D32;
+    --color-warning: #E65100;
+    --color-info: #01579B;
+    --spacing-paragraph: 0.75em;
+    --spacing-section: 2.5em;
+    --spacing-block: 1em;
+    --margin-page: 2.5cm;
+    --page-content-width: 15.6cm;
+
+    /* 本地别名 */
+    --ff-heading: var(--typography-fontFamily-heading);
+    --ff-body: var(--docx-body-font, "SimSun", "宋体", serif);
+    --fs-h1: var(--typography-fontSize-h1);
+    --fs-h2: var(--typography-fontSize-sectionHeader);
+    --fs-h3: var(--typography-fontSize-h2);
+    --fs-body: var(--docx-body-size, 12pt);
+    --fs-small: var(--docx-small-size, 10pt);
+    --fs-table: var(--docx-table-size, 10.5pt);
+    --lh-body: var(--typography-lineHeight-body);
+    --fw-heading: var(--typography-fontWeight-heading);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--ff-body);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--color-text);
+    background: var(--color-background);
+    max-width: var(--page-content-width);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* 封面 */
+  .cover-category {
+    text-align: left;
+    font-family: var(--ff-heading);
+    font-size: var(--typography-fontSize-coverCategory, 14pt);
+    font-weight: var(--fw-heading);
+    color: var(--color-primary);
+    letter-spacing: 0.08em;
+    margin-bottom: var(--spacing-paragraph, 0.8em);
+    padding: var(--margin-page) var(--margin-page) 0 var(--margin-page);
+  }
+  .cover-title {
+    text-align: left;
+    font-family: var(--ff-heading);
+    font-size: var(--docx-cover-title, 22pt);
+    font-weight: var(--fw-heading);
+    color: var(--color-heading);
+    line-height: 1.35;
+    margin-bottom: var(--spacing-block, 0.6em);
+    padding: 0 var(--margin-page);
+  }
+  .cover-subtitle {
+    text-align: left;
+    font-family: var(--ff-heading);
+    font-size: var(--typography-fontSize-sectionHeader, 13pt);
+    color: var(--color-muted);
+    margin-bottom: var(--spacing-section, 3em);
+    padding: 0 var(--margin-page);
+  }
+  .cover-meta {
+    text-align: left;
+    font-size: var(--fs-small);
+    color: var(--color-muted);
+    padding: 0 var(--margin-page);
+  }
+  .cover-body-pad { padding: var(--spacing-cover-top, 3.5em) 0 0 0; }
+
+  /* 目录 */
+  .doc-toc { padding: var(--margin-page); }
+  .toc-title {
+    font-family: var(--ff-heading);
+    font-size: var(--docx-toc-title, 16pt);
+    font-weight: var(--fw-heading);
+    color: var(--color-heading);
+    text-align: center;
+    margin-bottom: var(--spacing-block, 1em);
+  }
+  .toc-list, .toc-list ol, .toc-list ul { list-style: none; list-style-type: none; }
+  .toc-list { padding-left: var(--spacing-toc-pad, 0.5em); }
+  .toc-list > li { margin-bottom: var(--spacing-toc-li, 0.55em); }
+  .toc-list a { color: var(--color-text); text-decoration: none; }
+  .toc-list ol { padding-left: var(--spacing-toc-ol, 2em); margin-top: var(--spacing-toc-ol-top, 0.35em); }
+  .toc-list ol li { margin-bottom: var(--spacing-toc-li2, 0.3em); font-size: var(--fs-small); color: var(--color-muted); }
+  .toc-list ol a { color: var(--color-muted); }
+
+  /* 正文标题 */
+  h1.chapter {
+    font-family: var(--ff-heading);
+    font-size: var(--fs-h1);
+    font-weight: var(--fw-heading);
+    color: var(--color-heading);
+    border-left: 5px solid var(--color-primary);
+    padding-left: var(--spacing-h1-pad, 0.6em);
+    margin: var(--spacing-section) 0 var(--spacing-block) 0;
+  }
+  h2.sub {
+    font-family: var(--ff-heading);
+    font-size: var(--fs-h2);
+    font-weight: var(--fw-heading);
+    color: var(--color-primary);
+    margin: var(--spacing-block) 0 var(--spacing-paragraph) 0;
+  }
+
+  /* 正文段落与列表 */
+  p { margin-bottom: var(--spacing-paragraph); text-indent: 2em; }
+  ul, ol { margin: 0 0 var(--spacing-paragraph) 0; padding-left: var(--spacing-ol-pad, 2.5em); }
+  li { margin-bottom: var(--spacing-li, 0.35em); }
+
+  /* 表格 */
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--spacing-paragraph) 0;
+    font-size: var(--fs-table);
+  }
+  table.data caption {
+    font-family: var(--ff-heading);
+    font-size: var(--fs-small);
+    color: var(--color-muted);
+    margin-bottom: var(--spacing-cap, 0.4em);
+  }
+  table.data th {
+    background: var(--color-surface);
+    color: var(--color-heading);
+    font-family: var(--ff-heading);
+    font-weight: var(--fw-heading);
+    padding: var(--spacing-cell, 0.5em 0.7em);
+    border: 1px solid var(--color-border);
+    text-align: left;
+  }
+  table.data td {
+    padding: var(--spacing-cell, 0.5em 0.7em);
+    border: 1px solid var(--color-border);
+    vertical-align: top;
+  }
+
+  /* 数据强调与组件 */
+  .data-emphasis { color: var(--color-emphasis); font-weight: 700; }
+  .summary-highlights { text-align: left; text-indent: 0; margin-bottom: var(--spacing-block); }
+  [data-component="data-card"] {
+    text-align: left;
+    text-indent: 0;
+    padding: var(--spacing-block);
+    background: var(--color-background);
+    border-top: 3px solid var(--color-primary);
+    margin-bottom: var(--spacing-card-gap, 0.6em);
+  }
+  [data-component="data-card"][data-color="success"] { border-top-color: var(--color-success); }
+  [data-component="data-card"][data-color="warning"] { border-top-color: var(--color-warning); }
+  .card-title { font-size: var(--fs-small); color: var(--color-muted); margin-bottom: var(--spacing-card-title, 0.2em); text-indent: 0; }
+  .card-value { font-family: var(--ff-heading); font-size: var(--docx-card-value, 16pt); font-weight: var(--fw-heading); color: var(--color-primary); text-indent: 0; }
+  [data-component="data-card"][data-color="success"] .card-value { color: var(--color-success); }
+  [data-component="data-card"][data-color="warning"] .card-value { color: var(--color-warning); }
+  [data-component="callout"] {
+    text-indent: 0;
+    padding: var(--spacing-block);
+    margin: var(--spacing-paragraph) 0;
+    border-left: 4px solid var(--color-info);
+    background: var(--color-surface);
+  }
+  [data-component="callout"] p { text-indent: 0; margin-bottom: var(--spacing-callout-p, 0.3em); }
+  [data-component="callout"][data-variant="success"] { border-left-color: var(--color-success); }
+
+  /* 执行摘要框 */
+  .executive-summary {
+    border-left: 4px solid var(--color-primary);
+    background: var(--color-surface);
+    padding: var(--spacing-block);
+    margin-bottom: var(--spacing-block);
+  }
+  .executive-summary p { text-indent: 2em; }
+  .executive-summary p:first-of-type { text-indent: 0; font-family: var(--ff-heading); font-weight: var(--fw-heading); }
+  </style>
+</head>
+<body>
+  <section role="cover">
+    <div class="cover-body-pad"></div>
+    <p class="cover-category">项目执行交付文档</p>
+    <p class="cover-title">基于大模型的交互式飞机有限元模型智能生成技术<br>——项目执行交付文档</p>
+    <p class="cover-subtitle">契约驱动 · 质量闸闭环 · FEM-Bench-Aero 基准数据集</p>
+    <p class="cover-meta">2026 年 10 月 ｜ 版本 V1.0</p>
+  </section>
+
+  <section role="cover">
+    <nav class="doc-toc" aria-label="文档目录">
+      <p class="toc-title">目 录</p>
+      <ol class="toc-list">
+        <li><a href="#section-1">一、执行摘要</a></li>
+        <li><a href="#section-2">二、项目背景与目标</a>
+          <ol>
+            <li><a href="#section-2-1">（一）行业痛点</a></li>
+            <li><a href="#section-2-2">（二）项目目标</a></li>
+          </ol>
+        </li>
+        <li><a href="#section-3">三、技术框架总体设计</a>
+          <ol>
+            <li><a href="#section-3-1">（一）六层架构</a></li>
+            <li><a href="#section-3-2">（二）三条设计原则</a></li>
+            <li><a href="#section-3-3">（三）数据集在框架中的定位</a></li>
+          </ol>
+        </li>
+        <li><a href="#section-4">四、项目执行过程</a>
+          <ol>
+            <li><a href="#section-4-1">（一）M1–M2：契约与基线建设</a></li>
+            <li><a href="#section-4-2">（二）M3：结构形式扩展</a></li>
+            <li><a href="#section-4-3">（三）M4：划分规则化</a></li>
+            <li><a href="#section-4-4">（四）M5：放量与形式补全</a></li>
+            <li><a href="#section-4-5">（五）M6：材料维扩展——复材层合打样</a></li>
+          </ol>
+        </li>
+        <li><a href="#section-5">五、数据集建设成果：FEM-Bench-Aero</a>
+          <ol>
+            <li><a href="#section-5-1">（一）规模与构成</a></li>
+            <li><a href="#section-5-2">（二）数据集特色</a></li>
+          </ol>
+        </li>
+        <li><a href="#section-6">六、质量保证体系：九道质量闸</a>
+          <ol>
+            <li><a href="#section-6-1">（一）闸体系与实测结果</a></li>
+            <li><a href="#section-6-2">（二）验证纪律</a></li>
+            <li><a href="#section-6-3">（三）闸的实战战绩</a></li>
+          </ol>
+        </li>
+        <li><a href="#section-7">七、数据集对模型生成的支撑机制</a></li>
+        <li><a href="#section-8">八、项目价值与展望</a>
+          <ol>
+            <li><a href="#section-8-1">（一）项目价值</a></li>
+            <li><a href="#section-8-2">（二）后续规划</a></li>
+          </ol>
+        </li>
+        <li><a href="#section-9">附录</a></li>
+      </ol>
+    </nav>
+  </section>
+
+  <section role="body" data-page-restart="1">
+    <h1 class="chapter" id="section-1">一、执行摘要</h1>
+    <div class="executive-summary">
+      <p>项目定位</p>
+      <p>本项目围绕"基于大模型的交互式飞机有限元模型智能生成技术"开展建设，以"契约驱动、质量闸闭环"为核心技术路线，完成了从自然语言建模意图到可信有限元模型的全链路技术框架，并建成配套基准数据集 FEM-Bench-Aero。</p>
+    </div>
+    <div class="summary-highlights">
+      <div data-component="data-card" data-title="数据集规模" data-color="primary">
+        <span class="card-value">41 条 × 2 树</span>
+        <span class="card-title">CalculiX 发布树 + Abaqus 交叉验证树，40 个几何等价类</span>
+      </div>
+      <div data-component="data-card" data-title="结构覆盖" data-color="primary">
+        <span class="card-value">4 族 · 7 种形式</span>
+        <span class="card-title">翼盒 / 壁板 / 柱壳 / 开孔板，T1–T7 全部落地</span>
+      </div>
+      <div data-component="data-card" data-title="质量闸体系" data-color="success">
+        <span class="card-value">九道闸全绿</span>
+        <span class="card-title">网格 41/41 · 双码 41/41 · 语义 82/82 · 退化自检 50/50</span>
+      </div>
+      <div data-component="data-card" data-title="交叉验证精度" data-color="warning">
+        <span class="card-value">0.003%</span>
+        <span class="card-title">双求解器同构模型等效模量偏差；Kt 与解析解偏差 0.45%</span>
+      </div>
+    </div>
+    <p>项目核心成果汇总如下表（数据均为工具实测落盘值，可溯源复现）：</p>
+    <table class="data">
+      <thead>
+        <tr><th>序号</th><th>成果</th><th>量化指标</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>建成结构有限元基准数据集 FEM-Bench-Aero</td><td>41 条算例 × 2 棵求解器树，40 个几何等价类，覆盖 4 个结构族、7 种典型结构形式</td></tr>
+        <tr><td>2</td><td>质量闸体系全部通过</td><td>九道入库闸全绿：网格质量 41/41、双求解器交叉 41/41、语义门禁 82/82、自洽与去重 82/82、退化自检 50/50、分组回归 9/9</td></tr>
+        <tr><td>3</td><td>双求解器交叉验证精度</td><td>同构模型双码等效模量偏差 <span class="data-emphasis">0.003%</span>，开孔应力集中系数与解析解偏差 <span class="data-emphasis">0.45%</span></td></tr>
+        <tr><td>4</td><td>技术框架落地</td><td>契约唯一化建模、参数化自动建面、双后端自动写卡、九道质量闸全自动执行</td></tr>
+      </tbody>
+    </table>
+    <p>数据集对大模型生成能力的支撑通过四条机制实现：真值标尺（为生成结果打分）、覆盖教材（定义能力边界）、质量闸门（生成放行标准与入库标准同源）、防幻觉基线（回归基线钉死口径，杜绝指标漂移）。</p>
+
+    <h1 class="chapter" id="section-2">二、项目背景与目标</h1>
+    <h2 class="sub" id="section-2-1">（一）行业痛点</h2>
+    <p>飞机结构强度分析中，有限元建模是整个分析链条中耗时最长、质量最难控制的环节：</p>
+    <ol>
+      <li><strong>人工建模效率低</strong>：几何清理、网格划分、载荷边界施加占强度分析总工时的 70% 以上，且高度依赖工程师个人经验；</li>
+      <li><strong>模型质量不可控</strong>：网格质量、语义一致性、载荷平衡等关键指标缺乏系统化校验手段，错误往往在分析后期才暴露；</li>
+      <li><strong>经验难以沉淀</strong>：典型结构形式（翼盒、壁板、柱壳、开孔细节等）的建模知识散落在个人手中，无法转化为可复用的组织资产；</li>
+      <li><strong>大模型落地缺乏标尺</strong>：直接用大语言模型生成有限元模型面临"幻觉"风险——生成的模型看似合理却存在几何、材料或载荷错误，业界缺少可量化评测模型生成质量的基准数据集。</li>
+    </ol>
+    <h2 class="sub" id="section-2-2">（二）项目目标</h2>
+    <ol>
+      <li>构建"基于大模型的交互式飞机有限元模型智能生成技术框架"，实现从自然语言描述到可信有限元模型的自动转换；</li>
+      <li>建成配套基准数据集 FEM-Bench-Aero，为框架提供训练语料、评测基准与真值对照；</li>
+      <li>建立全链路自动化质量闸体系，确保每一份生成模型的可信度可量化、可复现。</li>
+    </ol>
+
+    <h1 class="chapter" id="section-3">三、技术框架总体设计</h1>
+    <h2 class="sub" id="section-3-1">（一）六层架构</h2>
+    <p>框架采用六层架构，自上而下为：</p>
+    <table class="data">
+      <thead>
+        <tr><th>层</th><th>名称</th><th>职责</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>交互层（大模型）</td><td>自然语言理解、多轮追问澄清、生成建模意图与参数草稿</td></tr>
+        <tr><td>2</td><td>契约层（FEASpec）</td><td>唯一数据契约：几何、网格、材料、载荷、边界、求解器选择一次声明、全局生效</td></tr>
+        <tr><td>3</td><td>生成层（参数化建模）</td><td>参数化几何建模（实体打标）、全四边形网格生成、CalculiX/Abaqus 双后端求解输入卡自动写卡</td></tr>
+        <tr><td>4</td><td>求解层</td><td>CalculiX 与 Abaqus 双求解器对同构模型独立求解、交叉验证</td></tr>
+        <tr><td>5</td><td>验证层（九道质量闸）</td><td>网格质量、语义一致、物理平衡、双码交叉、退化自检、回归基线、去重指纹等自动化门禁</td></tr>
+        <tr><td>6</td><td>应用回流层</td><td>模型交付、强度分析对接、新算例回流数据集</td></tr>
+      </tbody>
+    </table>
+    <h2 class="sub" id="section-3-2">（二）三条设计原则</h2>
+    <ol>
+      <li><strong>契约唯一</strong>：全链路只认一份声明式契约（FEASpec），任何环节不得私改参数，从根源上消灭"多处定义、互相打架"的不一致；</li>
+      <li><strong>求解器先于输入卡</strong>：求解器选择在契约层声明、在写卡前锁定，双后端输出由同一契约派生，保证双码模型严格同构；</li>
+      <li><strong>闸即标准</strong>：数据集入库的质量闸与生成模型放行的质量闸是同一套代码，数据集的可信度标准直接平移为生成结果的可信度标准。</li>
+    </ol>
+    <h2 class="sub" id="section-3-3">（三）数据集在框架中的定位</h2>
+    <p>数据集不是框架的附属产物，而是框架运转的"标尺与地基"：交互层靠它评测，生成层靠它校准，验证层靠它对照真值。没有数据集，框架的每一次生成都无法回答"对不对"；有了数据集，每一次生成都能给出量化偏差。</p>
+
+    <h1 class="chapter" id="section-4">四、项目执行过程</h1>
+    <p>项目按六个里程碑（M1–M6）推进，执行顺序经过专门设计——每一步都为后续步骤建立前置能力，顺序不可颠倒（否则新结构形式会在旧机制下"跑通但分组错"，而数值门禁全部不报警）。</p>
+    <h2 class="sub" id="section-4-1">（一）M1–M2：契约与基线建设（已完成）</h2>
+    <p><strong>任务</strong>：建立 FEASpec 唯一契约、参数化几何建模与网格生成流水线，建成首个结构形式（等直翼盒）的基准算例。</p>
+    <p><strong>关键动作</strong>：</p>
+    <ol>
+      <li>设计并实现唯一契约 FEASpec，将几何、网格、材料、载荷、边界、求解器选择收敛为一次声明；</li>
+      <li>实现基于几何内核的参数化建模，采用"建面打标 + 拓扑继承"方案，使网格分组与几何定义严格同源（替代早期的包围盒分类器，后者降级为交叉校验手段）；</li>
+      <li>建成等直翼盒基准：5144 个壳单元、5074 个节点、网格雅可比最小值 0.6249，作为后续所有扰动的回归锚点。</li>
+    </ol>
+    <p><strong>产出</strong>：契约驱动的建模流水线 v1、翼盒基准算例。</p>
+    <h2 class="sub" id="section-4-2">（二）M3：结构形式扩展（已完成）</h2>
+    <p><strong>任务</strong>：扩展加筋壁板（T5）与含长桁平板（T2）两种结构形式，验证框架对新形式的适应能力。</p>
+    <p><strong>关键动作</strong>：</p>
+    <ol>
+      <li>平板族闭式对照推导：矩形加筋板弯曲应力对照采用 von Mises 平面应力合成公式，纠正了初期误用方板公式的口径错误；</li>
+      <li>长桁截面支持 blade 与 T 形两类，法兰截面与蒙皮强制布尔耦合，保证共享节点、避免"假连接"（该项若缺失，所有门禁均不会报警——是实测踩坑后固化的纪律）；</li>
+      <li>两种新形式均配备退化自检（结构参数趋零时必须退化回已信任的简单形式）。</li>
+    </ol>
+    <p><strong>产出</strong>：4 结构族中 2 族落地，退化自检闸（check_forms）成为常设门禁。</p>
+    <h2 class="sub" id="section-4-3">（三）M4：划分规则化（已完成）</h2>
+    <p><strong>任务</strong>：将数据集 train/val/test 划分从随机抽样改造为物理规则驱动。</p>
+    <p><strong>关键动作</strong>：</p>
+    <ol>
+      <li>建立"等价类"概念：同族、同几何、同壁厚的算例归为一类，网格/载荷/边界/分析设置的差异不改变等价性，防止同类算例跨训练/评测集泄漏；</li>
+      <li>划分规则冻结存档，并由独立评测程序断言"规则可复现冻结口径"，规则改动必须显式重新冻结；</li>
+      <li>确立"精确锚点"判据：尺寸维以精确锚点定义训练域，单维外推进验证集、多维或跨维外推进测试集。</li>
+    </ol>
+    <p><strong>产出</strong>：规则化划分体系 + 冻结口径断言闸，奠定泛化评测的纪律基础。</p>
+    <h2 class="sub" id="section-4-4">（四）M5：放量与形式补全（2026-10-08 完成）</h2>
+    <p><strong>任务</strong>：八个子任务批量推进——划分规则化收尾、后掠/锥形翼盒（T1）、批量放量 8 条、机身柱壳（T3）、开孔板（T4）、多闭室翼盒（T6）、柱壳尺寸与壁厚维、开孔板放量。</p>
+    <p><strong>关键动作与实测结果</strong>：</p>
+    <ol>
+      <li><strong>后掠/锥形翼盒（T1）</strong>：9 条带平面形状算例入库；实践中确认"放样建模与拉伸建模不等价"，退化路径随之修正，该教训写入门禁自检；</li>
+      <li><strong>机身加筋柱壳（T3）</strong>：首个多载荷组合工况（内压 + 端部弯矩 + 端部剪力）；确立"网格尺寸以结构最窄特征为上限"的口径，与算例绝对尺寸解耦；尺寸维外推只朝收缩方向（受本机 33 GB 内存墙约束，实测可算上限 158,548 节点）；</li>
+      <li><strong>开孔板（T4）</strong>：首个带闭式解析对照（Howland 解）的结构族；确立"应力集中系数必须声明口径"（毛截面/净截面口径差 11.1%），并以"尺寸不变性探针"验证同比值跨尺寸算例的解析标尺不变——同码跨算例 Kt 偏差 ccx <span class="data-emphasis">0.629%</span>、Abaqus 1.539%，均小于 2% 闸值；</li>
+      <li><strong>多闭室翼盒（T6）</strong>：翼盒族新增"腹板数"形式维，首个扭转工况；确立剪流为决定性可观测量（载荷施加"弯曲 + 端部扭矩"组合），扭转率采用面内刚性转动最小二乘拟合测量；</li>
+      <li><strong>放量与双维角点</strong>：开孔板批量放量引入"双维角点谓词"，两轴判据采用严格不等读法，防止边界点被宽松读法灌入验证集。</li>
+    </ol>
+    <p><strong>产出</strong>：数据集达到 40 条/树，覆盖 4 族 6 形式，全部入库闸通过。</p>
+    <h2 class="sub" id="section-4-5">（五）M6：材料维扩展——复材层合打样（2026-10-11 完成）</h2>
+    <p><strong>任务</strong>：引入复合材料层合结构（T7），补齐第七种结构形式，验证框架对材料维的支撑能力。</p>
+    <p><strong>关键动作</strong>：</p>
+    <ol>
+      <li><strong>架构决策</strong>：经探针实测，CalculiX 的复合壳卡只支持特定单元类型，若采用逐层建模需重构全链网格。拍板采用"等效单层"架构：以经典层合板理论（CLT）将对称均衡铺层均匀化为等效正交异性单层，壳单元类型保持不变，全链兼容；</li>
+      <li><strong>CLT 计算器</strong>：实现折减刚度、角度变换、面内矩阵、等效工程常数全链计算，自测 15 项全部通过（自测当场逮住并修复一处剪切模量换算公式错误）；</li>
+      <li><strong>零扰动设计</strong>：铺层参数以字典键级注入既有契约，不新增数据类字段——既有全部算例的契约哈希逐字节不变，回归基线零漂移；</li>
+      <li><strong>复材对照闸</strong>：复材结构不用 Howland 解，改用 CLT 等效模量闸；测量口径经三轮迭代（站位线平均、远场最小二乘均因孔边扰动残留失败）最终确定为"加载端平均恒等式"——由高斯定理保证孔边扰动只改端面分布不改均值。实测：ccx 73804.31（−2.070%）、Abaqus 73802.03（−2.073%），<span class="data-emphasis">双码偏差 0.003%</span>；容差 3% 按实测收敛链钉定（无孔板 20 mm 网格偏差 −1.73% → 5 mm 网格 −0.19%，证明卡语义正确，残余偏差为非结构网格对正交异性场的系统离散）；</li>
+      <li><strong>去重指纹扩展</strong>：复材算例与铝制同几何算例网格逐字节同构，入库闸当场咬住指纹撞车——去重指纹由"网格 + 壳厚表"扩展为"网格 + 壳厚表 + 材料律块"第三次升级，修复后零误判。</li>
+    </ol>
+    <p><strong>产出</strong>：第七种结构形式落地，数据集达到 41 条/树，铺层族与厚度维列入放量计划。</p>
+
+    <h1 class="chapter" id="section-5">五、数据集建设成果：FEM-Bench-Aero</h1>
+    <h2 class="sub" id="section-5-1">（一）规模与构成</h2>
+    <table class="data">
+      <thead>
+        <tr><th>指标</th><th>数值</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>算例规模</td><td>41 条 × 2 棵树（CalculiX 发布树 + Abaqus 交叉验证树，同构逐字节对应）</td></tr>
+        <tr><td>几何等价类</td><td>40 个</td></tr>
+        <tr><td>结构族</td><td>4 个：翼盒 23 条 / 加筋壁板 4 条 / 机身柱壳 6 条 / 开孔板 8 条</td></tr>
+        <tr><td>结构形式</td><td>7 种（T1–T7）：等直翼盒、后掠/锥形翼盒、多闭室翼盒、加筋壁板、机身柱壳、开孔板、复材层合开孔板</td></tr>
+        <tr><td>数据划分</td><td>train 17 / val 13 / test 11（四个族验证集全部非空）</td></tr>
+        <tr><td>每条算例内容</td><td>契约声明、几何模型、网格、双后端求解输入卡、结果摘要、真值对照六件套</td></tr>
+      </tbody>
+    </table>
+    <h2 class="sub" id="section-5-2">（二）数据集特色</h2>
+    <ol>
+      <li><strong>双求解器同构互证</strong>：每条算例在 CalculiX 与 Abaqus 两棵树上模型逐字节同构、独立求解、交叉验证，标签可信度不依赖单一求解器；</li>
+      <li><strong>闭式解真值库</strong>：开孔板对照 Howland 解、平板对照解析弯曲解、多闭室对照剪流理论值、复材对照 CLT 等效模量——每条真值均可独立复算；</li>
+      <li><strong>物理维度外推的划分纪律</strong>：train/val/test 按"尺寸维、材料维、形式维"的外推关系划分，评测的是泛化能力而非记忆能力；</li>
+      <li><strong>全链路溯源</strong>：每条结论可追溯到"命令 + 实测数字 + 产物路径"，指标零凭空印制。</li>
+    </ol>
+
+    <h1 class="chapter" id="section-6">六、质量保证体系：九道质量闸</h1>
+    <h2 class="sub" id="section-6-1">（一）闸体系与实测结果</h2>
+    <table class="data">
+      <thead>
+        <tr><th>闸</th><th>内容</th><th>实测结果</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>闸 1 网格质量</td><td>全四边形网格、雅可比最小值 ≥ 0.30、零三角形单元</td><td>41/41 通过，全树 minJ 0.4636–0.6626</td></tr>
+        <tr><td>闸 2 语义门禁</td><td>派生预期与几何实测精确相等（单元计数按族公式全量核对）</td><td>82/82 通过（两树各 41）</td></tr>
+        <tr><td>闸 3 双求解器</td><td>双码位移差＜1%、逐节点 von Mises 中位差＜5%</td><td>41/41 通过</td></tr>
+        <tr><td>闸 4 物理平衡</td><td>载荷-反力平衡残差＜1e-3%</td><td>全部通过</td></tr>
+        <tr><td>闸 5 退化自检</td><td>每种结构形式参数趋零时必须退化回已信任形式</td><td>50/50 通过</td></tr>
+        <tr><td>闸 6 回归基线</td><td>分组指纹与归档基线比对，防口径漂移</td><td>9/9 通过</td></tr>
+        <tr><td>闸 7 去重指纹</td><td>网格 + 壳厚 + 材料律三成分指纹，防重复算例</td><td>重复 0</td></tr>
+        <tr><td>闸 8 跨树一致</td><td>两树网格逐字节一致、应力恢复口径一致</td><td>41/41 通过</td></tr>
+        <tr><td>闸 9 独立验证线</td><td>开孔板 Kt/峰位/平衡/双码四项物理闸</td><td>5/5 通过（Kt 与解析解偏差 0.45%）</td></tr>
+      </tbody>
+    </table>
+    <h2 class="sub" id="section-6-2">（二）验证纪律</h2>
+    <ol>
+      <li><strong>只认独立复算</strong>：平衡不变量、解析解、双码交叉三条路径互相独立，任何一条不通过即否决；</li>
+      <li><strong>门禁不许印没量过的数字</strong>：引用的每一个数必须落盘（命令 + 数字 + 产物路径）；</li>
+      <li><strong>变体结果完全相同即报警</strong>：防止"复制粘贴假通过"；</li>
+      <li><strong>判据变更须留档</strong>：改判据后重签基线是正常流程，但旧基线与新旧对比必须存档。</li>
+    </ol>
+    <h2 class="sub" id="section-6-3">（三）闸的实战战绩</h2>
+    <p>质量闸体系在执行过程中多次当场拦截真实缺陷，证明其有效性不是摆设：</p>
+    <ol>
+      <li>去重指纹闸当场咬住"复材与铝制算例同网格同厚度"的指纹撞车（若放行将误删一条材料维数据点）；</li>
+      <li>CLT 计算器自测当场逮住剪切模量换算公式错误（若流入将导致全部复材算例材料卡错误）；</li>
+      <li>语义门禁实测抓住"手工补跑产物缺摘要文件"（80 项检查抓出 4 项缺失）；</li>
+      <li>独立验证线在验证环境异常时正确回退，未让不可信产物进入数据集。</li>
+    </ol>
+
+    <h1 class="chapter" id="section-7">七、数据集对模型生成的支撑机制</h1>
+    <p>面向"基于大模型的交互式飞机有限元模型智能生成"这一项目总目标，数据集通过四条机制提供支撑：</p>
+    <h2 class="sub">（一）标尺机制：为生成结果打分</h2>
+    <p>数据集内置闭式解真值库与双码交叉标签，任何大模型生成的模型都可以对照打分：网格质量分（minJ 分布）、物理可信分（平衡残差）、精度分（与真值偏差）。标签可信度有实测背书——双码等效模量偏差 <span class="data-emphasis">0.003%</span>、Kt 与解析解偏差 <span class="data-emphasis">0.45%</span>。</p>
+    <h2 class="sub">（二）教材机制：定义能力边界</h2>
+    <p>7 种结构形式 × 40 个等价类构成能力覆盖图谱，train/val/test 按物理维度外推划分。大模型在 train 域学习"会什么"，在 val/test 域被评测"没见过的能不能对"——外推维度（尺寸、材料、形式）与工程实际外推需求一一对应。</p>
+    <h2 class="sub">（三）闸门机制：生成放行标准同源复用</h2>
+    <div data-component="callout" data-variant="success">
+      <p><strong>闸即标准</strong>：数据集入库的九道闸直接作为大模型生成模型的放行闸——生成的模型必须过同一套网格质量、语义一致、物理平衡、双码交叉检验。数据集的可信度建设因此直接转化为生成结果的可信度保障，无需另建评测体系。</p>
+    </div>
+    <h2 class="sub">（四）防幻觉机制：口径钉死、杜绝漂移</h2>
+    <p>回归基线将全部指标钉死在归档值上，任何口径改动（至今 29 项决议全部留档）必须显式重签基线；大模型生成的结果若与基准"完全相同"反而触发报警。这套纪律保证评测结论不随时间、不随环境漂移。</p>
+
+    <h1 class="chapter" id="section-8">八、项目价值与展望</h1>
+    <h2 class="sub" id="section-8-1">（一）项目价值</h2>
+    <ol>
+      <li><strong>技术价值</strong>：形成"契约驱动 + 质量闸闭环"的智能建模技术框架，实现自然语言到可信有限元模型的全链路自动转换，建模环节由人工经验驱动转为数据与规则驱动；</li>
+      <li><strong>资产价值</strong>：FEM-Bench-Aero 数据集将典型飞机结构形式的建模知识固化为可复用、可评测、可生长的组织资产，7 种结构形式持续扩展；</li>
+      <li><strong>方法论价值</strong>：九道闸验证体系与 29 项留档决议沉淀为一套可迁移的"AI 生成结果可信度保障"方法论，适用于其他工程智能生成场景。</li>
+    </ol>
+    <h2 class="sub" id="section-8-2">（二）后续规划</h2>
+    <ol>
+      <li><strong>数据集放量</strong>：复材铺层族（[±45]s、[0/±45/90]s）与厚度维扩展，先补划分声明再入库；</li>
+      <li><strong>形式扩展</strong>：多闭室翼盒腹板变体、更多机身段形式；</li>
+      <li><strong>大模型深度集成</strong>：基于数据集开展生成能力评测与迭代，交互式建模体验优化（多轮澄清、参数推荐）；</li>
+      <li><strong>工程对接</strong>：生成模型与强度分析工具链（载荷工况批量处理、安全裕度计算）打通，形成"生成—求解—评定"闭环。</li>
+    </ol>
+
+    <h1 class="chapter" id="section-9">附录</h1>
+    <h2 class="sub">（一）关键决议索引</h2>
+    <p>项目执行过程中的 29 项技术决议（D1–D29）全部留档，覆盖应力恢复口径、网格策略、划分规则、尺寸维判据、材料维架构等关键口径。每项决议均包含背景、实测依据、决策内容与影响范围，支持审计追溯。</p>
+    <h2 class="sub">（二）复现命令清单</h2>
+    <p>数据集全部质量指标可通过脚本一键复现，包括：退化自检（check_forms）、各结构族独立验证线（verify 系列）、语义门禁（check_semantics）、数据集八项校验（verify_dataset）、独立复算评测（eval_dataset）、分组回归（regress_groups）、清单生成（make_manifest）等。</p>
+    <h2 class="sub">（三）交付物清单</h2>
+    <table class="data">
+      <thead>
+        <tr><th>交付物</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>FEM-Bench-Aero 数据集</td><td>CalculiX 发布树 + Abaqus 交叉验证树，各 41 条算例</td></tr>
+        <tr><td>技术框架代码资产</td><td>契约、建面、网格、写卡、求解、后处理、验证全链路脚本</td></tr>
+        <tr><td>项目进展看板</td><td>每条结论可溯源至命令 + 实测数字 + 产物路径</td></tr>
+        <tr><td>两份技术 README</td><td>数据集与代码资产的使用说明与质量报告</td></tr>
+        <tr><td>汇报演示文稿</td><td>与本文档配套的 PPT（核心要点提炼版）</td></tr>
+      </tbody>
+    </table>
+  </section>
+</body>
+</html>

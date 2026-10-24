@@ -1,0 +1,2862 @@
+{
+ "milestone": "M12/D35",
+ "note": "关 1 用 eval_dataset._recompute（与 verify_dataset 同源，全 54 条）；关 3 用 xval_m8.check_one（判据零复制）但**只对翼盒族**——族专用判据不能跨族套用，其余族登记为 out_of_scope。纯后处理，未起求解器。",
+ "manifest": "F:\\AI FEA Modeling DataSets\\FEM-Bench-Aero\\manifest.json",
+ "gate1_mesh_quality": {
+  "n_cases": 54,
+  "n_measured": 54,
+  "worst_min_jacobian": 0.4636,
+  "worst_case": "fuselage_barrel_d1600_l1600_str8_frm3",
+  "n_below_threshold": 0,
+  "n_tri3_cases": 0,
+  "n_tri3_total": 0,
+  "threshold": 0.3,
+  "pass": true,
+  "rows": [
+   {
+    "case": "fuselage_barrel_d1600_l1600_str8_frm3",
+    "min_jacobian": 0.4636,
+    "n_tri3": 0
+   },
+   {
+    "case": "fuselage_barrel_d1800_l2000_str8_frm3",
+    "min_jacobian": 0.5159,
+    "n_tri3": 0
+   },
+   {
+    "case": "fuselage_barrel_d2000_l1600_str8_frm3",
+    "min_jacobian": 0.5159,
+    "n_tri3": 0
+   },
+   {
+    "case": "fuselage_barrel_d2000_l2000_str12_frm4",
+    "min_jacobian": 0.5211,
+    "n_tri3": 0
+   },
+   {
+    "case": "fuselage_barrel_d2000_l2000_str8_frm3",
+    "min_jacobian": 0.5159,
+    "n_tri3": 0
+   },
+   {
+    "case": "fuselage_barrel_d2000_l2000_t2_str8_frm3",
+    "min_jacobian": 0.5159,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox",
+    "min_jacobian": 0.6249,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_n_ribs3_chord1000",
+    "min_jacobian": 0.5965,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_n_ribs3_chord800",
+    "min_jacobian": 0.595,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_n_ribs5_chord800",
+    "min_jacobian": 0.595,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_n_ribs7_chord1000",
+    "min_jacobian": 0.6083,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_n_ribs7_chord800",
+    "min_jacobian": 0.5099,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_n_ribs9_chord1000",
+    "min_jacobian": 0.6337,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_recombination_algorithm3",
+    "min_jacobian": 0.5725,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_size_skin1p5",
+    "min_jacobian": 0.6249,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_size_skin2",
+    "min_jacobian": 0.6249,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_size_skin4",
+    "min_jacobian": 0.6249,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_size_span1600",
+    "min_jacobian": 0.6204,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_size_span2400",
+    "min_jacobian": 0.5966,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_size_span2400_skin2",
+    "min_jacobian": 0.5966,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_size_span3000",
+    "min_jacobian": 0.5047,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_size_span3000_skin1p5",
+    "min_jacobian": 0.5047,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_str3",
+    "min_jacobian": 0.5228,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_str3_T",
+    "min_jacobian": 0.5332,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_str5",
+    "min_jacobian": 0.5351,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_sweep10",
+    "min_jacobian": 0.6266,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_sweep20",
+    "min_jacobian": 0.4902,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_sweep20_taper060",
+    "min_jacobian": 0.5523,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_sweep30",
+    "min_jacobian": 0.6353,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_sweep30_taper080",
+    "min_jacobian": 0.5606,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_sweep40",
+    "min_jacobian": 0.4861,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_sweep40_taper040",
+    "min_jacobian": 0.5448,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_taper040",
+    "min_jacobian": 0.5064,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_taper060",
+    "min_jacobian": 0.5593,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_taper080",
+    "min_jacobian": 0.5484,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_taper090",
+    "min_jacobian": 0.5492,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_web1",
+    "min_jacobian": 0.5532,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_web1_offcentre",
+    "min_jacobian": 0.5467,
+    "n_tri3": 0
+   },
+   {
+    "case": "naca4412_wingbox_web2",
+    "min_jacobian": 0.5784,
+    "n_tri3": 0
+   },
+   {
+    "case": "open_hole_panel_400x200_d20",
+    "min_jacobian": 0.6084,
+    "n_tri3": 0
+   },
+   {
+    "case": "open_hole_panel_400x200_d20_cfrp090s",
+    "min_jacobian": 0.6084,
+    "n_tri3": 0
+   },
+   {
+    "case": "open_hole_panel_400x200_d20_cfrp45s",
+    "min_jacobian": 0.6084,
+    "n_tri3": 0
+   },
+   {
+    "case": "open_hole_panel_400x200_d20_cfrp45s_d40",
+    "min_jacobian": 0.6213,
+    "n_tri3": 0
+   },
+   {
+    "case": "open_hole_panel_400x200_d20_cfrpqi",
+    "min_jacobian": 0.6084,
+    "n_tri3": 0
+   },
+   {
+    "case": "open_hole_panel_400x200_d20_offcentre",
+    "min_jacobian": 0.6562,
+    "n_tri3": 0
+   },
+   {
+    "case": "open_hole_panel_400x200_d40",
+    "min_jacobian": 0.6213,
+    "n_tri3": 0
+   },
+   {
+    "case": "open_hole_panel_400x200_d40_offcentre",
+    "min_jacobian": 0.6626,
+    "n_tri3": 0
+   },
+   {
+    "case": "open_hole_panel_400x200_d50",
+    "min_jacobian": 0.6266,
+    "n_tri3": 0
+   },
+   {
+    "case": "open_hole_panel_600x300_d30",
+    "min_jacobian": 0.5808,
+    "n_tri3": 0
+   },
+   {
+    "case": "open_hole_panel_600x300_d60",
+    "min_jacobian": 0.602,
+    "n_tri3": 0
+   },
+   {
+    "case": "stiffened_panel_600x600",
+    "min_jacobian": 0.6167,
+    "n_tri3": 0
+   },
+   {
+    "case": "stiffened_panel_600x600_str3",
+    "min_jacobian": 0.5367,
+    "n_tri3": 0
+   },
+   {
+    "case": "stiffened_panel_800x600",
+    "min_jacobian": 0.6183,
+    "n_tri3": 0
+   },
+   {
+    "case": "stiffened_panel_800x600_str3",
+    "min_jacobian": 0.5978,
+    "n_tri3": 0
+   }
+  ]
+ },
+ "gate3_dual_solver": {
+  "scope": "wingbox only (xval_m8 判据的适用域：500 N 端部集中力 + 根截面反力平衡)",
+  "n_cases": 33,
+  "n_pass": 33,
+  "n_missing": 0,
+  "missing": [],
+  "pass": true,
+  "equilibrium_pct": {
+   "min": 1.922e-05,
+   "max": 0.00162248
+  },
+  "max_disp_gap_pct": {
+   "min": 0.071,
+   "max": 0.5544
+  },
+  "stress_median_pct": {
+   "min": 0.0708,
+   "max": 0.9979
+  },
+  "stress_p90_pct": {
+   "min": 4.5859,
+   "max": 64.2989
+  },
+  "failing": [],
+  "rows": [
+   {
+    "case": "naca4412_wingbox",
+    "sources": {
+     "ccx": "naca4412_wingbox.frd",
+     "abaqus": "naca4412_wingbox.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5074,
+     "n_abaqus": 5074,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.000192,
+       -500.002424,
+       0.0002
+      ],
+      "dominant": "Y",
+      "abs_value": 500.002424,
+      "residual_pct": 0.0004848
+     },
+     "abaqus": {
+      "sum": [
+       9e-06,
+       -500.000455,
+       1.5e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000455,
+      "residual_pct": 9.1013e-05
+     },
+     "worst_residual_pct": 0.0004848
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 731,
+      "mm": 2.365439
+     },
+     "abaqus": {
+      "node": 731,
+      "mm": 2.373896
+     },
+     "gap_pct": 0.3562,
+     "abs_diff_mm": 0.008457,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5074,
+     "median_pct": 0.3081,
+     "p90_pct": 33.8964,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 10.2824,
+      "node": 776
+     },
+     "abaqus": {
+      "vm_mpa": 8.4541,
+      "node": 3148
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs",
+     "abaqus": "outputs_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_n_ribs3_chord1000",
+    "sources": {
+     "ccx": "naca4412_wingbox_n_ribs3_chord1000.frd",
+     "abaqus": "naca4412_wingbox_n_ribs3_chord1000.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 4668,
+     "n_abaqus": 4668,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.000427,
+       -499.99623,
+       -0.0047
+      ],
+      "dominant": "Y",
+      "abs_value": 499.99623,
+      "residual_pct": 0.000754
+     },
+     "abaqus": {
+      "sum": [
+       -1e-06,
+       -500.000464,
+       5.3e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000464,
+      "residual_pct": 9.2851e-05
+     },
+     "worst_residual_pct": 0.000754
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 479,
+      "mm": 2.372344
+     },
+     "abaqus": {
+      "node": 479,
+      "mm": 2.378557
+     },
+     "gap_pct": 0.2612,
+     "abs_diff_mm": 0.006213,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 4668,
+     "median_pct": 0.1749,
+     "p90_pct": 14.2039,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 10.1615,
+      "node": 544
+     },
+     "abaqus": {
+      "vm_mpa": 8.2693,
+      "node": 3462
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs",
+     "abaqus": "outputs_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_n_ribs3_chord800",
+    "sources": {
+     "ccx": "naca4412_wingbox_n_ribs3_chord800.frd",
+     "abaqus": "naca4412_wingbox_n_ribs3_chord800.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 3679,
+     "n_abaqus": 3679,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 101,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.000993,
+       -500.005462,
+       -0.00476
+      ],
+      "dominant": "Y",
+      "abs_value": 500.005462,
+      "residual_pct": 0.0010924
+     },
+     "abaqus": {
+      "sum": [
+       -4e-06,
+       -500.000512,
+       -7.2e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000512,
+      "residual_pct": 0.000102319
+     },
+     "worst_residual_pct": 0.0010924
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 640,
+      "mm": 4.540154
+     },
+     "abaqus": {
+      "node": 640,
+      "mm": 4.550354
+     },
+     "gap_pct": 0.2242,
+     "abs_diff_mm": 0.0102,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 3679,
+     "median_pct": 0.1166,
+     "p90_pct": 42.6162,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 15.3944,
+      "node": 522
+     },
+     "abaqus": {
+      "vm_mpa": 12.7275,
+      "node": 2744
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs",
+     "abaqus": "outputs_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_n_ribs5_chord800",
+    "sources": {
+     "ccx": "naca4412_wingbox_n_ribs5_chord800.frd",
+     "abaqus": "naca4412_wingbox_n_ribs5_chord800.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 4057,
+     "n_abaqus": 4057,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 101,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.00064,
+       -500.003627,
+       -0.0055
+      ],
+      "dominant": "Y",
+      "abs_value": 500.003627,
+      "residual_pct": 0.0007254
+     },
+     "abaqus": {
+      "sum": [
+       -1e-05,
+       -500.000507,
+       -6.1e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000507,
+      "residual_pct": 0.000101367
+     },
+     "worst_residual_pct": 0.0007254
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 868,
+      "mm": 4.526728
+     },
+     "abaqus": {
+      "node": 868,
+      "mm": 4.542854
+     },
+     "gap_pct": 0.355,
+     "abs_diff_mm": 0.016126,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 4057,
+     "median_pct": 0.2532,
+     "p90_pct": 41.1175,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 15.2726,
+      "node": 734
+     },
+     "abaqus": {
+      "vm_mpa": 12.5256,
+      "node": 2847
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs",
+     "abaqus": "outputs_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_n_ribs7_chord1000",
+    "sources": {
+     "ccx": "naca4412_wingbox_n_ribs7_chord1000.frd",
+     "abaqus": "naca4412_wingbox_n_ribs7_chord1000.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5593,
+     "n_abaqus": 5593,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.000253,
+       -500.001371,
+       -0.0042
+      ],
+      "dominant": "Y",
+      "abs_value": 500.001371,
+      "residual_pct": 0.0002742
+     },
+     "abaqus": {
+      "sum": [
+       -3e-06,
+       -500.00046,
+       -6.9e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.00046,
+      "residual_pct": 9.2089e-05
+     },
+     "worst_residual_pct": 0.0002742
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 977,
+      "mm": 2.358054
+     },
+     "abaqus": {
+      "node": 977,
+      "mm": 2.368825
+     },
+     "gap_pct": 0.4547,
+     "abs_diff_mm": 0.010771,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5593,
+     "median_pct": 0.5872,
+     "p90_pct": 38.312,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 10.4278,
+      "node": 1016
+     },
+     "abaqus": {
+      "vm_mpa": 8.4513,
+      "node": 3850
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs",
+     "abaqus": "outputs_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_n_ribs7_chord800",
+    "sources": {
+     "ccx": "naca4412_wingbox_n_ribs7_chord800.frd",
+     "abaqus": "naca4412_wingbox_n_ribs7_chord800.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 4352,
+     "n_abaqus": 4352,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 98,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       -0.003028,
+       -500.003117,
+       0.0034
+      ],
+      "dominant": "Y",
+      "abs_value": 500.003117,
+      "residual_pct": 0.000623368
+     },
+     "abaqus": {
+      "sum": [
+       6e-06,
+       -499.999921,
+       -0.000164
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999921,
+      "residual_pct": 1.5897e-05
+     },
+     "worst_residual_pct": 0.000623368
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 922,
+      "mm": 4.512321
+     },
+     "abaqus": {
+      "node": 922,
+      "mm": 4.535214
+     },
+     "gap_pct": 0.5048,
+     "abs_diff_mm": 0.022893,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 4352,
+     "median_pct": 0.5179,
+     "p90_pct": 40.6058,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 15.3919,
+      "node": 954
+     },
+     "abaqus": {
+      "vm_mpa": 12.7268,
+      "node": 3109
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs",
+     "abaqus": "outputs_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_n_ribs9_chord1000",
+    "sources": {
+     "ccx": "naca4412_wingbox_n_ribs9_chord1000.frd",
+     "abaqus": "naca4412_wingbox_n_ribs9_chord1000.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5706,
+     "n_abaqus": 5706,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.000782,
+       -499.999626,
+       0.0005
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999626,
+      "residual_pct": 7.476e-05
+     },
+     "abaqus": {
+      "sum": [
+       0.0,
+       -500.000454,
+       -5.3e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000454,
+      "residual_pct": 9.0747e-05
+     },
+     "worst_residual_pct": 9.0747e-05
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 1205,
+      "mm": 2.350334
+     },
+     "abaqus": {
+      "node": 1205,
+      "mm": 2.363438
+     },
+     "gap_pct": 0.5544,
+     "abs_diff_mm": 0.013104,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5706,
+     "median_pct": 0.9979,
+     "p90_pct": 38.8572,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 10.3803,
+      "node": 1240
+     },
+     "abaqus": {
+      "vm_mpa": 8.4447,
+      "node": 4157
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_b2",
+     "abaqus": "outputs_b2_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_recombination_algorithm3",
+    "sources": {
+     "ccx": "naca4412_wingbox_recombination_algorithm3.frd",
+     "abaqus": "naca4412_wingbox_recombination_algorithm3.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5281,
+     "n_abaqus": 5281,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 153,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       -0.00178,
+       -499.997417,
+       -0.0008
+      ],
+      "dominant": "Y",
+      "abs_value": 499.997417,
+      "residual_pct": 0.0005166
+     },
+     "abaqus": {
+      "sum": [
+       -2e-06,
+       -499.999403,
+       -1.9e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999403,
+      "residual_pct": 0.000119425
+     },
+     "worst_residual_pct": 0.0005166
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 731,
+      "mm": 2.364867
+     },
+     "abaqus": {
+      "node": 731,
+      "mm": 2.372417
+     },
+     "gap_pct": 0.3182,
+     "abs_diff_mm": 0.00755,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5281,
+     "median_pct": 0.2221,
+     "p90_pct": 34.5555,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 10.3156,
+      "node": 776
+     },
+     "abaqus": {
+      "vm_mpa": 8.4192,
+      "node": 3622
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_str",
+     "abaqus": "outputs_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_size_skin1p5",
+    "sources": {
+     "ccx": "naca4412_wingbox_size_skin1p5.frd",
+     "abaqus": "naca4412_wingbox_size_skin1p5.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5074,
+     "n_abaqus": 5074,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.002969,
+       -500.000136,
+       0.0032
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000136,
+      "residual_pct": 2.72e-05
+     },
+     "abaqus": {
+      "sum": [
+       1.1e-05,
+       -500.000462,
+       -0.000172
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000462,
+      "residual_pct": 9.244e-05
+     },
+     "worst_residual_pct": 9.244e-05
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 732,
+      "mm": 4.71648
+     },
+     "abaqus": {
+      "node": 732,
+      "mm": 4.740186
+     },
+     "gap_pct": 0.5001,
+     "abs_diff_mm": 0.023706,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5074,
+     "median_pct": 0.4173,
+     "p90_pct": 35.7252,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 20.8221,
+      "node": 776
+     },
+     "abaqus": {
+      "vm_mpa": 16.8509,
+      "node": 3148
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "_probe_m8\\outputs_size_skin1p5",
+     "abaqus": "_probe_m8\\outputs_abaqus_size_skin1p5"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_size_skin2",
+    "sources": {
+     "ccx": "naca4412_wingbox_size_skin2.frd",
+     "abaqus": "naca4412_wingbox_size_skin2.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5074,
+     "n_abaqus": 5074,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.003104,
+       -500.000264,
+       -0.006
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000264,
+      "residual_pct": 5.28e-05
+     },
+     "abaqus": {
+      "sum": [
+       -3e-06,
+       -500.000459,
+       5.7e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000459,
+      "residual_pct": 9.1894e-05
+     },
+     "worst_residual_pct": 9.1894e-05
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 732,
+      "mm": 3.542304
+     },
+     "abaqus": {
+      "node": 732,
+      "mm": 3.557844
+     },
+     "gap_pct": 0.4368,
+     "abs_diff_mm": 0.01554,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5074,
+     "median_pct": 0.3574,
+     "p90_pct": 36.5767,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 15.5372,
+      "node": 776
+     },
+     "abaqus": {
+      "vm_mpa": 12.6601,
+      "node": 3148
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "_probe_m8\\outputs_size_skin2",
+     "abaqus": "_probe_m8\\outputs_abaqus_size_skin2"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_size_skin4",
+    "sources": {
+     "ccx": "naca4412_wingbox_size_skin4.frd",
+     "abaqus": "naca4412_wingbox_size_skin4.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5074,
+     "n_abaqus": 5074,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       -6.9e-05,
+       -499.998202,
+       0.0006
+      ],
+      "dominant": "Y",
+      "abs_value": 499.998202,
+      "residual_pct": 0.0003596
+     },
+     "abaqus": {
+      "sum": [
+       -5e-06,
+       -500.000461,
+       -1.1e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000461,
+      "residual_pct": 9.2176e-05
+     },
+     "worst_residual_pct": 0.0003596
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 731,
+      "mm": 1.775673
+     },
+     "abaqus": {
+      "node": 731,
+      "mm": 1.781077
+     },
+     "gap_pct": 0.3034,
+     "abs_diff_mm": 0.005404,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5074,
+     "median_pct": 0.2746,
+     "p90_pct": 35.0024,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 7.6724,
+      "node": 776
+     },
+     "abaqus": {
+      "vm_mpa": 6.343,
+      "node": 3148
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "_probe_m8\\outputs_size_skin4",
+     "abaqus": "_probe_m8\\outputs_abaqus_size_skin4"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_size_span1600",
+    "sources": {
+     "ccx": "naca4412_wingbox_size_span1600.frd",
+     "abaqus": "naca4412_wingbox_size_span1600.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 4273,
+     "n_abaqus": 4273,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.000801,
+       -500.003638,
+       -0.0003
+      ],
+      "dominant": "Y",
+      "abs_value": 500.003638,
+      "residual_pct": 0.0007276
+     },
+     "abaqus": {
+      "sum": [
+       -5e-06,
+       -500.000459,
+       -1.7e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000459,
+      "residual_pct": 9.1746e-05
+     },
+     "worst_residual_pct": 0.0007276
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 703,
+      "mm": 1.250615
+     },
+     "abaqus": {
+      "node": 703,
+      "mm": 1.255633
+     },
+     "gap_pct": 0.3996,
+     "abs_diff_mm": 0.005018,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 4273,
+     "median_pct": 0.4481,
+     "p90_pct": 36.4031,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 8.4428,
+      "node": 744
+     },
+     "abaqus": {
+      "vm_mpa": 6.7746,
+      "node": 2778
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "_probe_m8\\outputs_size_span1600",
+     "abaqus": "_probe_m8\\outputs_abaqus_size_span1600"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_size_span2400",
+    "sources": {
+     "ccx": "naca4412_wingbox_size_span2400.frd",
+     "abaqus": "naca4412_wingbox_size_span2400.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5836,
+     "n_abaqus": 5836,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       -0.001305,
+       -500.001357,
+       0.0041
+      ],
+      "dominant": "Y",
+      "abs_value": 500.001357,
+      "residual_pct": 0.00027144
+     },
+     "abaqus": {
+      "sum": [
+       -2e-06,
+       -500.000463,
+       3.8e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000463,
+      "residual_pct": 9.2673e-05
+     },
+     "worst_residual_pct": 0.00027144
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 760,
+      "mm": 4.019721
+     },
+     "abaqus": {
+      "node": 760,
+      "mm": 4.031983
+     },
+     "gap_pct": 0.3041,
+     "abs_diff_mm": 0.012262,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5836,
+     "median_pct": 0.2343,
+     "p90_pct": 31.1162,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 12.1111,
+      "node": 808
+     },
+     "abaqus": {
+      "vm_mpa": 10.0899,
+      "node": 3953
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "_probe_m8\\outputs_size_span2400",
+     "abaqus": "_probe_m8\\outputs_abaqus_size_span2400"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_size_span2400_skin2",
+    "sources": {
+     "ccx": "naca4412_wingbox_size_span2400_skin2.frd",
+     "abaqus": "naca4412_wingbox_size_span2400_skin2.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5836,
+     "n_abaqus": 5836,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       -0.002807,
+       -500.002414,
+       0.0033
+      ],
+      "dominant": "Y",
+      "abs_value": 500.002414,
+      "residual_pct": 0.0004828
+     },
+     "abaqus": {
+      "sum": [
+       4e-06,
+       -500.00046,
+       -3.8e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.00046,
+      "residual_pct": 9.2041e-05
+     },
+     "worst_residual_pct": 0.0004828
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 760,
+      "mm": 6.023137
+     },
+     "abaqus": {
+      "node": 760,
+      "mm": 6.045293
+     },
+     "gap_pct": 0.3665,
+     "abs_diff_mm": 0.022156,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5836,
+     "median_pct": 0.26,
+     "p90_pct": 34.4455,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 18.2952,
+      "node": 808
+     },
+     "abaqus": {
+      "vm_mpa": 15.1507,
+      "node": 3953
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "_probe_m8\\outputs_size_span2400_skin2",
+     "abaqus": "_probe_m8\\outputs_abaqus_size_span2400_skin2"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_size_span3000",
+    "sources": {
+     "ccx": "naca4412_wingbox_size_span3000.frd",
+     "abaqus": "naca4412_wingbox_size_span3000.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 7116,
+     "n_abaqus": 7116,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.001125,
+       -500.00157,
+       -0.0066
+      ],
+      "dominant": "Y",
+      "abs_value": 500.00157,
+      "residual_pct": 0.00031404
+     },
+     "abaqus": {
+      "sum": [
+       6e-06,
+       -500.000453,
+       -0.000122
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000453,
+      "residual_pct": 9.0683e-05
+     },
+     "worst_residual_pct": 0.00031404
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 803,
+      "mm": 7.747477
+     },
+     "abaqus": {
+      "node": 803,
+      "mm": 7.768001
+     },
+     "gap_pct": 0.2642,
+     "abs_diff_mm": 0.020524,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 7116,
+     "median_pct": 0.1761,
+     "p90_pct": 22.2263,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 14.8456,
+      "node": 856
+     },
+     "abaqus": {
+      "vm_mpa": 12.4075,
+      "node": 4128
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "_probe_m8\\outputs_size_span3000",
+     "abaqus": "_probe_m8\\outputs_abaqus_size_span3000"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_size_span3000_skin1p5",
+    "sources": {
+     "ccx": "naca4412_wingbox_size_span3000_skin1p5.frd",
+     "abaqus": "naca4412_wingbox_size_span3000_skin1p5.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 7116,
+     "n_abaqus": 7116,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       -1e-06,
+       -499.991888,
+       -0.0022
+      ],
+      "dominant": "Y",
+      "abs_value": 499.991888,
+      "residual_pct": 0.00162248
+     },
+     "abaqus": {
+      "sum": [
+       3e-06,
+       -500.000455,
+       -0.000141
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000455,
+      "residual_pct": 9.09e-05
+     },
+     "worst_residual_pct": 0.00162248
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 1061,
+      "mm": 15.473332
+     },
+     "abaqus": {
+      "node": 1062,
+      "mm": 15.529278
+     },
+     "gap_pct": 0.3603,
+     "abs_diff_mm": 0.055946,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 7116,
+     "median_pct": 0.2453,
+     "p90_pct": 24.9415,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 30.0451,
+      "node": 856
+     },
+     "abaqus": {
+      "vm_mpa": 24.8187,
+      "node": 4695
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "_probe_m8\\outputs_size_span3000_skin1p5",
+     "abaqus": "_probe_m8\\outputs_abaqus_size_span3000_skin1p5"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_str3",
+    "sources": {
+     "ccx": "naca4412_wingbox_str3.frd",
+     "abaqus": "naca4412_wingbox_str3.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 7387,
+     "n_abaqus": 7387,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 295,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.000677,
+       -500.000465,
+       -0.002526
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000465,
+      "residual_pct": 9.2928e-05
+     },
+     "abaqus": {
+      "sum": [
+       -3e-06,
+       -500.001406,
+       -9.1e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.001406,
+      "residual_pct": 0.000281271
+     },
+     "worst_residual_pct": 0.000281271
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 955,
+      "mm": 2.219397
+     },
+     "abaqus": {
+      "node": 955,
+      "mm": 2.225573
+     },
+     "gap_pct": 0.2775,
+     "abs_diff_mm": 0.006176,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 7387,
+     "median_pct": 0.483,
+     "p90_pct": 56.0569,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 9.8255,
+      "node": 1317
+     },
+     "abaqus": {
+      "vm_mpa": 8.2077,
+      "node": 6013
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_str",
+     "abaqus": "outputs_str_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_str3_T",
+    "sources": {
+     "ccx": "naca4412_wingbox_str3_T.frd",
+     "abaqus": "naca4412_wingbox_str3_T.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 29447,
+     "n_abaqus": 29447,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 811,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       -2.7e-05,
+       -499.999327,
+       0.00086
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999327,
+      "residual_pct": 0.000134507
+     },
+     "abaqus": {
+      "sum": [
+       -0.0,
+       -500.000153,
+       -6.3e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000153,
+      "residual_pct": 3.0517e-05
+     },
+     "worst_residual_pct": 0.000134507
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 1481,
+      "mm": 2.115067
+     },
+     "abaqus": {
+      "node": 1481,
+      "mm": 2.118117
+     },
+     "gap_pct": 0.144,
+     "abs_diff_mm": 0.00305,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 29447,
+     "median_pct": 0.1243,
+     "p90_pct": 39.278,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 10.6785,
+      "node": 2235
+     },
+     "abaqus": {
+      "vm_mpa": 8.5878,
+      "node": 20986
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_T",
+     "abaqus": "outputs_T_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_str5",
+    "sources": {
+     "ccx": "naca4412_wingbox_str5.frd",
+     "abaqus": "naca4412_wingbox_str5.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 8205,
+     "n_abaqus": 8205,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 401,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       8.6e-05,
+       -499.992971,
+       -0.00656
+      ],
+      "dominant": "Y",
+      "abs_value": 499.992971,
+      "residual_pct": 0.0014057
+     },
+     "abaqus": {
+      "sum": [
+       -5e-06,
+       -499.998883,
+       0.000134
+      ],
+      "dominant": "Y",
+      "abs_value": 499.998883,
+      "residual_pct": 0.000223342
+     },
+     "worst_residual_pct": 0.0014057
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 498,
+      "mm": 2.135447
+     },
+     "abaqus": {
+      "node": 498,
+      "mm": 2.141145
+     },
+     "gap_pct": 0.2661,
+     "abs_diff_mm": 0.005698,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 8205,
+     "median_pct": 0.6421,
+     "p90_pct": 64.2989,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 9.6418,
+      "node": 1679
+     },
+     "abaqus": {
+      "vm_mpa": 7.8919,
+      "node": 6818
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_b2",
+     "abaqus": "outputs_b2_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_sweep10",
+    "sources": {
+     "ccx": "naca4412_wingbox_sweep10.frd",
+     "abaqus": "naca4412_wingbox_sweep10.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5484,
+     "n_abaqus": 5484,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.000469,
+       -500.001749,
+       0.0013
+      ],
+      "dominant": "Y",
+      "abs_value": 500.001749,
+      "residual_pct": 0.0003498
+     },
+     "abaqus": {
+      "sum": [
+       1.2e-05,
+       -500.000453,
+       -6.1e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000453,
+      "residual_pct": 9.062e-05
+     },
+     "worst_residual_pct": 0.0003498
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 495,
+      "mm": 2.587602
+     },
+     "abaqus": {
+      "node": 495,
+      "mm": 2.595058
+     },
+     "gap_pct": 0.2873,
+     "abs_diff_mm": 0.007456,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5484,
+     "median_pct": 0.2196,
+     "p90_pct": 30.3685,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 9.5607,
+      "node": 862
+     },
+     "abaqus": {
+      "vm_mpa": 7.9602,
+      "node": 3425
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_b2",
+     "abaqus": "outputs_b2_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_sweep20",
+    "sources": {
+     "ccx": "naca4412_wingbox_sweep20.frd",
+     "abaqus": "naca4412_wingbox_sweep20.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5222,
+     "n_abaqus": 5222,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       -0.000554,
+       -500.00275,
+       0.00246
+      ],
+      "dominant": "Y",
+      "abs_value": 500.00275,
+      "residual_pct": 0.0005501
+     },
+     "abaqus": {
+      "sum": [
+       -6e-06,
+       -500.000454,
+       -2.7e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000454,
+      "residual_pct": 9.0755e-05
+     },
+     "worst_residual_pct": 0.0005501
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 495,
+      "mm": 3.169341
+     },
+     "abaqus": {
+      "node": 495,
+      "mm": 3.177626
+     },
+     "gap_pct": 0.2607,
+     "abs_diff_mm": 0.008285,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5222,
+     "median_pct": 0.2407,
+     "p90_pct": 30.083,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 10.1171,
+      "node": 841
+     },
+     "abaqus": {
+      "vm_mpa": 8.219,
+      "node": 3523
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_t1",
+     "abaqus": "outputs_t1_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_sweep20_taper060",
+    "sources": {
+     "ccx": "naca4412_wingbox_sweep20_taper060.frd",
+     "abaqus": "naca4412_wingbox_sweep20_taper060.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 7771,
+     "n_abaqus": 7771,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 227,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       -0.000315,
+       -500.000645,
+       -0.00097
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000645,
+      "residual_pct": 0.000128948
+     },
+     "abaqus": {
+      "sum": [
+       -8e-06,
+       -499.999921,
+       3.2e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999921,
+      "residual_pct": 1.5803e-05
+     },
+     "worst_residual_pct": 0.000128948
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 495,
+      "mm": 3.96104
+     },
+     "abaqus": {
+      "node": 495,
+      "mm": 3.968727
+     },
+     "gap_pct": 0.1937,
+     "abs_diff_mm": 0.007687,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 7771,
+     "median_pct": 0.137,
+     "p90_pct": 22.5359,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 9.0509,
+      "node": 919
+     },
+     "abaqus": {
+      "vm_mpa": 7.8509,
+      "node": 5333
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_t1",
+     "abaqus": "outputs_t1_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_sweep30",
+    "sources": {
+     "ccx": "naca4412_wingbox_sweep30.frd",
+     "abaqus": "naca4412_wingbox_sweep30.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5347,
+     "n_abaqus": 5347,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.001691,
+       -500.000787,
+       -0.00143
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000787,
+      "residual_pct": 0.00015732
+     },
+     "abaqus": {
+      "sum": [
+       -2.1e-05,
+       -500.000453,
+       2.3e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000453,
+      "residual_pct": 9.0633e-05
+     },
+     "worst_residual_pct": 0.00015732
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 495,
+      "mm": 4.384339
+     },
+     "abaqus": {
+      "node": 495,
+      "mm": 4.393791
+     },
+     "gap_pct": 0.2151,
+     "abs_diff_mm": 0.009452,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5347,
+     "median_pct": 0.2339,
+     "p90_pct": 34.3796,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 12.9043,
+      "node": 857
+     },
+     "abaqus": {
+      "vm_mpa": 10.3458,
+      "node": 3322
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "_probe_m10\\outputs_sweep30",
+     "abaqus": "_probe_m10\\outputs_abaqus_sweep30"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_sweep30_taper080",
+    "sources": {
+     "ccx": "naca4412_wingbox_sweep30_taper080.frd",
+     "abaqus": "naca4412_wingbox_sweep30_taper080.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5302,
+     "n_abaqus": 5302,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.001346,
+       -499.997484,
+       -0.00017
+      ],
+      "dominant": "Y",
+      "abs_value": 499.997484,
+      "residual_pct": 0.00050328
+     },
+     "abaqus": {
+      "sum": [
+       2.3e-05,
+       -499.999916,
+       2e-06
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999916,
+      "residual_pct": 1.675e-05
+     },
+     "worst_residual_pct": 0.00050328
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 495,
+      "mm": 4.705019
+     },
+     "abaqus": {
+      "node": 495,
+      "mm": 4.71393
+     },
+     "gap_pct": 0.189,
+     "abs_diff_mm": 0.008911,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5302,
+     "median_pct": 0.2074,
+     "p90_pct": 37.6453,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 12.1299,
+      "node": 853
+     },
+     "abaqus": {
+      "vm_mpa": 10.0451,
+      "node": 3549
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "_probe_m12\\outputs_sweep30_taper080",
+     "abaqus": "_probe_m12\\outputs_abaqus_sweep30_taper080"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_sweep40",
+    "sources": {
+     "ccx": "naca4412_wingbox_sweep40.frd",
+     "abaqus": "naca4412_wingbox_sweep40.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5697,
+     "n_abaqus": 5697,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       -0.003283,
+       -499.995142,
+       0.00032
+      ],
+      "dominant": "Y",
+      "abs_value": 499.995142,
+      "residual_pct": 0.0009716
+     },
+     "abaqus": {
+      "sum": [
+       5e-05,
+       -500.000461,
+       1.5e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000461,
+      "residual_pct": 9.2125e-05
+     },
+     "worst_residual_pct": 0.0009716
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 495,
+      "mm": 7.014338
+     },
+     "abaqus": {
+      "node": 495,
+      "mm": 7.026718
+     },
+     "gap_pct": 0.1762,
+     "abs_diff_mm": 0.01238,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5697,
+     "median_pct": 0.265,
+     "p90_pct": 22.6297,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 17.3217,
+      "node": 889
+     },
+     "abaqus": {
+      "vm_mpa": 13.7371,
+      "node": 3695
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_b2",
+     "abaqus": "outputs_b2_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_sweep40_taper040",
+    "sources": {
+     "ccx": "naca4412_wingbox_sweep40_taper040.frd",
+     "abaqus": "naca4412_wingbox_sweep40_taper040.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 15681,
+     "n_abaqus": 15681,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 501,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       -0.000868,
+       -499.999124,
+       -0.00349
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999124,
+      "residual_pct": 0.00017529
+     },
+     "abaqus": {
+      "sum": [
+       9e-06,
+       -499.999926,
+       3e-06
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999926,
+      "residual_pct": 1.4731e-05
+     },
+     "worst_residual_pct": 0.00017529
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 495,
+      "mm": 9.867346
+     },
+     "abaqus": {
+      "node": 495,
+      "mm": 9.87436
+     },
+     "gap_pct": 0.071,
+     "abs_diff_mm": 0.007014,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 15681,
+     "median_pct": 0.0708,
+     "p90_pct": 6.1867,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 15.0795,
+      "node": 1163
+     },
+     "abaqus": {
+      "vm_mpa": 13.244,
+      "node": 9066
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_b2",
+     "abaqus": "outputs_b2_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_taper040",
+    "sources": {
+     "ccx": "naca4412_wingbox_taper040.frd",
+     "abaqus": "naca4412_wingbox_taper040.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 14937,
+     "n_abaqus": 14937,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 501,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.000263,
+       -499.999904,
+       -0.0003
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999904,
+      "residual_pct": 1.922e-05
+     },
+     "abaqus": {
+      "sum": [
+       2e-06,
+       -499.999918,
+       7e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999918,
+      "residual_pct": 1.6443e-05
+     },
+     "worst_residual_pct": 1.922e-05
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 496,
+      "mm": 4.488858
+     },
+     "abaqus": {
+      "node": 496,
+      "mm": 4.495086
+     },
+     "gap_pct": 0.1386,
+     "abs_diff_mm": 0.006228,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 14937,
+     "median_pct": 0.0751,
+     "p90_pct": 4.5859,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 11.6294,
+      "node": 1134
+     },
+     "abaqus": {
+      "vm_mpa": 9.7603,
+      "node": 8969
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_b2",
+     "abaqus": "outputs_b2_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_taper060",
+    "sources": {
+     "ccx": "naca4412_wingbox_taper060.frd",
+     "abaqus": "naca4412_wingbox_taper060.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 7950,
+     "n_abaqus": 7950,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 227,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.000157,
+       -499.9962,
+       -0.00331
+      ],
+      "dominant": "Y",
+      "abs_value": 499.9962,
+      "residual_pct": 0.00076
+     },
+     "abaqus": {
+      "sum": [
+       -7e-06,
+       -499.999926,
+       -4.6e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999926,
+      "residual_pct": 1.4898e-05
+     },
+     "worst_residual_pct": 0.00076
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 496,
+      "mm": 3.384152
+     },
+     "abaqus": {
+      "node": 496,
+      "mm": 3.391462
+     },
+     "gap_pct": 0.2155,
+     "abs_diff_mm": 0.00731,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 7950,
+     "median_pct": 0.1258,
+     "p90_pct": 15.8302,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 10.9565,
+      "node": 948
+     },
+     "abaqus": {
+      "vm_mpa": 9.1127,
+      "node": 4629
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_t1",
+     "abaqus": "outputs_t1_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_taper080",
+    "sources": {
+     "ccx": "naca4412_wingbox_taper080.frd",
+     "abaqus": "naca4412_wingbox_taper080.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5125,
+     "n_abaqus": 5125,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.001552,
+       -499.999361,
+       0.0012
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999361,
+      "residual_pct": 0.00012772
+     },
+     "abaqus": {
+      "sum": [
+       -7e-06,
+       -499.999918,
+       9.9e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999918,
+      "residual_pct": 1.6424e-05
+     },
+     "worst_residual_pct": 0.00012772
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 1005,
+      "mm": 2.752089
+     },
+     "abaqus": {
+      "node": 1005,
+      "mm": 2.761012
+     },
+     "gap_pct": 0.3232,
+     "abs_diff_mm": 0.008923,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5125,
+     "median_pct": 0.2405,
+     "p90_pct": 36.0292,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 10.4392,
+      "node": 850
+     },
+     "abaqus": {
+      "vm_mpa": 8.5991,
+      "node": 3214
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_t1",
+     "abaqus": "outputs_t1_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_taper090",
+    "sources": {
+     "ccx": "naca4412_wingbox_taper090.frd",
+     "abaqus": "naca4412_wingbox_taper090.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 4871,
+     "n_abaqus": 4871,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 142,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       -0.000187,
+       -500.0014,
+       -0.0038
+      ],
+      "dominant": "Y",
+      "abs_value": 500.0014,
+      "residual_pct": 0.00027998
+     },
+     "abaqus": {
+      "sum": [
+       3e-06,
+       -499.99992,
+       -8.4e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 499.99992,
+      "residual_pct": 1.5998e-05
+     },
+     "worst_residual_pct": 0.00027998
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 987,
+      "mm": 2.536356
+     },
+     "abaqus": {
+      "node": 987,
+      "mm": 2.545144
+     },
+     "gap_pct": 0.3453,
+     "abs_diff_mm": 0.008788,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 4871,
+     "median_pct": 0.2744,
+     "p90_pct": 37.3773,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 10.2713,
+      "node": 840
+     },
+     "abaqus": {
+      "vm_mpa": 8.4858,
+      "node": 3318
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_b2",
+     "abaqus": "outputs_b2_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_web1",
+    "sources": {
+     "ccx": "naca4412_wingbox_web1.frd",
+     "abaqus": "naca4412_wingbox_web1.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5369,
+     "n_abaqus": 5369,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 150,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       -0.002292,
+       -499.999722,
+       0.00094
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999722,
+      "residual_pct": 5.56e-05
+     },
+     "abaqus": {
+      "sum": [
+       8.2e-05,
+       -499.999483,
+       0.000143
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999483,
+      "residual_pct": 0.000103498
+     },
+     "worst_residual_pct": 0.000103498
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 446,
+      "mm": 2.964576
+     },
+     "abaqus": {
+      "node": 446,
+      "mm": 2.972788
+     },
+     "gap_pct": 0.2762,
+     "abs_diff_mm": 0.008212,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5369,
+     "median_pct": 0.156,
+     "p90_pct": 29.7921,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 11.2086,
+      "node": 804
+     },
+     "abaqus": {
+      "vm_mpa": 9.6507,
+      "node": 2760
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_b5",
+     "abaqus": "outputs_b5_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_web1_offcentre",
+    "sources": {
+     "ccx": "naca4412_wingbox_web1_offcentre.frd",
+     "abaqus": "naca4412_wingbox_web1_offcentre.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5574,
+     "n_abaqus": 5574,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 152,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.005245,
+       -500.002974,
+       0.001321
+      ],
+      "dominant": "Y",
+      "abs_value": 500.002974,
+      "residual_pct": 0.0005948
+     },
+     "abaqus": {
+      "sum": [
+       -2e-05,
+       -500.000123,
+       2.2e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000123,
+      "residual_pct": 2.4605e-05
+     },
+     "worst_residual_pct": 0.0005948
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 446,
+      "mm": 3.060804
+     },
+     "abaqus": {
+      "node": 446,
+      "mm": 3.068837
+     },
+     "gap_pct": 0.2618,
+     "abs_diff_mm": 0.008033,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5574,
+     "median_pct": 0.1603,
+     "p90_pct": 28.5656,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 12.3436,
+      "node": 816
+     },
+     "abaqus": {
+      "vm_mpa": 11.1382,
+      "node": 3061
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_b5",
+     "abaqus": "outputs_b5_abaqus"
+    }
+   },
+   {
+    "case": "naca4412_wingbox_web2",
+    "sources": {
+     "ccx": "naca4412_wingbox_web2.frd",
+     "abaqus": "naca4412_wingbox_web2.odb.json"
+    },
+    "mesh": {
+     "n_ccx": 5653,
+     "n_abaqus": 5653,
+     "identical_labels": true,
+     "max_coord_diff_mm": 0.0
+    },
+    "equilibrium": {
+     "roots": 151,
+     "load_n": 500.0,
+     "ccx": {
+      "sum": [
+       0.005747,
+       -500.000786,
+       -8e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 500.000786,
+      "residual_pct": 0.0001572
+     },
+     "abaqus": {
+      "sum": [
+       0.000152,
+       -499.999158,
+       -9.6e-05
+      ],
+      "dominant": "Y",
+      "abs_value": 499.999158,
+      "residual_pct": 0.000168371
+     },
+     "worst_residual_pct": 0.000168371
+    },
+    "max_disp": {
+     "ccx": {
+      "node": 463,
+      "mm": 2.855791
+     },
+     "abaqus": {
+      "node": 463,
+      "mm": 2.864465
+     },
+     "gap_pct": 0.3028,
+     "abs_diff_mm": 0.008674,
+     "gated": false,
+     "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+    },
+    "stress_field": {
+     "n_common": 5653,
+     "median_pct": 0.2259,
+     "p90_pct": 30.7785,
+     "gated": true,
+     "tol_pct": 5.0
+    },
+    "peak_von_mises": {
+     "ccx": {
+      "vm_mpa": 10.3914,
+      "node": 897
+     },
+     "abaqus": {
+      "vm_mpa": 9.3301,
+      "node": 1565
+     },
+     "gated": false,
+     "note": "D8: peaks are not compared bare"
+    },
+    "pass": true,
+    "failures": [],
+    "dirs": {
+     "ccx": "outputs_b5",
+     "abaqus": "outputs_b5_abaqus"
+    }
+   }
+  ]
+ },
+ "out_of_scope": {
+  "fuselage_barrel": "D20 口径（剔端载环后的结构 max|u| + 20 站截面形心挠度剖面）；证据为 b3/b6 批次的控制台核对，未落 JSON —— 如实记为「有核对、无机器可读产物」",
+  "open_hole_panel": "孔边逐节点 vM 中位差 + max|u| 1 % 口径（D8/D28）；产物 _probe_b7/_b7_gate3.json、_t4_probe/verify_hole_full.json、FEM-Bench-Aero/verify_hole_t7.json",
+  "stiffened_panel": "平板双码；素板中面场在 Abaqus 侧恒为 0 ⇒ 逐节点场判据「不适用」，工具如实报告而非假装通过（见关 3 说明）"
+ },
+ "all_ok": true
+}

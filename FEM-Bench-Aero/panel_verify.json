@@ -1,0 +1,228 @@
+{
+  "navier_wmax": 0.9626822181019532,
+  "navier_coefficient": 0.004062352660676288,
+  "runs": {
+    "coarse": {
+      "ok": true,
+      "name": "verify_panel_plain_coarse",
+      "n_stringers": 0,
+      "size": 6.0,
+      "n_nodes": 11761,
+      "n_elements": 11560,
+      "element_types": {
+        "quad4": 11560
+      },
+      "min_quality": 0.6043,
+      "gate4": true,
+      "max_disp": 0.956577,
+      "max_w": 0.956577,
+      "max_vm_mid": 1.2134785891862483,
+      "peak_vm_centre": 2.632619783083414,
+      "peak_vm_centre_node": 8496,
+      "peak_vm_centre_coord": [
+        298.623,
+        300.265,
+        0.0
+      ],
+      "peak_vm_max": 3.0865976572687943,
+      "pressure": 0.0001,
+      "deck": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\outputs\\_verify_panel\\verify_panel_plain_coarse\\verify_panel_plain_coarse.inp",
+      "navier_err_pct": -0.6341883112778777
+    },
+    "fine": {
+      "ok": true,
+      "name": "verify_panel_plain_fine",
+      "n_stringers": 0,
+      "size": 3.0,
+      "n_nodes": 46432,
+      "n_elements": 46031,
+      "element_types": {
+        "quad4": 46031
+      },
+      "min_quality": 0.6167,
+      "gate4": true,
+      "max_disp": 0.961753,
+      "max_w": 0.961753,
+      "max_vm_mid": 1.3589707994248,
+      "peak_vm_centre": 2.639838618530945,
+      "peak_vm_centre_node": 13221,
+      "peak_vm_centre_coord": [
+        298.623,
+        299.396,
+        0.0
+      ],
+      "peak_vm_max": 2.968201976638486,
+      "pressure": 0.0001,
+      "deck": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\outputs\\_verify_panel\\verify_panel_plain_fine\\verify_panel_plain_fine.inp",
+      "navier_err_pct": -0.09652386680469711
+    },
+    "plain": {
+      "ok": true,
+      "name": "verify_panel_plain_sym",
+      "n_stringers": 0,
+      "size": 3.0,
+      "n_nodes": 46432,
+      "n_elements": 46031,
+      "element_types": {
+        "quad4": 46031
+      },
+      "min_quality": 0.6167,
+      "gate4": true,
+      "max_disp": 0.961753,
+      "max_w": 0.961753,
+      "max_vm_mid": 1.3589707994248,
+      "peak_vm_centre": 2.639838618530945,
+      "peak_vm_centre_node": 13221,
+      "peak_vm_centre_coord": [
+        298.623,
+        299.396,
+        0.0
+      ],
+      "peak_vm_max": 2.968201976638486,
+      "pressure": 0.0001,
+      "deck": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\outputs\\_verify_panel\\verify_panel_plain_sym\\verify_panel_plain_sym.inp"
+    },
+    "stiffened": {
+      "ok": true,
+      "name": "verify_panel_stiff_sym",
+      "n_stringers": 3,
+      "size": 3.0,
+      "n_nodes": 51401,
+      "n_elements": 50976,
+      "element_types": {
+        "quad4": 50976
+      },
+      "min_quality": 0.5367,
+      "gate4": true,
+      "max_disp": 0.015261651810931748,
+      "max_w": 0.01526165,
+      "max_vm_mid": 1.7689225568450382,
+      "peak_vm_centre": 0.2649058266408017,
+      "peak_vm_centre_node": 542,
+      "peak_vm_centre_coord": [
+        300.0,
+        300.0,
+        0.0
+      ],
+      "peak_vm_max": 1.7743572948808453,
+      "pressure": 0.0001,
+      "deck": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\outputs\\_verify_panel\\verify_panel_stiff_sym\\verify_panel_stiff_sym.inp"
+    }
+  },
+  "invariants": {
+    "plain": {
+      "edge_reaction_sums": {
+        "x0": 10.876755,
+        "x1": 10.769818,
+        "y0": 10.644671,
+        "y1": 10.706994
+      },
+      "held_edges": {
+        "n": 800,
+        "sum_forc_z": 35.678081,
+        "lumped_pressure": 0.321771,
+        "reaction": 35.999852
+      },
+      "global_sum_fz": 1.94e-06,
+      "opposite_edge_dev_pct": {
+        "x0/x1": 0.983173,
+        "y0/y1": 0.582077
+      }
+    },
+    "stiffened": {
+      "edge_reaction_sums": {
+        "x0": 3.382067,
+        "x1": 3.389166,
+        "y0": 14.721271,
+        "y1": 14.717078
+      },
+      "held_edges": {
+        "n": 848,
+        "sum_forc_z": 35.6785,
+        "lumped_pressure": 0.320658,
+        "reaction": 35.999158
+      },
+      "global_sum_fz": -2.299e-06,
+      "opposite_edge_dev_pct": {
+        "x0/x1": 0.209444,
+        "y0/y1": 0.028481
+      }
+    }
+  },
+  "stiffening": {
+    "w_plain": 0.961753,
+    "w_stiff": 0.01526165,
+    "ratio": 63.017629155432076,
+    "subpanel_wmax": 0.011866087739457918,
+    "pitch": 150.0
+  },
+  "checks": [
+    {
+      "key": "plain/coarse.navier",
+      "pass": true,
+      "detail": "6 mm mesh, 11560 elems, {'quad4': 11560} | w_max 0.95658 mm vs Navier 0.96268 mm -> -0.634 %"
+    },
+    {
+      "key": "plain/fine.navier",
+      "pass": true,
+      "detail": "3 mm mesh, 46031 elems, {'quad4': 46031} | w_max 0.96175 mm vs Navier 0.96268 mm -> -0.097 %"
+    },
+    {
+      "key": "plain.convergence",
+      "pass": true,
+      "detail": "|err| coarse 0.634 % -> fine 0.097 % (must not grow with refinement)"
+    },
+    {
+      "key": "plain.loaded-area",
+      "pass": true,
+      "detail": "mesh-integrated loaded area 360000.0000 mm^2 vs plate 360000.0 mm^2 -> 0.00e+00 % (the stringers would add 0 mm^2, 0.0 %)"
+    },
+    {
+      "key": "plain.global-sum",
+      "pass": true,
+      "detail": "sum(FORC_z) over all 46432 nodes +0.000002 N vs applied 36.00000 N -> 0.00001 % (must be ~0; no lumping model involved)"
+    },
+    {
+      "key": "plain.support-reaction",
+      "pass": true,
+      "detail": "sum(FORC_z) over 800 held edge nodes +35.67808 N + pressure lumped on them +0.32177 N = reaction +35.99985 N vs applied 36.00000 N -> 0.0004 %"
+    },
+    {
+      "key": "plain.reaction-symmetry",
+      "pass": true,
+      "detail": "edge sums x0 +10.8768, x1 +10.7698, y0 +10.6447, y1 +10.7070 N -> opposite-edge spread x0/x1 0.983 %, y0/y1 0.582 % (worst 0.983 %)"
+    },
+    {
+      "key": "stiffened.loaded-area",
+      "pass": true,
+      "detail": "mesh-integrated loaded area 360000.0000 mm^2 vs plate 360000.0 mm^2 -> 0.00e+00 % (the stringers would add 36000 mm^2, 10.0 %)"
+    },
+    {
+      "key": "stiffened.global-sum",
+      "pass": true,
+      "detail": "sum(FORC_z) over all 51401 nodes -0.000002 N vs applied 36.00000 N -> 0.00001 % (must be ~0; no lumping model involved)"
+    },
+    {
+      "key": "stiffened.support-reaction",
+      "pass": true,
+      "detail": "sum(FORC_z) over 848 held edge nodes +35.67850 N + pressure lumped on them +0.32066 N = reaction +35.99916 N vs applied 36.00000 N -> 0.0023 %"
+    },
+    {
+      "key": "stiffened.reaction-symmetry",
+      "pass": true,
+      "detail": "edge sums x0 +3.3821, x1 +3.3892, y0 +14.7213, y1 +14.7171 N -> opposite-edge spread x0/x1 0.209 %, y0/y1 0.028 % (worst 0.209 %)"
+    },
+    {
+      "key": "stiffened.stiffening",
+      "pass": true,
+      "detail": "w_plain 0.96175 / w_stiff 0.01526 = 63.0x (>= 5x required; a detached stringer gives ~1x). One bay 150 x 600 mm as a rigidly-supported plate would be 0.01187 mm - reported, not asserted"
+    },
+    {
+      "key": "plain.outer-fibre-stress",
+      "pass": true,
+      "detail": "6 Mx/t^2 at the centre = 2.64554 MPa; FE outer-fibre vM at the node nearest the centre (13221 at (298.62, 299.4, 0.0)) = 2.63984 -> -0.22 % | mid-surface channel reads 1.35897 (shear-dominated, D8's reason for discarding it); model-wide outer-fibre max 2.9682 MPa, +12.2 % above the closed form, on a supported edge"
+    }
+  ],
+  "n_pass": 13,
+  "n_fail": 0
+}

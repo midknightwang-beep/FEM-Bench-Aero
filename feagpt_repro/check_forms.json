@@ -1,0 +1,30 @@
+{
+  "n_pass": 4,
+  "n_fail": 0,
+  "checks": [
+    {
+      "form": "T5",
+      "check": "T5.section-degeneration",
+      "pass": true,
+      "detail": "T(flange_width=0) -> segments=(((100.0, 5.0), (100.0, -15.0)),) role=('web',) n_faces=1; blade -> (((100.0, 5.0), (100.0, -15.0)),) ('web',) 1"
+    },
+    {
+      "form": "T5",
+      "check": "T5.faces-per-section",
+      "pass": true,
+      "detail": "blade(w=None)->1 T(w=30.0)->3 T(w=0.0)->1 T(w=-5.0)->1"
+    },
+    {
+      "form": "T5",
+      "check": "T5.build-degeneration",
+      "pass": true,
+      "detail": "blade and T(fw=0) builds are identical: 7831 nodes, 7517 shells, minJ 0.5228, 9 groups"
+    },
+    {
+      "form": "T5",
+      "check": "T5.degenerated-gate4",
+      "pass": true,
+      "detail": "gate4 on T(fw=0) = PASS (8/8 checks), faces-per-stringer-section = 1"
+    }
+  ]
+}

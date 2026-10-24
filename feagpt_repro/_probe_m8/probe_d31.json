@@ -1,0 +1,108 @@
+{
+ "stock_hits": 0,
+ "stock_split_changes": 0,
+ "rule_is_non_disruptive": true,
+ "train_span": [
+  1600.0,
+  2400.0
+ ],
+ "train_skin": [
+  2.0,
+  4.0
+ ],
+ "candidates": [
+  {
+   "tag": "span1600",
+   "span": 1600.0,
+   "skin": 3.0,
+   "extra": {},
+   "split": "train",
+   "reason": "落在训练包络内",
+   "intent": "train 低档",
+   "role": "sweep"
+  },
+  {
+   "tag": "span2400",
+   "span": 2400.0,
+   "skin": 3.0,
+   "extra": {},
+   "split": "train",
+   "reason": "落在训练包络内",
+   "intent": "train 高档",
+   "role": "sweep"
+  },
+  {
+   "tag": "skin2",
+   "span": 2000.0,
+   "skin": 2.0,
+   "extra": {},
+   "split": "train",
+   "reason": "落在训练包络内",
+   "intent": "train 薄壁",
+   "role": "sweep"
+  },
+  {
+   "tag": "skin4",
+   "span": 2000.0,
+   "skin": 4.0,
+   "extra": {},
+   "split": "train",
+   "reason": "落在训练包络内",
+   "intent": "train 厚壁",
+   "role": "sweep"
+  },
+  {
+   "tag": "span3000",
+   "span": 3000.0,
+   "skin": 3.0,
+   "extra": {},
+   "split": "val",
+   "reason": "尺寸单维外推（span 3000 出训练包络 [1600,2400]）",
+   "intent": "超包络单轴 -> val",
+   "role": "sweep"
+  },
+  {
+   "tag": "skin1p5",
+   "span": 2000.0,
+   "skin": 1.5,
+   "extra": {},
+   "split": "val",
+   "reason": "尺寸单维外推（壁厚 1.5 出训练包络 [2,4]）",
+   "intent": "超包络单轴 -> val",
+   "role": "sweep"
+  },
+  {
+   "tag": "span3000_skin1p5",
+   "span": 3000.0,
+   "skin": 1.5,
+   "extra": {},
+   "split": "test",
+   "reason": "尺寸双轴外推（span 3000 出训练包络 [1600,2400]；壁厚 1.5 出训练包络 [2,4]）",
+   "intent": "超包络双轴 -> test",
+   "role": "sweep"
+  },
+  {
+   "tag": "span2400_skin2",
+   "span": 2400.0,
+   "skin": 2.0,
+   "extra": {},
+   "split": "train",
+   "reason": "落在训练包络内",
+   "intent": "包络内双轴组合 -> ?",
+   "role": "sweep"
+  },
+  {
+   "tag": "span3000_ribs7",
+   "span": 3000.0,
+   "skin": 3.0,
+   "extra": {
+    "n_ribs": 7
+   },
+   "split": "test",
+   "reason": "尺寸 × 他轴双维外推（span 3000 出训练包络 [1600,2400]；ribs 7 > 5）",
+   "intent": "尺寸 x ribs -> test",
+   "role": "sweep"
+  }
+ ],
+ "anchor_u": 2.3654390542892276
+}

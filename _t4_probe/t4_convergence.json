@@ -1,0 +1,92 @@
+{
+  "rows": [
+    {
+      "divisions": 12,
+      "arc_deg": 30.0,
+      "hole_edge_mm": 5.235987755982989,
+      "far_mm": 3.0,
+      "n_nodes": 2925,
+      "n_elements": 2817,
+      "n_tri": 0,
+      "min_jacobian": 0.659,
+      "n_edge_nodes": 12,
+      "sigma_max_MPa": 27.54472265793054,
+      "Kt_gross": 2.754472265793054,
+      "Kt_net": 2.4790250392137487
+    },
+    {
+      "divisions": 24,
+      "arc_deg": 15.0,
+      "hole_edge_mm": 2.6179938779914944,
+      "far_mm": 3.0,
+      "n_nodes": 3727,
+      "n_elements": 3613,
+      "n_tri": 0,
+      "min_jacobian": 0.6478,
+      "n_edge_nodes": 24,
+      "sigma_max_MPa": 29.89688987558891,
+      "Kt_gross": 2.9896889875588912,
+      "Kt_net": 2.690720088803002
+    },
+    {
+      "divisions": 36,
+      "arc_deg": 10.0,
+      "hole_edge_mm": 1.7453292519943295,
+      "far_mm": 3.0,
+      "n_nodes": 4323,
+      "n_elements": 4203,
+      "n_tri": 0,
+      "min_jacobian": 0.6352,
+      "n_edge_nodes": 36,
+      "sigma_max_MPa": 29.887014504197605,
+      "Kt_gross": 2.9887014504197604,
+      "Kt_net": 2.6898313053777847
+    },
+    {
+      "divisions": 48,
+      "arc_deg": 7.5,
+      "hole_edge_mm": 1.3089969389957472,
+      "far_mm": 3.0,
+      "n_nodes": 4676,
+      "n_elements": 4550,
+      "n_tri": 0,
+      "min_jacobian": 0.6473,
+      "n_edge_nodes": 48,
+      "sigma_max_MPa": 29.70860131648809,
+      "Kt_gross": 2.970860131648809,
+      "Kt_net": 2.673774118483928
+    },
+    {
+      "divisions": 72,
+      "arc_deg": 5.0,
+      "hole_edge_mm": 0.8726646259971648,
+      "far_mm": 3.0,
+      "n_nodes": 5261,
+      "n_elements": 5123,
+      "n_tri": 0,
+      "min_jacobian": 0.6583,
+      "n_edge_nodes": 72,
+      "sigma_max_MPa": 30.3728922296523,
+      "Kt_gross": 3.03728922296523,
+      "Kt_net": 2.733560300668707
+    },
+    {
+      "divisions": 96,
+      "arc_deg": 3.75,
+      "hole_edge_mm": 0.6544984694978736,
+      "far_mm": 3.0,
+      "n_nodes": 5819,
+      "n_elements": 5669,
+      "n_tri": 0,
+      "min_jacobian": 0.6363,
+      "n_edge_nodes": 96,
+      "sigma_max_MPa": 30.291056607980043,
+      "Kt_gross": 3.0291056607980043,
+      "Kt_net": 2.726195094718204
+    }
+  ],
+  "howland_kt_net": 2.72207,
+  "howland_kt_gross": 3.024522222222222,
+  "kirsch": 3.0,
+  "lambda": 0.1
+}

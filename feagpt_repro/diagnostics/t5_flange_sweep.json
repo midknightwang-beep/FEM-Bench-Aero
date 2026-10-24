@@ -1,0 +1,127 @@
+[
+ {
+  "n_faces": 69,
+  "ok": true,
+  "n_nodes": 7831,
+  "etypes": {
+   "quad4": 7517
+  },
+  "minJ": 0.5228,
+  "label": "blade (reference)",
+  "kind": "blade",
+  "width": 30.0,
+  "extra": {},
+  "flange_half": 15.0
+ },
+ {
+  "n_faces": 117,
+  "ok": false,
+  "error": "1D mesh cannot be divided by 2",
+  "label": "T flange 30 (as spec'd)",
+  "kind": "T",
+  "width": 30.0,
+  "extra": {},
+  "flange_half": 15.0
+ },
+ {
+  "n_faces": 117,
+  "ok": true,
+  "n_nodes": 10747,
+  "etypes": {
+   "quad4": 10529
+  },
+  "minJ": 0.3393,
+  "label": "T flange 40",
+  "kind": "T",
+  "width": 40.0,
+  "extra": {},
+  "flange_half": 20.0
+ },
+ {
+  "n_faces": 117,
+  "ok": true,
+  "n_nodes": 10175,
+  "etypes": {
+   "quad4": 9957
+  },
+  "minJ": 0.2254,
+  "label": "T flange 50",
+  "kind": "T",
+  "width": 50.0,
+  "extra": {},
+  "flange_half": 25.0
+ },
+ {
+  "n_faces": 117,
+  "ok": true,
+  "n_nodes": 10355,
+  "etypes": {
+   "quad4": 10137
+  },
+  "minJ": 0.5228,
+  "label": "T flange 60",
+  "kind": "T",
+  "width": 60.0,
+  "extra": {},
+  "flange_half": 30.0
+ },
+ {
+  "n_faces": 117,
+  "ok": true,
+  "n_nodes": 10687,
+  "etypes": {
+   "quad4": 10469
+  },
+  "minJ": 0.3143,
+  "label": "T flange 80",
+  "kind": "T",
+  "width": 80.0,
+  "extra": {},
+  "flange_half": 40.0
+ },
+ {
+  "n_faces": 117,
+  "ok": false,
+  "error": "1D mesh cannot be divided by 2",
+  "label": "T 30 + optimize topo",
+  "kind": "T",
+  "width": 30.0,
+  "extra": {
+   "Mesh.RecombineOptimizeTopology": 5
+  },
+  "flange_half": 15.0
+ },
+ {
+  "n_faces": 117,
+  "ok": true,
+  "n_nodes": 8019,
+  "etypes": {
+   "tri3": 438,
+   "quad4": 7534
+  },
+  "minJ": 0.3978,
+  "label": "T 30 + recomb alg 1",
+  "kind": "T",
+  "width": 30.0,
+  "extra": {
+   "Mesh.RecombinationAlgorithm": 1
+  },
+  "flange_half": 15.0
+ },
+ {
+  "n_faces": 117,
+  "ok": true,
+  "n_nodes": 8618,
+  "etypes": {
+   "tri3": 16626
+  },
+  "minJ": 0.6186,
+  "label": "T 30 + no recombine",
+  "kind": "T",
+  "width": 30.0,
+  "extra": {
+   "Mesh.RecombineAll": 0
+  },
+  "flange_half": 15.0
+ }
+]

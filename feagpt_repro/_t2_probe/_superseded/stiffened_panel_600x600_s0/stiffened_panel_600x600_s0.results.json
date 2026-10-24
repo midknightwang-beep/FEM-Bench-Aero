@@ -1,0 +1,21 @@
+{
+  "n_nodes": 11761,
+  "results": [
+    "DISP",
+    "ERROR",
+    "FORC",
+    "STRESS",
+    "TOSTRAIN"
+  ],
+  "max_disp": 0.956577,
+  "max_disp_node": 8496,
+  "max_disp_coord": [
+    298.623,
+    300.265,
+    0.0
+  ],
+  "max_w": 0.956577,
+  "max_von_mises": 1.2134785891851343,
+  "max_vm_location": 27,
+  "max_vm_element": 27
+}

@@ -1,0 +1,28 @@
+   WARNING: shrinks.length==shrinks_max=9266
+   WARNING: shrinks.length==shrinks_max=9266
+   WARNING: shrinks.length==shrinks_max=9266
+   WARNING: shrinks.length==shrinks_max=9266
+   WARNING: shrinks.length==shrinks_max=1175
+   WARNING: shrinks.length==shrinks_max=1175
+=== T2 degeneration
+  [PASS] T2.definition-degeneration
+         n=0 -> stations () pitch None; n=3 -> stations (150.0, 300.0, 450.0) pitch 150 (want (150.0, 300.0, 450.0) / 150)
+  [PASS] T2.degenerate-model
+         n=0 built: skin 1 face(s), stringer 0 face(s), 1 surface(s), stations []; gate4 PASS; 46432 nodes, minJ 0.6167
+  [PASS] T2.parameter-invariance
+         n=0 with height 20->40, thickness 2.5->5, blade->T(fw=50) is identical face for face
+  [PASS] T2.stringer-sensitivity
+         n=1: skin 2/2 str 1/1 stations [300.0] mesh ok {'quad4': 47684} minJ 0.6207 gate4 PASS; n=3: skin 4/4 str 3/3 stations [150.0, 300.0, 450.0] mesh ok {'quad4': 50976} minJ 0.5367 gate4 PASS
+=== T5 degeneration
+  [PASS] T5.section-degeneration
+         T(flange_width=0) -> segments=(((100.0, 5.0), (100.0, -15.0)),) role=('web',) n_faces=1; blade -> (((100.0, 5.0), (100.0, -15.0)),) ('web',) 1
+  [PASS] T5.faces-per-section
+         blade(w=None)->1 T(w=30.0)->3 T(w=0.0)->1 T(w=-5.0)->1
+  [PASS] T5.build-degeneration
+         blade and T(fw=0) builds are identical: 7831 nodes, 7517 shells, minJ 0.5228, 9 groups
+  [PASS] T5.degenerated-gate4
+         gate4 on T(fw=0) = PASS (8/8 checks), faces-per-stringer-section = 1
+
+degeneration self-checks: 8 PASS, 0 FAIL
+VERDICT: PASS
+report -> ../FEM-Bench-Aero/check_forms.json

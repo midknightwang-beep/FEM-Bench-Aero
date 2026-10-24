@@ -1,0 +1,93 @@
+{
+ "note": "form comparison on the D36 dataset; NOTHING landed",
+ "target": "max_disp",
+ "dataset": {
+  "train": 21,
+  "val": 7,
+  "test": 6
+ },
+ "forms": {
+  "lin": {
+   "alpha": 0.03162277660168379,
+   "cond": 1.7456537158479222,
+   "rank": 8,
+   "n_cols": 10,
+   "dropped_cols": [
+    "is_T",
+    "n_web"
+   ],
+   "train_loo": 5.816043314292169,
+   "loo_top": {
+    "case": "naca4412_wingbox_sweep35",
+    "pred": 4.323858148749297,
+    "obs": 5.429258752938191,
+    "ape": -20.36006487240411
+   },
+   "loo_second": {
+    "case": "naca4412_wingbox_sweep30",
+    "pred": 4.196745568301287,
+    "obs": 4.384339379992175,
+    "ape": -4.278724693324794
+   },
+   "val_mape": 9.565006644697815,
+   "val_sweep40_ape": -26.3545952065536,
+   "test_mape": 6.480553838523449,
+   "test_sweep40_taper040_ape": -24.422336101011286
+  },
+  "quad": {
+   "alpha": 0.1778279410038923,
+   "cond": 9.647554758091461,
+   "rank": 9,
+   "n_cols": 11,
+   "dropped_cols": [
+    "is_T",
+    "n_web"
+   ],
+   "train_loo": 3.683894941231077,
+   "loo_top": {
+    "case": "naca4412_wingbox_sweep35",
+    "pred": 5.045412601128849,
+    "obs": 5.429258752938191,
+    "ape": -7.069955021053534
+   },
+   "loo_second": {
+    "case": "naca4412_wingbox_sweep30",
+    "pred": 4.249396514948888,
+    "obs": 4.384339379992175,
+    "ape": -3.077838035511023
+   },
+   "val_mape": 6.302442616240876,
+   "val_sweep40_ape": -6.122258673152464,
+   "test_mape": 2.6306129251440438,
+   "test_sweep40_taper040_ape": 1.090149003253333
+  },
+  "cubic": {
+   "alpha": 0.005623413251903491,
+   "cond": 70.50780017641566,
+   "rank": 10,
+   "n_cols": 12,
+   "dropped_cols": [
+    "is_T",
+    "n_web"
+   ],
+   "train_loo": 3.423695108492945,
+   "loo_top": {
+    "case": "naca4412_wingbox_sweep35",
+    "pred": 5.3077772279673745,
+    "obs": 5.429258752938191,
+    "ape": -2.237534265705669
+   },
+   "loo_second": {
+    "case": "naca4412_wingbox_sweep30",
+    "pred": 4.158248520780531,
+    "obs": 4.384339379992175,
+    "ape": -5.15678280389069
+   },
+   "val_mape": 5.975259451229437,
+   "val_sweep40_ape": 5.388321775480222,
+   "test_mape": 4.950354107514884,
+   "test_sweep40_taper040_ape": 16.082159084976073
+  }
+ },
+ "measured_expectation": "slope per deg 0.05136 (20-30) -> 0.08835 (30-35) -> 0.13402 (35-40); s goes 1.625 -> 1.875 (+15.4 %) while slope goes +51.7 %, so curvature is still growing -- a quadratic in s cannot express that"
+}

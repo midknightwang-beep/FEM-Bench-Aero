@@ -1,0 +1,379 @@
+{
+ "verdict": "PASS",
+ "n_cases": 53,
+ "moved": [
+  {
+   "case": "naca4412_wingbox_sweep20_taper060",
+   "manifest": "test",
+   "now": "train"
+  }
+ ],
+ "predicted": {
+  "naca4412_wingbox_sweep20_taper060": [
+   "test",
+   "train"
+  ]
+ },
+ "counts": {
+  "test": 13,
+  "train": 23,
+  "val": 17
+ },
+ "families": {
+  "fuselage_barrel": {
+   "test": 2,
+   "train": 1,
+   "val": 3
+  },
+  "wingbox": {
+   "test": 6,
+   "train": 19,
+   "val": 7
+  },
+  "open_hole_panel": {
+   "test": 4,
+   "train": 2,
+   "val": 5
+  },
+  "stiffened_panel": {
+   "test": 1,
+   "train": 1,
+   "val": 2
+  }
+ },
+ "interaction_cell": [
+  {
+   "case": "naca4412_wingbox_sweep20_taper060",
+   "split": "train",
+   "sweep": 20.0,
+   "taper": 0.6
+  },
+  {
+   "case": "naca4412_wingbox_sweep40_taper040",
+   "split": "test",
+   "sweep": 40.0,
+   "taper": 0.4
+  }
+ ],
+ "n_train_interaction": 1,
+ "rows": [
+  {
+   "case": "fuselage_barrel_d1600_l1600_str8_frm3",
+   "split": "test",
+   "reason": "尺寸双维外推（直径 1600 ≠ 2000 且 长度 1600 ≠ 2000）",
+   "family": "fuselage_barrel"
+  },
+  {
+   "case": "fuselage_barrel_d1800_l2000_str8_frm3",
+   "split": "val",
+   "reason": "尺寸单维外推（直径 1800 ≠ 2000）",
+   "family": "fuselage_barrel"
+  },
+  {
+   "case": "fuselage_barrel_d2000_l1600_str8_frm3",
+   "split": "val",
+   "reason": "尺寸单维外推（长度 1600 ≠ 2000）",
+   "family": "fuselage_barrel"
+  },
+  {
+   "case": "fuselage_barrel_d2000_l2000_str12_frm4",
+   "split": "test",
+   "reason": "双维外推（长桁 12 与框 4 同时超出 train 包络）",
+   "family": "fuselage_barrel"
+  },
+  {
+   "case": "fuselage_barrel_d2000_l2000_str8_frm3",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "fuselage_barrel"
+  },
+  {
+   "case": "fuselage_barrel_d2000_l2000_t2_str8_frm3",
+   "split": "val",
+   "reason": "尺寸单维外推（壁厚 2 ≠ 3）",
+   "family": "fuselage_barrel"
+  },
+  {
+   "case": "naca4412_wingbox",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_n_ribs3_chord1000",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_n_ribs3_chord800",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_n_ribs5_chord800",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_n_ribs7_chord1000",
+   "split": "val",
+   "reason": "单维外推（肋 7 > 5，弦保持默认）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_n_ribs7_chord800",
+   "split": "test",
+   "reason": "双维外推（肋 7 > 5 且 弦 800 ≠ 1000）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_n_ribs9_chord1000",
+   "split": "val",
+   "reason": "单维外推（肋 9 > 5，弦保持默认）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_recombination_algorithm3",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_size_skin1p5",
+   "split": "val",
+   "reason": "尺寸单维外推（壁厚 1.5 出 train 区间 [2, 4]）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_size_skin2",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_size_skin4",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_size_span1600",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_size_span2400",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_size_span2400_skin2",
+   "split": "test",
+   "reason": "尺寸双轴组合外推（展长 2400 ≠ 2000 且 壁厚 2 ≠ 3；train 各站只动单轴，交互项未见过）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_size_span3000",
+   "split": "val",
+   "reason": "尺寸单维外推（展长 3000 出 train 区间 [1600, 2400]）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_size_span3000_skin1p5",
+   "split": "test",
+   "reason": "尺寸双维外推（展长 3000 出 train 区间 [1600, 2400] 且 壁厚 1.5 出 train 区间 [2, 4]）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_str3",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_str3_T",
+   "split": "test",
+   "reason": "新截面形式（train 里没有锚定 'T' 形式）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_str5",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_sweep10",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_sweep20",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_sweep20_taper060",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_sweep30",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_sweep40",
+   "split": "val",
+   "reason": "平面形状单维外推（后掠 40° > train 已学 30°，锥度中性）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_sweep40_taper040",
+   "split": "test",
+   "reason": "新平面形状组合（后掠 40° × 锥度 0.4 兼具，至少一轴出 train 值域 ≤30° / ≥0.6）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_taper040",
+   "split": "val",
+   "reason": "平面形状单维外推（锥度 0.4 < train 已学 0.6，后掠中性）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_taper060",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_taper080",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_taper090",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_web1",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_web1_offcentre",
+   "split": "test",
+   "reason": "新形式：腹板偏离等分（给定 [0.35] ≠ 等分 [0.475]；闭室不再等面积，Bredt-Batho 不再描述该截面）",
+   "family": "wingbox"
+  },
+  {
+   "case": "naca4412_wingbox_web2",
+   "split": "val",
+   "reason": "单维外推（腹板 2 > train 已学 1，位置仍等分）",
+   "family": "wingbox"
+  },
+  {
+   "case": "open_hole_panel_400x200_d20",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "open_hole_panel"
+  },
+  {
+   "case": "open_hole_panel_400x200_d20_cfrp090s",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "open_hole_panel"
+  },
+  {
+   "case": "open_hole_panel_400x200_d20_cfrp45s",
+   "split": "val",
+   "reason": "复材单维外推（铺层 [45/-45]s≠[0/90]s；D30 标量轴计数 =1）",
+   "family": "open_hole_panel"
+  },
+  {
+   "case": "open_hole_panel_400x200_d20_cfrp45s_d40",
+   "split": "test",
+   "reason": "复材多维外推（铺层 [45/-45]s≠[0/90]s + λ=0.2≠0.1；D30 标量轴计数 ≥2）",
+   "family": "open_hole_panel"
+  },
+  {
+   "case": "open_hole_panel_400x200_d20_cfrpqi",
+   "split": "val",
+   "reason": "复材单维外推（铺层 [0/45/-45/90]s≠[0/90]s；D30 标量轴计数 =1）",
+   "family": "open_hole_panel"
+  },
+  {
+   "case": "open_hole_panel_400x200_d20_offcentre",
+   "split": "test",
+   "reason": "新形式：偏心孔（(120, 60) 偏离形心 (200, 100)；train 只有中心孔，偏心后 Howland 无解析对照）",
+   "family": "open_hole_panel"
+  },
+  {
+   "case": "open_hole_panel_400x200_d40",
+   "split": "val",
+   "reason": "单维外推（孔径比 λ 0.200 > train 已学 0.1，孔仍居中）",
+   "family": "open_hole_panel"
+  },
+  {
+   "case": "open_hole_panel_400x200_d40_offcentre",
+   "split": "test",
+   "reason": "新形式：偏心孔（(120, 60) 偏离形心 (200, 100)；train 只有中心孔，偏心后 Howland 无解析对照）",
+   "family": "open_hole_panel"
+  },
+  {
+   "case": "open_hole_panel_400x200_d50",
+   "split": "val",
+   "reason": "单维外推（孔径比 λ 0.250 > train 已学 0.1，孔仍居中）",
+   "family": "open_hole_panel"
+  },
+  {
+   "case": "open_hole_panel_600x300_d30",
+   "split": "val",
+   "reason": "尺寸单维外推（600x300 ≠ train 已学 400x200）",
+   "family": "open_hole_panel"
+  },
+  {
+   "case": "open_hole_panel_600x300_d60",
+   "split": "test",
+   "reason": "双维外推（λ 0.200 与 600x300 同时 ≠ 锚点 λ 0.1 / 400x200）",
+   "family": "open_hole_panel"
+  },
+  {
+   "case": "stiffened_panel_600x600",
+   "split": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）",
+   "family": "stiffened_panel"
+  },
+  {
+   "case": "stiffened_panel_600x600_str3",
+   "split": "test",
+   "reason": "族内新形式（光板 ⇒ 3 根长桁）",
+   "family": "stiffened_panel"
+  },
+  {
+   "case": "stiffened_panel_800x600",
+   "split": "val",
+   "reason": "平板尺寸单维外推（800x600 ≠ train 已学 600x600）",
+   "family": "stiffened_panel"
+  },
+  {
+   "case": "stiffened_panel_800x600_str3",
+   "split": "val",
+   "reason": "平板尺寸单维外推（800x600 ≠ train 已学 600x600）",
+   "family": "stiffened_panel"
+  }
+ ]
+}

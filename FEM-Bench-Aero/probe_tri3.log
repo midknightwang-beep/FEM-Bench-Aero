@@ -1,0 +1,40 @@
+
+=== naca4412_wingbox_n_ribs3_chord800   (size_chord=12.0 size_span=25.0 algorithm_2d=6)
+  alg1 (first pass)    tri3 tri3=  8 algo=1 nodes=  3927 ( +0.0 %) elems=  3676 ( +0.0 %) minJ=0.5973
+  alg1 + optimize      tri3 tri3=  8 algo=1 nodes=  3927 ( +0.0 %) elems=  3676 ( +0.0 %) minJ=0.5973
+  alg1 + algo8         tri3 tri3= 18 algo=1 nodes=  3288 (-16.3 %) elems=  3042 (-17.2 %) minJ=0.0241
+  alg2 simple-quad     OK  tri3=  0 algo=2 nodes=  4258 ( +8.4 %) elems=  4003 ( +8.9 %) minJ=0.5702
+  alg3 full-quad       OK  tri3=  0 algo=3 nodes=  3951 ( +0.6 %) elems=  3696 ( +0.5 %) minJ=0.5950
+  auto (as shipped)    OK  tri3=  0 algo=3 esc<-alg1 nodes=  3951 ( +0.6 %) elems=  3696 ( +0.5 %) minJ=0.5950
+
+=== naca4412_wingbox_n_ribs5_chord800   (size_chord=12.0 size_span=25.0 algorithm_2d=6)
+  alg1 (first pass)    tri3 tri3= 16 algo=1 nodes=  4267 ( +0.0 %) elems=  3922 ( +0.0 %) minJ=0.5950
+  alg1 + optimize      tri3 tri3= 16 algo=1 nodes=  4267 ( +0.0 %) elems=  3922 ( +0.0 %) minJ=0.5950
+  alg1 + algo8         tri3 tri3= 28 algo=1 nodes=  3631 (-14.9 %) elems=  3292 (-16.1 %) minJ=0.0241
+  alg2 simple-quad     OK  tri3=  0 algo=2 nodes=  4867 (+14.1 %) elems=  4514 (+15.1 %) minJ=0.5714
+  alg3 full-quad       OK  tri3=  0 algo=3 nodes=  4465 ( +4.6 %) elems=  4112 ( +4.8 %) minJ=0.5950
+  auto (as shipped)    OK  tri3=  0 algo=3 esc<-alg1 nodes=  4465 ( +4.6 %) elems=  4112 ( +4.8 %) minJ=0.5950
+
+=== naca4412_wingbox   (size_chord=12.0 size_span=25.0 algorithm_2d=6)
+  alg1 (first pass)    OK  tri3=  0 algo=1 nodes=  5482 ( +0.0 %) elems=  5144 ( +0.0 %) minJ=0.6249
+  alg1 + optimize      OK  tri3=  0 algo=1 nodes=  5482 ( +0.0 %) elems=  5144 ( +0.0 %) minJ=0.6249
+  alg1 + algo8         tri3 tri3= 22 algo=1 nodes=  4664 (-14.9 %) elems=  4337 (-15.7 %) minJ=0.5489
+  alg2 simple-quad     OK  tri3=  0 algo=2 nodes=  6067 (+10.7 %) elems=  5729 (+11.4 %) minJ=0.5243
+  alg3 full-quad       OK  tri3=  0 algo=3 nodes=  5689 ( +3.8 %) elems=  5351 ( +4.0 %) minJ=0.5725
+  auto (as shipped)    OK  tri3=  0 algo=1 nodes=  5482 ( +0.0 %) elems=  5144 ( +0.0 %) minJ=0.6249
+
+=== naca4412_wingbox_n_ribs7_chord800   (size_chord=12.0 size_span=25.0 algorithm_2d=6)
+  alg1 (first pass)    OK  tri3=  0 algo=1 nodes=  4896 ( +0.0 %) elems=  4445 ( +0.0 %) minJ=0.5099
+  alg1 + optimize      OK  tri3=  0 algo=1 nodes=  4896 ( +0.0 %) elems=  4445 ( +0.0 %) minJ=0.5099
+  alg1 + algo8         tri3 tri3= 34 algo=1 nodes=  4187 (-14.5 %) elems=  3753 (-15.6 %) minJ=0.0241
+  alg2 simple-quad     OK  tri3=  0 algo=2 nodes=  5349 ( +9.3 %) elems=  4898 (+10.2 %) minJ=0.5714
+  alg3 full-quad       OK  tri3=  0 algo=3 nodes=  5039 ( +2.9 %) elems=  4588 ( +3.2 %) minJ=0.5950
+  auto (as shipped)    OK  tri3=  0 algo=1 nodes=  4896 ( +0.0 %) elems=  4445 ( +0.0 %) minJ=0.5099
+
+=== naca4412_wingbox_n_ribs3_chord1000   (size_chord=12.0 size_span=25.0 algorithm_2d=6)
+  alg1 (first pass)    OK  tri3=  0 algo=1 nodes=  4940 ( +0.0 %) elems=  4690 ( +0.0 %) minJ=0.5965
+  alg1 + optimize      OK  tri3=  0 algo=1 nodes=  4940 ( +0.0 %) elems=  4690 ( +0.0 %) minJ=0.5965
+  alg1 + algo8         tri3 tri3= 12 algo=1 nodes=  4217 (-14.6 %) elems=  3973 (-15.3 %) minJ=0.5696
+  alg2 simple-quad     OK  tri3=  0 algo=2 nodes=  5489 (+11.1 %) elems=  5239 (+11.7 %) minJ=0.5243
+  alg3 full-quad       OK  tri3=  0 algo=3 nodes=  5111 ( +3.5 %) elems=  4861 ( +3.6 %) minJ=0.5524
+  auto (as shipped)    OK  tri3=  0 algo=1 nodes=  4940 ( +0.0 %) elems=  4690 ( +0.0 %) minJ=0.5965

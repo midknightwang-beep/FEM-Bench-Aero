@@ -1,0 +1,88 @@
+{
+  "generated": "2026-10-24",
+  "milestone": "D36 pure-sweep station (sweep 35 deg, taper neutral)",
+  "gates": {
+    "equilibrium_pct": 0.05,
+    "stress_median_pct": 5.0,
+    "coord_tol_mm": 0.001
+  },
+  "n_cases": 1,
+  "n_fail": 0,
+  "verdict": "PASS",
+  "shared_implementation": "_probe_m8/xval_m8.py:check_one (HERE redirected)",
+  "cases": [
+    {
+      "case": "naca4412_wingbox_sweep35",
+      "sources": {
+        "ccx": "naca4412_wingbox_sweep35.frd",
+        "abaqus": "naca4412_wingbox_sweep35.odb.json"
+      },
+      "mesh": {
+        "n_ccx": 5687,
+        "n_abaqus": 5687,
+        "identical_labels": true,
+        "max_coord_diff_mm": 0.0
+      },
+      "equilibrium": {
+        "roots": 153,
+        "load_n": 500.0,
+        "ccx": {
+          "sum": [
+            0.000193,
+            -499.998712,
+            0.00314
+          ],
+          "dominant": "Y",
+          "abs_value": 499.998712,
+          "residual_pct": 0.00025764
+        },
+        "abaqus": {
+          "sum": [
+            -6.3e-05,
+            -499.999423,
+            -3.1e-05
+          ],
+          "dominant": "Y",
+          "abs_value": 499.999423,
+          "residual_pct": 0.000115347
+        },
+        "worst_residual_pct": 0.00025764
+      },
+      "max_disp": {
+        "ccx": {
+          "node": 495,
+          "mm": 5.429259
+        },
+        "abaqus": {
+          "node": 495,
+          "mm": 5.437559
+        },
+        "gap_pct": 0.1526,
+        "abs_diff_mm": 0.0083,
+        "gated": false,
+        "note": "model-wide max|u|; REPORTED, not gated (peak is one node)"
+      },
+      "stress_field": {
+        "n_common": 5687,
+        "median_pct": 0.1975,
+        "p90_pct": 29.8225,
+        "gated": true,
+        "tol_pct": 5.0
+      },
+      "peak_von_mises": {
+        "ccx": {
+          "vm_mpa": 14.898,
+          "node": 873
+        },
+        "abaqus": {
+          "vm_mpa": 12.0526,
+          "node": 3848
+        },
+        "gated": false,
+        "note": "D8: peaks are not compared bare"
+      },
+      "pass": true,
+      "failures": []
+    }
+  ]
+}

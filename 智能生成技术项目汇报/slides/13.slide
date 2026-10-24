@@ -1,0 +1,50 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 28, right: 80 }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>数据集支撑模型生成的四条机制</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 130, width: 690, flexDirection: 'column', gap: 16 }}>
+    {[
+      { n: '01', t: '标尺 · 为生成结果打分', d: '闭式解真值库 + 双码交叉标签：网格质量分（minJ 分布）、物理可信分（平衡残差）、精度分（与真值偏差），标签可信度有 0.003% 实测背书' },
+      { n: '02', t: '教材 · 定义能力边界', d: '7 种结构形式 × 40 等价类构成覆盖图谱；train 域学"会什么"，val/test 域测"没见过的能不能对"，外推维度与工程需求一一对应' },
+      { n: '03', t: '闸门 · 放行标准同源复用', d: '生成的模型必须过与数据集入库同一套九道闸——网格质量、语义一致、物理平衡、双码交叉，无需另建评测体系' },
+      { n: '04', t: '防幻觉 · 口径钉死杜绝漂移', d: '回归基线钉死全部指标；29 项口径决议留档、改动必须重签基线；生成结果与基准"完全相同"反而触发报警' },
+    ].map((m, i) => (
+      <Box key={i} style={{ flexDirection: 'row', gap: 18, alignItems: 'flex-start', background: '#F1F5F9', borderRadius: 10, padding: '14px 18px' }}>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#06B6D4', width: 52, lineHeight: 1.2 }}>{m.n}</Text>
+        <Box style={{ flex: 1 }}>
+          <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 4 }}>{m.t}</Text>
+          <Text style={{ fontSize: 14.5, color: '#334155', lineHeight: 1.55 }}>{m.d}</Text>
+        </Box>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', right: 80, top: 130, width: 380, height: 460, background: '#0F172A', borderRadius: 12, padding: 30 }}>
+    <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 4 }}>闭环关系</Text>
+    <Text style={{ fontSize: 15, color: '#06B6D4', fontWeight: 'bold', marginBottom: 20 }}>数据集 ⇄ 生成能力共同生长</Text>
+    {[
+      { t: '生成 → 求解', d: '契约驱动自动建模' },
+      { t: '求解 → 验证', d: '九道闸对照真值' },
+      { t: '验证 → 回流', d: '新算例反哺数据集' },
+      { t: '回流 → 评测', d: '覆盖图谱持续扩展' },
+    ].map((r, i) => (
+      <Box key={i} style={{ marginBottom: 12 }}>
+        <Box style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 8, padding: '10px 16px', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#06B6D4', width: 24 }}>{i + 1}</Text>
+          <Box>
+            <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#FFFFFF' }}>{r.t}</Text>
+            <Text style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.65)' }}>{r.d}</Text>
+          </Box>
+        </Box>
+        {i < 3 && <Text style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)', textAlign: 'center', lineHeight: 1.1 }}>↓</Text>}
+      </Box>
+    ))}
+    <Text style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginTop: 'auto' }}>
+      数据集的可信度建设直接转化为生成结果的可信度保障
+    </Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>基于大模型的飞机有限元模型智能生成技术</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>13 / 15</Text>
+  </Box>
+</Slide>

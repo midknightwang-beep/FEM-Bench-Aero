@@ -1,0 +1,137 @@
+[
+  {
+    "variant": "plain",
+    "mode": "plain",
+    "n_faces_total": 4,
+    "n_skin_faces": 1,
+    "n_stringer_faces": 3,
+    "n_unclaimed_faces": 0,
+    "map_complete": null,
+    "skin_face_boxes": [
+      [
+        -0.0,
+        -0.0,
+        -0.0,
+        600.0,
+        600.0,
+        0.0
+      ]
+    ],
+    "stringer_shared_nodes": [
+      0,
+      0,
+      0
+    ],
+    "stringer_faces_with_zero_shared_nodes": 3,
+    "occ_shared_boundary_curves": 0,
+    "n_nodes": 3448,
+    "n_elements": 3188,
+    "min_quality": 0.6877
+  },
+  {
+    "variant": "skin-objects",
+    "mode": "skin-objects",
+    "n_faces_total": 7,
+    "n_skin_faces": 4,
+    "n_stringer_faces": 3,
+    "n_unclaimed_faces": 0,
+    "map_complete": true,
+    "skin_face_boxes": [
+      [
+        -0.0,
+        -0.0,
+        -0.0,
+        150.0,
+        600.0,
+        0.0
+      ],
+      [
+        150.0,
+        -0.0,
+        -0.0,
+        300.0,
+        600.0,
+        0.0
+      ],
+      [
+        300.0,
+        -0.0,
+        -0.0,
+        450.0,
+        600.0,
+        0.0
+      ],
+      [
+        450.0,
+        -0.0,
+        -0.0,
+        600.0,
+        600.0,
+        0.0
+      ]
+    ],
+    "stringer_shared_nodes": [
+      51,
+      51,
+      51
+    ],
+    "stringer_faces_with_zero_shared_nodes": 0,
+    "occ_shared_boundary_curves": 3,
+    "n_nodes": 3430,
+    "n_elements": 3317,
+    "min_quality": 0.644
+  },
+  {
+    "variant": "skin-tools",
+    "mode": "skin-tools",
+    "n_faces_total": 7,
+    "n_skin_faces": 4,
+    "n_stringer_faces": 3,
+    "n_unclaimed_faces": 0,
+    "map_complete": true,
+    "skin_face_boxes": [
+      [
+        -0.0,
+        -0.0,
+        -0.0,
+        150.0,
+        600.0,
+        0.0
+      ],
+      [
+        150.0,
+        -0.0,
+        -0.0,
+        300.0,
+        600.0,
+        0.0
+      ],
+      [
+        300.0,
+        -0.0,
+        -0.0,
+        450.0,
+        600.0,
+        0.0
+      ],
+      [
+        450.0,
+        -0.0,
+        -0.0,
+        600.0,
+        600.0,
+        0.0
+      ]
+    ],
+    "stringer_shared_nodes": [
+      51,
+      51,
+      51
+    ],
+    "stringer_faces_with_zero_shared_nodes": 0,
+    "occ_shared_boundary_curves": 3,
+    "n_nodes": 3430,
+    "n_elements": 3317,
+    "min_quality": 0.644
+  }
+]

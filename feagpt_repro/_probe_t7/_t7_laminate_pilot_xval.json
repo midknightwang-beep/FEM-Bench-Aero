@@ -1,0 +1,26 @@
+{
+  "rows": [
+    {
+      "label": "laminate coupon",
+      "case": "open_hole_panel_400x200_d20_cfrp090s",
+      "layup": "[0/90]s",
+      "sigma_gross": 10.0,
+      "ccx": {
+        "E_eff": 73804.30513536144,
+        "strain": 0.00013549345098039215,
+        "n_end_nodes": 51,
+        "E_clt": 75364.48598130842,
+        "residual_pct": -2.070180437950475
+      },
+      "abaqus": {
+        "E_eff": 73802.0334530984,
+        "strain": 0.00013549762157102427,
+        "n_end_nodes": 51,
+        "E_clt": 75364.48598130842,
+        "residual_pct": -2.073194698889791
+      }
+    }
+  ],
+  "tol_eff": 0.03,
+  "pass": true
+}

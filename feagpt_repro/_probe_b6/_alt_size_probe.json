@@ -1,0 +1,55 @@
+[
+  {
+    "case": "fuselage_barrel_d2000_l1600_str8_frm3",
+    "params": {
+      "length": 1600.0
+    },
+    "split": "val",
+    "why": "尺寸单维外推（长度 1600 ≠ 2000）",
+    "label": "shrink: length down, the affordable analogue of L3000",
+    "shell_area_mm2": 10930101,
+    "n_nodes": 129656,
+    "equations_est": 1935764,
+    "rc": 0
+  },
+  {
+    "case": "fuselage_barrel_d1600_l1600_str8_frm3",
+    "params": {
+      "diameter": 1600.0,
+      "length": 1600.0
+    },
+    "split": "test",
+    "why": "尺寸双维外推（直径 1600 ≠ 2000 且 长度 1600 ≠ 2000）",
+    "label": "shrink: two-dimension corner, both down",
+    "shell_area_mm2": 8806384,
+    "n_nodes": 103739,
+    "equations_est": 1548823,
+    "rc": 0
+  },
+  {
+    "case": "fuselage_barrel_d2000_l2400_str8_frm3",
+    "params": {
+      "length": 2400.0
+    },
+    "split": "val",
+    "why": "尺寸单维外推（长度 2400 ≠ 2000）",
+    "label": "grow: +20 % length - how much head-room is left?",
+    "shell_area_mm2": 16116649,
+    "n_nodes": 188555,
+    "equations_est": 2815126,
+    "rc": 0
+  },
+  {
+    "case": "fuselage_barrel_d2200_l2000_str8_frm3",
+    "params": {
+      "diameter": 2200.0
+    },
+    "split": "val",
+    "why": "尺寸单维外推（直径 2200 ≠ 2000）",
+    "label": "grow: +10 % diameter - how much head-room is left?",
+    "shell_area_mm2": 14836561,
+    "n_nodes": 174563,
+    "equations_est": 2606226,
+    "rc": 0
+  }
+]

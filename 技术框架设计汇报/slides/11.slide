@@ -1,0 +1,50 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 48, right: 80 }}>
+    <Text style={{ fontSize: 15, color: '#1565C0', letterSpacing: 2 }}>05 具体方案</Text>
+    <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#1A1A1A', marginTop: 6 }}>异常怎么处置，边界怎么划</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 158, width: 540 }}>
+    <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#0D47A1' }}>两类典型异常的处置顺序</Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 196, width: 540, flexDirection: 'column', gap: 14 }}>
+    <Box style={{ height: 168, background: '#FFF7ED', borderRadius: 10, padding: '16px 20px', borderLeft: '4px solid #E65100' }}>
+      <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#E65100' }}>双码偏差超差</Text>
+      <Text style={{ fontSize: 13, color: '#7C2D12', marginTop: 8, lineHeight: 1.75 }}>
+        ① 先比两套输入卡的单元与截面定义（最常见：适配器漏写字段）
+        ② 再比结果坐标系与符号（次常见：归一化符号反了）
+        ③ 最后才怀疑求解器实现差异
+      </Text>
+      <Text style={{ fontSize: 12.5, color: '#9A3412', marginTop: 6 }}>先怀疑自己的适配器，再怀疑求解器</Text>
+    </Box>
+    <Box style={{ height: 168, background: '#E3F2FD', borderRadius: 10, padding: '16px 20px', borderLeft: '4px solid #1565C0' }}>
+      <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#0D47A1' }}>语义一致闸失败</Text>
+      <Text style={{ fontSize: 13, color: '#334155', marginTop: 8, lineHeight: 1.75 }}>
+        契约声明壁厚 2.0 mm，几何实测 1.8 mm。
+        处置不是"把契约改成 1.8"，而是修建面器（近似偏移或单位漏乘）。
+      </Text>
+      <Text style={{ fontSize: 12.5, color: '#0D47A1', marginTop: 6 }}>契约是真相，实测是证据；不符时改实现，不改真相</Text>
+    </Box>
+  </Box>
+  <Box style={{ position: 'absolute', left: 660, top: 158, width: 540 }}>
+    <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#0D47A1' }}>能力边界：显式声明，不静默降级</Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 660, top: 196, width: 540, flexDirection: 'column', gap: 12 }}>
+    <Box style={{ height: 208, background: '#F0F9F7', borderRadius: 10, padding: '16px 20px', borderTop: '3px solid #00897B' }}>
+      <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#00695C' }}>当前覆盖</Text>
+      {['线性静力分析', '壳 / 梁 / 杆单元', '金属 + 等效正交异性复材', '典型飞机结构形式参数化族', '多工况线性组合'].map((s, i) => (
+        <Text key={i} style={{ fontSize: 13.5, color: '#065F56', marginTop: 6 }}>· {s}</Text>
+      ))}
+    </Box>
+    <Box style={{ height: 208, background: '#FEF2F2', borderRadius: 10, padding: '16px 20px', borderTop: '3px solid #B91C1C' }}>
+      <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#B91C1C' }}>暂不支持</Text>
+      {['接触与装配连接', '几何 / 材料非线性', '屈曲 · 瞬态 · 模态', '气动弹性与多物理场', '静默降级（一律拒绝并说明原因）'].map((s, i) => (
+        <Text key={i} style={{ fontSize: 13.5, color: '#7F1D1D', marginTop: 6 }}>· {s}</Text>
+      ))}
+    </Box>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>技术框架设计报告</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>11 / 12</Text>
+  </Box>
+</Slide>

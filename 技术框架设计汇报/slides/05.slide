@@ -1,0 +1,45 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 48, right: 80 }}>
+    <Text style={{ fontSize: 15, color: '#1565C0', letterSpacing: 2 }}>02 现状调研</Text>
+    <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#1A1A1A', marginTop: 6 }}>三条主流路线，五个共性缺口</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 168, right: 80, height: 210, flexDirection: 'row', gap: 20 }}>
+    {[
+      { t: '路线一 · 代码/输入卡生成', a: '模型直接写输入文件', b: '路径最短、通用性最好', c: '零提示成功率≈0', d: '必须配检索与反馈', col: '#1565C0', bg: '#E3F2FD' },
+      { t: '路线二 · Agent 编排', a: '多角色分工 + 工具调用', b: '意图→检索→写卡→求解→审查', c: '有审查≈90%', d: '去掉审查≈45%；检索内 92.5%', col: '#00897B', bg: '#E0F2F1' },
+      { t: '路线三 · 评测基准', a: '带真值的任务集 + 统一指标', b: '把「感觉能用」变成可测量', c: '跨 39 个基准', d: '最佳代码级成功≈72%', col: '#E65100', bg: '#FFF3E0' },
+    ].map((x, i) => (
+      <Box key={i} style={{ flex: 1, height: 210, background: x.bg, borderRadius: 10, padding: '18px 20px', borderTop: `4px solid ${x.col}` }}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: x.col }}>{x.t}</Text>
+        <Text style={{ fontSize: 13, color: '#1A1A1A', marginTop: 8, lineHeight: 1.6 }}>{x.a}{'\n'}{x.b}</Text>
+        <Text style={{ fontSize: 13, color: '#B91C1C', marginTop: 8, lineHeight: 1.6 }}>{x.c}{'\n'}{x.d}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 402, right: 80 }}>
+    <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0D47A1' }}>五个共性缺口——都卡在「能不能进工程流程」上</Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 442, right: 80, flexDirection: 'row', gap: 14 }}>
+    {[
+      { n: '1', t: '只验"能跑"', d: '不验物理对错' },
+      { n: '2', t: '无形式化契约', d: '输出空间不受约束' },
+      { n: '3', t: '单一求解器', d: '结果无交叉基准' },
+      { n: '4', t: '评测不可复现', d: '划分不透明' },
+      { n: '5', t: '缺退化自检', d: '改动即漂移' },
+    ].map((x, i) => (
+      <Box key={i} style={{ flex: 1, height: 120, background: '#FEF2F2', borderRadius: 8, padding: '14px 14px', borderLeft: '3px solid #B91C1C' }}>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#B91C1C', opacity: 0.5 }}>{x.n}</Text>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#7F1D1D', marginTop: 2 }}>{x.t}</Text>
+        <Text style={{ fontSize: 12, color: '#7F1D1D', marginTop: 6, lineHeight: 1.5 }}>{x.d}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 586, right: 80, background: '#E3F2FD', borderRadius: 8, padding: '12px 20px' }}>
+    <Text style={{ fontSize: 14, color: '#0D47A1' }}>启示：输入必须收敛到契约 · 验证必须独立 · 双码互证是可信度捷径 · 数据与闸必须同源</Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>技术框架设计报告</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>05 / 12</Text>
+  </Box>
+</Slide>

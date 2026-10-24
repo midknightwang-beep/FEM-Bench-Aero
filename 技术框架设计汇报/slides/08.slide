@@ -1,0 +1,52 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 48, right: 80 }}>
+    <Text style={{ fontSize: 15, color: '#1565C0', letterSpacing: 2 }}>04 总体设计</Text>
+    <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#1A1A1A', marginTop: 6 }}>接口契约与两条反馈回路</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 160, right: 80, flexDirection: 'row', gap: 12 }}>
+    {['语言', '意图', '契约', '几何', '网格', '输入卡', '结果', '验证'].map((s, i) => (
+      <Box key={i} style={{ flex: 1, height: 56, background: i < 4 ? '#E3F2FD' : '#E0F2F1', borderRadius: 8, justifyContent: 'center', alignItems: 'center', border: `1.5px solid ${i < 4 ? '#1565C0' : '#00897B'}` }}>
+        <Text style={{ fontSize: 15, fontWeight: 'bold', color: i < 4 ? '#0D47A1' : '#00695C' }}>{s}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 240, right: 80 }}>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>I1 语言→意图　I2 意图→契约　I3 契约→几何　I4 几何→网格　I5 契约+网格→输入卡　I6 输入卡→结果　I7 结果→验证　I8 报告→回流</Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 292, right: 80, flexDirection: 'row', gap: 20 }}>
+    <Box style={{ flex: 1, height: 150, background: '#FFF7ED', borderRadius: 10, padding: '18px 22px', borderLeft: '5px solid #E65100' }}>
+      <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#E65100' }}>修复回路（短环）</Text>
+      <Text style={{ fontSize: 14, color: '#7C2D12', marginTop: 8, lineHeight: 1.7 }}>
+        验证拒绝 → 归因 → 回到生成层局部重做（加密网格、修正施加面），最多重试有限次，超限转人工。
+      </Text>
+      <Text style={{ fontSize: 13, color: '#9A3412', marginTop: 8 }}>解决「这次没做好」</Text>
+    </Box>
+    <Box style={{ flex: 1, height: 150, background: '#F0F9F7', borderRadius: 10, padding: '18px 22px', borderLeft: '5px solid #00897B' }}>
+      <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#00897B' }}>演进回路（长环）</Text>
+      <Text style={{ fontSize: 14, color: '#065F56', marginTop: 8, lineHeight: 1.7 }}>
+        归因为能力缺口 → 样本入回流池 → 人工确认 → 扩充数据集与检索库 → 提升下一轮能力。
+      </Text>
+      <Text style={{ fontSize: 13, color: '#00695C', marginTop: 8 }}>解决「这类做不了」</Text>
+    </Box>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 470, right: 80 }}>
+    <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#0D47A1' }}>三条接口规则，各解决一类集成问题</Text>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, top: 510, right: 80, flexDirection: 'row', gap: 14 }}>
+    {[
+      { t: '单向主链', d: '下游不得回写上游，避免"最终生效的是哪一版参数"说不清' },
+      { t: '显式失败语义', d: '最危险的失败不是报错，而是空结果被当成"没数据"继续算' },
+      { t: '可序列化', d: '接口数据落盘，任何一次运行都能凭它完整重放' },
+    ].map((x, i) => (
+      <Box key={i} style={{ flex: 1, height: 100, background: '#F8FAFC', borderRadius: 8, padding: '14px 16px', borderTop: '3px solid #1565C0' }}>
+        <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#0D47A1' }}>{x.t}</Text>
+        <Text style={{ fontSize: 12.5, color: '#475569', marginTop: 6, lineHeight: 1.6 }}>{x.d}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>技术框架设计报告</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>08 / 12</Text>
+  </Box>
+</Slide>

@@ -1,0 +1,39 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: 0, fontFamily: 'Microsoft YaHei', position: 'relative' }}>
+  <Box style={{ position: 'absolute', left: 80, top: 28, right: 80 }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>项目价值与后续规划</Text>
+    <Box style={{ width: 56, height: 4, background: '#1565C0', marginTop: 10 }} />
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, right: 80, top: 128, flexDirection: 'row', gap: 24 }}>
+    {[
+      { t: '技术价值', d: '"契约驱动 + 质量闸闭环"的智能建模框架——自然语言到可信有限元模型全链路自动转换，建模由人工经验驱动转为数据与规则驱动' },
+      { t: '资产价值', d: 'FEM-Bench-Aero 把典型飞机结构形式的建模知识固化为可复用、可评测、可生长的组织资产，7 种结构形式持续扩展' },
+      { t: '方法论价值', d: '九道闸验证体系与 29 项留档决议，沉淀为可迁移的"AI 生成结果可信度保障"方法论，适用于其他工程智能生成场景' },
+    ].map((v, i) => (
+      <Box key={i} style={{ flex: 1, background: '#F1F5F9', borderRadius: 10, padding: '18px 20px', borderTop: '4px solid #1565C0' }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#1565C0', marginBottom: 8 }}>{v.t}</Text>
+        <Text style={{ fontSize: 15, color: '#334155', lineHeight: 1.6 }}>{v.d}</Text>
+      </Box>
+    ))}
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, right: 80, top: 372, bottom: 64, background: '#0F172A', borderRadius: 12, padding: '26px 32px' }}>
+    <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 18 }}>后续规划</Text>
+    <Box style={{ flexDirection: 'row', gap: 20, flex: 1 }}>
+      {[
+        { t: '数据集放量', d: '复材铺层族 [±45]s、[0/±45/90]s 与厚度维扩展，先补划分声明再入库' },
+        { t: '形式扩展', d: '多闭室翼盒腹板变体、更多机身段结构形式' },
+        { t: '大模型深度集成', d: '基于数据集开展生成能力评测与迭代，多轮澄清与参数推荐' },
+        { t: '工程对接', d: '打通载荷工况批量处理与安全裕度计算，形成"生成—求解—评定"闭环' },
+      ].map((p, i) => (
+        <Box key={i} style={{ flex: 1, flexDirection: 'column' }}>
+          <Box style={{ height: 5, background: 'linear-gradient(90deg, #1565C0 0%, #06B6D4 100%)', borderRadius: 3, marginBottom: 12 }} />
+          <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#06B6D4', marginBottom: 8 }}>{p.t}</Text>
+          <Text style={{ fontSize: 14, color: 'rgba(255,255,255,0.78)', lineHeight: 1.6 }}>{p.d}</Text>
+        </Box>
+      ))}
+    </Box>
+  </Box>
+  <Box style={{ position: 'absolute', left: 80, bottom: 24, right: 80, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 12, color: '#94A3B8' }}>基于大模型的飞机有限元模型智能生成技术</Text>
+    <Text style={{ fontSize: 14, color: '#94A3B8' }}>14 / 15</Text>
+  </Box>
+</Slide>

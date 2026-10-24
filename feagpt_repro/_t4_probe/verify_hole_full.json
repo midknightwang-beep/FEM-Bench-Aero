@@ -1,0 +1,124 @@
+{
+  "n_pass": 6,
+  "n_fail": 0,
+  "checks": [
+    {
+      "check": "hole.kt-gross-vs-howland",
+      "pass": true,
+      "detail": "lambda=0.1000: Kt_gross 3.0380 vs Howland 3.0245 (+0.45 %, tol 2 %); Kirsch infinite-plate 3.0000 shown for reference only"
+    },
+    {
+      "check": "hole.kt-net-vs-howland",
+      "pass": true,
+      "detail": "same peak in the net convention: Kt_net 2.7342 vs 2.7221 (+0.45 %). The two conventions disagree with each other by 11.1 % - both are right, both are checked"
+    },
+    {
+      "check": "hole.peak-location",
+      "pass": true,
+      "detail": "peak at theta=270.00 deg, 72 edge nodes (half-step 2.50 deg); Kirsch puts the maximum on the load-normal diameter (90 / 270 deg)"
+    },
+    {
+      "check": "hole.equilibrium",
+      "pass": true,
+      "detail": "loaded end carries 4000 N vs applied 4000 N (0.0000 %); clamped end -4000 N (0.0000 %); whole model 0.001 N (0.0000 %)"
+    },
+    {
+      "check": "hole.cross-solver",
+      "pass": true,
+      "detail": "max |u| ccx 0.057497 vs abaqus 0.057585 mm (0.154 %, tol 1 %); hole-edge per-node median von Mises gap 2.318 % over 72 nodes (tol 5 %). Peak Kt_gross ccx 3.0380 vs abaqus 2.9797 (1.920 %) and Kt_net 2.7342 vs 2.6817 (1.920 %) are printed for reference only: a peak is a recovery statistic, not an invariant (D8), so the gate sits on the displacement and the median, not on it"
+    },
+    {
+      "check": "hole.lambda-trend",
+      "pass": true,
+      "detail": "lambda=0.1: Kt_gross 3.0380 (Howland 3.0245, +0.45 %); lambda=0.2: Kt_gross 3.1323 (Howland 3.1352, -0.09 %); lambda=0.3: Kt_gross 3.3591 (Howland 3.3558, +0.10 %); the gross-section factor must rise monotonically with lambda - matching one coupon is luck, reproducing the ordering is the model"
+    }
+  ],
+  "detail": {
+    "ccx": {
+      "lambda": 0.1,
+      "sigma_max": 30.379912849830227,
+      "peak_angle_deg": 270.0,
+      "Kt_gross": 3.037991284983023,
+      "Kt_net": 2.7341921564847205,
+      "howland_net": 2.72207,
+      "howland_gross": 3.024522222222222,
+      "kirsch": 3.0,
+      "n_edge_nodes": 72,
+      "n_nodes": 9861,
+      "n_elements": 9675,
+      "element_types": {
+        "quad4": 9675
+      },
+      "tri_count": 0,
+      "min_quality": 0.6084,
+      "mesh_size": 4.0,
+      "division": 72,
+      "gate4": true,
+      "equilibrium": {
+        "applied_N": 4000.0013999999996,
+        "reaction_N": -4000.0004,
+        "global_N": 0.0009999997295732537,
+        "force_N": 4000.0
+      }
+    },
+    "abaqus": {
+      "lambda": 0.1,
+      "sigma_max": 29.79668233054995,
+      "peak_angle_deg": 270.0,
+      "Kt_gross": 2.979668233054995,
+      "Kt_net": 2.6817014097494956,
+      "howland_net": 2.72207,
+      "howland_gross": 3.024522222222222,
+      "kirsch": 3.0,
+      "n_edge_nodes": 72,
+      "n_nodes": 9861,
+      "n_elements": 9675,
+      "tri_count": 0,
+      "min_quality": 0.6084,
+      "gate4": true,
+      "cross": {
+        "max_disp": 0.05758521698203681,
+        "gap_disp_pct": 0.1536768326363422,
+        "edge_vm_median_pct": 2.3178021271902303,
+        "n_edge_common": 72,
+        "peak_kt_gross_gap_pct": 1.9197899683360582,
+        "peak_kt_net_gap_pct": 1.9197899683360549
+      }
+    },
+    "trend": {
+      "lambda_010": {
+        "lambda": 0.1,
+        "sigma_max": 30.379912849830227,
+        "peak_angle_deg": 270.0,
+        "Kt_gross": 3.037991284983023,
+        "Kt_net": 2.7341921564847205,
+        "howland_net": 2.72207,
+        "howland_gross": 3.024522222222222,
+        "kirsch": 3.0,
+        "n_edge_nodes": 72
+      },
+      "lambda_020": {
+        "lambda": 0.2,
+        "sigma_max": 31.322729480482266,
+        "peak_angle_deg": 90.0,
+        "Kt_gross": 3.1322729480482265,
+        "Kt_net": 2.505818358438581,
+        "howland_net": 2.50816,
+        "howland_gross": 3.1352,
+        "kirsch": 3.0,
+        "n_edge_nodes": 72
+      },
+      "lambda_030": {
+        "lambda": 0.3,
+        "sigma_max": 33.59077206416309,
+        "peak_angle_deg": 90.0,
+        "Kt_gross": 3.359077206416309,
+        "Kt_net": 2.351354044491416,
+        "howland_net": 2.34909,
+        "howland_gross": 3.355842857142857,
+        "kirsch": 3.0,
+        "n_edge_nodes": 72
+      }
+    }
+  }
+}

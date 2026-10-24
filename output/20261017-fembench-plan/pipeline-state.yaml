@@ -1,0 +1,60 @@
+version: 1
+created_at: 2026-10-17T17:44:00+08:00
+updated_at: 2026-10-17T17:44:00+08:00
+request_id: 20261017-fembench-plan
+workspace_root: F:\AI FEA Modeling DataSets
+user_goal: 数据集初步构建完成之后的《项目实施计划》Word 文档，面向领导汇报，含五阶段任务/交付物/风险/节奏
+output_docx_path: F:\AI FEA Modeling DataSets\output\20261017-fembench-plan\stage3\项目实施计划-数据集初步构建完成后.docx
+output_docx_user_specified: false
+current_stage: 3
+
+constraints:
+  - 零密级/涉密类字样
+  - 全部数字须有落盘实测背书或标注为行业公开文献结果
+  - 面向领导与评审，结论先行、数据说话
+
+stages:
+  stage_0:
+    status: completed
+    completed_at: 2026-10-17T17:44:00+08:00
+    decision: full_pipeline
+
+  stage_1:
+    status: completed
+    started_at: 2026-10-17T17:44:00+08:00
+    completed_at: 2026-10-17T17:46:00+08:00
+    output_path: stage1/final_draft.md
+    genre: work-report
+    expert_used: work-report-expert
+    route_tag: work_report
+
+  stage_2:
+    status: completed
+    started_at: 2026-10-17T17:46:00+08:00
+    completed_at: 2026-10-17T17:50:00+08:00
+    route: html-template
+    html_sub: business-modern
+    output_path: stage2/formatted-项目实施计划.html
+    output_format: html
+    skills_invoked: [design-token, doc-typeset, html-review]
+    design_tokens_path: skills/design-token/tokens/compiled/business-report.json
+    fallback: false
+    fallback_reason: null
+
+  stage_3:
+    status: completed
+    started_at: 2026-10-17T17:51:00+08:00
+    completed_at: 2026-10-17T17:52:00+08:00
+    executor: doc-converter
+    input_format: html
+    output_path: stage3/项目实施计划-数据集初步构建完成后.docx
+    skill_used: []
+    present_files_opened: false
+    fallback: false
+    fallback_reason: null
+
+consistency_check:
+  output_files_exist: true
+  stage_chain_complete: true
+  last_checked_at: 2026-10-17T17:52:00+08:00
+  errors: []

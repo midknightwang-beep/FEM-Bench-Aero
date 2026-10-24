@@ -1,0 +1,302 @@
+{
+ "fuselage_barrel_d1600_l1600_str8_frm3": {
+  "ccx": {
+   "n_nodes": 103715,
+   "max_disp": 3.006971613849265,
+   "max_von_mises": 343.6254904474861,
+   "max_von_mises_midsurface": 160.18084092281185,
+   "min_jacobian": null
+  },
+  "abq": {
+   "n_nodes": 103715,
+   "max_disp": 3.0815920532112546,
+   "max_von_mises": 386.03769177685996,
+   "max_von_mises_midsurface": 130.18629433839914,
+   "min_jacobian": null
+  },
+  "sem": {
+   "pass": true,
+   "checks": [
+    {
+     "key": "n_skin_faces",
+     "expected": 16,
+     "actual": 16,
+     "pass": true
+    },
+    {
+     "key": "n_stringer_faces",
+     "expected": 16,
+     "actual": 16,
+     "pass": true
+    },
+    {
+     "key": "n_frame_faces",
+     "expected": 24,
+     "actual": 24,
+     "pass": true
+    },
+    {
+     "key": "n_frame_z_planes",
+     "expected": 3,
+     "actual": 3,
+     "pass": true
+    },
+    {
+     "key": "stringer_angles",
+     "expected": [
+      0.0,
+      0.785398163,
+      1.570796327,
+      2.35619449,
+      3.141592654,
+      3.926990817,
+      4.71238898,
+      5.497787144
+     ],
+     "actual": [
+      0.0,
+      0.785398163,
+      1.570796327,
+      2.35619449,
+      3.141592654,
+      3.926990817,
+      4.71238898,
+      5.497787144
+     ],
+     "pass": true
+    },
+    {
+     "key": "n_surfaces",
+     "expected": 56,
+     "actual": 56,
+     "pass": true
+    }
+   ]
+  }
+ },
+ "fuselage_barrel_d1800_l2000_str8_frm3": {
+  "ccx": {
+   "n_nodes": 143402,
+   "max_disp": 2.8015884244749887,
+   "max_von_mises": 286.7959532842231,
+   "max_von_mises_midsurface": 128.46466375416696,
+   "min_jacobian": null
+  },
+  "abq": {
+   "n_nodes": 143402,
+   "max_disp": 2.890731572718537,
+   "max_von_mises": 323.7578112745016,
+   "max_von_mises_midsurface": 116.27974672738584,
+   "min_jacobian": null
+  },
+  "sem": {
+   "pass": true,
+   "checks": [
+    {
+     "key": "n_skin_faces",
+     "expected": 16,
+     "actual": 16,
+     "pass": true
+    },
+    {
+     "key": "n_stringer_faces",
+     "expected": 16,
+     "actual": 16,
+     "pass": true
+    },
+    {
+     "key": "n_frame_faces",
+     "expected": 24,
+     "actual": 24,
+     "pass": true
+    },
+    {
+     "key": "n_frame_z_planes",
+     "expected": 3,
+     "actual": 3,
+     "pass": true
+    },
+    {
+     "key": "stringer_angles",
+     "expected": [
+      0.0,
+      0.785398163,
+      1.570796327,
+      2.35619449,
+      3.141592654,
+      3.926990817,
+      4.71238898,
+      5.497787144
+     ],
+     "actual": [
+      0.0,
+      0.785398163,
+      1.570796327,
+      2.35619449,
+      3.141592654,
+      3.926990817,
+      4.71238898,
+      5.497787144
+     ],
+     "pass": true
+    },
+    {
+     "key": "n_surfaces",
+     "expected": 56,
+     "actual": 56,
+     "pass": true
+    }
+   ]
+  }
+ },
+ "fuselage_barrel_d2000_l1600_str8_frm3": {
+  "ccx": {
+   "n_nodes": 129632,
+   "max_disp": 2.5511204284128275,
+   "max_von_mises": 249.3505562957935,
+   "max_von_mises_midsurface": 115.77167555403804,
+   "min_jacobian": null
+  },
+  "abq": {
+   "n_nodes": 129632,
+   "max_disp": 2.613124245039985,
+   "max_von_mises": 281.06280275049306,
+   "max_von_mises_midsurface": 109.32699574753258,
+   "min_jacobian": null
+  },
+  "sem": {
+   "pass": true,
+   "checks": [
+    {
+     "key": "n_skin_faces",
+     "expected": 16,
+     "actual": 16,
+     "pass": true
+    },
+    {
+     "key": "n_stringer_faces",
+     "expected": 16,
+     "actual": 16,
+     "pass": true
+    },
+    {
+     "key": "n_frame_faces",
+     "expected": 24,
+     "actual": 24,
+     "pass": true
+    },
+    {
+     "key": "n_frame_z_planes",
+     "expected": 3,
+     "actual": 3,
+     "pass": true
+    },
+    {
+     "key": "stringer_angles",
+     "expected": [
+      0.0,
+      0.785398163,
+      1.570796327,
+      2.35619449,
+      3.141592654,
+      3.926990817,
+      4.71238898,
+      5.497787144
+     ],
+     "actual": [
+      0.0,
+      0.785398163,
+      1.570796327,
+      2.35619449,
+      3.141592654,
+      3.926990817,
+      4.71238898,
+      5.497787144
+     ],
+     "pass": true
+    },
+    {
+     "key": "n_surfaces",
+     "expected": 56,
+     "actual": 56,
+     "pass": true
+    }
+   ]
+  }
+ },
+ "fuselage_barrel_d2000_l2000_t2_str8_frm3": {
+  "ccx": {
+   "n_nodes": 158524,
+   "max_disp": 4.678703089358844,
+   "max_von_mises": 372.5256004684946,
+   "max_von_mises_midsurface": 157.65500332761437,
+   "min_jacobian": null
+  },
+  "abq": {
+   "n_nodes": 158524,
+   "max_disp": 4.867503256484361,
+   "max_von_mises": 433.91175459235484,
+   "max_von_mises_midsurface": 140.49758947567778,
+   "min_jacobian": null
+  },
+  "sem": {
+   "pass": true,
+   "checks": [
+    {
+     "key": "n_skin_faces",
+     "expected": 16,
+     "actual": 16,
+     "pass": true
+    },
+    {
+     "key": "n_stringer_faces",
+     "expected": 16,
+     "actual": 16,
+     "pass": true
+    },
+    {
+     "key": "n_frame_faces",
+     "expected": 24,
+     "actual": 24,
+     "pass": true
+    },
+    {
+     "key": "n_frame_z_planes",
+     "expected": 3,
+     "actual": 3,
+     "pass": true
+    },
+    {
+     "key": "stringer_angles",
+     "expected": [
+      0.0,
+      0.785398163,
+      1.570796327,
+      2.35619449,
+      3.141592654,
+      3.926990817,
+      4.71238898,
+      5.497787144
+     ],
+     "actual": [
+      0.0,
+      0.785398163,
+      1.570796327,
+      2.35619449,
+      3.141592654,
+      3.926990817,
+      4.71238898,
+      5.497787144
+     ],
+     "pass": true
+    },
+    {
+     "key": "n_surfaces",
+     "expected": 56,
+     "actual": 56,
+     "pass": true
+    }
+   ]
+  }
+ }
+}

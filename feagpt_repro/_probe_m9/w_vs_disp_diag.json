@@ -1,0 +1,193 @@
+{
+ "probe": "M9 / max_w as wingbox proxy target",
+ "checks": {
+  "axes": {
+   "bbox": {
+    "x": [
+     248.5,
+     701.5,
+     453.0
+    ],
+    "y": [
+     -26.16,
+     100.34,
+     126.5
+    ],
+    "z": [
+     -2.0,
+     2002.0,
+     2004.0
+    ]
+   },
+   "rib_z_planes": [
+    -0.0,
+    500.0,
+    1000.0,
+    1500.0,
+    2000.0
+   ],
+   "z_is_span": true,
+   "load_dof": 2,
+   "load_axis": "y"
+  },
+  "base_case_peaks": {
+   "max_disp": 2.369085,
+   "max_v_y": 2.36745,
+   "max_w_z": 0.112281,
+   "v_over_u": 0.99931,
+   "w_over_u": 0.04739
+  },
+  "max_v_equals_max_disp": {
+   "n_frd": 15,
+   "min": 0.99899,
+   "max": 0.999732,
+   "spread_pct": 0.0742
+  },
+  "exponents": {
+   "max_disp": {
+    "span": 2.9003,
+    "skin": -0.9958
+   },
+   "max_v_y": {
+    "span": 2.9014,
+    "skin": -0.9959
+   },
+   "max_w_z": {
+    "span": 1.9466,
+    "skin": -0.9704
+   },
+   "beam_theory": {
+    "span": 3.0,
+    "skin": -1.0
+   }
+  },
+  "sweep_sensitivity": {
+   "sweep10": {
+    "sweep": 10.0,
+    "taper": 1.0,
+    "disp_x_base": 1.094,
+    "w_x_base": 0.999
+   },
+   "sweep20": {
+    "sweep": 20.0,
+    "taper": 1.0,
+    "disp_x_base": 1.34,
+    "w_x_base": 1.152
+   },
+   "sweep40": {
+    "sweep": 40.0,
+    "taper": 1.0,
+    "disp_x_base": 2.965,
+    "w_x_base": 2.092
+   },
+   "taper040": {
+    "sweep": 0.0,
+    "taper": 0.4,
+    "disp_x_base": 1.898,
+    "w_x_base": 1.511
+   },
+   "sweep20_taper060": {
+    "sweep": 20.0,
+    "taper": 0.6,
+    "disp_x_base": 1.675,
+    "w_x_base": 1.2
+   },
+   "sweep40_taper040": {
+    "sweep": 40.0,
+    "taper": 0.4,
+    "disp_x_base": 4.171,
+    "w_x_base": 1.716
+   }
+  },
+  "hard_case_amplification": {
+   "disp_x": 4.171,
+   "w_x": 1.716,
+   "w_is_less_sensitive_by": 0.774
+  },
+  "per_case_ape": {
+   "naca4412_wingbox_n_ribs7_chord800": {
+    "max_disp": 0.031,
+    "max_w": 0.339,
+    "max_von_mises_midsurface": 1.125
+   },
+   "naca4412_wingbox_size_span2400_skin2": {
+    "max_disp": 0.65,
+    "max_w": 0.75,
+    "max_von_mises_midsurface": 0.472
+   },
+   "naca4412_wingbox_size_span3000_skin1p5": {
+    "max_disp": 2.028,
+    "max_w": 1.561,
+    "max_von_mises_midsurface": 0.451
+   },
+   "naca4412_wingbox_str3_T": {
+    "max_disp": 5.26,
+    "max_w": 4.566,
+    "max_von_mises_midsurface": 6.973
+   },
+   "naca4412_wingbox_sweep20_taper060": {
+    "max_disp": 8.63,
+    "max_w": 16.41,
+    "max_von_mises_midsurface": 15.485
+   },
+   "naca4412_wingbox_sweep40_taper040": {
+    "max_disp": 32.856,
+    "max_w": 2.364,
+    "max_von_mises_midsurface": 30.763
+   },
+   "naca4412_wingbox_web1_offcentre": {
+    "max_disp": 6.278,
+    "max_w": 3.211,
+    "max_von_mises_midsurface": 11.279
+   }
+  },
+  "test_comparison": {
+   "all_cases": {
+    "max_disp": 7.962,
+    "max_w": 4.172,
+    "max_von_mises_midsurface": 9.507
+   },
+   "drop_sweep40_from_BOTH": {
+    "max_disp": 3.813,
+    "max_w": 4.473,
+    "max_von_mises_midsurface": 5.964
+   },
+   "drop_each_targets_own_worst": {
+    "max_disp": 3.813,
+    "max_w": 2.132,
+    "max_von_mises_midsurface": 5.964
+   },
+   "note": "cross-target MAPE must drop the SAME case, not each model's own worst"
+  },
+  "verdict_on_max_w": {
+   "wins_on_mean_with_hard_case": true,
+   "wins_on_mean_without_it": false,
+   "conclusion": "max_w's advantage is produced by ONE test case (sweep40_taper040). Remove it from both targets and max_disp is better.  max_w is the spanwise displacement (span^1.95), which is 2.4x less sensitive to sweep than the bending deflection -- so it masks the single worst defect of the dataset instead of measuring it."
+  },
+  "cross_family_usability": {
+   "open_hole_panel": {
+    "n": 11,
+    "w_over_u_min": 0.0,
+    "w_over_u_max": 0.0
+   },
+   "fuselage_barrel": {
+    "n": 6,
+    "w_over_u_min": 0.821497,
+    "w_over_u_max": 0.890596
+   },
+   "stiffened_panel": {
+    "n": 4,
+    "w_over_u_min": 1.0,
+    "w_over_u_max": 1.0
+   }
+  },
+  "wingbox_w_over_u": {
+   "n": 31,
+   "min": 0.01908,
+   "max": 0.05712,
+   "spread": 2.994
+  }
+ },
+ "fails": [],
+ "verdict": "PASS"
+}

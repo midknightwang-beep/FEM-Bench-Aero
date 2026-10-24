@@ -1,0 +1,36 @@
+
+*******************************************************************
+******        Statistics on Transfer (Write)                 ******
+
+*******************************************************************
+******        Transfer Mode = 0  I.E.  As Is       ******
+******        Transferring Shape, ShapeType = 0                      ******
+** WorkSession : Sending all data
+ Step File Name : F:\AI FEA Modeling DataSets\feagpt_repro\_probe_m10\outputs_abaqus_sweep30\naca4412_wingbox_sweep30\naca4412_wingbox_sweep30.step(4345 ents)  Write  Done
+FeaGPT reproduction | 1 case(s) -> _probe_m10/outputs_abaqus_sweep30
+
+[FAIL] naca4412_wingbox_sweep30
+        geometry : gmsh-occ | 21 surfaces | mid-surface area 2,437,330 mm^2
+        mesh     : 5823 nodes, 5417 shells, {'quad4': 5417}, minJ 0.6353
+        solver   : abaqus (abaqus.BAT) rc=0 in 32.808 s
+        - tagged 21/21 faces via outDimTagsMap
+        - tag/bbox cross-check: non-prismatic planform - the legacy dx~0 spar rule cannot hold here, so its 8 disagreement(s) are expected; the build-time tags are authoritative
+        - tag/bbox cross-check: 8 disagreement(s) - face 18: tagged=front_spar bbox=upper_skin, face 19: tagged=front_spar bbox=upper_skin, face 20: tagged=front_spar bbox=upper_skin, face 21: tagged=front_spar bbox=upper_skin, face 22: tagged=rear_spar bbox=upper_skin, face 23: tagged=rear_spar bbox=upper_skin, face 24: tagged=rear_spar bbox=upper_skin, face 25: tagged=rear_spar bbox=upper_skin
+        - mesh size capped at 29.20 mm = 0.4 x the narrowest spar web (72.99 mm): on a varying planform the web is a trapezoid, and a strip under ~2x the global element size meshes into needles (see _m5_probe/t1_mesh_probe.py)
+        - recombination algorithm 1 (blossom)
+        - quality gate passed: min scaled Jacobian 0.635, 0 triangle(s)
+        - gate4 semantic PASS (10 checks)
+        - dropped 476 unreferenced mesh node(s) (5823 -> 5347); they carry no stiffness but would dilute nodal loads and abort Abaqus
+        - deck written (abaqus): 5347 active nodes, 5417 shell elements in 5 group(s)
+        - solver failed: pro\feagpt\abaqus_odb.py", line 337, in <module>
+    raise SystemExit(main())
+  File "F:\AI FEA Modeling DataSets\feagpt_repro\feagpt\abaqus_odb.py", line 326, in main
+    meta = extract(odb_path, out_path)
+  File "F:\AI FEA Modeling DataSets\feagpt_repro\feagpt\abaqus_odb.py", line 140, in extract
+    frame = step.frames[-1]
+<unknown>.AbaqusException: 0
+
+--- Abaqus diagnostics ---
+(none reported)
+
+0/1 case(s) completed. Summary -> _probe_m10\outputs_abaqus_sweep30\batch_summary.json

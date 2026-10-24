@@ -1,0 +1,262 @@
+{
+  "points": [
+    {
+      "label": "anchor_d2000_l2000_t3",
+      "diameter": 2000.0,
+      "length": 2000.0,
+      "thickness": 3.0,
+      "pressure": {
+        "hoop_vm_MPa": 16.688446,
+        "hoop_closed_form_MPa": 16.666667,
+        "sigma_z_MPa": 0.01823,
+        "w_mm": 0.227248,
+        "w_closed_form_mm": 0.227998,
+        "node": 22234,
+        "coord": [
+          705.96,
+          708.25,
+          1001.05
+        ],
+        "n_nodes": 105199
+      },
+      "run_ok": true,
+      "bending": {
+        "bending_vm_MPa": 3.725754,
+        "bending_closed_form_MPa": 3.751318,
+        "inertia_mm4": 9424777960.769379,
+        "x_mm": 707.1067811865476,
+        "node": 22234,
+        "coord": [
+          705.96,
+          708.25,
+          1001.05
+        ],
+        "n_nodes": 105199
+      }
+    },
+    {
+      "label": "d1600_l2000_t3",
+      "diameter": 1600.0,
+      "length": 2000.0,
+      "thickness": 3.0,
+      "pressure": {
+        "hoop_vm_MPa": 13.359171,
+        "hoop_closed_form_MPa": 13.333333,
+        "sigma_z_MPa": 0.014788,
+        "w_mm": 0.145954,
+        "w_closed_form_mm": 0.145919,
+        "node": 6987,
+        "coord": [
+          565.73,
+          565.64,
+          993.48
+        ],
+        "n_nodes": 84362
+      },
+      "run_ok": true,
+      "bending": {
+        "bending_vm_MPa": 5.833164,
+        "bending_closed_form_MPa": 5.861434,
+        "inertia_mm4": 4825486315.913922,
+        "x_mm": 565.685424949238,
+        "node": 6987,
+        "coord": [
+          565.73,
+          565.64,
+          993.48
+        ],
+        "n_nodes": 84362
+      }
+    },
+    {
+      "label": "d2000_l1600_t3",
+      "diameter": 2000.0,
+      "length": 1600.0,
+      "thickness": 3.0,
+      "pressure": {
+        "hoop_vm_MPa": 16.695702,
+        "hoop_closed_form_MPa": 16.666667,
+        "sigma_z_MPa": 0.004997,
+        "w_mm": 0.228151,
+        "w_closed_form_mm": 0.227998,
+        "node": 19095,
+        "coord": [
+          708.36,
+          705.85,
+          801.82
+        ],
+        "n_nodes": 84421
+      },
+      "run_ok": true
+    },
+    {
+      "label": "d2000_l2000_t2",
+      "diameter": 2000.0,
+      "length": 2000.0,
+      "thickness": 2.0,
+      "pressure": {
+        "hoop_vm_MPa": 25.020945,
+        "hoop_closed_form_MPa": 25.0,
+        "sigma_z_MPa": 0.023045,
+        "w_mm": 0.340573,
+        "w_closed_form_mm": 0.341997,
+        "node": 22234,
+        "coord": [
+          705.96,
+          708.25,
+          1001.05
+        ],
+        "n_nodes": 105199
+      },
+      "run_ok": true
+    },
+    {
+      "label": "d1600_l1600_t3",
+      "diameter": 1600.0,
+      "length": 1600.0,
+      "thickness": 3.0,
+      "pressure": {
+        "hoop_vm_MPa": 13.352091,
+        "hoop_closed_form_MPa": 13.333333,
+        "sigma_z_MPa": 0.00663,
+        "w_mm": 0.145951,
+        "w_closed_form_mm": 0.145919,
+        "node": 5687,
+        "coord": [
+          566.37,
+          565.0,
+          794.45
+        ],
+        "n_nodes": 67814
+      },
+      "run_ok": true
+    }
+  ],
+  "ratios": [
+    {
+      "label": "d1600_l2000_t3",
+      "sigma_fe_ratio": 0.800504,
+      "sigma_cf_ratio": 0.8,
+      "sigma_err_pct": 0.063,
+      "w_fe_ratio": 0.642267,
+      "w_cf_ratio": 0.640001,
+      "w_err_pct": 0.3541,
+      "pass": true
+    },
+    {
+      "label": "d2000_l1600_t3",
+      "sigma_fe_ratio": 1.000435,
+      "sigma_cf_ratio": 1.0,
+      "sigma_err_pct": 0.0435,
+      "w_fe_ratio": 1.003974,
+      "w_cf_ratio": 1.0,
+      "w_err_pct": 0.3974,
+      "pass": true
+    },
+    {
+      "label": "d2000_l2000_t2",
+      "sigma_fe_ratio": 1.499297,
+      "sigma_cf_ratio": 1.5,
+      "sigma_err_pct": -0.0468,
+      "w_fe_ratio": 1.498684,
+      "w_cf_ratio": 1.5,
+      "w_err_pct": -0.0877,
+      "pass": true
+    },
+    {
+      "label": "d1600_l1600_t3",
+      "sigma_fe_ratio": 0.80008,
+      "sigma_cf_ratio": 0.8,
+      "sigma_err_pct": 0.01,
+      "w_fe_ratio": 0.642254,
+      "w_cf_ratio": 0.640001,
+      "w_err_pct": 0.352,
+      "pass": true
+    }
+  ],
+  "checks": [
+    {
+      "key": "pressure.hoop-membrane",
+      "pass": true,
+      "detail": "outer-fibre von Mises at mid-length (node 22234 at (705.96, 708.25, 1001.05)) = 16.68845 MPa vs pR/t = 16.66667 MPa -> +0.131 %; sigma_z there = 0.01823 MPa (+0.11 % of hoop - the barrel has no end caps, so the pressure has no axial resultant)"
+    },
+    {
+      "key": "pressure.radial-growth",
+      "pass": true,
+      "detail": "radial displacement at mid-length = 0.22725 mm vs pR^2/(E t) = 0.22800 mm -> -0.329 % (E = 73100 MPa, nu = 0.33; the free growth, i.e. far from the clamped end)"
+    },
+    {
+      "key": "pressure.hoop-membrane",
+      "pass": true,
+      "detail": "outer-fibre von Mises at mid-length (node 6987 at (565.73, 565.64, 993.48)) = 13.35917 MPa vs pR/t = 13.33333 MPa -> +0.194 %; sigma_z there = 0.01479 MPa (+0.11 % of hoop - the barrel has no end caps, so the pressure has no axial resultant)"
+    },
+    {
+      "key": "pressure.radial-growth",
+      "pass": true,
+      "detail": "radial displacement at mid-length = 0.14595 mm vs pR^2/(E t) = 0.14592 mm -> +0.024 % (E = 73100 MPa, nu = 0.33; the free growth, i.e. far from the clamped end)"
+    },
+    {
+      "key": "pressure.hoop-membrane",
+      "pass": true,
+      "detail": "outer-fibre von Mises at mid-length (node 19095 at (708.36, 705.85, 801.82)) = 16.69570 MPa vs pR/t = 16.66667 MPa -> +0.174 %; sigma_z there = 0.00500 MPa (+0.03 % of hoop - the barrel has no end caps, so the pressure has no axial resultant)"
+    },
+    {
+      "key": "pressure.radial-growth",
+      "pass": true,
+      "detail": "radial displacement at mid-length = 0.22815 mm vs pR^2/(E t) = 0.22800 mm -> +0.067 % (E = 73100 MPa, nu = 0.33; the free growth, i.e. far from the clamped end)"
+    },
+    {
+      "key": "pressure.hoop-membrane",
+      "pass": true,
+      "detail": "outer-fibre von Mises at mid-length (node 22234 at (705.96, 708.25, 1001.05)) = 25.02095 MPa vs pR/t = 25.00000 MPa -> +0.084 %; sigma_z there = 0.02304 MPa (+0.09 % of hoop - the barrel has no end caps, so the pressure has no axial resultant)"
+    },
+    {
+      "key": "pressure.radial-growth",
+      "pass": true,
+      "detail": "radial displacement at mid-length = 0.34057 mm vs pR^2/(E t) = 0.34200 mm -> -0.416 % (E = 73100 MPa, nu = 0.33; the free growth, i.e. far from the clamped end)"
+    },
+    {
+      "key": "pressure.hoop-membrane",
+      "pass": true,
+      "detail": "outer-fibre von Mises at mid-length (node 5687 at (566.37, 565.0, 794.45)) = 13.35209 MPa vs pR/t = 13.33333 MPa -> +0.141 %; sigma_z there = 0.00663 MPa (+0.05 % of hoop - the barrel has no end caps, so the pressure has no axial resultant)"
+    },
+    {
+      "key": "pressure.radial-growth",
+      "pass": true,
+      "detail": "radial displacement at mid-length = 0.14595 mm vs pR^2/(E t) = 0.14592 mm -> +0.022 % (E = 73100 MPa, nu = 0.33; the free growth, i.e. far from the clamped end)"
+    },
+    {
+      "key": "moment.beam-bending",
+      "pass": true,
+      "detail": "outer-fibre von Mises at mid-length (node 22234 at (705.96, 708.25, 1001.05)) = 3.72575 MPa vs M x / I = 3.75132 MPa -> -0.681 % (I = pi R^3 t = 9.425e+09 mm^4 at R = 1000, t = 3; x = R cos(pi/4) = 707.107 mm - the sampled meridian is half a bay off the free skin seam)"
+    },
+    {
+      "key": "moment.beam-bending",
+      "pass": true,
+      "detail": "outer-fibre von Mises at mid-length (node 6987 at (565.73, 565.64, 993.48)) = 5.83316 MPa vs M x / I = 5.86143 MPa -> -0.482 % (I = pi R^3 t = 4.825e+09 mm^4 at R = 800, t = 3; x = R cos(pi/4) = 565.685 mm - the sampled meridian is half a bay off the free skin seam)"
+    },
+    {
+      "key": "size.ratio.d1600_l2000_t3",
+      "pass": true,
+      "detail": "FE ratio (sigma x0.8005, w x0.6423) vs closed form (sigma x0.8000, w x0.6400)"
+    },
+    {
+      "key": "size.ratio.d2000_l1600_t3",
+      "pass": true,
+      "detail": "FE ratio (sigma x1.0004, w x1.0040) vs closed form (sigma x1.0000, w x1.0000)"
+    },
+    {
+      "key": "size.ratio.d2000_l2000_t2",
+      "pass": true,
+      "detail": "FE ratio (sigma x1.4993, w x1.4987) vs closed form (sigma x1.5000, w x1.5000)"
+    },
+    {
+      "key": "size.ratio.d1600_l1600_t3",
+      "pass": true,
+      "detail": "FE ratio (sigma x0.8001, w x0.6423) vs closed form (sigma x0.8000, w x0.6400)"
+    }
+  ],
+  "n_pass": 16,
+  "n_fail": 0,
+  "pass": true
+}

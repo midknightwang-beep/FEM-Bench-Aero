@@ -1,0 +1,153 @@
+{
+ "probe": "D33 sweep station",
+ "constant": "WINGBOX_TRAIN_MAX_SWEEP",
+ "old": 20.0,
+ "new": 30.0,
+ "archived_cases": 52,
+ "manifest_agrees": 52,
+ "side_changes": [],
+ "reason_text_changes": [
+  {
+   "case": "naca4412_wingbox_sweep40",
+   "from": "平面形状单维外推（后掠 40° > train 已学 20°，锥度中性）",
+   "to": "平面形状单维外推（后掠 40° > train 已学 30°，锥度中性）"
+  }
+ ],
+ "new_case": {
+  "before": {
+   "side": "val",
+   "reason": "平面形状单维外推（后掠 30° > train 已学 20°，锥度中性）"
+  },
+  "after": {
+   "side": "train",
+   "reason": "落在训练包络内（未命中任何留出区域）"
+  }
+ },
+ "d12": {
+  "naca4412_wingbox": {
+   "want": "train",
+   "got": "train",
+   "ok": true
+  },
+  "naca4412_wingbox_recombination_algorithm3": {
+   "want": "train",
+   "got": "train",
+   "ok": true
+  },
+  "naca4412_wingbox_n_ribs3_chord1000": {
+   "want": "train",
+   "got": "train",
+   "ok": true
+  },
+  "naca4412_wingbox_n_ribs3_chord800": {
+   "want": "train",
+   "got": "train",
+   "ok": true
+  },
+  "naca4412_wingbox_n_ribs5_chord800": {
+   "want": "train",
+   "got": "train",
+   "ok": true
+  },
+  "naca4412_wingbox_str3": {
+   "want": "train",
+   "got": "train",
+   "ok": true
+  },
+  "stiffened_panel_600x600": {
+   "want": "train",
+   "got": "train",
+   "ok": true
+  },
+  "naca4412_wingbox_n_ribs7_chord1000": {
+   "want": "val",
+   "got": "val",
+   "ok": true
+  },
+  "naca4412_wingbox_n_ribs7_chord800": {
+   "want": "test",
+   "got": "test",
+   "ok": true
+  },
+  "naca4412_wingbox_str3_T": {
+   "want": "test",
+   "got": "test",
+   "ok": true
+  },
+  "stiffened_panel_600x600_str3": {
+   "want": "test",
+   "got": "test",
+   "ok": true
+  }
+ },
+ "sweep_stations_after": {
+  "0": {
+   "train": [
+    "naca4412_wingbox",
+    "naca4412_wingbox_n_ribs3_chord1000",
+    "naca4412_wingbox_n_ribs3_chord800",
+    "naca4412_wingbox_n_ribs5_chord800",
+    "naca4412_wingbox_recombination_algorithm3",
+    "naca4412_wingbox_size_skin2",
+    "naca4412_wingbox_size_skin4",
+    "naca4412_wingbox_size_span1600",
+    "naca4412_wingbox_size_span2400",
+    "naca4412_wingbox_str3",
+    "naca4412_wingbox_str5",
+    "naca4412_wingbox_taper060",
+    "naca4412_wingbox_taper080",
+    "naca4412_wingbox_taper090",
+    "naca4412_wingbox_web1"
+   ],
+   "val": [
+    "naca4412_wingbox_n_ribs7_chord1000",
+    "naca4412_wingbox_n_ribs9_chord1000",
+    "naca4412_wingbox_size_skin1p5",
+    "naca4412_wingbox_size_span3000",
+    "naca4412_wingbox_taper040",
+    "naca4412_wingbox_web2"
+   ],
+   "test": [
+    "naca4412_wingbox_n_ribs7_chord800",
+    "naca4412_wingbox_size_span2400_skin2",
+    "naca4412_wingbox_size_span3000_skin1p5",
+    "naca4412_wingbox_str3_T",
+    "naca4412_wingbox_web1_offcentre"
+   ]
+  },
+  "10": {
+   "train": [
+    "naca4412_wingbox_sweep10"
+   ],
+   "val": [],
+   "test": []
+  },
+  "20": {
+   "train": [
+    "naca4412_wingbox_sweep20"
+   ],
+   "val": [],
+   "test": [
+    "naca4412_wingbox_sweep20_taper060"
+   ]
+  },
+  "30": {
+   "train": [
+    "naca4412_wingbox_sweep30"
+   ],
+   "val": [],
+   "test": []
+  },
+  "40": {
+   "train": [],
+   "val": [
+    "naca4412_wingbox_sweep40"
+   ],
+   "test": [
+    "naca4412_wingbox_sweep40_taper040"
+   ]
+  }
+ },
+ "fails": [],
+ "verdict": "PASS"
+}

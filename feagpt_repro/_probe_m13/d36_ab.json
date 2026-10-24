@@ -1,0 +1,227 @@
+{
+ "test_cases": [
+  "naca4412_wingbox_n_ribs7_chord800",
+  "naca4412_wingbox_size_span2400_skin2",
+  "naca4412_wingbox_size_span3000_skin1p5",
+  "naca4412_wingbox_str3_T",
+  "naca4412_wingbox_sweep40_taper040",
+  "naca4412_wingbox_web1_offcentre"
+ ],
+ "val_cases": [
+  "naca4412_wingbox_n_ribs7_chord1000",
+  "naca4412_wingbox_n_ribs9_chord1000",
+  "naca4412_wingbox_size_skin1p5",
+  "naca4412_wingbox_size_span3000",
+  "naca4412_wingbox_sweep40",
+  "naca4412_wingbox_taper040",
+  "naca4412_wingbox_web2"
+ ],
+ "boot": 4000,
+ "seed": 20261024,
+ "by_target": {
+  "max_disp": {
+   "A_d35": {
+    "n_train": 20,
+    "alpha": 0.1778279410038923,
+    "loo_mape": 3.736,
+    "test_mape": 3.0065211169186687,
+    "ci95": [
+     1.204662990128491,
+     4.795046584381576
+    ],
+    "max_ape": 5.933847231796808,
+    "val_mape": 6.85513782822148,
+    "val_sweep40_ape": -10.959931952468205,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": -0.03,
+     "naca4412_wingbox_size_span2400_skin2": -0.57,
+     "naca4412_wingbox_size_span3000_skin1p5": -2.86,
+     "naca4412_wingbox_str3_T": 5.47,
+     "naca4412_wingbox_sweep40_taper040": -3.18,
+     "naca4412_wingbox_web1_offcentre": -5.93
+    }
+   },
+   "B_d36": {
+    "n_train": 21,
+    "alpha": 0.1778279410038923,
+    "loo_mape": 3.684,
+    "test_mape": 2.6306129251440438,
+    "ci95": [
+     0.8828137779701749,
+     4.441689611762302
+    ],
+    "max_ape": 5.922208798697193,
+    "val_mape": 6.302442616240876,
+    "val_sweep40_ape": -6.122258673152459,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 0.08,
+     "naca4412_wingbox_size_span2400_skin2": -0.47,
+     "naca4412_wingbox_size_span3000_skin1p5": -2.73,
+     "naca4412_wingbox_str3_T": 5.49,
+     "naca4412_wingbox_sweep40_taper040": 1.09,
+     "naca4412_wingbox_web1_offcentre": -5.92
+    }
+   },
+   "paired_B_minus_A": {
+    "mean": -0.3759081917746302,
+    "ci95": [
+     -1.0734238751437253,
+     0.006355332890511933
+    ]
+   }
+  },
+  "max_w": {
+   "A_d35": {
+    "n_train": 20,
+    "alpha": 0.31622776601683794,
+    "loo_mape": 5.819,
+    "test_mape": 4.258273821425427,
+    "ci95": [
+     1.1750851944967555,
+     8.279797605378656
+    ],
+    "max_ape": 13.905171332649257,
+    "val_mape": 6.810855523200968,
+    "val_sweep40_ape": -22.005841142883465,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 0.14,
+     "naca4412_wingbox_size_span2400_skin2": -0.32,
+     "naca4412_wingbox_size_span3000_skin1p5": -2.41,
+     "naca4412_wingbox_str3_T": 5.23,
+     "naca4412_wingbox_sweep40_taper040": 13.91,
+     "naca4412_wingbox_web1_offcentre": 3.54
+    }
+   },
+   "B_d36": {
+    "n_train": 21,
+    "alpha": 0.1,
+    "loo_mape": 5.73,
+    "test_mape": 7.4545887753234386,
+    "ci95": [
+     1.309007269282373,
+     18.24616610431147
+    ],
+    "max_ape": 33.36924451023131,
+    "val_mape": 5.268196681091607,
+    "val_sweep40_ape": -7.66770084517574,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 1.25,
+     "naca4412_wingbox_size_span2400_skin2": 0.74,
+     "naca4412_wingbox_size_span3000_skin1p5": -0.62,
+     "naca4412_wingbox_str3_T": 5.24,
+     "naca4412_wingbox_sweep40_taper040": 33.37,
+     "naca4412_wingbox_web1_offcentre": 3.51
+    }
+   },
+   "paired_B_minus_A": {
+    "mean": 3.1963149538980105,
+    "ci95": [
+     -0.6412229234268114,
+     9.91311210917899
+    ]
+   }
+  },
+  "max_von_mises": {
+   "A_d35": {
+    "n_train": 20,
+    "alpha": 0.1778279410038923,
+    "loo_mape": 4.397,
+    "test_mape": 5.288889013228978,
+    "ci95": [
+     1.8971349159041102,
+     9.025814206640206
+    ],
+    "max_ape": 11.834642020381203,
+    "val_mape": 5.795344867805848,
+    "val_sweep40_ape": -4.621568272015198,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 1.17,
+     "naca4412_wingbox_size_span2400_skin2": 0.08,
+     "naca4412_wingbox_size_span3000_skin1p5": -1.0,
+     "naca4412_wingbox_str3_T": -8.98,
+     "naca4412_wingbox_sweep40_taper040": 8.67,
+     "naca4412_wingbox_web1_offcentre": -11.83
+    }
+   },
+   "B_d36": {
+    "n_train": 21,
+    "alpha": 0.1,
+    "loo_mape": 4.192,
+    "test_mape": 6.294649705517504,
+    "ci95": [
+     2.054811359051569,
+     10.83491819093735
+    ],
+    "max_ape": 14.533315440261262,
+    "val_mape": 5.387577207654952,
+    "val_sweep40_ape": 0.864992092520489,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 1.59,
+     "naca4412_wingbox_size_span2400_skin2": 0.41,
+     "naca4412_wingbox_size_span3000_skin1p5": -0.48,
+     "naca4412_wingbox_str3_T": -8.96,
+     "naca4412_wingbox_sweep40_taper040": 14.53,
+     "naca4412_wingbox_web1_offcentre": -11.8
+    }
+   },
+   "paired_B_minus_A": {
+    "mean": 1.0057606922885285,
+    "ci95": [
+     -0.18510677251827704,
+     2.9909690117164542
+    ]
+   }
+  },
+  "max_von_mises_midsurface": {
+   "A_d35": {
+    "n_train": 20,
+    "alpha": 0.1778279410038923,
+    "loo_mape": 3.86,
+    "test_mape": 4.677450315488635,
+    "ci95": [
+     1.6022298947039177,
+     7.993936035650305
+    ],
+    "max_ape": 10.141361947552296,
+    "val_mape": 4.1503285923228725,
+    "val_sweep40_ape": -1.5042350886567801,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 0.64,
+     "naca4412_wingbox_size_span2400_skin2": 0.15,
+     "naca4412_wingbox_size_span3000_skin1p5": -0.78,
+     "naca4412_wingbox_str3_T": -7.25,
+     "naca4412_wingbox_sweep40_taper040": 9.1,
+     "naca4412_wingbox_web1_offcentre": -10.14
+    }
+   },
+   "B_d36": {
+    "n_train": 21,
+    "alpha": 0.1,
+    "loo_mape": 3.688,
+    "test_mape": 5.558360199287197,
+    "ci95": [
+     1.6264909906023233,
+     10.078602889978193
+    ],
+    "max_ape": 14.213700299385113,
+    "val_mape": 4.6228626612440875,
+    "val_sweep40_ape": 3.3897610580097215,
+    "per_case": {
+     "naca4412_wingbox_n_ribs7_chord800": 1.04,
+     "naca4412_wingbox_size_span2400_skin2": 0.48,
+     "naca4412_wingbox_size_span3000_skin1p5": -0.26,
+     "naca4412_wingbox_str3_T": -7.24,
+     "naca4412_wingbox_sweep40_taper040": 14.21,
+     "naca4412_wingbox_web1_offcentre": -10.12
+    }
+   },
+   "paired_B_minus_A": {
+    "mean": 0.8809098837985677,
+    "ci95": [
+     -0.182510778318591,
+     2.619560591540304
+    ]
+   }
+  }
+ }
+}

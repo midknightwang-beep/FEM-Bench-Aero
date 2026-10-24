@@ -1,0 +1,107 @@
+   WARNING: shrinks.length==shrinks_max=9266
+   WARNING: shrinks.length==shrinks_max=9266
+   WARNING: shrinks.length==shrinks_max=9266
+   WARNING: shrinks.length==shrinks_max=9266
+   WARNING: shrinks.length==shrinks_max=1175
+   WARNING: shrinks.length==shrinks_max=1175
+=== T1 degeneration
+  [PASS] T1.dispatch-definition
+         neutral (ratio 1.0, sweep 0) -> prismatic; (0.9, 0) and (1.0, 5) -> loft
+  [PASS] T1.neutral-reproduces-M1
+         neutral box == shipped case: 5482 nodes, 5144 shells, minJ 0.6249, 10 groups
+  [PASS] T1.swept-is-wired
+         ratio=1 sweep=20: tip-rib chord 450.0000 (want 450.0000), tip LE x 977.9405 (want 977.9405), nodes 5698, minJ 0.4902
+  [PASS] T1.tapered-is-wired
+         ratio=0.6 sweep=0: tip-rib chord 270.0000 (want 270.0000), tip LE x 150.0000 (want 150.0000), nodes 8426, minJ 0.5593
+  [PASS] T1.sensitivity
+         sweep 20 deg moves the model: 6 difference(s) vs neutral
+  [PASS] T1.role-and-split
+         neutral baseline/train; sweep sweep/train; taper sweep/train; both sweep/test
+  [PASS] T1.D16-val-regions
+         sweep40(val) sweep/val; sweep10(train) sweep/train; taper040(val) sweep/val; taper090(train) sweep/train; both40x040(test) sweep/test; ribs9(val) sweep/val; plain800x600(val) degenerate/val; plain600x600(train) degenerate/train
+=== T2 degeneration
+  (mesh size 3 mm - the check's own default)
+  [PASS] T2.definition-degeneration
+         n=0 -> stations () pitch None; n=3 -> stations (150.0, 300.0, 450.0) pitch 150 (want (150.0, 300.0, 450.0) / 150)
+  [PASS] T2.degenerate-model
+         n=0 built: skin 1 face(s), stringer 0 face(s), 1 surface(s), stations []; gate4 PASS; 46432 nodes, minJ 0.6167
+  [PASS] T2.parameter-invariance
+         n=0 with height 20->40, thickness 2.5->5, blade->T(fw=50) is identical face for face
+  [PASS] T2.stringer-sensitivity
+         n=1: skin 2/2 str 1/1 stations [300.0] mesh ok {'quad4': 47684} minJ 0.6207 gate4 PASS; n=3: skin 4/4 str 3/3 stations [150.0, 300.0, 450.0] mesh ok {'quad4': 50976} minJ 0.5367 gate4 PASS
+=== T3 degeneration
+  (mesh size 25 mm - the check's own default)
+  [PASS] T3.definition-degeneration
+         n_str=0 -> angles (); n_frm=2 -> frame_z (0.0, 2000.0) (want (0.0, 2000.0)); bay_count 1 (want 1)
+  [PASS] T3.stringer-envelope
+         n_stringers 1..4 refused [1, 2, 3, 4] (want [1, 2, 3, 4]); n_stringers=5 accepted [5] (want [5]) - D19: below five the frame arcs carry triangles
+  [PASS] T3.pressure-sign
+         fuselage.PRESSURE_DLOAD_SIGN = 1.0 (want 1.0); GeometryResult() default = -1.0 (want -1.0); deck: sign=+1 -> P +0.05 (want > 0), sign=-1 -> P -0.05 (want < 0)
+  [PASS] T3.section-kind-envelope
+         non-blade sections ['T', 't'] all refused: yes; blade accepted: yes - D22: the barrel builder builds a flat radial web per stringer, so a flanged request would silently produce the blade model
+  [PASS] T3.degenerate-expectation
+         derived: skin 4/4, stringer 0/0, frames 8/8, z-planes 2/2, surfaces 12/12, angles []
+  [PASS] T3.degenerate-model
+         n_str=0/n_frm=2 built: skin 4 face(s), stringer 0, frames 8 on 2 z-plane(s), 12 surface(s), angles []; gate4 PASS; 105199 nodes, minJ 0.5818
+  [PASS] T3.pressure-sign-builder
+         build_fuselage_barrel declared pressure_dload_sign = +1.0 (want +1.0) - the deck must see the family's number, not the writer's default
+  [PASS] T3.parameter-invariance
+         n_str=0 with height 25->40, thickness 2.5->5, flange width 0->50 is identical face for face - no stringer parameter reaches a stringer-free barrel (the blade->T axis is D22's refusal, checked separately)
+  [PASS] T3.layout-sensitivity
+         0str/2frm: skin 4/4 str 0/0 frm 8/8 angles 0/0 mesh ok 105199n minJ 0.5818 gate4 PASS; 5str/2frm: skin 5/5 str 5/5 frm 10/10 angles 5/5 mesh ok 152645n minJ 0.5159 gate4 PASS; 8str/3frm: skin 16/16 str 16/16 frm 24/24 angles 8/8 mesh ok 158548n minJ 0.5159 gate4 PASS; 12str/4frm: skin 36/36 str 36/36 frm 48/48 angles 12/12 mesh ok 169654n minJ 0.5211 gate4 PASS
+  [PASS] T3.size-degeneration
+         the anchor D2000 x L2000 x t3, written out, is the default specimen face for face and section for section (shell {'skin': 3.0, 'stringers': 2.5, 'frames': 3.0})
+  [PASS] T3.size-sensitivity
+         diameter 2000->1600: mesh moved (128058n); length 2000->1600: mesh moved (129656n); thickness 3->2: skin section 3.0 -> 2.0, mesh SAME (158548n)
+  [PASS] T3.role-and-split
+         default specimen -> train; diameter 1800 -> val; length 1600 -> val; thickness 2 -> val; diameter 1600 + length 1600 -> test; length 3000 -> val; diameter 1600 + length 3000 -> test; diameter 1600 + thickness 2 -> test; stringers 10 + diameter 1600 -> test; stringers 6 -> train
+=== T4 degeneration
+  (mesh size: the check's own family default)
+  [PASS] T4.gate-teeth
+         uncut plate reads n_curves_total 4 (want 5), n_hole_curves 0 (want 1), hole_d_measured 0.0 (want 20.0) -> gate4 FAIL, as it must (the gate has teeth)
+  [PASS] T4.definition
+         default: lambda 0.1000, net width 180 mm, centre (200, 100), edge margin 90 mm; illegal coupons refused: lambda>=1/3, hole-off-the-edge, short coupon, hole_d<=0
+  [PASS] T4.built-model
+         default coupon: 1 face(s), 5 curve(s), 1 hole, measured d 20 mm at [200.0, 100.0]; gate4 PASS; 9861 nodes, 9675 shells, minJ 0.6084, tri {'quad4': 9675}
+  [PASS] T4.hole-size
+         lambda=0.15 (d=30): measured 30 mm, curves 5, mesh ok, gate4 PASS; lambda=0.25 (d=50): measured 50 mm, curves 5, mesh ok, gate4 PASS
+  [PASS] T4.edge-floor-envelope
+         edge-size floor 0.6667 mm -> smallest buildable hole d 15.279 mm (at 72 divisions); d=14.973 refused (the floor is a live gate); d=17.571 built, measured 17.571 mm, gate4 PASS
+  [PASS] T4.hole-position
+         hole at (120, 60): measured centre [120.0, 60.0], 1 hole curve(s), d 20 mm, gate4 PASS
+  [PASS] T4.default-centre
+         hole_x/hole_y = None is identical to the explicit (200, 100)
+  [PASS] T4.role-and-split
+         default(train) baseline/train; lambda0.2(val) sweep/val; lambda0.3(val) sweep/val; offcentre(test) feature/test; 800x200(val) sweep/val; b7 size600x300d30(val) sweep/val; b7 lambda0.25(val) sweep/val; b7 D28 corner(test) sweep/test; b7 offcentre d40(test) feature/test; probe D28 lambda-down+size(test) sweep/test; probe lambda-down only(train) sweep/train
+=== T5 degeneration
+  [PASS] T5.section-degeneration
+         T(flange_width=0) -> segments=(((100.0, 5.0), (100.0, -15.0)),) role=('web',) n_faces=1; blade -> (((100.0, 5.0), (100.0, -15.0)),) ('web',) 1
+  [PASS] T5.faces-per-section
+         blade(w=None)->1 T(w=30.0)->3 T(w=0.0)->1 T(w=-5.0)->1
+  [PASS] T5.build-degeneration
+         blade and T(fw=0) builds are identical: 7831 nodes, 7517 shells, minJ 0.5228, 10 groups
+  [PASS] T5.degenerated-gate4
+         gate4 on T(fw=0) = PASS (10/10 checks), faces-per-stringer-section = 1
+=== T6 degeneration
+  [PASS] T6.cell-definition
+         neutral 0web/1cell even=False; one 1/2 even=True; two 2/3 even=True; off-centre 1/2 even=False
+  [PASS] T6.neutral-reproduces-M1
+         web-free box == shipped case: 5482 nodes, 5144 shells, minJ 0.6249, 10 groups
+  [PASS] T6.cells-one
+         cells 2 (want 2), web faces 4 (want 1x4=4), gate4 PASS (10/10)
+  [PASS] T6.cells-two
+         cells 3 (want 3), web faces 8 (want 2x4=8), gate4 PASS (10/10)
+  [PASS] T6.cells-off
+         cells 2 (want 2), web faces 4 (want 1x4=4), gate4 PASS (10/10)
+  [PASS] T6.gate-sees-cells
+         expectation changes on n_webs 1 -> 0 in ['n_rib_faces', 'n_skin_faces_lower', 'n_skin_faces_upper', 'n_surfaces', 'n_web_faces']
+  [PASS] T6.refuses-outside-spars
+         web at 0.1c, ahead of the 0.25c front spar -> refused: web station 0.1 is not strictly between the spars (0.25, 0.7): a web outside them would 
+  [PASS] T6.refuses-on-stringer
+         web 0.475c == the single stringer station -> refused: web station 0.475 coincides with a stringer station: the two are different structural me
+  [PASS] T6.role-and-split
+         web1 sweep/train; web2 sweep/val; offcentre feature/test | one-web matches WINGBOX_BASELINE: False (must be False)
+
+degeneration self-checks: 44 PASS, 0 FAIL
+VERDICT: PASS
+report -> _probe_b7/_check_forms_b7_pre.json

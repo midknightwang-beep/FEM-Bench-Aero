@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FeaGPT 流水线本地复现 · Abaqus 分支接入报告</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --panel:#ffffff; --ink:#1b1f24; --muted:#5b6470;
+    --line:#e3e6ea; --accent:#1f6feb; --accent-soft:#eaf1fd;
+    --ok:#1a7f37; --ok-soft:#e6f4ea; --warn:#9a6700; --warn-soft:#fff8e5;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    line-height:1.7;font-size:15px}
+  .wrap{max-width:1040px;margin:0 auto;padding:40px 24px 80px}
+  header{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:32px}
+  h1{font-size:26px;margin:0 0 8px;letter-spacing:-.2px}
+  .sub{color:var(--muted);font-size:14px}
+  h2{font-size:19px;margin:44px 0 14px;padding-left:11px;border-left:4px solid var(--accent)}
+  h3{font-size:15px;margin:24px 0 10px;color:var(--muted);font-weight:600;letter-spacing:.3px}
+  p{margin:10px 0}
+  code{font-family:var(--mono);font-size:13px;background:#eef1f4;padding:1.5px 6px;border-radius:4px}
+  pre{background:#0f172a;color:#e6edf3;padding:16px 18px;border-radius:8px;overflow-x:auto;
+    font-family:var(--mono);font-size:12.5px;line-height:1.65}
+  table{width:100%;border-collapse:collapse;margin:14px 0;background:var(--panel);
+    border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:14px}
+  th,td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f0f2f5;font-weight:600;font-size:13px;color:var(--muted);letter-spacing:.3px}
+  tr:last-child td{border-bottom:none}
+  td.num{font-family:var(--mono);text-align:right}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:18px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .card .k{font-size:12px;color:var(--muted);letter-spacing:.4px;margin-bottom:6px}
+  .card .v{font-size:23px;font-weight:650;font-family:var(--mono);letter-spacing:-.5px}
+  .card .u{font-size:12px;color:var(--muted);font-weight:400;margin-left:3px}
+  .card .sm{font-size:12px;color:var(--muted)}
+  .tag{display:inline-block;font-size:12px;padding:2px 9px;border-radius:20px;font-weight:600;letter-spacing:.2px}
+  .tag.ok{background:var(--ok-soft);color:var(--ok)}
+  .tag.warn{background:var(--warn-soft);color:var(--warn)}
+  .tag.no{background:#fdeaea;color:#b42318}
+  .tag.blue{background:var(--accent-soft);color:var(--accent)}
+  .note{background:var(--accent-soft);border-left:4px solid var(--accent);
+    padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:14px}
+  .warn-note{background:var(--warn-soft);border-left:4px solid #d4a72c;
+    padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:14px}
+  .bad-note{background:#fdeaea;border-left:4px solid #b42318;
+    padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:14px}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:6px 0}
+  .flow{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px}
+  footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);
+    color:var(--muted);font-size:13px}
+  .hl{font-weight:650;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>FeaGPT 流水线本地复现 · Abaqus 分支 + 长桁几何</h1>
+  <div class="sub">arXiv:2510.21993 的 GMSA 链路 → 可跑的本地脚本 &nbsp;·&nbsp; 双求解器后端 + 交叉验证 + 竖式长桁 &nbsp;·&nbsp; 2026-10-02</div>
+</header>
+
+<div class="bad-note">
+<b>先更正上一版的数字。</b>上一版报告的翼盒结果（max |u| = 1.5854 mm、max vM = 6.86 MPa）<b>作废</b>。本轮接入 Abaqus 时发现两个既有缺陷，其中一个让施加的 500 N 只进去 326 N——见第六节。本页所有数字都是修复后重跑得到的。
+</div>
+
+<h2>一、本次做了什么</h2>
+<p>四件事，按依赖顺序：</p>
+<ol>
+  <li><b>给 deck 生成器加 Abaqus 方言分支</b>。两个求解器的关键字语言大部分相同，所以是<b>一个 builder + 方言开关</b>，而不是两份会各自漂移的代码。开关只落在三处：输出请求块、少数单字段数据行的尾逗号、<code>*HEADING</code> 出处行。</li>
+  <li><b>写 ODB 结果提取器</b>（<code>abaqus_odb.py</code>，由 <code>abaqus python</code> 执行——<code>odbAccess</code> 只存在于 Abaqus 自己的解释器里）。它把 ODB 转成与 FRD 解析器<b>完全同构</b>的中间 JSON，于是结果归纳那段代码<b>一行都不分支</b>。</li>
+  <li><b>求解器适配层接入 Abaqus</b>：<code>job=/interactive/cpus=1/ask_delete=OFF</code>，求解完成后自动调用提取器。</li>
+  <li><b>双求解器交叉验证</b>（<code>verify_solvers.py</code>）：同一模型两个互相独立的代码各算一遍，比物理结果。这是对适配层最硬的检查。</li>
+  <li><b>给几何加长桁</b>（本轮追加）：上下蒙皮各加 N 条竖式长桁，顶边与蒙皮共节点。顺带修掉窄条网格的退化，并做了「有/无长桁」的对照实验。见第七节。</li>
+</ol>
+
+<h2>二、链路（双后端）</h2>
+<div class="flow">
+<svg viewBox="0 0 980 300" width="100%" role="img" aria-label="双求解器 GMSA 流水线">
+  <defs>
+    <marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 z" fill="#1f6feb"/>
+    </marker>
+    <style>
+      .bx{fill:#ffffff;stroke:#d5dae0;stroke-width:1.4;rx:9}
+      .ttl{font:600 13px -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;fill:#1b1f24}
+      .sm{font:11px ui-monospace,Menlo,Consolas,monospace;fill:#5b6470}
+      .ar{stroke:#1f6feb;stroke-width:1.6;fill:none;marker-end:url(#a)}
+      .js{font:600 10.5px ui-monospace,Menlo,monospace;fill:#1f6feb}
+    </style>
+  </defs>
+
+  <rect class="bx" x="8"   y="52" width="118" height="64"/>
+  <text class="ttl" x="67"  y="78"  text-anchor="middle">参数 / 规划</text>
+  <text class="sm"  x="67"  y="97"  text-anchor="middle">planning.py</text>
+
+  <rect class="bx" x="150" y="52" width="118" height="64"/>
+  <text class="ttl" x="209" y="78"  text-anchor="middle">几何</text>
+  <text class="sm"  x="209" y="97"  text-anchor="middle">蒙皮/梁/肋/长桁</text>
+
+  <rect class="bx" x="292" y="52" width="118" height="64"/>
+  <text class="ttl" x="351" y="78"  text-anchor="middle">网格 + 门禁</text>
+  <text class="sm"  x="351" y="97"  text-anchor="middle">minJ ≥ 0.30</text>
+
+  <rect class="bx" x="434" y="52" width="126" height="64" stroke="#1f6feb" stroke-width="1.8"/>
+  <text class="ttl" x="497" y="78"  text-anchor="middle">deck（双方言）</text>
+  <text class="sm"  x="497" y="97"  text-anchor="middle">inp_writer.py</text>
+
+  <rect class="bx" x="584" y="52" width="150" height="64" stroke="#1f6feb" stroke-width="1.8"/>
+  <text class="ttl" x="659" y="78"  text-anchor="middle">结果归纳</text>
+  <text class="sm"  x="659" y="97"  text-anchor="middle">求解器无关 · post.py</text>
+
+  <rect class="bx" x="758" y="52" width="214" height="64" stroke="#1a7f37" stroke-width="1.8"/>
+  <text class="ttl" x="865" y="78"  text-anchor="middle">交叉验证</text>
+  <text class="sm"  x="865" y="97"  text-anchor="middle">verify_solvers.py</text>
+
+  <path class="ar" d="M126,84 L148,84"/>
+  <path class="ar" d="M268,84 L290,84"/>
+  <path class="ar" d="M410,84 L432,84"/>
+  <path class="ar" d="M560,84 L582,84"/>
+  <path class="ar" d="M734,84 L756,84"/>
+
+  <rect x="434" y="150" width="126" height="46" rx="8" fill="#eaf1fd" stroke="#c9dcfb"/>
+  <text class="sm" x="497" y="169" text-anchor="middle" style="fill:#1f6feb">ccx -i job</text>
+  <text class="sm" x="497" y="185" text-anchor="middle" style="fill:#1f6feb">→ .frd</text>
+
+  <rect x="584" y="150" width="150" height="46" rx="8" fill="#eaf1fd" stroke="#c9dcfb"/>
+  <text class="sm" x="659" y="169" text-anchor="middle" style="fill:#1f6feb">abaqus python</text>
+  <text class="sm" x="659" y="185" text-anchor="middle" style="fill:#1f6feb">→ .odb → .odb.json</text>
+
+  <path class="ar" d="M497,116 L497,148"/>
+  <path class="ar" d="M659,116 L659,148"/>
+  <path d="M497,196 L497,216 L659,216 L659,196" stroke="#1f6feb" stroke-width="1.4" fill="none"/>
+  <path class="ar" d="M578,216 L600,216"/>
+
+  <rect x="292" y="240" width="680" height="42" rx="8" fill="#e6f4ea" stroke="#bfe3cb"/>
+  <text class="js" x="632" y="266" text-anchor="middle" style="fill:#1a7f37">同一套归纳 → 逐节点字段、峰值、静力平衡残差 &nbsp;·&nbsp; 求解器换掉，物理不变，判据不变</text>
+
+  <rect x="8" y="150" width="402" height="132" rx="8" fill="#fafbfc" stroke="#e3e6ea"/>
+  <text class="sm" x="24" y="176" style="fill:#1b1f24;font-weight:600">FEASpec (JSON)</text>
+  <text class="sm" x="24" y="198">贯穿全链的唯一契约：</text>
+  <text class="sm" x="24" y="216">每个阶段只读它、只写自己的产物</text>
+  <text class="sm" x="24" y="244" style="fill:#1f6feb">求解器在写 deck 之前解析</text>
+  <text class="sm" x="24" y="262">（方言取决于它），结果侧不分支</text>
+</svg>
+</div>
+
+<h2>三、主算例（修复后重跑）</h2>
+<p>NACA4412 翼盒（前后梁之间 0.25c–0.70c），chord 1000 mm，span 2000 mm，5 翼肋，铝 2024-T3，翼尖集中力 500 N（+Y）。</p>
+<div class="cards">
+  <div class="card"><div class="k">壳面 / 中面面积</div><div class="v">21<span class="u">面</span></div><div class="sm">2,376,450 mm²</div></div>
+  <div class="card"><div class="k">网格</div><div class="v">5144<span class="u">全 quad4</span></div><div class="sm">gmsh 出 5482 节点 → <b>5074 活跃</b>（滤掉 408 孤儿）</div></div>
+  <div class="card"><div class="k">最大位移 · ccx</div><div class="v">2.3654<span class="u">mm</span></div><div class="sm">3.4–4.2 s</div></div>
+  <div class="card"><div class="k">最大位移 · abaqus</div><div class="v">2.3739<span class="u">mm</span></div><div class="sm">19–27 s（含 ODB 提取）</div></div>
+  <div class="card"><div class="k">最小缩放雅可比</div><div class="v">0.625<span class="u">门禁 0.30</span></div><div class="sm">硬门禁，不过就中止</div></div>
+</div>
+
+<h3>参数化扫描：批量能力</h3>
+<p><code>python run_pipeline.py --sweep "airfoil.n_ribs=3,5,7" "airfoil.chord=800,1000"</code> → <span class="tag ok">6 / 6 全部成功</span>，单构型 2.7–4.3 s。</p>
+<table>
+  <thead><tr><th>构型</th><th class="num">壳面</th><th class="num">单元数</th><th class="num">活跃节点</th><th class="num">最小 J</th><th class="num">最大位移 (mm)</th><th class="num">最大 vM (MPa)</th></tr></thead>
+  <tbody>
+    <tr><td>ribs 3 / chord 800</td><td class="num">11</td><td class="num">3676</td><td class="num">3655</td><td class="num">0.5973</td><td class="num">4.5359</td><td class="num">15.18</td></tr>
+    <tr><td>ribs 3 / chord 1000</td><td class="num">11</td><td class="num">4690</td><td class="num">4668</td><td class="num">0.5965</td><td class="num">2.3723</td><td class="num">10.16</td></tr>
+    <tr><td>ribs 5 / chord 800</td><td class="num">21</td><td class="num">3922</td><td class="num">3859</td><td class="num">0.5950</td><td class="num">4.5246</td><td class="num">15.21</td></tr>
+    <tr><td>ribs 5 / chord 1000</td><td class="num">21</td><td class="num">5144</td><td class="num">5074</td><td class="num">0.6249</td><td class="num"><b>2.3654</b></td><td class="num">10.28</td></tr>
+    <tr><td>ribs 7 / chord 800</td><td class="num">31</td><td class="num">4445</td><td class="num">4352</td><td class="num">0.5099</td><td class="num">4.5123</td><td class="num">15.39</td></tr>
+    <tr><td>ribs 7 / chord 1000</td><td class="num">31</td><td class="num">5711</td><td class="num">5593</td><td class="num">0.6083</td><td class="num">2.3580</td><td class="num">10.43</td></tr>
+  </tbody>
+</table>
+<p><b>读数</b>：翼肋数对整体弯曲刚度影响很小（800 mm 弦长下 3→7 肋，位移只降 0.5%）——翼肋抗的是<span class="hl">截面畸变</span>，不是整体弯曲；<span class="hl">弦长</span>才是主导（800→1000 mm，位移降约 48%）。面数满足 <code>4×(n−1)+n</code>。</p>
+
+<h2>四、双求解器交叉验证 <span class="tag ok">PASS · 7 项</span></h2>
+<p>同一模型，CalculiX 2.23 与 Abaqus 2026 各算一遍。<b>两个互相独立的实现</b>在物理结果上一致，不可能用"我们自己的代码有 bug"来解释——这是这一轮最有价值的一块。</p>
+<table>
+  <thead><tr><th style="width:24%">检查项</th><th style="width:46%">实测</th><th style="width:14%">判定</th><th>证明什么</th></tr></thead>
+  <tbody>
+    <tr><td>节点标签集合</td><td>ccx 5074 vs abaqus 5074 → <b>完全一致</b></td><td><span class="tag ok">通过</span></td><td>两个求解器读到的是同一张网格</td></tr>
+    <tr><td>节点坐标</td><td>max |Δ| = <b>5.859e-05 mm</b>，与 <code>float32(ccx坐标)</code> 逐位一致</td><td><span class="tag ok">已解释</span></td><td>ODB 用 32 位浮点存坐标——是存储精度，不是模型差异</td></tr>
+    <tr><td>单元数（从 ODB 读）</td><td>abaqus 实际装配 <b>5144</b> 个 S4</td><td><span class="tag ok">通过</span></td><td>整个网格在 deck 往返中存活（不读 deck 文本，读求解器装了什么）</td></tr>
+    <tr><td>最大位移</td><td>ccx 2.36544 vs abaqus 2.37390 mm → <b>0.356 %</b></td><td><span class="tag ok">通过</span></td><td>主物理响应</td></tr>
+    <tr><td>最大 |UZ|</td><td>0.10967 vs 0.11005 mm → 0.344 %</td><td><span class="tag ok">通过</span></td><td>非主方向分量也对得上</td></tr>
+    <tr><td><b>静力平衡</b></td><td>ccx 根部 ΣR<sub>Y</sub> = <b>−500.00017 N</b>（残差 0.000034 %）<br>abaqus 根部 ΣR<sub>Y</sub> = <b>−500.00046 N</b>（残差 0.000091 %）</td><td><span class="tag ok">通过</span></td><td><b>唯一不依赖任何一方内部约定的检查</b>——载荷稀释 bug 就是它抓到的</td></tr>
+    <tr><td>应力场（逐节点）</td><td>5074 节点，<b>中位差 0.31 %</b>，p90 19.59 %</td><td><span class="tag ok">通过</span></td><td>整个场对得上，而不只是峰值</td></tr>
+  </tbody>
+</table>
+
+<h3>应力口径的判定过程</h3>
+<p>壳应力沿厚度存在<b>截面点</b>上，两个代码默认输出的位置不同，不能想当然地比。用全部 5074 个节点逐点比对 CalculiX <code>OUTPUT=2D</code> 与 Abaqus 的三种口径：</p>
+<table>
+  <thead><tr><th>Abaqus 口径</th><th class="num">中位相对差</th><th class="num">均值相对差</th><th class="num">相关系数</th><th>判定</th></tr></thead>
+  <tbody>
+    <tr><td>上表面（section point 5）</td><td class="num">3.25 %</td><td class="num">10.90 %</td><td class="num">0.9906</td><td></td></tr>
+    <tr><td>下表面（section point 1）</td><td class="num">3.30 %</td><td class="num">15.19 %</td><td class="num">0.9892</td><td></td></tr>
+    <tr><td><b>中面（膜应力）</b></td><td class="num"><b>1.63 %</b></td><td class="num">10.70 %</td><td class="num"><b>0.9924</b></td><td><span class="tag ok">最佳</span></td></tr>
+  </tbody>
+</table>
+<p>结论：<b>CalculiX <code>OUTPUT=2D</code> 报的是中面膜应力</b>，所以 Abaqus 侧的主口径也取膜应力，两个后端在同一个物理量上直接可比。</p>
+<div class="warn-note">
+<b>峰值不作判据。</b>ccx 10.28 MPa vs abaqus 膜 8.45 MPa 差 17.8 %，但这<b>不是</b>可用的比对判据——von Mises 峰值出现在梁肋交汇的<b>几何奇异点</b>，只由各家的平滑/外插选择主导，本身随网格变化。所以本工程把<b>逐节点中位差</b>作为应力判据（0.31 %），峰值只作报告。abaqus 侧同时输出"外表面逐单元峰值"11.78 MPa，那是<b>定尺寸用的数</b>，与 CalculiX 的 2D 口径不可比。
+</div>
+
+<h2>五、两个真 bug（本轮发现，修复后所有数据已重跑）</h2>
+
+<h3>Bug 1 — 载荷被静默稀释（最阴的一个）</h3>
+<p>gmsh 会为<b>曲面之外的曲线和点</b>也生成节点，<b>诊断时（几何修复前）</b>本算例有 <b>396 个节点不连接任何单元</b>。载荷按"翼尖所有节点（190 个）"平摊，但其中只有 124 个真正在模型里：</p>
+<pre>实际施加 = 500 / 190 × 124 = 326.32 N
+根部反力之和 = −326.31589 N   ← 精确吻合</pre>
+<p>结果是之前所有翼盒数字（1.5854 mm / 6.86 MPa）对应的都是 <b>326 N</b>，不是 500 N。
+<b>只有静力平衡检查能发现它</b>——位移、应力、雅可比全都"看着合理"。</p>
+<p class="sm">Abaqus 更不容忍：它删掉这 396 个节点后，直接报 <b>67 个致命错误</b>（"集中力施加在未激活节点上"）并中止。这也是 Abaqus 分支第一次跑失败的真实原因。</p>
+<p><b>修法</b>：<code>meshing.referenced_nodes()</code> 只保留被单元引用的节点。未被引用的节点不参与刚度矩阵，删除是物理等价的，同时让 deck 对两个求解器都自洽。修复后孤儿节点 <b>0</b>，平衡残差 <b>0.000034 %</b>。</p>
+<p class="sm">注：上面 396 / 190 / 124 是<b>几何修复前</b>的诊断读数。Bug 2 改了梁腹板位置后几何随之变化，<b>当前复跑</b>读数为孤儿节点 <b>408 个</b>、翼尖载荷节点 <b>142 个</b>，<code>*CLOAD</code> 合计 <b>500 N</b>（不再稀释）。</p>
+
+<h3>Bug 2 — 梁腹板是斜的，前后梁整个丢失</h3>
+<p><code>_points_on_section()</code> 从余弦采样的网格里"挑" <code>x ∈ [0.25c, 0.70c]</code>，但余弦网格上<b>根本没有</b> 0.25/0.70 这两个点：</p>
+<pre>上表面最近点 x = 261.38   ↓  连起来的前梁斜了 3.225 mm
+下表面最近点 x = 258.16   ↑  后梁斜了 7.369 mm</pre>
+<p>腹板一旦带上弦向跨度，<code>dx ≤ tol</code> 的归类条件就判不出来，8 块腹板全被塞进"上蒙皮"组。后果是 deck 里<b>完全没有 <code>E_FRONT_SPAR</code> / <code>E_REAR_SPAR</code></b>，而且上下蒙皮单元数严重不对称（2471 vs 1694）。</p>
+<table>
+  <thead><tr><th>分组</th><th class="num">修复前</th><th class="num">修复后</th></tr></thead>
+  <tbody>
+    <tr><td>upper_skin</td><td class="num">12 面（含 8 块腹板）</td><td class="num">4 面</td></tr>
+    <tr><td>lower_skin</td><td class="num">4 面</td><td class="num">4 面</td></tr>
+    <tr><td>front_spar</td><td class="num" style="color:#b42318">0</td><td class="num" style="color:#1a7f37">4 面</td></tr>
+    <tr><td>rear_spar</td><td class="num" style="color:#b42318">0</td><td class="num" style="color:#1a7f37">4 面</td></tr>
+    <tr><td>元素数（上 / 下蒙皮）</td><td class="num">2471 / 1694（不对称）</td><td class="num">1856 / 1865（对称）</td></tr>
+  </tbody>
+</table>
+<p><b>修法</b>：把精确的梁站位显式并入截面点列表（插值出 y），保证 <code>dx = 0</code>。曲线其余部分不变，前缘网格分辨率不受影响。</p>
+
+<h2>六、独立验证①：`verify_cantilever.py` <span class="tag ok">PASS</span></h2>
+<p>用一个有闭式解的问题跑<b>同一条链路</b>（含生产的节点过滤）。薄壁盒悬臂梁 600 × 60 × 60 mm，t = 2 mm，F = 500 N。</p>
+<table>
+  <thead><tr><th style="width:34%">检查项</th><th>实测</th><th style="width:14%">判定</th></tr></thead>
+  <tbody>
+    <tr><td>静力平衡<div class="sm">不依赖任何解析模型</div></td>
+        <td>固支端 ΣR<sub>z</sub> = <b>−500.0000 N</b> vs 施加 +500 N → 残差 <b>0.00001 %</b></td>
+        <td><span class="tag ok">通过</span></td></tr>
+    <tr><td>挠度 vs 解析解</td>
+        <td>FE 1.91029 mm vs Timoshenko 1.75547 mm → <b>+8.82 %</b></td>
+        <td><span class="tag warn">偏差</span></td></tr>
+    <tr><td>网格敏感性</td><td>粗 / 细网格差 <b>1.97 %</b></td><td><span class="tag ok">通过</span></td></tr>
+    <tr><td><b>厚壁对照</b></td><td>t = 6 mm → 偏差降到 <b>+0.80 %</b></td><td><span class="tag ok">坐实</span></td></tr>
+  </tbody>
+</table>
+<div class="note">
+<b>怎么读这组数</b>：平衡残差 1e-5 说明<span class="hl">数值实现没有错</span>。8.8 % 的挠度偏差不是误差，是<b>物理</b>——薄壁盒弯曲时横截面会畸变（截面变"扁"），壳模型能捕捉、梁理论天生不能。把壁厚从 2 mm 加到 6 mm，畸变被抑制，偏差随即落到 0.8 %。
+</div>
+
+<h2>七、加长桁：竖式长桁（本轮新增）</h2>
+<p>把 <code>n_stringers_per_skin</code> 从占位的 <code>3</code> 变成<b>真正建出来的几何</b>，默认值改为 <code>0</code>（不加强）——这样既有基线一个数都不用动，长桁按需开启（<code>--stringers N</code>）。</p>
+
+<h3>建的是什么</h3>
+<p>每侧蒙皮 N 条<b>竖式长桁（blade stringer）</b>：位于 <code>x = const</code> 平面、沿展向通长、<b>顶边与蒙皮贴合、底边自由</b>的一片竖板——薄壁盒段里长桁的常规理想化。站位在前后梁之间等分。</p>
+<div class="cards">
+  <div class="card"><div class="k">壳面</div><div class="v">69<span class="u">面</span></div><div class="sm">基线 21（+48）</div></div>
+  <div class="card"><div class="k">中面面积</div><div class="v">2,616,450<span class="u">mm²</span></div><div class="sm">较基线 +10.1 %</div></div>
+  <div class="card"><div class="k">长桁面</div><div class="v">12 + 12<span class="u">上 / 下</span></div><div class="sm">3 条/侧 × 4 个展向段</div></div>
+  <div class="card"><div class="k">网格</div><div class="v">7517<span class="u">全 quad4</span></div><div class="sm">7387 个活跃节点</div></div>
+</div>
+
+<h3>三个不明显的地方</h3>
+<ol>
+  <li><b>长桁站位必须是蒙皮样条的控制点。</b>板顶边与蒙皮若只是"贴得很近"而非共享边，布尔运算会吐碎片、甚至干脆不连。所以站位被显式插进截面点列（<code>_points_on_section(extra=…)</code>），让样条<b>按构造</b>穿过它。</li>
+  <li><b>长桁也是 <code>dx ≈ 0</code> 的平面，与翼梁判据撞车。</b>原分类器"<code>dx ≈ 0</code> 就是梁"会把每条长桁都当成梁。改为按<b>弦向站位</b>区分——站位严格取在梁之间，两个集合不相交。</li>
+  <li><b>上下不能用 <code>y &gt; 0</code> 判。</b>NACA4412 有弯度：下蒙皮在 0.59c 处 <code>y = −10.3 mm</code>，20 mm 的长桁会伸到 <code>y = +9.7 mm</code>，中心落在 y=0 之上却明明属于下蒙皮。改成与<b>局部盒段中高线</b>比较。</li>
+</ol>
+
+<h3>结果：加长桁 vs「同算法」对照</h3>
+<p>加长桁会触发网格重组算法的切换（见下），直接和基线比会混入网格差异。所以另跑了一个<b>不加长桁、但用同一算法</b>的对照组：</p>
+<table>
+  <thead><tr><th>算例</th><th class="num">长桁</th><th class="num">重组算法</th><th class="num">单元</th><th class="num">活跃节点</th><th class="num">minJ</th><th class="num">max |u| (mm)</th><th class="num">max vM (MPa)</th></tr></thead>
+  <tbody>
+    <tr><td>基线（§三）</td><td class="num">0</td><td class="num">1</td><td class="num">5144</td><td class="num">5074</td><td class="num">0.6249</td><td class="num">2.3654</td><td class="num">10.28</td></tr>
+    <tr><td>对照组（同算法）</td><td class="num">0</td><td class="num">3</td><td class="num">5351</td><td class="num">5281</td><td class="num">0.5725</td><td class="num">2.3649</td><td class="num">10.32</td></tr>
+    <tr><td><b>加长桁</b></td><td class="num"><b>3</b></td><td class="num">3</td><td class="num">7517</td><td class="num">7387</td><td class="num">0.5228</td><td class="num"><b>2.2194</b></td><td class="num"><b>9.83</b></td></tr>
+  </tbody>
+</table>
+<div class="note">
+<b>对照组 vs 基线只差 0.02 %</b>（2.3649 vs 2.3654 mm）——说明重组算法对响应几乎中性，所以第三行的差异可以干净地归因给长桁本身：<b>挠度 −6.15 %、峰值 vM −4.7 %</b>。方向合理——长桁贴蒙皮承担轴向载荷，增大弯曲刚度与承力面积。对照 §三 的扫描：<b>翼肋</b>几乎不影响整体弯曲，<b>长桁</b>则直接影响。
+</div>
+<p>交叉验证（<code>verify_solvers.py --case naca4412_wingbox_str3</code>）：<span class="tag ok">PASS · 7 项</span> —— 节点 7387 完全一致、坐标 float32 一致、max|u| 差 <b>0.277 %</b>、平衡残差 <b>0.000364 % / 0.000281 %</b>、逐节点应力中位差 <b>0.48 %</b>。</p>
+
+<h3>顺带修掉的网格退化</h3>
+<p>长桁是 <b>20 × 500 mm</b> 的窄条，gmsh 默认的 blossom 重组算法在这种长宽比上很差。用 <code>diagnostics/stringer_quality.py</code> 逐组统计后确认：<b>坏单元几乎全在长桁上</b>（444 个三角里的 432 个），蒙皮只是轻微下降（0.52–0.56）。</p>
+<table>
+  <thead><tr><th>重组算法</th><th class="num">单元</th><th class="num">全局 minJ</th><th class="num">长桁 minJ</th><th class="num">三角</th></tr></thead>
+  <tbody>
+    <tr><td>1 · blossom（原默认）</td><td class="num">7118</td><td class="num" style="color:#b42318">0.350</td><td class="num">0.398</td><td class="num" style="color:#b42318">444</td></tr>
+    <tr><td><b>3 · blossom 全四边形</b></td><td class="num">7517</td><td class="num" style="color:#1a7f37"><b>0.523</b></td><td class="num"><b>0.690</b></td><td class="num" style="color:#1a7f37"><b>0</b></td></tr>
+    <tr><td>2 · simple 全四边形</td><td class="num">8115</td><td class="num" style="color:#b42318">0.245 ❌</td><td class="num">0.245</td><td class="num">0</td></tr>
+  </tbody>
+</table>
+<p>但全四边形<b>不是普遍更好</b>：对无长桁的盒段，blossom 反而给出更高的 minJ（0.625 vs 0.573）。所以<b>没有改全局默认值</b>——那会作废所有既有验证数据——而是让<b>网格阶段按模型自适应</b>（<code>recombination_algorithm = 0</code> 表示自动：有薄长桁条用 3，否则用 1），并把选择写进 mesh 报告。想强制时显式给值即可，这正是做上面那个 A/B 对照的手段。</p>
+
+<h2>八、踩过的坑</h2>
+<h3>CalculiX deck</h3>
+<table>
+  <thead><tr><th style="width:5%">#</th><th style="width:38%">坑</th><th>表现 / 修法</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><code>*NODE FILE</code> 上加了 <code>NSET=</code></td><td>CalculiX 2.23 写出<b>空的 DISP/FORC 块</b>——文件看着正常，其实一个位移都没有。</td></tr>
+    <tr><td>2</td><td>壳结果没加 <code>OUTPUT=2D</code></td><td>壳被扩展成实体，节点数翻倍，位移场跟中面理论没法比。</td></tr>
+    <tr><td>3</td><td><code>*ELEMENT</code> 编号不连续</td><td>每个 ELSET 从 1 重编 → <code>element N is already defined</code>。改为全链连续计数。</td></tr>
+    <tr><td>4</td><td>数据行尾逗号</td><td>Abaqus 把尾逗号读成"下一行续写"，会把后面的关键字吞进数据块。两个方言都不用尾逗号。</td></tr>
+  </tbody>
+</table>
+<h3>Abaqus deck / ODB</h3>
+<table>
+  <thead><tr><th style="width:5%">#</th><th style="width:38%">坑</th><th>表现 / 修法</th></tr></thead>
+  <tbody>
+    <tr><td>5</td><td><code>OUTPUT=2D</code> 是 CalculiX 专有</td><td>写进 Abaqus deck 直接中止。Abaqus 用 <code>*OUTPUT, FIELD</code> + <code>*NODE OUTPUT</code> / <code>*ELEMENT OUTPUT</code>。</td></tr>
+    <tr><td>6</td><td>没加 <code>ask_delete=OFF</code></td><td>只要上次留了作业文件，Abaqus 就停在交互式"是否覆盖？"提示上，直到超时。<b>不是可选项</b>。</td></tr>
+    <tr><td>6b</td><td>残留 <code>.lck</code> 让作业中止，<b>但 Abaqus 返回 0</b></td><td>原因写在 <code>&lt;job&gt;.msg</code>（不是 stdout，也不是 <code>.dat</code>）：<i>"Detected lock file … before removing the lock file and resubmitting"</i>。批量跑时会表现为"每个受影响算例都成功-然后-空结果"。适配层启动前清掉自己输出目录里的锁（该时刻它必然是陈旧的）并记日志；同时<b>不再只信退出码</b>——要求有可用 ODB，并回读 <code>.msg</code>/<code>.dat</code> 报出真实原因。</td></tr>
+    <tr><td>6c</td><td>Abaqus 在<b>被沙箱隔离的 shell</b> 里会"静默失败"</td><td><code>pre.exe</code> 要往 <code>%TEMP%\22207_&lt;job&gt;_&lt;pid&gt;</code> 写 scratch 目录——在工作区之外。写入被拦时它<b>不报权限错</b>，而是表现为：<b>固定 ~19 s 延迟 + <code>Analysis Input File Processor exited with an error</code> + <code>.dat</code> 里一条错误都没有 + ODB 只有骨架没有帧</b>。定位：先用 1 个单元的<b>最小卡片</b>复现（证明与模型无关）→ 再逐一 A/B 掉 <code>ask_delete</code>、路径空格、输出块、并行模式（全不是）→ 最后比对"隔离 / 不隔离"两次调用才锁定。<b>结论：本机跑 Abaqus 必须在不被隔离的 shell 里。</b></td></tr>
+    <tr><td>7</td><td><code>odbAccess</code> 是"像 dict"而不是 dict</td><td>三种错法各不相同：<code>frame.fieldOutputs</code> 是 <code>Repository</code>（有 <code>[]</code>、<code>keys()</code>，<b>没有</b> <code>.get()</code>）；<code>instance.elements</code> 是 <code>OdbMeshElementArray</code>（可迭代，没有 <code>keys()</code>）；<code>getSubset(position=)</code> 要<b>符号常量</b>，传字符串报 <code>position; found string…</code>。</td></tr>
+    <tr><td>8</td><td>壳应力是 <b>4 分量</b>不是 6 分量</td><td>实测类型 <code>TENSOR_3D_PLANAR</code>，分量为 <code>(S11,S22,S33,S12)</code>（壳理论平面应力，S33≡0）。而 FRD 是 <code>(SXX,SYY,SZZ,SXY,SYZ,SZX)</code>——<b>两个剪切分量顺序相反</b>。必须<b>按分量标签</b>映射；按下标映射会在分量数变化时静默出错。</td></tr>
+    <tr><td>9</td><td><code>ELEMENT_NODAL</code> 只暴露最外侧两个截面点</td><td>默认 5 点截面下只给 1 和 5。取 <code>sorted(sp)[len//2]</code> 拿到的是<b>顶面</b>不是中面——典型的"安静地给错答案"。正确做法是壳理论的膜应力 <code>(σ下+σ上)/2</code>。</td></tr>
+  </tbody>
+</table>
+<h3>gmsh / FRD</h3>
+<table>
+  <thead><tr><th style="width:5%">#</th><th style="width:38%">坑</th><th>表现 / 修法</th></tr></thead>
+  <tbody>
+    <tr><td>10</td><td><code>occ.fragment()</code> 返回值解包错</td><td>返回 <code>(outDimTags, outDimTagsMap)</code>，不是两个输出列表；且 fragment 后<b>必须先 synchronize</b> 才能查包围盒。</td></tr>
+    <tr><td>11</td><td>gmsh Curvature <i>field</i> 不可脚本化</td><td>4.15 里所有候选选项名都被拒，改用全局 <code>Mesh.MeshSizeFromCurvature</code>。</td></tr>
+    <tr><td>12</td><td>FRD 按 <code>ncomp</code> 硬读</td><td>DISP 声明 4 个分量却只写 3 个；负号还与节点号粘连（<code>4-6.87E-10</code>）→ 整段被吞。改为固定宽度 + 实际字段数。</td></tr>
+    <tr><td>13</td><td>窄条长桁上默认重组算法留三角</td><td>20 × 500 mm 的竖板上 blossom 留下 6 % 三角、minJ 掉到 0.40。<b>先定位再修</b>（<code>diagnostics/stringer_quality.py</code> 逐组统计），确认坏单元全在长桁上，再换 blossom 全四边形（→ 0.69、零三角）。</td></tr>
+    <tr><td>14</td><td>对比实验里参数被覆盖</td><td>第一版"换重组算法"实验六个变体结果<b>完全相同</b>——因为 <code>Mesh.RecombinationAlgorithm</code> 被 <code>_configure_size_field</code> 在 <code>generate()</code> 前重设了。<b>结果一模一样就是报警信号</b>，重做后差异立刻显现。</td></tr>
+  </tbody>
+</table>
+
+<h2>九、本机环境事实</h2>
+<ul>
+  <li><b>Abaqus 2026</b>：<code>D:\Program Files\SIMULIA\Commands\abaqus.bat</code>（EstProducts\2026，RELr428）。
+      <code>abaqus python</code> 自带 CPython 3.10.5，含 <code>odbAccess</code> / <code>abaqusConstants</code>；
+      <b>路径含空格无碍</b>，参数正常传递。</li>
+  <li><b>CalculiX 2.23</b>：<code>tools/calculix/calculix_2.23_4win/ccx_static.exe</code>（静态链接，无 DLL 依赖）。</li>
+  <li><b>gmsh 4.15.2</b>（含 OpenCASCADE 内核）装在 venv。</li>
+  <li><b>pip 镜像实测</b>：清华 11–15 MB/s ≫ 腾讯 8 ≫ 华为 4.9 ≫ 中科大 2.6 ≫ 阿里 0.06 ≫ 官方 pythonhosted <b>0.008</b> MB/s。差 <b>1400 倍</b>，装大 wheel 直接指定清华。</li>
+</ul>
+
+<h2>十、目录与用法</h2>
+<pre>feagpt_repro/
+├── feagpt/
+│   ├── spec.py          # 契约：FEASpec（标准化 JSON）
+│   ├── planning.py      # ① 规则解析器（LLM 挂载点在注释里）
+│   ├── naca.py          # NACA 4 位翼型坐标（纯 numpy，可独立校验）
+│   ├── geometry.py      # ② gmsh OCC：蒙皮/腹板/翼肋/竖式长桁 + fragment 共节点
+│   ├── meshing.py       # ③ 曲率自适应 + 质量门禁 + 节点过滤 + 重组算法自适应
+│   ├── inp_writer.py    # ④ 双方言 deck（ccx / abaqus）
+│   ├── solver.py        # ④ 求解器适配层 + ODB→JSON
+│   ├── abaqus_odb.py    # ④′ ODB 提取器（`abaqus python` 执行）
+│   ├── post.py          # ⑤ 结果归纳（求解器无关）
+│   └── pipeline.py      # 编排 + run_batch
+├── run_pipeline.py      # CLI（--demo / --text / --spec / --sweep / --solver / --stringers）
+├── verify_cantilever.py # 独立验证①：解析解 + 平衡 + 网格敏感性
+├── verify_solvers.py    # 独立验证②：双求解器交叉验证（--case 指定算例）
+├── diagnostics/         # ODB 结构探针 + 逐组网格质量探针
+└── requirements.txt</pre>
+<pre>python run_pipeline.py --demo                                        # CalculiX
+python run_pipeline.py --demo --solver abaqus --out outputs_abaqus
+python run_pipeline.py --demo --stringers 3 --solver ccx --out outputs_str
+python run_pipeline.py --demo --stringers 3 --solver abaqus --out outputs_str_abaqus
+python run_pipeline.py --sweep "airfoil.n_ribs=3,5,7" "airfoil.chord=800,1000"
+python verify_cantilever.py                                          # 独立验证①
+python verify_solvers.py --ccx outputs_str --abaqus outputs_str_abaqus --case naca4412_wingbox_str3</pre>
+
+<h2>十一、现状与缺口</h2>
+<p><b>完成度：双求解器链路 100% 跑通 + 长桁几何已落地</b>（几何→网格→双后端求解→统一归纳，含批量、两条独立验证、两处缺陷修复、长桁 A/B）。<b>未做：</b></p>
+<ul>
+  <li>几何是<b>薄壁壳（中面）</b>。长桁只做了<b>竖式（blade）</b>一种截面的理想化——没做帽型/T 型截面，也没做端部削尖；长桁站位目前是梁间等分，未做非等距布置；复材层合、接触均未做</li>
+  <li>Abaqus 分支没做：实体单元、接触、几何非线性（NLGEOM）、<b>多步/多帧提取</b>（当前只取最后一步最后一帧）</li>
+  <li>应力场跨求解器只在<b>中面膜应力</b>口径下可比；峰值口径未对齐</li>
+  <li>结果提取只到「峰值 + 逐节点」，未做插值到参考网格 / 场量对齐——那是数据集化的下一步</li>
+  <li>LLM 规划器未接（规则解析器顶着，接上只改 <code>planning.py</code> 一个函数）</li>
+</ul>
+<p>下一步的杠杆点仍是<b>照这条链路批量造数据</b>：把 <code>sweep</code> 扩成翼型族 × <b>长桁布局</b> × 复材铺层的组合，批量产 <code>.inp/.frd/结果</code> 配对，即为调研报告里说的 <code>FEM-Bench-Aero</code>。长桁进去之后，几何才真正有了"航空结构语义"。</p>
+
+<footer>
+  FeaGPT: Qi, Xu &amp; Chu, arXiv:2510.21993 &nbsp;·&nbsp; 复现工程：<code>F:\AI FEA Modeling DataSets\feagpt_repro</code><br>
+  全部数字均为本机实跑，见 <code>outputs/</code>（CalculiX 基线）、<code>outputs_abaqus/</code>（Abaqus 基线）、<code>outputs_str/</code> 与 <code>outputs_str_abaqus/</code>（加长桁）
+</footer>
+
+</div>
+</body>
+</html>

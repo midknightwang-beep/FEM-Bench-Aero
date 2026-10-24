@@ -1,0 +1,278 @@
+{
+ "n_cases": 34,
+ "folds": {
+  "max_disp": {
+   "mape": 5.350907070279112,
+   "median": 2.572531900203175,
+   "max": 33.10322996091423,
+   "p90": 14.085834813838959,
+   "apes": {
+    "naca4412_wingbox": 1.988,
+    "naca4412_wingbox_n_ribs3_chord1000": 3.071,
+    "naca4412_wingbox_n_ribs3_chord800": -0.431,
+    "naca4412_wingbox_n_ribs5_chord800": -1.001,
+    "naca4412_wingbox_n_ribs7_chord1000": 1.661,
+    "naca4412_wingbox_n_ribs7_chord800": -1.992,
+    "naca4412_wingbox_n_ribs9_chord1000": 1.949,
+    "naca4412_wingbox_recombination_algorithm3": 2.015,
+    "naca4412_wingbox_size_skin1p5": 1.454,
+    "naca4412_wingbox_size_skin2": 1.259,
+    "naca4412_wingbox_size_skin4": 3.038,
+    "naca4412_wingbox_size_span1600": 2.399,
+    "naca4412_wingbox_size_span2400": 0.915,
+    "naca4412_wingbox_size_span2400_skin2": -0.119,
+    "naca4412_wingbox_size_span3000": -1.014,
+    "naca4412_wingbox_size_span3000_skin1p5": -4.205,
+    "naca4412_wingbox_str3": 1.099,
+    "naca4412_wingbox_str3_T": 5.803,
+    "naca4412_wingbox_str5": -1.32,
+    "naca4412_wingbox_sweep10": 1.826,
+    "naca4412_wingbox_sweep20": 0.593,
+    "naca4412_wingbox_sweep20_taper060": 14.869,
+    "naca4412_wingbox_sweep30": -2.841,
+    "naca4412_wingbox_sweep30_taper080": 7.326,
+    "naca4412_wingbox_sweep35": -6.015,
+    "naca4412_wingbox_sweep40": -13.173,
+    "naca4412_wingbox_sweep40_taper040": 14.477,
+    "naca4412_wingbox_taper040": -20.909,
+    "naca4412_wingbox_taper060": -2.746,
+    "naca4412_wingbox_taper080": 2.781,
+    "naca4412_wingbox_taper090": 3.006,
+    "naca4412_wingbox_web1": 12.86,
+    "naca4412_wingbox_web1_offcentre": -8.672,
+    "naca4412_wingbox_web2": 33.103
+   },
+   "worst": [
+    [
+     "naca4412_wingbox_web2",
+     33.10322996091423
+    ],
+    [
+     "naca4412_wingbox_taper040",
+     -20.909401834939864
+    ],
+    [
+     "naca4412_wingbox_sweep20_taper060",
+     14.86874421503207
+    ],
+    [
+     "naca4412_wingbox_sweep40_taper040",
+     14.476870837235234
+    ],
+    [
+     "naca4412_wingbox_sweep40",
+     -13.17341742591432
+    ]
+   ]
+  },
+  "max_w": {
+   "mape": 7.428926226713254,
+   "median": 3.762013594777522,
+   "max": 52.40187739794608,
+   "p90": 16.06785701793639,
+   "apes": {
+    "naca4412_wingbox": 3.337,
+    "naca4412_wingbox_n_ribs3_chord1000": 5.151,
+    "naca4412_wingbox_n_ribs3_chord800": -0.073,
+    "naca4412_wingbox_n_ribs5_chord800": -1.044,
+    "naca4412_wingbox_n_ribs7_chord1000": 2.651,
+    "naca4412_wingbox_n_ribs7_chord800": -2.722,
+    "naca4412_wingbox_n_ribs9_chord1000": 3.12,
+    "naca4412_wingbox_recombination_algorithm3": 3.369,
+    "naca4412_wingbox_size_skin1p5": 1.123,
+    "naca4412_wingbox_size_skin2": 1.575,
+    "naca4412_wingbox_size_skin4": 5.516,
+    "naca4412_wingbox_size_span1600": 5.279,
+    "naca4412_wingbox_size_span2400": 2.016,
+    "naca4412_wingbox_size_span2400_skin2": -0.207,
+    "naca4412_wingbox_size_span3000": 0.908,
+    "naca4412_wingbox_size_span3000_skin1p5": -5.532,
+    "naca4412_wingbox_str3": 1.413,
+    "naca4412_wingbox_str3_T": 5.879,
+    "naca4412_wingbox_str5": -1.765,
+    "naca4412_wingbox_sweep10": 7.657,
+    "naca4412_wingbox_sweep20": 2.422,
+    "naca4412_wingbox_sweep20_taper060": 12.195,
+    "naca4412_wingbox_sweep30": -7.426,
+    "naca4412_wingbox_sweep30_taper080": 17.141,
+    "naca4412_wingbox_sweep35": -13.565,
+    "naca4412_wingbox_sweep40": -26.009,
+    "naca4412_wingbox_sweep40_taper040": 52.402,
+    "naca4412_wingbox_taper040": -30.051,
+    "naca4412_wingbox_taper060": -10.106,
+    "naca4412_wingbox_taper080": -1.15,
+    "naca4412_wingbox_taper090": 1.482,
+    "naca4412_wingbox_web1": -5.388,
+    "naca4412_wingbox_web1_offcentre": 4.155,
+    "naca4412_wingbox_web2": -8.754
+   },
+   "worst": [
+    [
+     "naca4412_wingbox_sweep40_taper040",
+     52.40187739794608
+    ],
+    [
+     "naca4412_wingbox_taper040",
+     -30.051063875909477
+    ],
+    [
+     "naca4412_wingbox_sweep40",
+     -26.008561786768226
+    ],
+    [
+     "naca4412_wingbox_sweep30_taper080",
+     17.140512715532957
+    ],
+    [
+     "naca4412_wingbox_sweep35",
+     -13.564993723544413
+    ]
+   ]
+  },
+  "max_von_mises": {
+   "mape": 8.544962571708437,
+   "median": 2.394522138667253,
+   "max": 85.03301942928412,
+   "p90": 18.99380619281283,
+   "apes": {
+    "naca4412_wingbox": 1.205,
+    "naca4412_wingbox_n_ribs3_chord1000": 3.327,
+    "naca4412_wingbox_n_ribs3_chord800": -2.87,
+    "naca4412_wingbox_n_ribs5_chord800": -0.192,
+    "naca4412_wingbox_n_ribs7_chord1000": 0.009,
+    "naca4412_wingbox_n_ribs7_chord800": -0.86,
+    "naca4412_wingbox_n_ribs9_chord1000": 1.401,
+    "naca4412_wingbox_recombination_algorithm3": 1.155,
+    "naca4412_wingbox_size_skin1p5": -1.534,
+    "naca4412_wingbox_size_skin2": -0.286,
+    "naca4412_wingbox_size_skin4": 2.133,
+    "naca4412_wingbox_size_span1600": 1.735,
+    "naca4412_wingbox_size_span2400": 1.016,
+    "naca4412_wingbox_size_span2400_skin2": -0.571,
+    "naca4412_wingbox_size_span3000": 1.348,
+    "naca4412_wingbox_size_span3000_skin1p5": -3.372,
+    "naca4412_wingbox_str3": 0.894,
+    "naca4412_wingbox_str3_T": -8.801,
+    "naca4412_wingbox_str5": -0.102,
+    "naca4412_wingbox_sweep10": 8.778,
+    "naca4412_wingbox_sweep20": 9.811,
+    "naca4412_wingbox_sweep20_taper060": 27.776,
+    "naca4412_wingbox_sweep30": -2.656,
+    "naca4412_wingbox_sweep30_taper080": 5.047,
+    "naca4412_wingbox_sweep35": -8.128,
+    "naca4412_wingbox_sweep40": -16.21,
+    "naca4412_wingbox_sweep40_taper040": 18.475,
+    "naca4412_wingbox_taper040": -19.216,
+    "naca4412_wingbox_taper060": -7.362,
+    "naca4412_wingbox_taper080": -0.465,
+    "naca4412_wingbox_taper090": 1.427,
+    "naca4412_wingbox_web1": 32.345,
+    "naca4412_wingbox_web1_offcentre": -14.987,
+    "naca4412_wingbox_web2": 85.033
+   },
+   "worst": [
+    [
+     "naca4412_wingbox_web2",
+     85.03301942928412
+    ],
+    [
+     "naca4412_wingbox_web1",
+     32.34544618071874
+    ],
+    [
+     "naca4412_wingbox_sweep20_taper060",
+     27.77649412730627
+    ],
+    [
+     "naca4412_wingbox_taper040",
+     -19.21621906801429
+    ],
+    [
+     "naca4412_wingbox_sweep40_taper040",
+     18.474842817342754
+    ]
+   ]
+  },
+  "max_von_mises_midsurface": {
+   "mape": 7.52132482707129,
+   "median": 2.444779874793281,
+   "max": 68.51137714479215,
+   "p90": 17.37163564015443,
+   "apes": {
+    "naca4412_wingbox": 1.145,
+    "naca4412_wingbox_n_ribs3_chord1000": 2.602,
+    "naca4412_wingbox_n_ribs3_chord800": -2.365,
+    "naca4412_wingbox_n_ribs5_chord800": -0.303,
+    "naca4412_wingbox_n_ribs7_chord1000": -0.08,
+    "naca4412_wingbox_n_ribs7_chord800": -1.227,
+    "naca4412_wingbox_n_ribs9_chord1000": 1.414,
+    "naca4412_wingbox_recombination_algorithm3": 0.792,
+    "naca4412_wingbox_size_skin1p5": -1.361,
+    "naca4412_wingbox_size_skin2": -0.41,
+    "naca4412_wingbox_size_skin4": 2.524,
+    "naca4412_wingbox_size_span1600": 1.265,
+    "naca4412_wingbox_size_span2400": 0.945,
+    "naca4412_wingbox_size_span2400_skin2": -0.701,
+    "naca4412_wingbox_size_span3000": 1.051,
+    "naca4412_wingbox_size_span3000_skin1p5": -3.235,
+    "naca4412_wingbox_str3": 1.369,
+    "naca4412_wingbox_str3_T": -7.114,
+    "naca4412_wingbox_str5": -1.003,
+    "naca4412_wingbox_sweep10": 8.341,
+    "naca4412_wingbox_sweep20": 9.769,
+    "naca4412_wingbox_sweep20_taper060": 27.619,
+    "naca4412_wingbox_sweep30": -4.264,
+    "naca4412_wingbox_sweep30_taper080": 3.895,
+    "naca4412_wingbox_sweep35": -8.303,
+    "naca4412_wingbox_sweep40": -13.674,
+    "naca4412_wingbox_sweep40_taper040": 16.079,
+    "naca4412_wingbox_taper040": -17.925,
+    "naca4412_wingbox_taper060": -6.944,
+    "naca4412_wingbox_taper080": -0.819,
+    "naca4412_wingbox_taper090": 1.092,
+    "naca4412_wingbox_web1": 25.377,
+    "naca4412_wingbox_web1_offcentre": -12.205,
+    "naca4412_wingbox_web2": 68.511
+   },
+   "worst": [
+    [
+     "naca4412_wingbox_web2",
+     68.51137714479215
+    ],
+    [
+     "naca4412_wingbox_sweep20_taper060",
+     27.618734259269413
+    ],
+    [
+     "naca4412_wingbox_web1",
+     25.37699505011884
+    ],
+    [
+     "naca4412_wingbox_taper040",
+     -17.92549217933692
+    ],
+    [
+     "naca4412_wingbox_sweep40_taper040",
+     16.079303715395294
+    ]
+   ]
+  }
+ },
+ "max_disp_by_original_split": {
+  "train": {
+   "n": 21,
+   "mape": 3.4951904761904764,
+   "max": 14.869
+  },
+  "val": {
+   "n": 7,
+   "mape": 10.466142857142858,
+   "max": 33.103
+  },
+  "test": {
+   "n": 6,
+   "mape": 5.878,
+   "max": 14.477
+  }
+ }
+}

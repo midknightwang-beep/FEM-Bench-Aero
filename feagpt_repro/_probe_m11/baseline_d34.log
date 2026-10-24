@@ -1,0 +1,150 @@
+================================================================================================
+FORMAL BASELINE -- family wingbox
+  cases 32 = train 18 / val 7 / test 7   distinct geometry classes 31
+  dataset digest ebdbd4fe325ac90a...  (sha256 of case_id|spec_sha256|split)
+================================================================================================
+
+[train feature coverage] constant on train: ['is_T']
+  train span 1600-2400 | skin_t 2-4 | sweep 0-30
+
+------------------------------------------------------------------------------------------------
+target: max|u| (mm)   [gate]
+tier                      trainLOO     val    test       test 95% CI   medAPE  maxAPE dropWorst
+M0 constant(geomean)         30.11  34.61%  45.15%     [27.71,63.06]   38.24%   82.0%    39.01%
+M0m constant(MAPE-opt)       28.83  35.84%  49.06%     [31.07,67.66]   47.43%   84.7%    43.13%
+M1 beam(1p)                  13.40  22.45%  26.07%     [13.86,43.10]   15.45%   73.8%    18.12%
+M2 beam+shape^c(3p)           3.67   4.89%  14.97%      [5.49,28.21]   11.69%   49.4%     9.24%
+M2L size-pow(4p)             16.25  21.92%  23.17%      [8.74,41.67]   14.27%   73.4%    14.80%
+M2X full-pow(7p)              3.84   4.87%  14.35%      [3.79,28.80]   11.56%   52.0%     8.07%
+M3 ridge(10f)                 4.75   9.75%   8.62%      [4.16,13.85]    5.80%   20.6%     6.62%
+M3q ridge+sweep^2             2.14   4.65%   6.16%      [2.38,10.34]    5.07%   15.2%     4.66%
+M4 GP-RBF(10f)                8.25  10.84%  16.74%      [7.02,28.91]    7.37%   47.8%    11.57%
+M5 hybrid(10f+phys)           4.19   9.40%   7.74%      [2.26,14.36]    5.78%   25.7%     4.75%
+M5q hybrid+sweep^2            2.14   4.56%   6.18%      [2.27,10.53]    5.06%   15.7%     4.59%
+  selected on VAL: physics M2X full-pow(7p) (val 4.87%)  |  learner M5q hybrid+sweep^2 (val 4.56%)
+  NOTE val and test disagree: best on TEST is M3q ridge+sweep^2 (6.16%), not the val-selected tier.  n_val=7, n_test=7 -- this is a warning about the size of val, not a licence to select on test.
+  TEST: learner 6.18%  vs physics 14.35%   paired diff = -8.16 pp  95% CI [-18.83, -0.20]  -> SIGNIFICANT
+  vs MAPE-optimal constant floor (49.06%): M5q hybrid+sweep^2 ratio = 12.6%
+  self-check: OK
+  implied exponents (M2L): span +2.928 / skin -0.947 / chord -2.451   (beam theory: +3 / -1 / -3)
+  implied exponents (M2X): span +2.882 / skin -0.992 / chord -2.873 / cos2sweep -2.143 / taper -1.383
+
+  error by extrapolation mechanism (descriptive only; n=1-3 per group, no verdict drawn):
+    group                    n       M1      M2X       M3      M3q       M5      M5q
+    combo                    2    23.0%     5.9%    11.7%     7.1%     7.0%     7.0%
+    ribs_new                 1    12.0%     0.5%     2.7%     0.3%     0.8%     0.2%
+    size_out                 1    12.9%     1.3%     5.8%     2.4%     1.3%     2.2%
+    section_new              1    22.4%    12.9%     5.0%     5.1%     5.8%     5.1%
+    planform_out             1    73.8%    52.0%    17.2%    15.2%    25.7%    15.7%
+    webpos_new               1    15.4%    22.0%     6.2%     6.0%     6.7%     6.0%
+  1-parameter beam scaling 26.07%  vs  best learner 6.18%  ->  gap +19.90 pp
+
+------------------------------------------------------------------------------------------------
+target: max normal deflection w (mm)   [gate]
+tier                      trainLOO     val    test       test 95% CI   medAPE  maxAPE dropWorst
+M0 constant(geomean)         21.59  31.71%  35.33%     [21.65,51.73]   29.44%   75.4%    28.66%
+M0m constant(MAPE-opt)       18.36  30.32%  35.93%     [20.99,53.30]   35.07%   77.3%    29.04%
+M1 beam(1p)                  12.50  23.58%  27.38%     [17.94,38.57]   22.55%   54.4%    22.88%
+M2 beam+shape^c(3p)           7.71  12.38%  28.30%     [13.64,46.95]   19.74%   77.6%    20.08%
+M2L size-pow(4p)              9.13  17.37%  13.48%      [4.93,23.74]   13.53%   39.5%     9.13%
+M2X full-pow(7p)              4.76   5.67%  17.55%      [4.48,36.17]    7.85%   70.6%     8.71%
+M3 ridge(10f)                 4.18   6.73%   9.60%      [3.21,17.01]    4.47%   27.3%     6.66%
+M3q ridge+sweep^2             1.74   2.13%  13.75%      [2.05,31.62]    3.25%   64.9%     5.22%
+M4 GP-RBF(10f)                6.71   9.06%  12.87%      [4.98,23.18]    6.19%   40.3%     8.31%
+M5 hybrid(10f+phys)           4.27   6.01%   8.33%      [1.52,16.35]    3.26%   26.8%     5.26%
+M5q hybrid+sweep^2            1.77   1.93%  13.49%      [1.59,31.52]    3.24%   65.1%     4.90%
+  selected on VAL: physics M2X full-pow(7p) (val 5.67%)  |  learner M5q hybrid+sweep^2 (val 1.93%)
+  NOTE val and test disagree: best on TEST is M5 hybrid(10f+phys) (8.33%), not the val-selected tier.  n_val=7, n_test=7 -- this is a warning about the size of val, not a licence to select on test.
+  TEST: learner 13.49%  vs physics 17.55%   paired diff = -4.04 pp  95% CI [-6.25, -2.16]  -> SIGNIFICANT
+  vs MAPE-optimal constant floor (35.94%): M5q hybrid+sweep^2 ratio = 37.6%
+  self-check: OK
+
+  error by extrapolation mechanism (descriptive only; n=1-3 per group, no verdict drawn):
+    group                    n       M1      M2X       M3      M3q       M5      M5q
+    combo                    2    19.2%    13.7%    14.9%    10.2%    13.8%    10.0%
+    ribs_new                 1    28.0%     0.2%     2.4%     0.7%     0.1%     0.1%
+    size_out                 1    54.4%     3.9%     4.7%     2.4%     1.0%     1.4%
+    section_new              1    12.2%     7.8%     4.5%     4.6%     4.5%     4.6%
+    planform_out             1    41.2%    70.6%    22.7%    64.9%    21.9%    65.1%
+    webpos_new               1    17.4%    12.9%     3.2%     3.2%     3.3%     3.2%
+  1-parameter beam scaling 27.39%  vs  best learner 13.49%  ->  gap +13.89 pp
+
+------------------------------------------------------------------------------------------------
+target: mid-surface peak vM (MPa)   [gate]
+tier                      trainLOO     val    test       test 95% CI   medAPE  maxAPE dropWorst
+M0 constant(geomean)         15.50  18.86%  27.88%     [14.98,42.64]   27.64%   63.7%    21.91%
+M0m constant(MAPE-opt)       12.77  19.65%  29.84%     [16.34,45.20]   31.89%   65.8%    23.85%
+M1 beam(1p)                   4.51   8.33%  10.72%      [4.41,18.71]    4.96%   31.4%     7.26%
+M2 beam+shape^c(3p)           4.41   6.97%   9.54%      [4.21,15.47]    4.07%   20.8%     7.67%
+M2L size-pow(4p)              4.40   7.51%   9.42%      [2.62,17.96]    2.57%   31.0%     5.82%
+M2X full-pow(7p)              4.78   4.22%  10.33%      [3.32,19.09]    5.14%   31.8%     6.76%
+M3 ridge(10f)                 4.92   8.00%   9.38%      [3.64,18.14]    7.97%   32.8%     5.48%
+M3q ridge+sweep^2             2.03   3.98%  10.75%      [2.81,20.33]    7.59%   36.6%     6.44%
+M4 GP-RBF(10f)                9.88  10.59%  20.84%     [11.94,33.75]   14.68%   56.7%    14.86%
+M5 hybrid(10f+phys)           3.92   7.66%   9.48%      [3.38,16.30]    5.89%   22.3%     7.34%
+M5q hybrid+sweep^2            2.03   3.98%  10.75%      [2.81,20.33]    7.59%   36.6%     6.44%
+  selected on VAL: physics M2X full-pow(7p) (val 4.22%)  |  learner M5q hybrid+sweep^2 (val 3.98%)
+  NOTE val and test disagree: best on TEST is M3 ridge(10f) (9.38%), not the val-selected tier.  n_val=7, n_test=7 -- this is a warning about the size of val, not a licence to select on test.
+  TEST: learner 10.75%  vs physics 10.33%   paired diff = +0.42 pp  95% CI [-6.33, +9.01]  -> NOT resolved (CI spans 0)
+  vs MAPE-optimal constant floor (29.84%): M5q hybrid+sweep^2 ratio = 36.0%
+  self-check: OK
+
+  error by extrapolation mechanism (descriptive only; n=1-3 per group, no verdict drawn):
+    group                    n       M1      M2X       M3      M3q       M5      M5q
+    combo                    2     8.0%    16.6%    17.3%     9.9%    11.3%     9.9%
+    ribs_new                 1     5.0%     0.4%     1.5%     0.2%     2.7%     0.2%
+    size_out                 1     3.2%     1.9%     2.4%     0.8%     0.8%     0.8%
+    section_new              1     3.2%     5.1%     8.0%     7.6%     5.9%     7.6%
+    planform_out             1    31.4%    13.7%     8.9%    36.6%    22.0%    36.6%
+    webpos_new               1    16.2%    17.9%    10.4%    10.2%    12.4%    10.2%
+  1-parameter beam scaling 10.72%  vs  best learner 10.75%  ->  gap -0.04 pp  (physics already at the ceiling)
+
+------------------------------------------------------------------------------------------------
+target: outer-fibre peak vM (MPa)   [log]
+tier                      trainLOO     val    test       test 95% CI   medAPE  maxAPE dropWorst
+M0 constant(geomean)         16.39  19.01%  28.76%     [15.94,42.70]   28.60%   63.2%    23.03%
+M0m constant(MAPE-opt)       13.38  21.30%  31.22%     [18.23,45.94]   33.25%   65.6%    25.50%
+M1 beam(1p)                   5.37   9.78%  12.57%      [5.47,20.81]    5.71%   32.7%     9.21%
+M2 beam+shape^c(3p)           5.14   7.55%  10.88%      [4.69,18.01]    5.34%   24.8%     8.56%
+M2L size-pow(4p)              5.64   9.23%  10.86%      [2.76,20.01]    3.47%   32.3%     7.29%
+M2X full-pow(7p)              5.32   5.90%  11.97%      [3.74,21.61]    5.93%   31.9%     8.65%
+M3 ridge(10f)                 5.76   9.66%  10.39%      [4.52,18.81]    9.62%   32.7%     6.66%
+M3q ridge+sweep^2             2.60   4.69%  11.55%      [3.45,21.08]    9.32%   37.7%     7.19%
+M4 GP-RBF(10f)               10.52  10.63%  21.29%     [12.78,33.89]   14.46%   56.2%    15.47%
+M5 hybrid(10f+phys)           4.51   8.40%  10.60%      [4.38,17.23]    7.35%   23.2%     8.49%
+M5q hybrid+sweep^2            2.60   4.69%  11.55%      [3.45,21.08]    9.32%   37.7%     7.19%
+  selected on VAL: physics M2X full-pow(7p) (val 5.90%)  |  learner M5q hybrid+sweep^2 (val 4.69%)
+  NOTE val and test disagree: best on TEST is M3 ridge(10f) (10.39%), not the val-selected tier.  n_val=7, n_test=7 -- this is a warning about the size of val, not a licence to select on test.
+  TEST: learner 11.55%  vs physics 11.97%   paired diff = -0.41 pp  95% CI [-7.45, +7.30]  -> NOT resolved (CI spans 0)
+  vs MAPE-optimal constant floor (31.22%): M5q hybrid+sweep^2 ratio = 37.0%
+  self-check: OK
+
+  error by extrapolation mechanism (descriptive only; n=1-3 per group, no verdict drawn):
+    group                    n       M1      M2X       M3      M3q       M5      M5q
+    combo                    2     8.5%    16.4%    17.6%    10.1%    11.4%    10.1%
+    ribs_new                 1     5.7%     0.1%     1.8%     0.7%     3.2%     0.7%
+    size_out                 1     4.8%     1.5%     3.9%     1.1%     1.4%     1.1%
+    section_new              1     4.1%     5.9%     9.6%     9.3%     7.4%     9.3%
+    planform_out             1    32.7%    18.4%     9.8%    37.7%    23.2%    37.7%
+    webpos_new               1    23.8%    25.2%    12.2%    11.9%    16.1%    11.9%
+  1-parameter beam scaling 12.57%  vs  best learner 11.55%  ->  gap +1.02 pp  (physics already at the ceiling)
+
+================================================================================================
+[peak localisation] every scalar target here is a max over nodes.  If the
+  argmax jumps between cases, the target is a discrete *selection*, not a
+  smooth functional of the parameters -- and no smooth surrogate can fit it.
+  max_disp_node          21/32 distinct nodes   top [[495, 6], [731, 3], [732, 2]]
+  vm_midsurface_node     26/32 distinct nodes   top [[776, 5], [808, 2], [856, 2]]
+
+================================================================================================
+CROSS-FAMILY TRAINABILITY  (a family needs train >= 5 to fit any of the
+tiers above; below that a held-out score measures nothing)
+  fuselage_barrel      train  1  val  3  test  2   NOT modelable (too few train cases)
+  open_hole_panel      train  2  val  5  test  4   NOT modelable (too few train cases)
+  stiffened_panel      train  1  val  2  test  1   NOT modelable (too few train cases)
+  wingbox              train 18  val  7  test  7   modelable
+
+================================================================================================
+VERDICT: PASS   (0 self-check failure(s))
+
+-> ..\FEM-Bench-Aero\baseline_d34.json
