@@ -1,0 +1,33 @@
+{
+ "task_id": "L3_naca4412_wingbox_size_span1600",
+ "family": "wingbox",
+ "split_v2": "boundary_holdout",
+ "input_level": "L3",
+ "candidate_spec": "F:/AI FEA Modeling DataSets/feagpt_repro/candidates_l3_v2\\L3_naca4412_wingbox_size_span1600.json",
+ "gates": {
+  "spec_fidelity": {
+   "pass": true,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed": [],
+   "engineering_layer": true,
+   "dead_fields_skipped": [
+    "airfoil.stringer_height",
+    "airfoil.stringer_thickness",
+    "airfoil.stringer_kind",
+    "airfoil.stringer_flange_width"
+   ],
+   "exec_config_mismatch": [],
+   "metadata_extra": [
+    {
+     "field": "analysis.type",
+     "actual": "static"
+    }
+   ],
+   "field": "spec_fidelity (field-level, mandatory, skip-solve)",
+   "expected": "all graded fields equal (float tol 1e-6)",
+   "actual": "24/24 fields"
+  }
+ },
+ "overall_pass": true
+}

@@ -1,0 +1,53 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20_offcentre",
+ "family": "open_hole_panel",
+ "split_v2": "extrapolation_test",
+ "input_level": "L3",
+ "candidate_spec": "F:/AI FEA Modeling DataSets/feagpt_repro/candidates_l3_v2\\L3_open_hole_panel_400x200_d20_offcentre.json",
+ "gates": {
+  "spec_fidelity": {
+   "pass": false,
+   "n_fields": 20,
+   "n_fail": 4,
+   "failed": [
+    {
+     "field": "params.hole_x",
+     "expected": 120.0,
+     "actual": "<missing>",
+     "pass": false
+    },
+    {
+     "field": "params.hole_y",
+     "expected": 60.0,
+     "actual": "<missing>",
+     "pass": false
+    },
+    {
+     "field": "load.distribution (not in gold)",
+     "expected": "<absent>",
+     "actual": "end_uniform",
+     "pass": false
+    },
+    {
+     "field": "extra.hole_refinement (not in gold)",
+     "expected": "<absent>",
+     "actual": true,
+     "pass": false
+    }
+   ],
+   "engineering_layer": true,
+   "dead_fields_skipped": [],
+   "exec_config_mismatch": [],
+   "metadata_extra": [
+    {
+     "field": "analysis.type",
+     "actual": "static"
+    }
+   ],
+   "field": "spec_fidelity (field-level, mandatory, skip-solve)",
+   "expected": "all graded fields equal (float tol 1e-6)",
+   "actual": "16/20 fields"
+  }
+ },
+ "overall_pass": false
+}

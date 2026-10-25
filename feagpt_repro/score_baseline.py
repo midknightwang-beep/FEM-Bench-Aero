@@ -110,11 +110,12 @@ def main():
     def get(k, d):
         return argv[argv.index(k) + 1] if k in argv else d
     cand_dir = get('--candidates', os.path.join(HERE, 'candidates_l3_v2'))
+    tasks_path = get('--tasks', os.path.join(HERE, 'tasks', 'tasks.jsonl'))
     report_path = get('--report', os.path.join(RUNS, 'baseline_scorecard_L3.json'))
     trivial_path = get('--trivial', os.path.join(RUNS, 'trivial_baselines_L3.json'))
     n_tasks_exam = int(get('--n-tasks-exam', '11'))
 
-    tasks = {t['task_id']: t for t in load_tasks(os.path.join(HERE, 'tasks', 'tasks.jsonl'))
+    tasks = {t['task_id']: t for t in load_tasks(tasks_path)
              if t['input_level'] == 'L3'}
     rows = []
     for fn in sorted(os.listdir(cand_dir)):
@@ -177,6 +178,19 @@ def main():
             'criterion': '>= 10 pp 才算 LLM 真有增量（专家 6.3.1）；n_exam<20 ⇒ underpowered 不得判 PASS（R12）',
             'verdict': ('PASS' if (llm_exam - t1_exam >= 10 and n_exam >= 20) else
                         'BELOW' if llm_exam - t1_exam < 10 else 'UNDERPOWERED')}
+
+    # W5a：scorecard 重打分时保留既有 msr_section（MSR 由 msr_l3.py 单独产出，
+    # 重打分不得抹掉；NC-22 依赖顶层 exam.msr 存在）
+    prev_msr = None
+    if os.path.exists(report_path):
+        try:
+            prev_msr = json.load(open(report_path, encoding='utf-8')).get('msr_section')
+        except Exception:
+            prev_msr = None
+    if prev_msr:
+        scorecard['msr_section'] = prev_msr
+        scorecard.setdefault('exam', {})['msr'] = prev_msr.get('exam_msr')
+        scorecard.setdefault('dev', {})['msr'] = prev_msr.get('dev_msr')
 
     json.dump(scorecard, open(report_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     e = scorecard['exam']

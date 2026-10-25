@@ -1,0 +1,60 @@
+{
+ "task_id": "L3_naca4412_wingbox_n_ribs9_chord1000",
+ "family": "wingbox",
+ "split_v2": "val",
+ "input_level": "L3",
+ "candidate_spec": "F:/AI FEA Modeling DataSets/feagpt_repro/candidates_l3_v2\\L3_naca4412_wingbox_n_ribs9_chord1000.json",
+ "gates": {
+  "spec_fidelity": {
+   "pass": false,
+   "n_fields": 27,
+   "n_fail": 3,
+   "failed": [
+    {
+     "field": "extra.rib_layout (not in gold)",
+     "expected": "<absent>",
+     "actual": "uniform",
+     "pass": false
+    },
+    {
+     "field": "extra.rib_pitch_count (not in gold)",
+     "expected": "<absent>",
+     "actual": 9,
+     "pass": false
+    },
+    {
+     "field": "extra.web_thickness (not in gold)",
+     "expected": "<absent>",
+     "actual": 3,
+     "pass": false
+    }
+   ],
+   "engineering_layer": true,
+   "dead_fields_skipped": [
+    "airfoil.stringer_height",
+    "airfoil.stringer_thickness",
+    "airfoil.stringer_kind",
+    "airfoil.stringer_flange_width"
+   ],
+   "exec_config_mismatch": [],
+   "metadata_extra": [
+    {
+     "field": "load.point",
+     "actual": "wingtip"
+    },
+    {
+     "field": "analysis.type",
+     "actual": "static_linear"
+    },
+    {
+     "field": "extra.element_type",
+     "actual": "QUAD_SHELL"
+    }
+   ],
+   "field": "spec_fidelity (field-level, mandatory, skip-solve)",
+   "expected": "all graded fields equal (float tol 1e-6)",
+   "actual": "24/27 fields"
+  }
+ },
+ "overall_pass": false
+}

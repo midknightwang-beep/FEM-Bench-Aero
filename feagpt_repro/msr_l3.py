@@ -13,13 +13,12 @@ W4e 修正（专家第四轮 P0-2 / 红线 R16）：
   3. 澄清题（无 spec 期望）不计 MSR 分母，分母 = spec-required 任务；
   4. --python 指定子进程解释器（默认 venv，gmsh 在 envs/default）。
 """
-import json, os, sys, collections
+import json, os, sys, collections, argparse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from evaluate import evaluate_one, load_tasks, RUNS
 
-CAND_DIR = os.path.join(HERE, 'candidates_l3_v3')   # W4e：考卷 v4 候选目录
 REPORT = os.path.join(RUNS, 'baseline_scorecard_L3.json')
 
 VENV_PY = 'C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe'
@@ -43,6 +42,12 @@ def classify_failure(result):
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--candidates', default=os.path.join(HERE, 'candidates_l3_v3'),
+                    help='候选目录（W5a/R22 教训：目录不得硬编码，改名必须改参数）')
+    args = ap.parse_args()
+    cand_dir = args.candidates
+
     # ---- R16：依赖预检（本进程 gmsh/numpy 可导入，否则环境错误退出）----
     missing = []
     for mod in ('gmsh', 'numpy'):
@@ -59,23 +64,30 @@ def main():
     tasks = {t['task_id']: t for t in load_tasks(os.path.join(HERE, 'tasks', 'tasks.jsonl'))
              if t['input_level'] == 'L3'}
     cands = {}
-    for fn in sorted(os.listdir(CAND_DIR)):
+    for fn in sorted(os.listdir(cand_dir)):
         if fn.endswith('.json'):
-            c = json.load(open(os.path.join(CAND_DIR, fn), encoding='utf-8'))
+            c = json.load(open(os.path.join(cand_dir, fn), encoding='utf-8'))
             cands[c['task_id']] = c
 
     rows, n_env_skip = [], 0
     for tid in sorted(tasks):
         t = tasks[tid]
         c = cands.get(tid) or {}
-        if not c.get('spec'):
-            # 澄清/未收敛/编造被拒候选：无 spec 期望，不计 MSR 分母（P1-4）
+        # W5a（专家第五轮 P0-3/R23）：澄清题一律不计 MSR 分母——即使模型静默编造产出了 spec
+        # （编造已由 FPR 单独计数，双重计数违反 R23；分母口径与 RUBRIC §4 一致）
+        if t.get('expected_clarifications'):
             rows.append({'task_id': tid, 'msr_pass': None, 'denominator': False,
-                         'reason': 'no spec (clarify/unresolved/fabricated-rejected)'})
+                         'reason': 'clarify task (expected_clarifications) — R23: 编造归 FPR，不入 MSR'})
+            print(f"  [--] {tid}: clarify task -> 不进分母")
+            continue
+        if not c.get('spec'):
+            # 未收敛/无输出候选：无 spec 期望，不计 MSR 分母
+            rows.append({'task_id': tid, 'msr_pass': None, 'denominator': False,
+                         'reason': 'no spec (unresolved/no-output)'})
             print(f"  [--] {tid}: no spec -> 不进分母")
             continue
         try:
-            r = evaluate_one(t, os.path.join(CAND_DIR, tid + '.json'), skip_solve=False,
+            r = evaluate_one(t, os.path.join(cand_dir, tid + '.json'), skip_solve=False,
                              timeout=1800)
         except Exception as e:
             msg = str(e)
@@ -107,10 +119,27 @@ def main():
     env_fails = [r for r in rows if r.get('failure_class') == 'env']
     if env_fails:
         print(f'环境失败 {len(env_fails)} 条——不进 MSR 分母（R16），请检查解释器后重跑。')
-    msr = {'note': '全链 MSR（R14/R16，W4e 修正）：契约闸+ccx 求解+关1+关4+fidelity+spec_fidelity 全 PASS；'
-                   '分母 = spec-required 任务（澄清/未收敛候选不计）；依赖预检不过即环境退出；'
-                   '失败分层 env/contract/model/solver，env 不计模型失败。',
+
+    # W5a（专家第五轮 P1-1/P1-2）：exam/dev MSR 汇总落盘——不再手算；by_split 全指标
+    by_split = {}
+    for sp in ('train', 'val', 'boundary_holdout', 'extrapolation_test'):
+        ids = [r['task_id'] for r in den_rows if tasks[r['task_id']]['split_v2'] == sp]
+        pp = sum(1 for tid in ids if next(r for r in den_rows if r['task_id'] == tid)['msr_pass'])
+        by_split[sp] = {'msr': f'{pp}/{len(ids)}', 'pass': pp, 'n': len(ids)}
+    exam_sp = ('boundary_holdout', 'extrapolation_test')
+    exam_ids = [r['task_id'] for r in den_rows if tasks[r['task_id']]['split_v2'] in exam_sp]
+    exam_p = sum(1 for tid in exam_ids if next(r for r in den_rows if r['task_id'] == tid)['msr_pass'])
+    dev_ids = [r['task_id'] for r in den_rows if tasks[r['task_id']]['split_v2'] not in exam_sp]
+    dev_p = sum(1 for tid in dev_ids if next(r for r in den_rows if r['task_id'] == tid)['msr_pass'])
+
+    msr = {'note': '全链 MSR（R14/R16/R23，W5a 修正）：契约闸+ccx 求解+关1+关4+fidelity+spec_fidelity 全 PASS；'
+                   '分母 = spec-required 且非澄清题（R23：澄清/未收敛候选不计，编造归 FPR）；'
+                   '依赖预检不过即环境退出；失败分层 env/contract/model/solver，env 不计模型失败。',
            'msr': f'{p}/{n}', 'msr_pct': round(100 * p / max(1, n), 1),
+           'exam_msr': f'{exam_p}/{len(exam_ids)}',
+           'exam_msr_pct': round(100 * exam_p / max(1, len(exam_ids)), 1),
+           'dev_msr': f'{dev_p}/{len(dev_ids)}',
+           'by_split': by_split,
            'n_denominator': n, 'n_clarify_excluded': sum(1 for r in rows if not r.get('denominator')),
            'failure_class_counts': dict(collections.Counter(
                r.get('failure_class') for r in den_rows if not r['msr_pass'])),
@@ -119,8 +148,12 @@ def main():
            'per_task': rows}
     sc = json.load(open(REPORT, encoding='utf-8'))
     sc['msr_section'] = msr
+    # 顶层同步（NC-22 检查点：成绩单必须含 exam.msr）
+    sc.setdefault('exam', {})['msr'] = msr['exam_msr']
+    sc.setdefault('dev', {})['msr'] = msr['dev_msr']
     json.dump(sc, open(REPORT, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-    print(f"\nMSR = {p}/{n} ({msr['msr_pct']}%)  失败分层={msr['failure_class_counts']}")
+    print(f"\nMSR = {p}/{n} ({msr['msr_pct']}%)  exam={msr['exam_msr']} dev={msr['dev_msr']}"
+          f"  失败分层={msr['failure_class_counts']}")
     print('merged ->', REPORT)
     return 0
 

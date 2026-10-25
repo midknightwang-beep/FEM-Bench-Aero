@@ -1,0 +1,46 @@
+{
+ "task_id": "L3_stiffened_panel_600x600_str3",
+ "family": "stiffened_panel",
+ "split_v2": "extrapolation_test",
+ "input_level": "L3",
+ "candidate_spec": "F:/AI FEA Modeling DataSets/feagpt_repro/candidates_l3_v2\\L3_stiffened_panel_600x600_str3.json",
+ "gates": {
+  "spec_fidelity": {
+   "pass": true,
+   "n_fields": 14,
+   "n_fail": 0,
+   "failed": [],
+   "engineering_layer": true,
+   "dead_fields_skipped": [],
+   "exec_config_mismatch": [
+    {
+     "field": "load.direction (pressure)",
+     "expected": [
+      0.0,
+      0.0,
+      -1.0
+     ],
+     "actual": [
+      0,
+      1,
+      0
+     ]
+    }
+   ],
+   "metadata_extra": [
+    {
+     "field": "analysis.type",
+     "actual": "linear_static"
+    },
+    {
+     "field": "extra.units",
+     "actual": "mm-t-s"
+    }
+   ],
+   "field": "spec_fidelity (field-level, mandatory, skip-solve)",
+   "expected": "all graded fields equal (float tol 1e-6)",
+   "actual": "14/14 fields"
+  }
+ },
+ "overall_pass": true
+}

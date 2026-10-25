@@ -17,7 +17,13 @@ NC-8  L3 集成自检（nl 行存在 + 走三闸路径）-> INFO（L3 语义由 
 
 输出：eval_runs/negative_controls.json；全部秒级（spec_fidelity 快通道，不起求解器）。
 """
-import json, os, sys, copy, argparse
+import json, os, sys, argparse
+
+try:  # P1-3（专家第五轮）：GBK 控制台直跑不因中文/符号输出崩
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+except Exception:
+    pass
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -166,7 +172,7 @@ def main():
         FEASpec.from_dict(packaged)
         ok = False; why = '未拒绝（静默降级仍存在）'
     except ValueError:
-        ok = True; why = 'raise ✅'
+        ok = True; why = 'raise ok'
     results.append({'id': 'NC-11', 'desc': '包装候选拒绝契约', 'expect': 'raise', 'actual': why, 'ok': ok})
     print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-11 包装候选拒绝契约                         expect=raise {why}")
 
@@ -175,7 +181,7 @@ def main():
         FEASpec.from_dict({'structure': {'family': 'unknown'}, 'name': 'x'})
         ok = False; why = '未拒绝'
     except ValueError:
-        ok = True; why = 'raise ✅'
+        ok = True; why = 'raise ok'
     results.append({'id': 'NC-12', 'desc': 'family=unknown 拒绝', 'expect': 'raise', 'actual': why, 'ok': ok})
     print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-12 family=unknown 拒绝                      expect=raise {why}")
 
@@ -234,22 +240,33 @@ def main():
 
     # ---- W4e/W4f 扩展（专家第四轮附录 C）：NC-15..19 ----
     # NC-15：澄清判分字段级——问错族键名（含关键词'长桁'）必须 FAIL（R17）
+    # W5a：澄清题对象动态取（v5 考卷 panel 600x600 的 ec 迁到 str3；静默跳过 = 检查消失，禁止）
     from score_baseline import judge_clarify_field_level
-    panel_t = tasks.get('L3_stiffened_panel_600x600')
-    if panel_t and panel_t.get('clarify_aliases'):
+    panel_t = next((t for t in tasks.values()
+                    if t.get('expected_clarifications') and t.get('clarify_aliases')
+                    and t.get('clarify_wrong_keys')), None)
+    if panel_t is None:
+        results.append({'id': 'NC-15', 'desc': '澄清字段级探针无测对象', 'expect': 'any L3 clarify task',
+                        'actual': 'none found —— 澄清判据失去测试对象，配置错误', 'ok': False})
+        print('  [BAD!] NC-15 无任何带 clarify_aliases 的 L3 任务（澄清判据失去测试对象）')
+    else:
+        wrong_key_probe = (panel_t.get('clarify_wrong_keys') or ['n_stringers_per_skin'])[0]
         ok15, det15 = judge_clarify_field_level(
-            "长桁根数 n_stringers_per_skin 具体是多少？", panel_t)
-        results.append({'id': 'NC-15', 'desc': '澄清问错族键 n_stringers_per_skin',
+            f"{wrong_key_probe} 具体是多少？", panel_t)
+        results.append({'id': 'NC-15', 'desc': f'澄清问错族键 {wrong_key_probe}',
                         'expect': 'FAIL', 'actual': 'FAIL' if not ok15 else 'PASS',
-                        'ok': not ok15, 'detail': {k: det15.get(k) for k in ('wrong_keys_hit', 'alias_hits')}})
-        print(f"  [{ 'ok ' if (not ok15) else 'BAD!' }] NC-15 澄清问错族键（含'长桁'仍须FAIL）       "
+                        'ok': not ok15, 'task': panel_t['task_id'],
+                        'detail': {k: det15.get(k) for k in ('wrong_keys_hit', 'alias_hits')}})
+        print(f"  [{ 'ok ' if (not ok15) else 'BAD!' }] NC-15 澄清问错族键（{wrong_key_probe}）           "
               f"expect=FAIL actual={'FAIL' if not ok15 else 'PASS'}")
         # 反向：问对别名（无错键）必须 PASS
-        ok15b, _ = judge_clarify_field_level("请问长桁根数是多少？", panel_t)
-        results.append({'id': 'NC-15b', 'desc': '澄清问对别名（长桁根数）',
+        alias0 = (panel_t['clarify_aliases'] if isinstance(panel_t['clarify_aliases'], list)
+                  else sum(panel_t['clarify_aliases'].values(), []))[0]
+        ok15b, _ = judge_clarify_field_level(f"请问{alias0}是多少？", panel_t)
+        results.append({'id': 'NC-15b', 'desc': f'澄清问对别名（{alias0}）',
                         'expect': 'PASS', 'actual': 'PASS' if ok15b else 'FAIL',
-                        'ok': ok15b})
-        print(f"  [{ 'ok ' if ok15b else 'BAD!' }] NC-15b 澄清问对别名                            "
+                        'ok': ok15b, 'task': panel_t['task_id']})
+        print(f"  [{ 'ok ' if ok15b else 'BAD!' }] NC-15b 澄清问对别名（{alias0}）               "
               f"expect=PASS actual={'PASS' if ok15b else 'FAIL'}")
 
     # NC-16：panel bc.support 自创键（bc_skip 曾漏判）⇒ spec_fidelity FAIL（R19/P0-4）
@@ -311,6 +328,54 @@ def main():
         results.append({'id': 'NC-19', 'desc': 'exam 集不含 train/val（成绩单未生成，跳过）',
                         'expect': 'skip', 'actual': 'no scorecard', 'ok': True})
         print('  [ ok ] NC-19 exam 集不含 train/val（成绩单未生成，跳过）')
+
+    # ---- W5a 扩展（专家第五轮 6.2）：NC-20..22 ----
+    # NC-20：任务 NL 未给载荷方向 ⇒ 构建期拒绝（R21；v4 考卷 3 条翼盒因「法向」歧义失败）
+    # 判据 = 必须有 coordinate_convention 且 NL 无「（法向）」类未定义裸词；
+    # 方向表述可为向量 [0,1,0] 或文字化轴向（沿 +x / 绕 y / 沿壁面内法向）
+    import re
+    bare_normal = re.compile(r'（法向）|\(法向\)')
+    l3_all = [t for t in tasks.values() if t['input_level'] == 'L3']
+    no_dir = [t['task_id'] for t in l3_all
+              if not t.get('coordinate_convention')
+              or bare_normal.search(t['input'].get('nl', ''))]
+    ok = not no_dir
+    results.append({'id': 'NC-20', 'desc': 'L3 任务 NL 必须给坐标系+方向向量（R21）',
+                    'expect': 'empty', 'actual': str(no_dir[:5]) or 'empty', 'ok': ok})
+    print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-20 L3 NL 载荷方向完备（R21）               "
+          f"expect=empty actual={no_dir[:5] or 'empty'}")
+
+    # NC-21：MSR 分母不得含澄清/编造题（R23；v4 成绩单 d1600 曾双重计数）
+    sc21_path = os.path.join(RUNS, 'baseline_scorecard_L3.json')
+    if os.path.exists(sc21_path):
+        sc21 = json.load(open(sc21_path, encoding='utf-8'))
+        ec_ids = {t['task_id'] for t in l3_all if t.get('expected_clarifications')}
+        bad_den = [r['task_id'] for r in sc21.get('msr_section', {}).get('per_task', [])
+                   if r.get('denominator') and r['task_id'] in ec_ids]
+        ok = not bad_den
+        results.append({'id': 'NC-21', 'desc': 'MSR 分母不含澄清题（R23）',
+                        'expect': 'empty', 'actual': str(bad_den) or 'empty', 'ok': ok})
+        print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-21 MSR 分母排除澄清题（R23）               "
+              f"expect=empty actual={bad_den or 'empty'}")
+    else:
+        results.append({'id': 'NC-21', 'desc': 'MSR 分母检查（成绩单未生成，跳过）',
+                        'expect': 'skip', 'actual': 'no scorecard', 'ok': True})
+        print('  [ ok ] NC-21 MSR 分母排除澄清题（成绩单未生成，跳过）')
+
+    # NC-22：成绩单含 exam.msr（P1-1：不再手算；msr_section 已有 ⇒ exam.msr 必须有）
+    if os.path.exists(sc21_path):
+        sc22 = json.load(open(sc21_path, encoding='utf-8'))
+        has_msr_sec = bool(sc22.get('msr_section'))
+        em = (sc22.get('exam') or {}).get('msr')
+        ok = (not has_msr_sec) or bool(em)
+        results.append({'id': 'NC-22', 'desc': '成绩单 exam.msr 汇总字段（P1-1）',
+                        'expect': 'present', 'actual': em or 'missing', 'ok': ok})
+        print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-22 成绩单含 exam.msr                        "
+              f"expect=present actual={em or 'missing'}")
+    else:
+        results.append({'id': 'NC-22', 'desc': 'exam.msr 检查（成绩单未生成，跳过）',
+                        'expect': 'skip', 'actual': 'no scorecard', 'ok': True})
+        print('  [ ok ] NC-22 成绩单含 exam.msr（成绩单未生成，跳过）')
 
 
     n_ok = sum(1 for r in results if r['ok'])

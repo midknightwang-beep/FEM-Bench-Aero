@@ -1,10 +1,10 @@
-# RUBRIC.md — L3 判分口径预注册（W4e/W4f，专家第四轮 P0-6/R18）
+# RUBRIC.md — L3 判分口径预注册（W4e/W4f → W5a，专家第四/五轮 R18）
 
-> **冻结时间**：2026-10-25（考卷 v4 重跑**之前**）。
+> **版本**：v3（2026-10-25，W5a 修题后冻结；变更记录见文末）。
 > **纪律（R18）**：本文件冻结后，跑基线期间不得再改；每次改动必须新开版本号 + 记录原因。
 > **post-hoc 声明**：W4d 版口径（EXEC_CONFIG_KEYS / METADATA_KEY_NAMES / bc_skip）是看过
 > 30 条候选后调整的，属 **post-hoc**——其成绩（C-020，已 superseded）只能作开发参考；
-> 本 v2 口径在重跑（W5）前冻结，重跑成绩方为正式。
+> v2 口径冻结于 v4 重跑前（C-021）；v3 口径冻结于 v5 考卷重生成（W5b）之前。
 
 ## 1. 层次（红线 R15）
 
@@ -49,16 +49,32 @@
 
 - 全链 = 契约闸（含 FEASpec 试建）+ ccx 求解 + 关1 网格 + 关4 语义 + fidelity + spec_fidelity。
 - **依赖预检（R16）**：gmsh/numpy 缺失 ⇒ 环境错误退出，绝不记候选 FAIL。
-- 分母 = spec-required 任务（澄清/未收敛/编造被拒候选不计）。
+- **分母（R23，v3 修订）**：按**任务属性**排除——`expected_clarifications` 非空的澄清题与
+  无 spec 产出的未收敛候选一律不计分母，**无论澄清题是否被模型静默编造出 spec**
+  （编造已由 FPR 单独计数，双重计数违反 R23）。v2 文字「编造被拒候选不计」按此执行。
 - 失败分层 `env / contract / model / solver`；env 单独计数，不进 MSR。
+- 汇总：`exam.msr` / `dev.msr` / `by_split` 落盘成绩单（P1-1/P1-2，不再手算；NC-22 检查）。
 - 解释器：`C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe`（gmsh 在 venv）。
 
 ## 5. value_added
 
 - `exam` TSR_LLM − `exam` TSR_T1（同任务集 exam 口径，**不用 all_pct**）。
-- `n_exam < 20` ⇒ `underpowered=true`，**不得判 PASS**（R12）。
+- `n_exam < 20` ⇒ `underpowered=true`，**不得判 PASS**（R12/R24）。
 
 ## 6. 负控
 
 - 每次改判分/考卷必跑负控套件（R5/R6）；未全绿不得跑基线。
-- 套件：PC-1 + NC-1..19（W4e/W4f 新增 NC-15..19，见 negative_controls.py 文档头）。
+- 套件：PC-1 + NC-1..22（W5a 新增 NC-20 载荷方向完备 / NC-21 MSR 分母 / NC-22 exam.msr）。
+
+## 7. 任务构建期检查（R21，W5a 新增）
+
+- L3 任务 NL 必须给**坐标系约定 + 载荷方向**（向量或明确轴向文字），禁止「法向」类未定义裸词。
+- `tasks.jsonl` 每条 L3 行带 `coordinate_convention` 字段；NC-20 构建期检查。
+
+## 8. 版本记录
+
+| 版本 | 时间 | 变更 | 原因 |
+|---|---|---|---|
+| v1（post-hoc） | 2026-10-25 W4d | 初版（工程层口径） | 看过 30 条候选后调整 |
+| v2 | 2026-10-25 W4e/f | exam/dev 分栏 + 澄清字段级 + SFR 编造对齐 + 试建闸 | 专家第四轮 R15-R20 |
+| v3 | 2026-10-25 W5a | MSR 分母按任务属性排除（R23）+ R21 任务构建期方向检查 + NC-20..22 + exam.msr/dev.msr 汇总 | 专家第五轮 P0-1/P0-3/P1-1/P1-2；考卷 v5（坐标系写死 + panel 澄清题迁移 str3） |

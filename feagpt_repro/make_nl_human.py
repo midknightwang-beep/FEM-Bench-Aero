@@ -43,7 +43,10 @@ def wb_text(p, style, omit=None):
     if int(p.get('n_web', 0) or 0) > 0:
         pos = p.get('web_pos', 'centre')
         txt += f"加 {int(p['n_web'])} 道中间腹板（{pos}），"
-    txt += ("材料铝 2024-T3。工况：翼尖施加 500 N 集中力（法向），根部固支，展向悬臂。"
+    # W5a（专家第五轮 P0-1/R21）：载荷方向属任务输入，NL 必须给坐标系与方向向量——
+    # 旧版只写「法向」，同一任务模型两次分别猜 [0,1,0]/[0,0,1]（exam 3 条因此失败）
+    txt += ("材料铝 2024-T3。坐标系：x 弦向、y 弯曲方向（翼型法向）、z 展向。"
+            "工况：翼尖施加 500 N 集中力，方向 [0,1,0]（沿 +y 弯曲方向），根部固支，展向悬臂。"
             "单元全四边形壳，网格弦向 12 mm / 展向 25 mm。")
     return txt
 
@@ -68,7 +71,8 @@ def oh_text(p, style, mesh_size=None):
     sz = mesh_size if mesh_size is not None else 3.0
     return (f"开孔拉伸板：{fnum(p['length'])} × {fnum(p['width'])} mm，厚 {fnum(p['thickness'])} mm，"
             f"{hole}直径 {fnum(p['hole_d'])} mm，{mat}。"
-            f"两端施加 {fnum(p.get('load_n', 4000))} N 面内拉伸（端部均布），横向自由。"
+            f"坐标系：x 沿板长（拉伸方向）、y 板宽、z 板面法向。"
+            f"两端施加 {fnum(p.get('load_n', 4000))} N 面内拉伸（端部均布），方向 [1,0,0]（沿 +x），横向自由。"
             f"网格尺寸 {fnum(sz)} mm（弦向/展向同值），孔周加密。")
 
 def fb_text(p, style):
@@ -77,7 +81,8 @@ def fb_text(p, style):
     return (f"机身柱壳段：直径 {fnum(p['diameter'])} mm、长度 {fnum(p['length'])} mm，壳厚 {fnum(p['thickness'])} mm，"
             f"{int(p['n_stringers'])} 根长桁（blade 剖面，高 25 mm、厚 2.5 mm）、"
             f"{int(p['n_frames'])} 个普通框（blade 剖面）。"
-            f"载荷组合：内压 0.05 MPa + 端部剪力 50 kN + 端部弯矩 50 kN·m。"
+            f"坐标系：z 沿壳轴（轴向）、x 水平横向、y 竖直。"
+            f"载荷组合：内压 0.05 MPa（作用于壳体内壁，沿壁面内法向）+ 端部剪力 50 kN 沿 +x + 端部弯矩 50 kN·m 绕 y 轴。"
             f"材料铝 2024-T3，壳单元，周向与轴向网格各 25 mm。")
 
 def sp_text(p, style, mesh_size=3.0):
@@ -89,7 +94,8 @@ def sp_text(p, style, mesh_size=3.0):
     else:
         st = "无长桁（素板）。"
     return (f"加筋壁板：{fnum(p['width'])} × {fnum(p['length'])} mm，板厚 {fnum(p['thickness'])} mm，"
-            f"{st}四边简支，受 {fnum(p.get('pressure_mpa', 0.0001))} MPa 均布面压。"
+            f"{st}四边简支，受 {fnum(p.get('pressure_mpa', 0.0001))} MPa 均布面压，"
+            f"方向 [0,0,-1]（沿 -z 压向板面；z 为板面法向，板位于 z=0 平面）。"
             f"材料铝 2024-T3，板与筋全壳单元，网格尺寸 {fnum(mesh_size)} mm（弦向/展向同值）。")
 
 STYLE_CYCLE = ['描述', '任务单', '图纸']
@@ -114,6 +120,11 @@ def main():
         cands = by_fam.get(fam, [])
         # 优先挑非锚定基线的（覆盖更多样）
         picked = cands[:n]
+        # W5a（专家第五轮 P0-1 顺带实锤）：panel 素板（n_stringers=0）NL 写「无长桁」信息完备，
+        # 登记 ec=['n_stringers'] 是伪缺题——v4 考卷模型如实填 0 被误判「编造」（C-021 FPR 成分）。
+        # 澄清名额给 n_stringers>0 的案（挖「N 根」→「若干根」才是真缺）。
+        if fam == 'stiffened_panel':
+            picked = sorted(picked, key=lambda t: -int(t['input']['spec_normalized']['structure']['params'].get('n_stringers', 0)))
         for i, t in enumerate(picked):
             norm = t['input']['spec_normalized']
             fam_ = t['family']
@@ -151,7 +162,10 @@ def main():
                 ms = float(norm.get('mesh', {}).get('size_chord', 3.0))
                 txt = sp_text(norm['structure']['params'], STYLE_CYCLE[i % 3], mesh_size=ms)
                 if omit == 'n_stringers':
-                    txt = txt.replace("3 根 blade 长桁等距（高 20 mm、厚 2.5 mm）。", "若干根长桁。")
+                    # W5a：替换串从 gold 实读（旧版硬编码「3 根」对 ns≠3 的案会静默失配）
+                    old = f"{int(norm['structure']['params']['n_stringers'])} 根 blade 长桁等距（高 20 mm、厚 2.5 mm）。"
+                    assert old in txt, f'panel omit 替换失配: {t["task_id"]}'
+                    txt = txt.replace(old, "若干根长桁。")
             row = {
                 'task_id': f"L3_{t['task_id'][3:]}",
                 'family': fam_, 'input_level': 'L3', 'input_source': 'human',
@@ -159,6 +173,13 @@ def main():
                 'truth_ref': t['truth_ref'], 'gates': t['gates'],
                 'split_v2': t['split_v2'], 'split_reason': t['split_reason'] + ' | L3 人工 NL',
                 'geometry_class': t['geometry_class'],
+                # W5a（R21）：坐标系约定随任务落盘——载荷方向属任务输入，不属于隐藏约定
+                'coordinate_convention': {
+                    'wingbox': 'x=弦向, y=弯曲方向(翼型法向), z=展向; 翼尖载荷 [0,1,0] (+y)',
+                    'open_hole_panel': 'x=板长(拉伸方向), y=板宽, z=板面法向; 拉伸载荷 [1,0,0] (+x)',
+                    'fuselage_barrel': 'z=壳轴, x=水平横向(端剪沿+x), y=竖直(端弯绕y); 内压沿壁面内法向',
+                    'stiffened_panel': 'x/y=板面内, z=板面法向; 面压 [0,0,-1] (-z 压向板面)',
+                }[fam_],
             }
             if omit:
                 row['expected_clarifications'] = [omit]

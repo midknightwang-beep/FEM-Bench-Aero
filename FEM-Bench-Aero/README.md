@@ -7,10 +7,10 @@
 
 | 想做什么 | 去哪里 |
 |---|---|
-| 看当前计划 | [ROADMAP.md](ROADMAP.md)（W1–W4f 已收口。**对外 headline = 留出集 exam 11 条：TSR 5/11、SFR 5/10，n=11 underpowered**（C-021；C-020 的 18/30 已 superseded——混入 train/val + MSR 环境失败，专家第四轮 R15/R16）） |
+| 看当前计划 | [ROADMAP.md](ROADMAP.md)（W5a 已收口，**W5 Conditional-Go**：W5b 扩量前置。对外 headline 仍 = C-021 exam 11 条 TSR 5/11 / SFR 5/10 / **MSR 4/9（R23 修订）**，n=11 underpowered（R24：不得调优/承诺）；C-024 桥接表实锤 v3→v4 变化、C-025 修题后重打分（考卷 v5）|
 | 拿数据本体 | `../feagpt_repro/fetch_data.py --src <FEM-Bench-Aero-v1.0-data.tar.gz>`（SHA256 校验 + 55 条核对） |
-| 看任务/考卷 | `../feagpt_repro/tasks/tasks.jsonl`（L1 55 + L2 55 + L3 30 = 考卷 v4；L3 含 4 条澄清型，字段级别名判据 clarify_aliases/clarify_wrong_keys；**exam = boundary_holdout + extrapolation_test 共 11 条**，R15） |
-| 跑评测 | `python ../feagpt_repro/evaluate.py --batch --use-gold`；负控 `python ../feagpt_repro/negative_controls.py`（**21/21**，PC-1 + NC-1..19，红线 R5/R6）；判分口径见 [RUBRIC.md](RUBRIC.md)（预注册，R18） |
+| 看任务/考卷 | `../feagpt_repro/tasks/tasks.jsonl`（L1 55 + L2 55 + L3 30 = **考卷 v5**：四族 NL 坐标系+方向写死（R21，coordinate_convention 字段）；panel 澄清题修正迁 str3；判分口径 [RUBRIC.md](RUBRIC.md) **v3**（MSR 分母按任务属性排除 R23）|
+| 跑评测 | `python ../feagpt_repro/evaluate.py --batch --use-gold`；负控 `python ../feagpt_repro/negative_controls.py`（**24/24**，PC-1 + NC-1..22，红线 R5/R6）；判分口径见 [RUBRIC.md](RUBRIC.md)（v3 预注册，R18） |
 | 看基线成绩单 | `../feagpt_repro/eval_runs/baseline_scorecard_L3.json`（exam/dev 分栏；全链 msr_l3.py 须 venv 解释器 `"C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"`，含依赖预检与失败分层 env/contract/model/solver，R16） |
 | 查对外数字 | [external_numbers.md](external_numbers.md) ← [CLAIMS.md](CLAIMS.md) 主张账本（禁止手抄） |
 | 看 v1.0 已知限制 | [dataset_card.md](dataset_card.md)（8 条，含 vM 峰值未收敛 ≥13 %） |

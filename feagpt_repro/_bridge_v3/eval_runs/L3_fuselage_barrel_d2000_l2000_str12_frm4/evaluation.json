@@ -1,0 +1,64 @@
+{
+ "task_id": "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+ "family": "fuselage_barrel",
+ "split_v2": "extrapolation_test",
+ "input_level": "L3",
+ "candidate_spec": "F:/AI FEA Modeling DataSets/feagpt_repro/candidates_l3_v2\\L3_fuselage_barrel_d2000_l2000_str12_frm4.json",
+ "gates": {
+  "spec_fidelity": {
+   "pass": false,
+   "n_fields": 17,
+   "n_fail": 2,
+   "failed": [
+    {
+     "field": "extra.end_moment",
+     "expected": 50000000.0,
+     "actual": {
+      "magnitude": 50000000
+     },
+     "pass": false
+    },
+    {
+     "field": "extra.end_shear",
+     "expected": 50000.0,
+     "actual": {
+      "magnitude": 50000,
+      "direction": [
+       0,
+       1,
+       0
+      ]
+     },
+     "pass": false
+    }
+   ],
+   "engineering_layer": true,
+   "dead_fields_skipped": [],
+   "exec_config_mismatch": [
+    {
+     "field": "load.direction (pressure)",
+     "expected": [
+      0.0,
+      0.0,
+      1.0
+     ],
+     "actual": [
+      0,
+      1,
+      0
+     ]
+    }
+   ],
+   "metadata_extra": [
+    {
+     "field": "analysis.type",
+     "actual": "linear_static"
+    }
+   ],
+   "field": "spec_fidelity (field-level, mandatory, skip-solve)",
+   "expected": "all graded fields equal (float tol 1e-6)",
+   "actual": "15/17 fields"
+  }
+ },
+ "overall_pass": false
+}

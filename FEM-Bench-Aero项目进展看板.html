@@ -1697,7 +1697,17 @@ const REVIEW = [
     '<b>冒烟行为改变实证</b>：barrel 澄清题（考卷 v4 唯一缺 n_frames）从 v3「静默编造」变 v4「正确 CLARIFY 问框数」——考卷补齐信息 + prompt 按族键名后模型行为改变；★ 坑：msr_l3.py CAND_DIR 硬编码 v2 曾对着旧候选跑出 0/25（目录参数化）；★ schema analysis 白名单一度含 type 而 AnalysisSpec dataclass 拒收——试建闸立即抓到两层不一致',
     '<b>exam 11 条构成（如实）</b>：spec_pass 5 / spec_fail 4（wingbox×3 全是 load.direction 真实语义错 [0,1,0]→[0,0,1]、cfrp45s_d40 hole_d/layup 错）/ fabricated 1（barrel d1600 静默填 n_frames）/ no_output 1（offcentre hole_radius 3 轮删不掉）；dev 19 条：TSR 11/19、SFR 9/13（不进对外）；2 条 HTTP 502 服务瞬时故障已重试补齐（R16 环境失败不计模型失败）'
    ],
-   files:['FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/CLAIMS.md','feagpt_repro/eval_runs/baseline_scorecard_L3.json','feagpt_repro/eval_runs/negative_controls.json','feagpt_repro/score_baseline.py','feagpt_repro/msr_l3.py','feagpt_repro/candidates_l3_v3']}
+   files:['FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/CLAIMS.md','feagpt_repro/eval_runs/baseline_scorecard_L3.json','feagpt_repro/eval_runs/negative_controls.json','feagpt_repro/score_baseline.py','feagpt_repro/msr_l3.py','feagpt_repro/candidates_l3_v3']},
+  {id:'r58', g:'W5/Conditional-Go', c:'<b>W5a（专家第五轮整改）：修题 + 桥接表 + MSR 分母对齐 — C-021 MSR 修订 4/9 (44.4%)；C-024 桥接实锤 v3→v4 净 -2 条全来自任务欠定义；C-025 修题后重打分 dev 12/19（+1 纠错）；负控 24/24；R21–R24 挂账</b>',
+   q:'第五轮复评判定 Conditional-Go：基础设施够 W5 用，但 ① 3 条翼盒 exam 失败是任务欠定义（NL 只写「法向」没给坐标系，同一任务模型两代候选猜不同方向）② MSR 分母把编造澄清题 d1600 双重计数（RUBRIC 说澄清不计）③ v3→v4 下降 18.1pp 无桥接解释（考卷/判据/prompt 三件事同时变）④ n=11 underpowered。顺序：先 W5a 修题/桥接/MSR（不重新生成），再 W5b 扩到 n≥20。',
+   cmd:'python negative_controls.py   # 24/24（PC-1 + NC-1..22）\npython score_baseline.py --candidates candidates_l3_v3   # v5 考卷重打分\n"C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe" msr_l3.py   # R23 新分母 + exam.msr/dev.msr 汇总',
+   ev:[
+    '<b>W5a-1 修题（考卷 v5，R21）</b>：四族 NL 写死坐标系+方向——wingbox「x 弦向/y 弯曲/z 展向，方向 [0,1,0]」、open_hole「[1,0,0] 沿板长」、panel「[0,0,-1] 面压」、barrel「z 壳轴/端剪沿 x/端弯绕 y」（fuselage.py 实锤轴向硬编码）；tasks.jsonl 每条 L3 加 coordinate_convention（30/30）；<b>★ 超出专家报告的新实锤：panel 600x600 是伪缺澄清题</b>——gold n_stringers=0、NL 明写「无长桁」信息完备，ec 却登记 n_stringers ⇒ C-021 的「panel 600x600 编造 FAIL」实为考卷错题误罚；澄清名额迁 str3（3 根挖成「若干根」真缺），omit 替换串改 f-string 从 gold 读',
+    '<b>W5a-2 桥接表（R22，C-024）</b>：四格全现算（v3 旧判据从 b2e9b74 git 恢复到 _bridge_v3/，FEA 路径修一层）——A(v2候选×v3判据)=7/11（与历史一致）→ B(v3目录候选×v3判据)=5/11 → C(v2候选×v4判据)=0/11 → D(v3目录候选×v4判据)=5/11；净 -2 条全部来自 3 条 wingbox load.direction；判据收紧 -7 条全落 v2 旧候选习惯键（analysis.type 纯描述键）；<b>B=D 证明判据收紧对 v4 新候选零影响</b>（schema 修复循环已逼删）；恒等式闭合',
+    '<b>W5a-3 MSR 分母（R23，P1-1/P1-2）</b>：按任务属性排除——expected_clarifications 非空一律不计分母（无论是否被编造出 spec，编造归 FPR 不双重计数）；msr_l3.py argparse 化（CAND_DIR 硬编码教训）；exam.msr/dev.msr/by_split 落盘（不再手算，NC-22 检查）；C-021 MSR 4/10→4/9；score_baseline 重打分保留 msr_section',
+    '<b>W5a-4/5 重打分与负控</b>：修题后重打分 exam TSR 4/11（-1 = str3 ec 迁移对旧候选系统性误罚——「旧候选不能评新考卷」，正式 v5 成绩待 W5b 重生成）；dev 12/19（+1 = 600x600 修题纠错，从误罚编造变如实 spec_pass）；MSR 12/21 (57.1%) exam 4/8 dev 8/13（失败分层 model 6 + contract 3，env 0）；负控 <b>24/24</b>：NC-20（NL 方向完备）/NC-21（MSR 分母）/NC-22（exam.msr）；★ NC-15 曾因 600x600 不再是澄清题而静默消失——改动态取澄清任务+无测对象显式 FAIL（静默消失的检查比失败更危险）；P1-3 emoji 去 + stdout utf-8 重配置（GBK 控制台直跑不崩）'
+   ],
+   files:['feagpt_repro/eval_runs/bridge_v3_v4.json','FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/CLAIMS.md','feagpt_repro/eval_runs/baseline_scorecard_L3.json','feagpt_repro/eval_runs/negative_controls.json','feagpt_repro/make_nl_human.py','feagpt_repro/msr_l3.py']}
  ];
 
 /* ============ 渲染 ============ */
