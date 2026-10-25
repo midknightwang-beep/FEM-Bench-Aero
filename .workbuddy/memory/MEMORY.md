@@ -87,12 +87,25 @@
   专家第三轮（FEM-Bench-Aero第三轮复评与执行纠偏_2026-10-24.md）实锤：① 全链路径包装候选静默解成默认翼盒（skip_solve 修了全链没修）② bc/analysis/extra 漏判（柱壳候选 extra={} 端剪端弯全丢仍 23/23 PASS）③ L3 任务 mesh/load 键空完全不判 ④「冒烟 2/2」是旧快照（全量 2/5 SFR、全链 0/5 MSR）⑤ key 硬编码/无 response_format/model=auto 不可引用。评分卡 22/30 No-Go。
   **W4c 已落地**：FEASpec.from_dict 严格化（缺 structure/family 未知 => raise）；evaluate 全链解包+contract 闸（bc 空/柱壳缺 end_shear 不求解）；spec_fidelity 补 bc/analysis/extra（gold 权威全键判，L3 也判）；**负控 14/14**（新增 NC-9..13）；score_baseline partial 警告+underpowered（R12）；gen_candidates prompt 补 bc/extra+response_format+key 入 env；gate3 n_gated_pass 15→49；L3 boundary_holdout 统一（id_test 清零）；fetch_data tarfile；validate_schema UTF-8。
   **红线新增 R9–R14**（SFR≠MSR≠TSR / 候选契约校验 / 成绩单全覆盖 / n<20 不判 value_added / 模型 id 必录 / skip_solve 不得称基线）。
-  **待办**：GqaWxI（19 条 L1 全考卷生成）完成后用新判据打分出正式成绩单 + CLAIMS C-017/C-018 + 评分卡重评 → W4d（L3 主基线 + schema 约束解码，n≥20）。老王 8 项待拍板全按「整改完善」授权执行。
-- 下一步候选（待老王拍板，按 ROADMAP 顺序）：
-  ① **W1：git init + .gitignore**（10 分钟，R7，专家 P0）+ outputs 瘦身归档（9.7 GB）+ 对外材料单一数字源（41→55 口径 + B/C 移出）。
-  ② **W2–W3：任务 JSONL + evaluate(candidate)**（复用闸判据代码）+ 30 条人工 NL + ID test（等价类整类留出）+ schema 统一。
-  ③ **W4：首份 ID 基线成绩单**（通用大模型 + 约束解码，TSR/FPR 口径）。
-  ④ 翼盒「新形式」锚点：`webpos_new` 5.92 % / `section_new` 5.49 %（train 各 1 条）——随 v1.1 数据放量按「参数覆盖」补，不再按 MAPE 补。
+  **待办（已全部收口）**：W4b 成绩单（C-017，L1 smoke SFR 0/19）→ W4d L3 主基线（commit b2e9b74）。
+- **★★★★ W4d L3 主基线收口（2026-10-25，commit b2e9b74，C-020，评分卡 29/30）——ROADMAP W1–W4 全部收口**：
+  老王两项口径拍板：① **工程层判+配置层只报**（EXEC_CONFIG_KEYS=mesh gmsh 键/analysis 执行键/extra 内部编码键/
+  pressure 方向 → REPORTED；死字段 stringer_* 豁免（ns=0）；元数据自创键白名单；语义编造照罚；**bc 只对 wingbox 判
+  ——实锤 pipeline 不消费 spec.bc，非翼盒族 gold bc 是死模板值**）② **澄清题问对=对（clarify_keywords 落盘）、编造=错**。
+  生成 = gen_candidates_v2.js（pin glm-5.3-flash；**SDK 无 json_schema logits 约束 ⇒ 约束解码 = json_object + ajv 校验
+  + 错误反馈修复循环 ≤3 轮**，CLAIMS 如实标注）。负控 **15/15**（NC-14 工程层口径四探针）。
+  **成绩单（n=30，考卷 v3）**：TSR 18/30 (60%)、SFR 16/25 (64%)、**全链 MSR 11/30 (36.7%)**（翼盒有 spec 12 条中 11 条
+  全绿 fidelity≤0.024%；13 条 pipeline 失败全为模型 spec 质量——语义自创键/字段错位/单位换算，归因落盘
+  msr_pipeline_failure_attribution.json）、**value_added Δ+36.7pp PASS**（T1 地板同任务集 23.3%，n≥20）。
+  考卷三轮实锤修正（第三轮后停止迭代）：ec 伪缺 bug / CFRP 材料卡 11 常数从 gold 写全 / **网格尺寸 gold 4.0 硬编码成
+  「3 mm」+ offcentre 孔位**。
+  **坑**：① 全链 MSR 必须 venv 解释器（系统 Python 无 gmsh 假报 pipeline 失败）② 判分层豁免的元数据键必须在全链
+  FEASpec 构造前剥离（dataclass 拒收未知键，两层口径要一致）③ SDK response_format 只有 json_object|text。
+- 下一步候选（待老王拍板，按 ROADMAP）：
+  ① W5 评审包：成绩单对外化（盲测协议预注册 D36 方法论沿用）+ 专家第四轮复评材料。
+  ② v1.1 数据放量：L3 考卷扩量（按参数覆盖补 NL 变体）+ ID 内插留出 + 边界 holdout 扩容。
+  ③ MSR 失败 13 条的修复率维度（KPI 含「修复」）——候选 spec 一轮反馈修复实验。
+  ④ 翼盒「新形式」锚点：随 v1.1 数据放量按「参数覆盖」补，不再按 MAPE 补。
 - **明确禁止**：**`sweep` 轴停手**（D34 换基 / D35 补交互 / D36 补中间站，三轮各付一次代价、边际为零）；
   不要再加交互特征（−36.54 %）；不要补 vM 峰值；不要在补数据的同时改模型形式（混叠）。
 - 新形式必须自带退化自检（check_forms 常设闸）。
