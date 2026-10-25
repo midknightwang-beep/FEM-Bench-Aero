@@ -1,0 +1,508 @@
+{
+ "note": "W4d L3 主基线（2026-10-25 拍板口径）：TSR=行为正确性（完备题答对+澄清题问对）；SFR=字段保真（工程层判，配置层只报）；FPR 双向；MSR 全链见 msr 节（红线 R9/R14）。",
+ "model": "glm-5.3-flash",
+ "decode": "json_object + schema_task.json 校验 + 错误反馈修复循环（<=3 轮；SDK 无 logits 级 json_schema）",
+ "n_tasks": 30,
+ "n_tasks_exam_expected": 30,
+ "partial": false,
+ "underpowered": false,
+ "tsr": {
+  "pass": 18,
+  "total": 30,
+  "pct": 60.0
+ },
+ "sfr": {
+  "pass": 16,
+  "of_spec_candidates": 25,
+  "pct": 64.0
+ },
+ "fpr": {
+  "fabricated_on_clarify_tasks": 1,
+  "n_clarify_tasks": 4,
+  "fabrication_rate_pct": 25.0,
+  "overclarify": 1,
+  "clarify_wrong_field": 0
+ },
+ "category_counts": {
+  "fabricated": 1,
+  "spec_fail": 9,
+  "spec_pass": 15,
+  "clarify_ok": 3,
+  "no_output": 1,
+  "clarify_wrong": 1
+ },
+ "by_split": {
+  "boundary_holdout": {
+   "tsr": "4/4"
+  },
+  "extrapolation_test": {
+   "tsr": "3/7"
+  },
+  "train": {
+   "tsr": "8/9"
+  },
+  "val": {
+   "tsr": "3/10"
+  }
+ },
+ "per_task": [
+  {
+   "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+   "split_v2": "extrapolation_test",
+   "family": "fuselage_barrel",
+   "category": "fabricated",
+   "tsr_pass": false,
+   "ec": true,
+   "turns_used": 3,
+   "note": "澄清题静默编造 spec（缺 ['n_frames']）",
+   "expected_clarifications": [
+    "n_frames"
+   ],
+   "sfr_fields": "17/17",
+   "sfr_pass": true
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d1800_l2000_str8_frm3",
+   "split_v2": "val",
+   "family": "fuselage_barrel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 17,
+   "n_fail": 2,
+   "failed_fields": [
+    "extra.end_moment",
+    "extra.end_shear"
+   ],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l1600_str8_frm3",
+   "split_v2": "val",
+   "family": "fuselage_barrel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 18,
+   "n_fail": 1,
+   "failed_fields": [
+    "extra.internal_pressure (not in gold)"
+   ],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+   "split_v2": "extrapolation_test",
+   "family": "fuselage_barrel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 17,
+   "n_fail": 2,
+   "failed_fields": [
+    "extra.end_moment",
+    "extra.end_shear"
+   ],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
+   "split_v2": "train",
+   "family": "fuselage_barrel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 17,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_naca4412_wingbox",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "clarify_ok",
+   "tsr_pass": true,
+   "ec": true,
+   "turns_used": 1,
+   "clarify": "[\"翼肋数量 n_ribs 未明确（描述为'若干'），请给出具体肋数及是否含根部/端部肋\"]",
+   "keywords": [
+    "肋"
+   ],
+   "hit": true
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs3_chord1000",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs3_chord800",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs5_chord800",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs7_chord1000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs7_chord800",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs9_chord1000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 27,
+   "n_fail": 3,
+   "failed_fields": [
+    "extra.rib_layout (not in gold)",
+    "extra.rib_pitch_count (not in gold)",
+    "extra.web_thickness (not in gold)"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_recombination_algorithm3",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin1p5",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin2",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin4",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span1600",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span2400",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span2400_skin2",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span3000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20",
+   "split_v2": "train",
+   "family": "open_hole_panel",
+   "category": "clarify_ok",
+   "tsr_pass": true,
+   "ec": true,
+   "turns_used": 1,
+   "clarify": "[\"开孔直径是多少？孔的位置（默认居中）是否正确？\"]",
+   "keywords": [
+    "孔"
+   ],
+   "hit": true
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp090s",
+   "split_v2": "train",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 21,
+   "n_fail": 6,
+   "failed_fields": [
+    "params.layup",
+    "load.kind",
+    "load.magnitude",
+    "load.faces (not in gold)",
+    "load.total_force (not in gold)",
+    "extra.target_total_force_N (not in gold)"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 21,
+   "n_fail": 4,
+   "failed_fields": [
+    "params.layup",
+    "extra.lamina (not in gold)",
+    "extra.layup (not in gold)",
+    "extra.mesh_refine_around_hole (not in gold)"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "category": "no_output",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "note": "3 轮修复未收敛（UNRESOLVED）"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrpqi",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 22,
+   "n_fail": 5,
+   "failed_fields": [
+    "params.layup",
+    "load.distribution (not in gold)",
+    "extra.layup (not in gold)",
+    "extra.mesh_refinement (not in gold)",
+    "extra.ply_material (not in gold)"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_offcentre",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 20,
+   "n_fail": 4,
+   "failed_fields": [
+    "params.hole_x",
+    "params.hole_y",
+    "load.distribution (not in gold)",
+    "extra.hole_refinement (not in gold)"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_stiffened_panel_600x600",
+   "split_v2": "train",
+   "family": "stiffened_panel",
+   "category": "clarify_ok",
+   "tsr_pass": true,
+   "ec": true,
+   "turns_used": 1,
+   "clarify": "[\"长桁根数 n_stringers_per_skin 具体是多少？\",\"长桁截面形式 kind 是 blade 还是 T？（若非 blade 还需给定 flange 宽度）\",\"长桁截面尺寸 stringer_height 和 stringer_thickness 分别是多少？\"]",
+   "keywords": [
+    "长桁"
+   ],
+   "hit": true
+  },
+  {
+   "task_id": "L3_stiffened_panel_600x600_str3",
+   "split_v2": "extrapolation_test",
+   "family": "stiffened_panel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 14,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_stiffened_panel_800x600",
+   "split_v2": "val",
+   "family": "stiffened_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 15,
+   "n_fail": 1,
+   "failed_fields": [
+    "extra.stringer_kind (not in gold)"
+   ],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_stiffened_panel_800x600_str3",
+   "split_v2": "val",
+   "family": "stiffened_panel",
+   "category": "clarify_wrong",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 1,
+   "clarify": "[\"3 根 blade 长桁的截面高度 stringer_height 是多少(mm)?\",\"3 根 blade 长桁的厚度 stringer_thickness 是多少(mm)?\",\"加筋壁板的 600 mm 和 800 mm 分别对应哪个方向(length_spanwise 与 width_ch",
+   "note": "该答不答（信息完备却澄清）"
+  }
+ ],
+ "value_added": {
+  "TSR_T1_pct": 26.7,
+  "TSR_LLM_pct": 60.0,
+  "delta_pp": 33.3,
+  "criterion": ">= 10 pp 才算 LLM 真有增量（专家 6.3.1）；n=30 >= 20 可判（红线 R12）",
+  "verdict": "PASS"
+ }
+}

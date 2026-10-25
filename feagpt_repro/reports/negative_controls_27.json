@@ -1,0 +1,233 @@
+{
+ "n_cases": 27,
+ "n_ok": 27,
+ "all_ok": true,
+ "ids": [
+  "PC-1",
+  "NC-1",
+  "NC-3",
+  "NC-4",
+  "NC-5",
+  "NC-6",
+  "NC-2",
+  "NC-7",
+  "NC-8",
+  "NC-9",
+  "NC-10",
+  "NC-11",
+  "NC-12",
+  "NC-13",
+  "NC-14",
+  "NC-15",
+  "NC-15b",
+  "NC-16",
+  "NC-17",
+  "NC-18",
+  "NC-19",
+  "NC-20",
+  "NC-21",
+  "NC-22",
+  "NC-23",
+  "NC-24",
+  "NC-25"
+ ],
+ "results": [
+  {
+   "id": "PC-1",
+   "desc": "gold spec",
+   "expect": "PASS",
+   "actual": "PASS",
+   "ok": true
+  },
+  {
+   "id": "NC-1",
+   "desc": "rib_thickness 4->8",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-3",
+   "desc": "n_stringers_per_skin 0->3",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-4",
+   "desc": "mesh.size_chord 12->20",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-5",
+   "desc": "load.magnitude 500->600",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-6",
+   "desc": "E 73100->60000",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-2",
+   "desc": "L2 问对填错 8.0",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-7",
+   "desc": "L2 静默默认",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-8",
+   "desc": "L3 已接入任务层（30 条）",
+   "expect": "30 条",
+   "actual": "30",
+   "ok": true
+  },
+  {
+   "id": "NC-9",
+   "desc": "删 bc",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-10",
+   "desc": "删 extra.end_shear",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-11",
+   "desc": "包装候选拒绝契约",
+   "expect": "raise",
+   "actual": "raise ok",
+   "ok": true
+  },
+  {
+   "id": "NC-12",
+   "desc": "family=unknown 拒绝",
+   "expect": "raise",
+   "actual": "raise ok",
+   "ok": true
+  },
+  {
+   "id": "NC-13",
+   "desc": "L3 删 mesh/load/bc/extra",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-14",
+   "desc": "工程层口径四探针",
+   "expect": "4/4",
+   "actual": "配置键错值豁免=OK; 死字段错值豁免=OK; web_chordwise 编值照罚=OK; 判层字段错闸不松=OK",
+   "ok": true
+  },
+  {
+   "id": "NC-15",
+   "desc": "澄清问错族键 n_stringers_per_skin",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true,
+   "task": "L3_naca4412_wingbox",
+   "detail": {
+    "wrong_keys_hit": [
+     "n_stringers_per_skin"
+    ],
+    "alias_hits": null
+   }
+  },
+  {
+   "id": "NC-15b",
+   "desc": "澄清问对别名（n_ribs）",
+   "expect": "PASS",
+   "actual": "PASS",
+   "ok": true,
+   "task": "L3_naca4412_wingbox"
+  },
+  {
+   "id": "NC-16",
+   "desc": "panel bc.support 自创键",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-17",
+   "desc": "open_hole 自创键 load.distribution+material.ply_material",
+   "expect": "FAIL/FAIL",
+   "actual": "FAIL/FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-18",
+   "desc": "MSR 依赖预检（gmsh 缺失 => 环境退出 rc=2）",
+   "expect": "guard present",
+   "actual": "present",
+   "ok": true
+  },
+  {
+   "id": "NC-19",
+   "desc": "exam 集不含 train/val（R15）",
+   "expect": "empty",
+   "actual": "[]",
+   "ok": true
+  },
+  {
+   "id": "NC-20",
+   "desc": "L3 任务 NL 必须给坐标系+方向向量（R21）",
+   "expect": "empty",
+   "actual": "[]",
+   "ok": true
+  },
+  {
+   "id": "NC-21",
+   "desc": "MSR 分母不含澄清题（R23；核对卷=tasks_v4.jsonl）",
+   "expect": "empty",
+   "actual": "[]",
+   "ok": true
+  },
+  {
+   "id": "NC-22",
+   "desc": "成绩单 exam.msr 汇总字段（P1-1）",
+   "expect": "present",
+   "actual": "4/9",
+   "ok": true
+  },
+  {
+   "id": "NC-23",
+   "desc": "CLAIMS artifact 缺失 ⇒ check_claims FAIL",
+   "expect": "rc!=0 + 报「不存在」",
+   "actual": "rc=1",
+   "ok": true
+  },
+  {
+   "id": "NC-24",
+   "desc": "CLAIMS artifact 在 eval_runs/（未追踪）⇒ FAIL（R25）",
+   "expect": "rc!=0 + 报 eval_runs",
+   "actual": "rc=1",
+   "ok": true
+  },
+  {
+   "id": "NC-25",
+   "desc": "官方/诊断同一 artifact 路径 ⇒ FAIL（R27）",
+   "expect": "rc!=0 + 报 R27",
+   "actual": "rc=1",
+   "ok": true
+  }
+ ]
+}

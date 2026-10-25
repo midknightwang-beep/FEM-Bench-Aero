@@ -1707,7 +1707,19 @@ const REVIEW = [
     '<b>W5a-3 MSR 分母（R23，P1-1/P1-2）</b>：按任务属性排除——expected_clarifications 非空一律不计分母（无论是否被编造出 spec，编造归 FPR 不双重计数）；msr_l3.py argparse 化（CAND_DIR 硬编码教训）；exam.msr/dev.msr/by_split 落盘（不再手算，NC-22 检查）；C-021 MSR 4/10→4/9；score_baseline 重打分保留 msr_section',
     '<b>W5a-4/5 重打分与负控</b>：修题后重打分 exam TSR 4/11（-1 = str3 ec 迁移对旧候选系统性误罚——「旧候选不能评新考卷」，正式 v5 成绩待 W5b 重生成）；dev 12/19（+1 = 600x600 修题纠错，从误罚编造变如实 spec_pass）；MSR 12/21 (57.1%) exam 4/8 dev 8/13（失败分层 model 6 + contract 3，env 0）；负控 <b>24/24</b>：NC-20（NL 方向完备）/NC-21（MSR 分母）/NC-22（exam.msr）；★ NC-15 曾因 600x600 不再是澄清题而静默消失——改动态取澄清任务+无测对象显式 FAIL（静默消失的检查比失败更危险）；P1-3 emoji 去 + stdout utf-8 重配置（GBK 控制台直跑不崩）'
    ],
-   files:['feagpt_repro/eval_runs/bridge_v3_v4.json','FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/CLAIMS.md','feagpt_repro/eval_runs/baseline_scorecard_L3.json','feagpt_repro/eval_runs/negative_controls.json','feagpt_repro/make_nl_human.py','feagpt_repro/msr_l3.py']}
+   files:['feagpt_repro/eval_runs/bridge_v3_v4.json','FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/CLAIMS.md','feagpt_repro/eval_runs/baseline_scorecard_L3.json','feagpt_repro/eval_runs/negative_controls.json','feagpt_repro/make_nl_human.py','feagpt_repro/msr_l3.py']},
+  {id:'r59', g:'W5/扩量前置', c:'<b>W5a′（专家第六轮整改）：把证据钉进 git — 官方 artifact 入 <code>reports/</code> + <code>check_claims.py</code> 自检（R25/R26/R27）+ 负控 27/27；<b>C-021 逐项复现</b>（exam TSR 5/11、MSR 4/9、dev 11/19）+ bootstrap CI 落地（TSR CI95 [18.2, 72.7]）</b>',
+   q:'第六轮复评判定 Conditional-Go：科学内容够了，但 <b>官方数字不可自证</b>——① <code>git ls-files feagpt_repro/eval_runs</code> = 0（该目录被 gitignore 第 52 行排除）② C-021 的 v4 成绩单已被 C-025 的 v5 重打分覆盖，命令现在跑出来的是 4/11 不是 5/11 ③ 没有脚本检查「CLAIM 的 artifact 是否存在/被追踪」④ C-019 记 21 条实为 24 条、C-024 归因不准。要求先做 0.5 天的 W5a′ 再扩量。',
+   cmd:'python check_claims.py   # 18 条 active claim / 19 个 artifact 逐条查（存在+git 追踪+路径一致+sha256）\npython negative_controls.py   # 27/27（+NC-23/24/25 打 check_claims）\npython score_baseline.py --candidates candidates_l3_v3 --tasks reports/papers/tasks_v4.jsonl --report reports/baseline_scorecard_L3_v4.json   # 复现 5/11\nexport_msr.py → bootstrap_ci.py   # MSR 4/9 复核 + CI95 [18.2,72.7]',
+   ev:[
+    '<b>reports/ 入库（R25）</b>：官方出一处——v4 成绩单（C-021）、v5 重打分（C-025，标 diagnostic）、桥接 A/B/C + 汇总（C-024）、负控 27 条、T1 地板、MSR 明细、bootstrap CI、考卷快照 <code>papers/</code>（v4 = <code>git show 28e66bb:</code> 逐字节，v5 = tag v1.0-l3-v5，带 SHA256SUMS）+ <code>INDEX.md</code> 说明官方/诊断；<code>eval_runs/</code> 退回纯工作目录',
+    '<b>C-021 逐项复现（P0-2）</b>：<code>--tasks papers/tasks_v4.jsonl</code> 重跑得 exam TSR <b>5/11 (45.5%)</b>、SFR 5/10、dev <b>11/19</b>、问错字段 <b>0</b>，与 C-021 文本逐项一致；全链 MSR 重跑 18 min 得 <b>11/21、exam 4/9、dev 7/12</b>（分层 model 7 + contract 3，env 0），与 C-021 的 4/9 一致——<b>官方数字现在在 clean clone 上可复现</b>',
+    '<b>check_claims.py（R26）+ NC-23/24/25</b>：解析 CLAIMS 表格，对每条 active claim 查 artifact 存在 / git 追踪 / 不在 eval_runs / 与 command 的 <code>--report</code> 路径一致 / 同路径不被两条口径不同的 claim 占用，并记 sha256+mtime；三条负控用临时 CLAIMS 注入（缺失 / eval_runs / 官方诊断同路径），<b>全 27/27</b>',
+    '<b>CI 落地（P1-6）</b>：<code>bootstrap_ci.py</code> 对 exam 任务重采样（B=4000, seed 固定）——v4 官方 TSR 45.5% <b>CI95 [18.2, 72.7]</b>、SFR 50% [20.0, 80.0]、MSR 44.4% [11.1, 77.8]；<b>区间宽度本身就是「n=11 不得对外承诺」的量化证明</b>（R12/R24 不放宽）',
+    '<b>计数与归因修正（P1-1..P1-4）</b>：C-019 21→<b>27</b>（并写明旧「21/23」是漏计 NC-15b 的错账）；RUBRIC §6 同步；C-024 归因改 <b>−3 wingbox load.direction +1 d2000</b> 并给 per_task 四列；C-009 标 superseded；README「看成绩单」改链 <code>reports/INDEX.md</code>，不再直链工作文件',
+    '<b>★ 两个新坑</b>：① <code>_bridge_v3/tasks/tasks.jsonl</code> 打出来 exam 也是 5/11，但 dev 10/19、问错字段 1 ⇒ <b>「总数对上」≠「复现对了」</b>，必须用 <code>papers/tasks_v4.jsonl</code>；② NC-21 拿当前 v5 卷的澄清题清单去核 v4 成绩单分母，报出假红（str3 在 v4 不是澄清题）⇒ 负控必须按成绩单 <code>provenance.tasks_path</code> 回读它当时那张卷子。<b>「拿现态判历史产物」= 假红/假绿</b>'
+   ],
+   files:['feagpt_repro/reports/INDEX.md','feagpt_repro/reports/baseline_scorecard_L3_v4.json','feagpt_repro/reports/negative_controls_27.json','feagpt_repro/reports/bootstrap_ci_L3_v4.json','feagpt_repro/reports/papers/SHA256SUMS','feagpt_repro/check_claims.py','feagpt_repro/bootstrap_ci.py','feagpt_repro/export_msr.py','FEM-Bench-Aero/W5B_PLAN.md','FEM-Bench-Aero/CLAIMS.md']}
  ];
 
 /* ============ 渲染 ============ */

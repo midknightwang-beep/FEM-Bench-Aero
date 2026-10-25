@@ -14,15 +14,29 @@ score_baseline.py — W4d L3 主基线成绩单（W4e 按专家第四轮修正�
 W4e（专家第四轮 P0-1/R15）：headline 只用 exam = boundary_holdout + extrapolation_test；
 train+val 单列 dev（开发/诊断），不进对外。underpowered = n_exam < 20（红线 R12）。
 value_added = exam TSR_LLM − exam TSR_T1（地板同任务集 exam 口径，不用 all_pct）。
-输出：eval_runs/baseline_scorecard_L3.json
+
+W5a'（专家第六轮 P0-1/P0-2/P1-8，红线 R25/R27）：
+  - 输出默认写 reports/（**入库**，非 eval_runs/），文件名必须带版本；
+  - --paper 记录考卷 provenance（tasks 路径 + sha256），成绩单自带溯源；
+  - --candidates 默认 candidates_l3_v3，并在输出里显式记录实际目录（不再静默 v2）。
 """
-import json, os, sys, collections
+import json, os, sys, hashlib, collections
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from evaluate import evaluate_one, load_tasks, RUNS
 
 EXAM_SPLITS = ('boundary_holdout', 'extrapolation_test')
+# R25：官方 artifact 一律写 reports/（被 git 追踪），eval_runs/ 只作工作目录
+REPORT_DIR = os.path.join(HERE, 'reports')
+
+
+def sha256_file(p):
+    h = hashlib.sha256()
+    with open(p, 'rb') as f:
+        for chunk in iter(lambda: f.read(1 << 20), b''):
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def judge_clarify_field_level(text, task):
@@ -109,11 +123,15 @@ def main():
     argv = sys.argv[1:]
     def get(k, d):
         return argv[argv.index(k) + 1] if k in argv else d
-    cand_dir = get('--candidates', os.path.join(HERE, 'candidates_l3_v2'))
+    cand_dir = get('--candidates', os.path.join(HERE, 'candidates_l3_v3'))
     tasks_path = get('--tasks', os.path.join(HERE, 'tasks', 'tasks.jsonl'))
-    report_path = get('--report', os.path.join(RUNS, 'baseline_scorecard_L3.json'))
-    trivial_path = get('--trivial', os.path.join(RUNS, 'trivial_baselines_L3.json'))
+    report_dir = get('--report-dir', REPORT_DIR)
+    report_path = get('--report', os.path.join(report_dir, 'baseline_scorecard_L3.json'))
+    trivial_path = get('--trivial', os.path.join(report_dir, 'trivial_baselines_L3.json'))
     n_tasks_exam = int(get('--n-tasks-exam', '11'))
+    label = get('--label', '')
+    os.makedirs(os.path.dirname(os.path.abspath(report_path)) or '.', exist_ok=True)
+    print(f'[score_baseline] candidates={os.path.basename(cand_dir)}  tasks={tasks_path}')
 
     tasks = {t['task_id']: t for t in load_tasks(tasks_path)
              if t['input_level'] == 'L3'}
@@ -149,6 +167,14 @@ def main():
         'model': 'glm-5.3-flash',
         'decode': 'json_object + schema_task.json 校验 + 错误反馈修复循环（<=3 轮；SDK 无 logits 级 json_schema）',
         'exam_definition': 'exam = boundary_holdout + extrapolation_test；dev = train + val（R15）',
+        'provenance': {   # W5a'（R25/R27）：成绩单自带溯源，替代「靠人记当时跑了什么」
+            'label': label,
+            'tasks_path': os.path.relpath(os.path.abspath(tasks_path), HERE).replace('\\', '/'),
+            'tasks_sha256': sha256_file(tasks_path),
+            'candidates_dir': os.path.relpath(os.path.abspath(cand_dir), HERE).replace('\\', '/'),
+            'n_candidates': len(rows),
+            'generated_by': 'score_baseline.py',
+        },
         'n_tasks': len(rows),
         'n_tasks_exam_expected': n_tasks_exam,
         'partial': n_exam < n_tasks_exam,

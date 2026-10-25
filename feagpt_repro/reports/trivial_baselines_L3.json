@@ -1,0 +1,263 @@
+{
+ "note": "平凡基线地板（levels=['L3'], eng_layer=True）。考卷 = boundary_holdout + extrapolation_test；value_added = TSR_LLM − TSR_T1 ≥ 10 pp 才算 LLM 真有增量。",
+ "T0_constant": {
+  "exam_tsr": "0/11",
+  "exam_pct": 0.0,
+  "train_tsr": "5/9",
+  "all_pct": 16.7
+ },
+ "T1_retrieval": {
+  "exam_tsr": "0/11",
+  "exam_pct": 0.0,
+  "train_tsr": "8/9",
+  "all_pct": 26.7
+ },
+ "T2_gold": {
+  "exam_tsr": "11/11",
+  "exam_pct": 100.0,
+  "train_tsr": "9/9",
+  "all_pct": 100.0
+ },
+ "per_task": [
+  {
+   "task_id": "L3_naca4412_wingbox",
+   "split_v2": "train",
+   "family": "wingbox",
+   "T0": true,
+   "T1": true,
+   "T1_nn": "L3_naca4412_wingbox"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs3_chord1000",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_naca4412_wingbox"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs3_chord800",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_naca4412_wingbox_n_ribs5_chord800"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs5_chord800",
+   "split_v2": "train",
+   "family": "wingbox",
+   "T0": false,
+   "T1": true,
+   "T1_nn": "L3_naca4412_wingbox_n_ribs5_chord800"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs7_chord1000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_naca4412_wingbox"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs7_chord800",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_naca4412_wingbox_n_ribs5_chord800"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs9_chord1000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_naca4412_wingbox"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_recombination_algorithm3",
+   "split_v2": "train",
+   "family": "wingbox",
+   "T0": true,
+   "T1": true,
+   "T1_nn": "L3_naca4412_wingbox"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin1p5",
+   "split_v2": "val",
+   "family": "wingbox",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_naca4412_wingbox_size_skin2"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin2",
+   "split_v2": "train",
+   "family": "wingbox",
+   "T0": false,
+   "T1": true,
+   "T1_nn": "L3_naca4412_wingbox_size_skin2"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin4",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_naca4412_wingbox"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span1600",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_naca4412_wingbox"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span2400",
+   "split_v2": "train",
+   "family": "wingbox",
+   "T0": false,
+   "T1": true,
+   "T1_nn": "L3_naca4412_wingbox_size_span2400"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span2400_skin2",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_naca4412_wingbox_size_skin2"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span3000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_naca4412_wingbox_size_span2400"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20",
+   "split_v2": "train",
+   "family": "open_hole_panel",
+   "T0": true,
+   "T1": true,
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp090s",
+   "split_v2": "train",
+   "family": "open_hole_panel",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrpqi",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_offcentre",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+   "split_v2": "extrapolation_test",
+   "family": "fuselage_barrel",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3"
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d1800_l2000_str8_frm3",
+   "split_v2": "val",
+   "family": "fuselage_barrel",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3"
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l1600_str8_frm3",
+   "split_v2": "val",
+   "family": "fuselage_barrel",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3"
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+   "split_v2": "extrapolation_test",
+   "family": "fuselage_barrel",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3"
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
+   "split_v2": "train",
+   "family": "fuselage_barrel",
+   "T0": true,
+   "T1": true,
+   "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3"
+  },
+  {
+   "task_id": "L3_stiffened_panel_600x600",
+   "split_v2": "train",
+   "family": "stiffened_panel",
+   "T0": true,
+   "T1": true,
+   "T1_nn": "L3_stiffened_panel_600x600"
+  },
+  {
+   "task_id": "L3_stiffened_panel_600x600_str3",
+   "split_v2": "extrapolation_test",
+   "family": "stiffened_panel",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_stiffened_panel_600x600"
+  },
+  {
+   "task_id": "L3_stiffened_panel_800x600",
+   "split_v2": "val",
+   "family": "stiffened_panel",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_stiffened_panel_600x600"
+  },
+  {
+   "task_id": "L3_stiffened_panel_800x600_str3",
+   "split_v2": "val",
+   "family": "stiffened_panel",
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_stiffened_panel_600x600"
+  }
+ ]
+}

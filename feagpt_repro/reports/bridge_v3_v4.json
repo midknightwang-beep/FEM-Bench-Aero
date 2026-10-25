@@ -1,0 +1,220 @@
+{
+ "note": "W5a 桥接表（专家第五轮 P0-2/R22）：v3→v4 的 exam TSR 下降 63.6%→45.5% 的三成分分解。命名对齐专家复评：候选「v3」= candidates_l3_v2 目录（W4d 考卷生成，load.direction=[0,1,0]），候选「v4」= candidates_l3_v3 目录（W4e/f 考卷生成）；判据 v3 = commit b2e9b74 版 evaluate（analysis.type 等纯描述键豁免），判据 v4 = 现行（W4f 收紧，自创键照罚）。每格 = exam 11 条 TSR。考卷口径：A/B 用 b2e9b74 考卷、C/D 用 28e66bb 考卷（v4）；exam 上两考卷 ec 集一致，TSR 判定可比。",
+ "headline": {
+  "A": "7/11",
+  "B": "5/11",
+  "C": "0/11",
+  "D": "5/11"
+ },
+ "pct": {
+  "A": 63.6,
+  "B": 45.5,
+  "C": 0.0,
+  "D": 45.5
+ },
+ "decomposition": {
+  "rubric_tightening_on_v2_cand (A->C)": "7->0",
+  "candidate_change_on_v3_rubric (A->B)": "7->5",
+  "candidate_change_on_v4_rubric (C->D)": "0->5",
+  "closure": "A->D = 7->5 = (A->C) + (C->D) = (7-0) + (0-5) => 7->5 OK",
+  "B_equals_D": "B=D=5/11：判据收紧对新候选零影响（v4 schema additionalProperties 修复循环已逼删 analysis.type 等自创键）——判据收紧的全部惩罚落在 v2 旧候选的习惯键上"
+ },
+ "findings": [
+  "净变化 A->D = -2 条（63.6%->45.5%），全部来自 3 条 wingbox load.direction：v2 候选猜 [0,1,0]（gold 值，对），v4 候选猜 [0,0,1]/[0,0,-1]（错）——同一任务同一模型两次猜不同方向，证实任务欠定义（R21 已修：NL 写死坐标系+方向向量）",
+  "判据变严（-7 条）主因 = v4 判据对 analysis.type / bc.support 纯描述键照罚；新候选无此键（schema 白名单修复循环逼删），故 B=D；跨版本可比性受纯描述键惩罚影响是 W5b 重生成后自然消除的过渡现象",
+  "candidate 变化 +5 条中有 +1 来自 d2000 extra.end_shear/end_moment 值从错变对、+1 来自 panel str3 fabricated->spec_pass，属真实改善；cfrp45s_d40 由 UNRESOLVED 变 spec_fail（hole_d/layup 编造，真实变差）"
+ ],
+ "artifacts": {
+  "A": "eval_runs/bridge_A_v2cand_v3rubric.json",
+  "B": "eval_runs/bridge_B_v3cand_v3rubric.json",
+  "C": "eval_runs/bridge_C_v2cand_v4rubric.json",
+  "D": "eval_runs/baseline_scorecard_L3.json (C-021)"
+ },
+ "per_task": {
+  "L3_fuselage_barrel_d1600_l1600_str8_frm3": {
+   "A_v2cand_v3rubric": "fabricated",
+   "B_v3cand_v3rubric": "fabricated",
+   "C_v2cand_v4rubric": "fabricated",
+   "D_v3cand_v4rubric": "fabricated",
+   "pass": {
+    "A": false,
+    "B": false,
+    "C": false,
+    "D": false
+   },
+   "flips_on_rubric_change": [],
+   "flips_on_candidate_change": []
+  },
+  "L3_fuselage_barrel_d2000_l2000_str12_frm4": {
+   "A_v2cand_v3rubric": "spec_fail",
+   "B_v3cand_v3rubric": "spec_pass",
+   "C_v2cand_v4rubric": "spec_fail",
+   "D_v3cand_v4rubric": "spec_pass",
+   "pass": {
+    "A": false,
+    "B": true,
+    "C": false,
+    "D": true
+   },
+   "flips_on_rubric_change": [],
+   "flips_on_candidate_change": [
+    "v3",
+    "v4"
+   ]
+  },
+  "L3_naca4412_wingbox_n_ribs3_chord1000": {
+   "A_v2cand_v3rubric": "spec_pass",
+   "B_v3cand_v3rubric": "spec_pass",
+   "C_v2cand_v4rubric": "spec_fail",
+   "D_v3cand_v4rubric": "spec_pass",
+   "pass": {
+    "A": true,
+    "B": true,
+    "C": false,
+    "D": true
+   },
+   "flips_on_rubric_change": [
+    "A"
+   ],
+   "flips_on_candidate_change": [
+    "v4"
+   ]
+  },
+  "L3_naca4412_wingbox_n_ribs3_chord800": {
+   "A_v2cand_v3rubric": "spec_pass",
+   "B_v3cand_v3rubric": "spec_fail",
+   "C_v2cand_v4rubric": "spec_fail",
+   "D_v3cand_v4rubric": "spec_fail",
+   "pass": {
+    "A": true,
+    "B": false,
+    "C": false,
+    "D": false
+   },
+   "flips_on_rubric_change": [
+    "A"
+   ],
+   "flips_on_candidate_change": [
+    "v3"
+   ]
+  },
+  "L3_naca4412_wingbox_n_ribs7_chord800": {
+   "A_v2cand_v3rubric": "spec_pass",
+   "B_v3cand_v3rubric": "spec_fail",
+   "C_v2cand_v4rubric": "spec_fail",
+   "D_v3cand_v4rubric": "spec_fail",
+   "pass": {
+    "A": true,
+    "B": false,
+    "C": false,
+    "D": false
+   },
+   "flips_on_rubric_change": [
+    "A"
+   ],
+   "flips_on_candidate_change": [
+    "v3"
+   ]
+  },
+  "L3_naca4412_wingbox_size_skin4": {
+   "A_v2cand_v3rubric": "spec_pass",
+   "B_v3cand_v3rubric": "spec_fail",
+   "C_v2cand_v4rubric": "spec_fail",
+   "D_v3cand_v4rubric": "spec_fail",
+   "pass": {
+    "A": true,
+    "B": false,
+    "C": false,
+    "D": false
+   },
+   "flips_on_rubric_change": [
+    "A"
+   ],
+   "flips_on_candidate_change": [
+    "v3"
+   ]
+  },
+  "L3_naca4412_wingbox_size_span1600": {
+   "A_v2cand_v3rubric": "spec_pass",
+   "B_v3cand_v3rubric": "spec_pass",
+   "C_v2cand_v4rubric": "spec_fail",
+   "D_v3cand_v4rubric": "spec_pass",
+   "pass": {
+    "A": true,
+    "B": true,
+    "C": false,
+    "D": true
+   },
+   "flips_on_rubric_change": [
+    "A"
+   ],
+   "flips_on_candidate_change": [
+    "v4"
+   ]
+  },
+  "L3_naca4412_wingbox_size_span2400_skin2": {
+   "A_v2cand_v3rubric": "spec_pass",
+   "B_v3cand_v3rubric": "spec_pass",
+   "C_v2cand_v4rubric": "spec_fail",
+   "D_v3cand_v4rubric": "spec_pass",
+   "pass": {
+    "A": true,
+    "B": true,
+    "C": false,
+    "D": true
+   },
+   "flips_on_rubric_change": [
+    "A"
+   ],
+   "flips_on_candidate_change": [
+    "v4"
+   ]
+  },
+  "L3_open_hole_panel_400x200_d20_cfrp45s_d40": {
+   "A_v2cand_v3rubric": "no_output",
+   "B_v3cand_v3rubric": "spec_fail",
+   "C_v2cand_v4rubric": "no_output",
+   "D_v3cand_v4rubric": "spec_fail",
+   "pass": {
+    "A": false,
+    "B": false,
+    "C": false,
+    "D": false
+   },
+   "flips_on_rubric_change": [],
+   "flips_on_candidate_change": []
+  },
+  "L3_open_hole_panel_400x200_d20_offcentre": {
+   "A_v2cand_v3rubric": "spec_fail",
+   "B_v3cand_v3rubric": "no_output",
+   "C_v2cand_v4rubric": "spec_fail",
+   "D_v3cand_v4rubric": "no_output",
+   "pass": {
+    "A": false,
+    "B": false,
+    "C": false,
+    "D": false
+   },
+   "flips_on_rubric_change": [],
+   "flips_on_candidate_change": []
+  },
+  "L3_stiffened_panel_600x600_str3": {
+   "A_v2cand_v3rubric": "spec_pass",
+   "B_v3cand_v3rubric": "spec_pass",
+   "C_v2cand_v4rubric": "spec_fail",
+   "D_v3cand_v4rubric": "spec_pass",
+   "pass": {
+    "A": true,
+    "B": true,
+    "C": false,
+    "D": true
+   },
+   "flips_on_rubric_change": [
+    "A"
+   ],
+   "flips_on_candidate_change": [
+    "v4"
+   ]
+  }
+ }
+}

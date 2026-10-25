@@ -14,39 +14,44 @@
 | C-006 | 代理基线 max_disp test 2.631 %（CI [0.89,4.51]，地板 49.44）——**附录口径，对外承诺写 5–9 %** | baseline_d36_final.json | `python baseline.py --boot 4000` | 2026-10-24 | GATED* | 6 test | active（带 M14 caveat） |
 | C-007 | 全体 34 条留一 5.35 %（p90 14.09 / max 33.10） | _probe_m14/all_loo.json | `python _probe_m14/all_loo.py` | 2026-10-24 | GATED | 34 | active |
 | C-008 | vM 峰值未收敛：12→6 mm 仍 +12.9 %，真值带 ≥13 % 偏不安全低估 | _probe_m14/h_convergence.json | `python _probe_m14/h_convergence.py` | 2026-10-24 | GATED | 锚点 1 几何 | active |
-| C-009 | 评测器判分有效性：负控 9/9（PC-1 PASS + NC-1..8 FAIL） | feagpt_repro/eval_runs/negative_controls.json | `python negative_controls.py` | 2026-10-24 | GATED | 9 条 | active |
+| C-009 | 评测器负控 9/9（PC-1 + NC-1..8） | feagpt_repro/eval_runs/negative_controls.json | `python negative_controls.py` | 2026-10-24 | GATED | 9 条 | **superseded**（被 C-019 取代；artifact 在 gitignore 的 eval_runs/，违反 R25） |
 | C-010 | 任务层 140 行 = L1 55 + L2 55（轮换 13 字段、泄漏 0）+ L3 30（template_human_designed） | feagpt_repro/tasks/tasks.jsonl | `python make_tasks.py --dry` | 2026-10-24 | GATED | 140 | active |
 | C-011 | boundary_holdout 6 条（翼盒 train 边界锚点整类留出 28.6%）；**真内插 ID test = v1.1** | feagpt_repro/tasks/tasks.jsonl | `python make_tasks.py --dry` | 2026-10-24 | GATED | 6/21 | active |
 | C-012 | schema 双份 55/55 过 + 反向探针（死 airfoil 拒 / 越界 55° 拒） | FEM-Bench-Aero/schema_truth.json, schema_task.json | `python validate_schema.py` | 2026-10-24 | GATED | 55/55 | active |
 | C-013 | 数据本体可获取：v1.0-data.tar.gz 86 MB + SHA256SUMS + fetch_data 全链验证 | F:/FEA_Archive_20261024/SHA256SUMS.txt | `python fetch_data.py --src <path>` | 2026-10-24 | GATED | 55/55 | active |
-| C-017 | **L1 spec-copy smoke（W4b，非模型基线）**：考卷 19 条 SFR **0/19**（boundary 0/6、extrap 0/13）；归因 airfoil.chord×12 + bc.clamp×7——无 schema 约束解码时 LLM 指令遵循失败（airfoil 整组缺失/bc 块丢失），非建模能力结论；n=19 UNDERPOWERED | feagpt_repro/eval_runs/baseline_scorecard.json | `python score_baseline.py candidates` | 2026-10-24 | GATED (spec-only) | 19/19 | active |
+| C-017 | **L1 spec-copy smoke（W4b，非模型基线）**：考卷 19 条 SFR **0/19**（boundary 0/6、extrap 0/13）；归因 airfoil.chord×12 + bc.clamp×7——无 schema 约束解码时 LLM 指令遵循失败（airfoil 整组缺失/bc 块丢失），非建模能力结论；n=19 UNDERPOWERED | feagpt_repro/reports/baseline_scorecard_L1_smoke.json | `python score_baseline.py candidates --report reports/baseline_scorecard_L1_smoke.json` | 2026-10-24 | GATED (spec-only) | 19/19 | active |
 | C-018 | 「LLM 基线 TSR 2/2 = 100%」 | eval_runs/baseline_scorecard.json（22:08 旧快照） | — | 2026-10-24 | — | 2 条 | **superseded**（partial + skip_solve + 旧快照，被 C-017 取代；红线 R11/R14） |
-| C-025 | **W5a 修题后重打分（R21 修法 3：不重新生成，现有候选 + 考卷 v5 + RUBRIC v3）**：考卷 v5 = 四族 NL 写死坐标系+方向向量（coordinate_convention 30/30）+ panel 伪缺澄清题修正（600x600 gold n_stringers=0 信息完备曾误罚「编造」，ec 迁到 str3 真缺）。**exam TSR 4/11**（-1 = str3 ec 迁移对旧候选的系统性误罚：候选基于 v4 完整 NL 生成、考卷挖字段后旧候选不可能补问——「旧候选不能评新考卷」，不算模型退步；正式 v5 成绩待 W5b 重生成）；**dev TSR 12/19（+1 = 600x600 修题纠错：从误罚编造变如实 spec_pass）**；**MSR 12/21 (57.1%)、exam 4/8、dev 8/13**（R23 新分母；失败分层 model 6 + contract 3，env 0）；负控 **24/24**（NC-20/21/22 新增；NC-15 改动态取澄清任务防静默消失）。**正式对外 headline 仍为 C-021（v4 口径 5/11）**，本条为修题效果验证与 W5b 基线 | feagpt_repro/eval_runs/baseline_scorecard_L3.json + bridge_v3_v4.json | `python score_baseline.py --candidates candidates_l3_v3` + venv `python msr_l3.py` | 2026-10-25 | GATED (full-chain MSR) | 30/30 生成 / exam 11 | active |
-| C-024 | **v3→v4 桥接表（R22）**：exam TSR A(v2候选×v3判据)=7/11 → B(v3目录候选×v3判据)=5/11 → C(v2候选×v4判据)=0/11 → D(v3目录候选×v4判据)=5/11。净变化 -2 条全部来自 3 条 wingbox load.direction（同任务两代候选猜不同方向 → 证实任务欠定义 R21）；判据收紧 -7 条全落 v2 旧候选习惯键（analysis.type 等），B=D 证明对 v4 口径新生成候选零影响；恒等式闭合 (A→C)+(C→D)=A→D | feagpt_repro/eval_runs/bridge_v3_v4.json（含 bridge_A/B/C 三份逐格重算产物） | `python score_baseline.py --tasks <各版考卷>` + `_bridge_v3/`（b2e9b74 旧判据） | 2026-10-25 | GATED | exam 11 | active |
-| C-021 | **L3 主基线（W4e/W4f 重跑，考卷 v4 + RUBRIC v2 预注册口径，正式对外）**：glm-5.3-flash（R13）+ json_object/schema 校验/错误反馈修复循环≤3 轮。**headline = 留出集 exam 11 条（boundary 4 + extrap 7，R15）**：**TSR 5/11 (45.5%)、SFR 5/10 (50%)、MSR 4/9 (44.4%)**（全链 ccx，失败分层 model 8 + contract 3，env 0；W5a/R23 修订：原报 4/10 把编造澄清题 d1600 双重计数进 MSR，按任务属性排除后 4/9）；**value_added Δ+45.5pp vs T1 exam 0/11 —— n=11 < 20 ⇒ UNDERPOWERED 不得判 PASS（R12）**；FPR：编造 2/4（barrel d1600 静默填 n_frames、panel 600x600 静默填 n_stringers）、过度澄清 1、问错字段 0（字段级判据 R17）；dev（train+val 19 条，仅诊断）：TSR 11/19、SFR 9/13。负控 21/21。考卷 v4 实锤修正：barrel/panel NL 补长桁尺寸（builder 默认实读）+ n_stringers=0 改写「无长桁」+ 澄清题字段级别名；v3→v4 分数变化见 C-024 桥接表（净 -2 条全来自任务欠定义的载荷方向猜测） | feagpt_repro/eval_runs/baseline_scorecard_L3.json | `python score_baseline.py --candidates candidates_l3_v3` + venv `python msr_l3.py` | 2026-10-25 | GATED (exam headline + full-chain MSR) | 30/30 生成 / exam 11 | active |
+| C-025 | **W5a 修题后重打分（R21 修法 3：不重新生成，现有候选 + 考卷 v5 + RUBRIC v3）— ⚠️ DIAGNOSTIC，不是模型成绩（R28）**：考卷 v5 = 四族 NL 写死坐标系+方向向量（coordinate_convention 30/30）+ panel 伪缺澄清题修正（600x600 gold n_stringers=0 信息完备曾误罚「编造」，ec 迁到 str3 真缺）。**exam TSR 4/11**（-1 = str3 ec 迁移对旧候选的系统性误罚：候选基于 v4 完整 NL 生成、考卷挖字段后旧候选不可能补问——「旧候选不能评新考卷」）；**dev TSR 12/19（+1 = 600x600 修题纠错：从误罚编造变如实 spec_pass）**；**MSR 12/21 (57.1%)、exam 4/8、dev 8/13**（R23 新分母；失败分层 model 6 + contract 3，env 0）。**正式对外 headline 仍是 C-021（v4 口径 5/11 / MSR 4/9）**，本条只证明「修题改了什么」，正式 v5 成绩待 W5b 用 v5 重生成候选后另立 | feagpt_repro/reports/baseline_scorecard_L3_v5_rescore.json | `python score_baseline.py --candidates candidates_l3_v3 --tasks reports/papers/tasks_v5.jsonl --report reports/baseline_scorecard_L3_v5_rescore.json` + venv `python msr_l3.py --tasks reports/papers/tasks_v5.jsonl --report reports/baseline_scorecard_L3_v5_rescore.json` | 2026-10-25 | GATED (full-chain MSR) · **diagnostic** | 30/30 生成 / exam 11 | active（diagnostic） |
+| C-024 | **v3→v4 桥接表（R22）**：exam TSR A(v2候选×v3判据)=7/11 → B(v3目录候选×v3判据)=5/11 → C(v2候选×v4判据)=0/11 → D(v3目录候选×v4判据)=5/11。**A→D 净 −2 的逐条拆账（P1-3 修正）**：A→B = **−3 +1**（−3 条 wingbox `load.direction` 两代候选猜出不同方向 = 任务欠定义 R21；+1 条 `d2000_l2000_str12_frm4` 的 extra.end_shear/end_moment 由错变对）；A→C = −7 全落 v2 旧候选习惯键（analysis.type / bc.support 等纯描述键）；C→D = +5（判据收紧对 v4 新候选零影响，B=D=5 证明）。恒等式闭合 (A→C)+(C→D)=A→D | feagpt_repro/reports/bridge_v3_v4.json（含 bridge_A/B/C 三份逐格重算产物 + per_task 四列） | `python score_baseline.py --tasks <各版考卷> --report <各格报告>` + `_bridge_v3/`（b2e9b74 旧判据，sha256 见 reports/INDEX.md） | 2026-10-25 | GATED | exam 11 | active |
+| C-026 | **官方产物索引（W5a'，R25/R27）**：`reports/` 为官方 artifact 唯一出处（`eval_runs/` 仅工作目录，被 gitignore）。索引明确「官方 vs 诊断」：**官方 headline = C-021 v4 5/11 / MSR 4/9；C-025 v5 重打分 4/11 = 诊断**；含考卷快照 `papers/tasks_v4.jsonl`（git 28e66bb 逐字节）与 `tasks_v5.jsonl`（tag v1.0-l3-v5）、逐版本候选目录对照、一条命令复现表 | feagpt_repro/reports/INDEX.md | `python check_claims.py` + `cat reports/INDEX.md` | 2026-10-25 | GATED | 6 类产物 | active |
+| C-021 | **L3 主基线（W4e/W4f 重跑，考卷 v4 + RUBRIC v2 预注册口径，正式对外 headline）**：glm-5.3-flash（R13）+ json_object/schema 校验/错误反馈修复循环≤3 轮。**headline = 留出集 exam 11 条（boundary 4 + extrap 7，R15）**：**TSR 5/11 (45.5%)、SFR 5/10 (50%)、MSR 4/9 (44.4%)**（全链 ccx，失败分层 model 8 + contract 3，env 0；W5a/R23 修订：原报 4/10 把编造澄清题 d1600 双重计数进 MSR，按任务属性排除后 4/9）；**value_added Δ+45.5pp vs T1 exam 0/11 —— n=11 < 20 ⇒ UNDERPOWERED 不得判 PASS（R12/R24）**；FPR：编造 2/4（barrel d1600 静默填 n_frames、panel 600x600 静默填 n_stringers）、过度澄清 1、问错字段 0（字段级判据 R17）；dev（train+val 19 条，仅诊断）：TSR 11/19、SFR 9/13。负控见 C-019。考卷 v4 实锤修正：barrel/panel NL 补长桁尺寸（builder 默认实读）+ n_stringers=0 改写「无长桁」+ 澄清题字段级别名；v3→v4 分数变化见 C-024 桥接表（净 -2 = −3 条 wingbox load.direction +1 条 d2000 extra 值修正） | feagpt_repro/reports/baseline_scorecard_L3_v4.json | `python score_baseline.py --candidates candidates_l3_v3 --tasks reports/papers/tasks_v4.jsonl --report reports/baseline_scorecard_L3_v4.json` + venv `python msr_l3.py --tasks reports/papers/tasks_v4.jsonl --report reports/baseline_scorecard_L3_v4.json` | 2026-10-25 | GATED (exam headline + full-chain MSR) | 30/30 生成 / exam 11 | active |
 | C-020 | **L3 主基线（W4d，正式）**：glm-5.3-flash + json_object/schema 校验/错误反馈修复循环≤3 轮（SDK 无 logits 级 json_schema，如实标注）；考卷 v3（n=30，ec 澄清题 4 条）；拍板口径「工程层判+配置层只报 / 问对=对编造=错」。**TSR 18/30 (60%)**、**SFR 16/25 (64%)**、**MSR 11/30 (36.7%)**（全链 ccx，翼盒有 spec 12 条中 11 条全绿、fidelity ≤0.024%）；**value_added Δ+36.7pp PASS**（T1 地板同任务集 23.3%，n=30≥20 满足 R12）；FPR：编造 1/4（柱壳静默填 n_frames）、过度澄清 1；MSR 失败 13 条全为模型 spec 质量（语义自创键/字段错位/单位换算，归因见 msr_pipeline_failure_attribution.json）；考卷三轮修正实锤：ec 伪缺 bug / CFRP 材料卡缺失 / 网格尺寸+孔位硬编码（gold 4.0 写成 3mm） | feagpt_repro/eval_runs/baseline_scorecard_L3.json | `python score_baseline.py` + `python msr_l3.py`（venv） | 2026-10-25 | GATED | 30/30 | **superseded（W4e 专家第四轮）**：headline 混入 train/val（应只报留出 11 条，R15）+ MSR 6 条 gmsh 环境失败被记为模型失败（R16）+ SFR 计入 1 条编造（R20）+ rubric post-hoc（R18）。留出集重算见 C-021 |
-| C-019 | 评测器负控全绿（W4d 15/15；W4e 起为 PC-1 + NC-1..19 共 21 条，含字段级澄清双向探针/bc与material自创键/MSR预检/exam集检查） | feagpt_repro/eval_runs/negative_controls.json | `python negative_controls.py` | 2026-10-25 | GATED | 21 条 | active |
+| C-019 | 评测器负控全绿：**27/27** = PC-1 + NC-1..22（W4d 15 + W4e NC-15..19 + W5a NC-20..22）+ **NC-15b**（澄清双向）+ **NC-23..25**（W5a' artifact 入库/追踪/官方诊断分文件）。**计数口径注意**：W4d 15/15、W4e/W5a 24/24 是同一套件的不同代数（旧文里「21 条」「23 条」均为漏计 NC-15b 的错账，P1-1/P1-2 已改） | feagpt_repro/reports/negative_controls_27.json | `python negative_controls.py` | 2026-10-25 | GATED | 27 条 | active |
 | C-014 | 「关 3 55/55 全部双码验证」 | — | — | 2026-10-24 | — | — | **retracted**（被 C-003 取代；reported-only 不得计入 PASS，红线 R2） |
 | C-015 | 「30 条人工 NL」 | tasks/nl_human.jsonl | — | 2026-10-24 | — | 30 | **superseded**（实为 template_human_designed，红线 R4；老王人工抽检后可升级） |
 | C-016 | 「ID test 测内插」 | — | — | 2026-10-24 | — | — | **retracted**（边界留出 ≠ 内插，被 C-011 取代；内插留出 = v1.1） |
 
-## 十维评分卡（W4a/W4d 后自评，模板见专家复评 §6.6/附录 D）
+## 十维评分卡（模板见专家复评 §6.6/附录 D）
 
-| # | 维度 | W3 时 | W4a 后 | W4d 后 | W4f 后 | 依据 |
-|---|---|---:|---:|---:|---|
+> **第六轮专家给的是 24/30**（我们的 W4f 自评 29 是虚高：证据/可复现/版本/文档各 −1、统计 −1）。
+> W5a' 的整改就是把「证据 → 可复现 → 版本 → 文档」这四项从纸面变成机器可查；**统计有效性仍 1（n=11、无 CI）**，
+> 所以对外依然不可承诺——这也是 W5b 必须先扩到 n≥20 的唯一理由。
+
+| # | 维度 | W3 | W4f（自评） | 第六轮（专家） | W5a' 后 | 依据 |
+|---|---|---:|---:|---:|---:|---|
 | 1 | 目标一致性 | 3 | 3 | 3 | 3 | ROADMAP 主轴不变（评测基础设施） |
-| 2 | 任务有效性 | 1 | 2 | 3 | 3 | L3 考卷 v4 冻结（tag+sha256）；barrel/panel 契约缺口已补 |
-| 3 | 判分有效性 | 1 | 3 | 3 | 3 | 字段级澄清（R17）+ SFR 编造对齐（R20）+ 负控 21/21 + RUBRIC.md 预注册（R18） |
-| 4 | 证据等级 | 2 | 3 | 3 | 3 | C-021 exam 口径 GATED；MSR 失败分层 env/contract/model/solver（env=0） |
-| 5 | 可复现性 | 1 | 3 | 3 | 3 | 一条命令 + venv + 考卷 v4 tag/sha256 + RUBRIC 冻结 |
-| 6 | 版本治理 | 2 | 2 | 3 | 3 | git 全程 + 考卷 v4 tag v1.0-l3-v4 |
-| 7 | 文档真实性 | 2 | 3 | 3 | 3 | C-020 主动标 superseded；C-021 如实报 underpowered |
-| 8 | 统计有效性 | 1 | 1 | 2 | 2 | exam n=11 underpowered 如实标注不判 PASS（R12/R15）；扩到 n≥20 = W5 |
-| 9 | 范围纪律 | 3 | 3 | 3 | 3 | 红线 R1–R20 挂账 |
-| 10 | 计划执行 | 2 | 3 | 3 | 3 | W4a–W4f 六轮按期收口 |
-| **总分** | | **18/30** | **26/30** | **29/30** | **29/30** | C-021 可对外引用（headline 带 underpowered 标注）；留出集扩到 n≥20 = W5 前置 |
+| 2 | 任务有效性 | 1 | 3 | 3 | 3 | 考卷 v4/v5 冻结（tag+sha256+`reports/papers/` 快照）；坐标系写死 30/30 |
+| 3 | 判分有效性 | 1 | 3 | 3 | 3 | 字段级澄清（R17）+ SFR 编造对齐（R20）+ 负控 **27/27** + RUBRIC v3 预注册 |
+| 4 | 证据等级 | 2 | 3 | 2 | **3** | `reports/` 入库 + `check_claims.py` 逐条 sha256/追踪检查（R25/R26） |
+| 5 | 可复现性 | 1 | 3 | 2 | **3** | C-021 命令 `--tasks reports/papers/tasks_v4.jsonl` 重跑得 5/11、dev 11/19（逐项一致） |
+| 6 | 版本治理 | 2 | 3 | 2 | **3** | 官方 `_v4` / 诊断 `_v5_rescore` 分文件（R27）+ `reports/INDEX.md` 版本对照 |
+| 7 | 文档真实性 | 2 | 3 | 2 | **3** | C-019 24→**27**、C-024 归因改「−3+1」、C-009 superseded、README 链 INDEX 不链工作文件 |
+| 8 | 统计有效性 | 1 | 2 | 1 | **1** | exam n=11、无 CI、单模型 ⇒ 不判 PASS（R12/R24）；**W5b 唯一硬缺口** |
+| 9 | 范围纪律 | 3 | 3 | 3 | 3 | 红线条 R1–R28 挂账 |
+| 10 | 计划执行 | 2 | 3 | 3 | 3 | W5a' 按专家 0.5 天口径收口 |
+| **总分** | | **18/30** | **29/30** | **24/30** | **28/30** | 除统计有效性外全绿；W5b = 扩 n≥20 + CI + 第二模型才能动第 8 项 |
 
-## 红线条（R1–R24，挂账常设）
+## 红线条（R1–R28，挂账常设）
 
 R1 v1.0 冻结后不改 test/task ｜ R2 reported-only 不得计入 PASS ｜ R3 对外数字必须有 artifact+command（引 CLAIMS）
 ｜ R4 `human` 标签只用于人工撰写 ｜ R5 评测器改动必跑负控 ｜ R6 负控未全绿不得跑基线
@@ -63,3 +68,7 @@ R1 v1.0 冻结后不改 test/task ｜ R2 reported-only 不得计入 PASS ｜ R3 
 ｜ R22 口径/考卷/prompt 同时变化必须做桥接表；不能只报新分（W5a）
 ｜ R23 MSR 分母必须与 RUBRIC 一致；澄清/编造题不得双重计数（W5a）
 ｜ R24 n_exam<20 不得做模型调优/对外承诺；只能做扩量（W5a）
+｜ **R25 官方 artifact 必须入库**（`feagpt_repro/reports/`，不得在 gitignore 的 `eval_runs/`）；每条 active CLAIM 必须可追溯到被 git 追踪的文件（W5a'）
+｜ **R26 CLAIMS 自检必须可执行**：artifact 缺失/未追踪/路径与 command 不一致 ⇒ `check_claims.py` 失败；每 W 块收口必跑（W5a'）
+｜ **R27 官方 vs 诊断必须分文件**；诊断结果不得占用官方 artifact 路径，同一路径不得被两条 active claim 占用（W5a'）
+｜ **R28 旧候选不得评新考卷**；考卷变更后必须重生成候选，重打分只能标 diagnostic（W5a'）

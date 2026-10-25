@@ -12,16 +12,30 @@ W4e 修正（专家第四轮 P0-2 / 红线 R16）：
      环境失败单独计数、不进 MSR 分母；
   3. 澄清题（无 spec 期望）不计 MSR 分母，分母 = spec-required 任务；
   4. --python 指定子进程解释器（默认 venv，gmsh 在 envs/default）。
+
+W5a'（专家第六轮 P0-1/P0-2/P1-3，红线 R25/R27）：
+  - --tasks / --report / --report-dir 全部参数化（原先硬编码 tasks/tasks.jsonl 与
+    eval_runs/baseline_scorecard_L3.json ⇒ v4 MSR 无法复现）；
+  - 默认报告写 reports/（入库）；msr 节记录考卷 provenance（路径 + sha256）。
 """
-import json, os, sys, collections, argparse
+import json, os, sys, hashlib, collections, argparse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from evaluate import evaluate_one, load_tasks, RUNS
 
-REPORT = os.path.join(RUNS, 'baseline_scorecard_L3.json')
+REPORT_DIR = os.path.join(HERE, 'reports')
+REPORT = os.path.join(REPORT_DIR, 'baseline_scorecard_L3.json')
 
 VENV_PY = 'C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe'
+
+
+def sha256_file(p):
+    h = hashlib.sha256()
+    with open(p, 'rb') as f:
+        for chunk in iter(lambda: f.read(1 << 20), b''):
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def classify_failure(result):
@@ -45,8 +59,20 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--candidates', default=os.path.join(HERE, 'candidates_l3_v3'),
                     help='候选目录（W5a/R22 教训：目录不得硬编码，改名必须改参数）')
+    ap.add_argument('--tasks', default=os.path.join(HERE, 'tasks', 'tasks.jsonl'),
+                    help='考卷（W5a\'：v4 复现传 reports/papers/tasks_v4.jsonl）')
+    ap.add_argument('--report-dir', default=REPORT_DIR, help='报告目录（默认 reports/，入库）')
+    ap.add_argument('--report', default=None,
+                    help='要合并 msr_section 的成绩单路径（默认 <report-dir>/baseline_scorecard_L3.json）')
+    ap.add_argument('--reuse', default=None,
+                    help='W5a\'：复用某份既有成绩单的 per_task 求解结果，只按新考卷**重算分母**'
+                         '（求解与考卷无关；用于 v4 分母口径复现，不起求解器）')
     args = ap.parse_args()
     cand_dir = args.candidates
+    tasks_path = args.tasks
+    report_path = args.report or os.path.join(args.report_dir, 'baseline_scorecard_L3.json')
+    print(f'[msr_l3] candidates={os.path.basename(cand_dir)}  tasks={tasks_path}')
+    print(f'[msr_l3] report={report_path}')
 
     # ---- R16：依赖预检（本进程 gmsh/numpy 可导入，否则环境错误退出）----
     missing = []
@@ -61,13 +87,19 @@ def main():
               f'用 venv 解释器重跑："{VENV_PY}" msr_l3.py')
         return 2
 
-    tasks = {t['task_id']: t for t in load_tasks(os.path.join(HERE, 'tasks', 'tasks.jsonl'))
+    tasks = {t['task_id']: t for t in load_tasks(tasks_path)
              if t['input_level'] == 'L3'}
     cands = {}
     for fn in sorted(os.listdir(cand_dir)):
         if fn.endswith('.json'):
             c = json.load(open(os.path.join(cand_dir, fn), encoding='utf-8'))
             cands[c['task_id']] = c
+
+    reuse_map = {}
+    if args.reuse:
+        prev = json.load(open(args.reuse, encoding='utf-8')).get('msr_section', {})
+        reuse_map = {r['task_id']: r for r in prev.get('per_task', [])}
+        print(f"[msr_l3] REUSE 模式：分母重算自 {args.reuse}（{len(reuse_map)} 条既有结果，不起求解器）")
 
     rows, n_env_skip = [], 0
     for tid in sorted(tasks):
@@ -86,6 +118,19 @@ def main():
                          'reason': 'no spec (unresolved/no-output)'})
             print(f"  [--] {tid}: no spec -> 不进分母")
             continue
+        if reuse_map:
+            pr = reuse_map.get(tid)
+            if not pr or pr.get('msr_pass') is None:
+                rows.append({'task_id': tid, 'msr_pass': None, 'denominator': False,
+                             'reason': 'not-run in reuse source（该口径下无求解结果，不得计入）'})
+                print(f"  [--] {tid}: reuse 源里无求解结果 -> 不进分母")
+                continue
+            row = dict(pr)
+            row['denominator'] = True
+            rows.append(row)
+            print(f"  [{'ok' if row['msr_pass'] else 'FAIL'}] {tid}: (reuse) msr_pass={row['msr_pass']}")
+            continue
+
         try:
             r = evaluate_one(t, os.path.join(cand_dir, tid + '.json'), skip_solve=False,
                              timeout=1800)
@@ -135,6 +180,13 @@ def main():
     msr = {'note': '全链 MSR（R14/R16/R23，W5a 修正）：契约闸+ccx 求解+关1+关4+fidelity+spec_fidelity 全 PASS；'
                    '分母 = spec-required 且非澄清题（R23：澄清/未收敛候选不计，编造归 FPR）；'
                    '依赖预检不过即环境退出；失败分层 env/contract/model/solver，env 不计模型失败。',
+           'provenance': {'tasks_path': os.path.relpath(os.path.abspath(tasks_path), HERE).replace('\\', '/'),
+                          'tasks_sha256': sha256_file(tasks_path),
+                          'candidates_dir': os.path.relpath(os.path.abspath(cand_dir), HERE).replace('\\', '/'),
+                          'reuse_source': (os.path.relpath(os.path.abspath(args.reuse), HERE).replace('\\', '/')
+                                           if args.reuse else None)},
+           'n_not_run': sum(1 for r in rows if not r.get('denominator')
+                            and 'not-run' in (r.get('reason') or '')),
            'msr': f'{p}/{n}', 'msr_pct': round(100 * p / max(1, n), 1),
            'exam_msr': f'{exam_p}/{len(exam_ids)}',
            'exam_msr_pct': round(100 * exam_p / max(1, len(exam_ids)), 1),
@@ -146,15 +198,15 @@ def main():
            'gate_fail_counts': dict(collections.Counter(
                k for r in den_rows for k, v in (r.get('gates') or {}).items() if not v)),
            'per_task': rows}
-    sc = json.load(open(REPORT, encoding='utf-8'))
+    sc = json.load(open(report_path, encoding='utf-8'))
     sc['msr_section'] = msr
     # 顶层同步（NC-22 检查点：成绩单必须含 exam.msr）
     sc.setdefault('exam', {})['msr'] = msr['exam_msr']
     sc.setdefault('dev', {})['msr'] = msr['dev_msr']
-    json.dump(sc, open(REPORT, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    json.dump(sc, open(report_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print(f"\nMSR = {p}/{n} ({msr['msr_pct']}%)  exam={msr['exam_msr']} dev={msr['dev_msr']}"
           f"  失败分层={msr['failure_class_counts']}")
-    print('merged ->', REPORT)
+    print('merged ->', report_path)
     return 0
 
 

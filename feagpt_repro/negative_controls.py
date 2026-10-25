@@ -14,8 +14,14 @@ NC-5  load.magnitude 500->600            -> FAIL
 NC-6  material.youngs_modulus 73100->60000 -> FAIL
 NC-7  L2 静默默认（不提问）              -> FAIL
 NC-8  L3 集成自检（nl 行存在 + 走三闸路径）-> INFO（L3 语义由 schema+闸兜底）
+NC-9..14  W4c 契约/全链/口径探针
+NC-15/15b W4e 澄清双向（动态取澄清任务，防静默消失）
+NC-16..19 W4e 工程层/自创键/MSR 预检/exam 集
+NC-20..22 W5a  NL 载荷方向 / MSR 分母 / exam.msr
+NC-23..25 W5a' CLAIMS 自检（artifact 缺失 / eval_runs 未追踪 / 官方·诊断同路径）
 
-输出：eval_runs/negative_controls.json；全部秒级（spec_fidelity 快通道，不起求解器）。
+输出：reports/negative_controls_<n>.json（**入库**，R25；不再写 eval_runs/ 工作目录）；
+全部秒级（spec_fidelity 快通道，不起求解器）。
 """
 import json, os, sys, argparse
 
@@ -31,6 +37,18 @@ from evaluate import evaluate_one, evaluate_clarification, load_tasks, FEA, RUNS
 
 BASE_TASK = 'L1_naca4412_wingbox'
 L2_TASK = 'L2_naca4412_wingbox'
+
+
+def latest_scorecard():
+    """W5a'：负控要咬最新那份成绩单——不再硬编码 eval_runs/ 路径（否则官方入库后负控检查的是旧文件）。"""
+    d = os.path.join(HERE, 'reports')
+    cands = []
+    if os.path.isdir(d):
+        cands = [os.path.join(d, f) for f in os.listdir(d)
+                 if f.startswith('baseline_scorecard_L3') and f.endswith('.json')]
+    if cands:
+        return max(cands, key=os.path.getmtime)
+    return os.path.join(RUNS, 'baseline_scorecard_L3.json')
 
 
 def gold_spec():
@@ -314,7 +332,8 @@ def main():
           f"expect=guard actual={'present' if has_guard else 'missing'}")
 
     # NC-19：headline 检查——成绩单 exam 定义不得含 train/val（R15）
-    sc_path = os.path.join(RUNS, 'baseline_scorecard_L3.json')
+    sc_path = latest_scorecard()
+    print(f'  [info] 负控读取的成绩单 = {sc_path}')
     if os.path.exists(sc_path):
         sc19 = json.load(open(sc_path, encoding='utf-8'))
         exam_rows = [r for r in sc19.get('per_task', []) if r.get('is_exam')]
@@ -346,17 +365,25 @@ def main():
           f"expect=empty actual={no_dir[:5] or 'empty'}")
 
     # NC-21：MSR 分母不得含澄清/编造题（R23；v4 成绩单 d1600 曾双重计数）
-    sc21_path = os.path.join(RUNS, 'baseline_scorecard_L3.json')
+    # ★ W5a' 修正：必须用**成绩单自己那张考卷**的澄清题清单核对（provenance.tasks_path），
+    # 不能用当前 tasks.jsonl——v4/v5 的 ec 集不同（panel 600x600 ↔ str3），跨卷核对会假绿/假红。
+    sc21_path = sc_path
     if os.path.exists(sc21_path):
         sc21 = json.load(open(sc21_path, encoding='utf-8'))
-        ec_ids = {t['task_id'] for t in l3_all if t.get('expected_clarifications')}
+        pp = (sc21.get('provenance') or {}).get('tasks_path')
+        if pp and not os.path.isabs(pp):
+            pp = os.path.join(HERE, pp)
+        if not (pp and os.path.exists(pp)):
+            pp = os.path.join(HERE, 'tasks', 'tasks.jsonl')
+        paper_tasks = {t['task_id']: t for t in load_tasks(pp)}
+        ec_ids = {tid for tid, t in paper_tasks.items() if t.get('expected_clarifications')}
         bad_den = [r['task_id'] for r in sc21.get('msr_section', {}).get('per_task', [])
                    if r.get('denominator') and r['task_id'] in ec_ids]
         ok = not bad_den
-        results.append({'id': 'NC-21', 'desc': 'MSR 分母不含澄清题（R23）',
+        results.append({'id': 'NC-21', 'desc': f'MSR 分母不含澄清题（R23；核对卷={os.path.basename(pp)}）',
                         'expect': 'empty', 'actual': str(bad_den) or 'empty', 'ok': ok})
-        print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-21 MSR 分母排除澄清题（R23）               "
-              f"expect=empty actual={bad_den or 'empty'}")
+        print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-21 MSR 分母排除澄清题（R23, 卷={os.path.basename(pp)}）"
+              f"  expect=empty actual={bad_den or 'empty'}")
     else:
         results.append({'id': 'NC-21', 'desc': 'MSR 分母检查（成绩单未生成，跳过）',
                         'expect': 'skip', 'actual': 'no scorecard', 'ok': True})
@@ -368,23 +395,84 @@ def main():
         has_msr_sec = bool(sc22.get('msr_section'))
         em = (sc22.get('exam') or {}).get('msr')
         ok = (not has_msr_sec) or bool(em)
-        results.append({'id': 'NC-22', 'desc': '成绩单 exam.msr 汇总字段（P1-1）',
-                        'expect': 'present', 'actual': em or 'missing', 'ok': ok})
+        if not has_msr_sec:
+            # 成绩单还没合并 MSR（msr_l3.py 未跑）——这是 skip 不是 PASS：
+            # 显式打 skip，避免「expect=present actual=missing」却记 ok 的假绿（W5a 教训）
+            desc, actual = '成绩单 exam.msr（MSR 未合并，skip）', 'skip（无 msr_section）'
+        else:
+            desc, actual = '成绩单 exam.msr 汇总字段（P1-1）', (em or 'missing')
+        results.append({'id': 'NC-22', 'desc': desc,
+                        'expect': 'present', 'actual': actual, 'ok': ok})
         print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-22 成绩单含 exam.msr                        "
-              f"expect=present actual={em or 'missing'}")
+              f"expect=present actual={actual}")
     else:
         results.append({'id': 'NC-22', 'desc': 'exam.msr 检查（成绩单未生成，跳过）',
                         'expect': 'skip', 'actual': 'no scorecard', 'ok': True})
         print('  [ ok ] NC-22 成绩单含 exam.msr（成绩单未生成，跳过）')
 
 
+    # ---- W5a' 扩展（专家第六轮 6.2）：NC-23..25 —— CLAIMS 自检必须咬得住 ----
+    # 三条都用同一份 `check_claims.py`，仅注入不同的临时 CLAIMS（不删任何真实文件）。
+    import subprocess, tempfile
+    cc = os.path.join(HERE, 'check_claims.py')
+    tmpdir = os.path.join(RUNS, '_nc_claims')
+    os.makedirs(tmpdir, exist_ok=True)
+    ROOT_ = os.path.dirname(HERE)
+
+    def run_check_claims(md_text, tag):
+        md = os.path.join(tmpdir, f'claims_{tag}.md')
+        open(md, 'w', encoding='utf-8').write(md_text)
+        out = os.path.join(tmpdir, f'out_{tag}.json')
+        r = subprocess.run([sys.executable, cc, '--claims', md, '--root', ROOT_, '--json', out],
+                           capture_output=True, text=True, encoding='utf-8', errors='replace')
+        return r.returncode, (r.stdout or '') + (r.stderr or '')
+
+    HDR = ('| claim_id | statement | artifact | command | date | level | coverage | status |\n'
+           '|---|---|---|---|---|---|---|---|\n')
+
+    # NC-23：artifact 缺失（等价于「删掉某个 active claim 的 artifact」）=> check_claims FAIL
+    rc23, o23 = run_check_claims(
+        HDR + '| X-1 | 指向不存在的 artifact | feagpt_repro/reports/DOES_NOT_EXIST.json | '
+              '`python x.py --report reports/DOES_NOT_EXIST.json` | 2026-10-25 | GATED | 1 | active |\n',
+        'nc23')
+    ok23 = rc23 != 0 and '不存在' in o23
+    results.append({'id': 'NC-23', 'desc': 'CLAIMS artifact 缺失 ⇒ check_claims FAIL',
+                    'expect': 'rc!=0 + 报「不存在」', 'actual': f'rc={rc23}', 'ok': ok23})
+    print(f"  [{'ok ' if ok23 else 'BAD!'}] NC-23 artifact 缺失被检出                          "
+          f"expect=FAIL actual=rc{rc23}")
+
+    # NC-24：artifact 落在 gitignore 的 eval_runs/ ⇒ check_claims FAIL（R25）
+    rc24, o24 = run_check_claims(
+        HDR + '| X-2 | artifact 在 eval_runs | feagpt_repro/eval_runs/baseline_scorecard_L3.json | '
+              '`python x.py --report eval_runs/baseline_scorecard_L3.json` | 2026-10-25 | GATED | 1 | active |\n',
+        'nc24')
+    ok24 = rc24 != 0 and 'eval_runs' in o24
+    results.append({'id': 'NC-24', 'desc': 'CLAIMS artifact 在 eval_runs/（未追踪）⇒ FAIL（R25）',
+                    'expect': 'rc!=0 + 报 eval_runs', 'actual': f'rc={rc24}', 'ok': ok24})
+    print(f"  [{'ok ' if ok24 else 'BAD!'}] NC-24 eval_runs/ 未追踪被拒                         "
+          f"expect=FAIL actual=rc{rc24}")
+
+    # NC-25：官方与诊断占用同一 artifact 路径 ⇒ check_claims FAIL（R27）
+    rc25, o25 = run_check_claims(
+        HDR + '| X-3 | 官方 | feagpt_repro/reports/bridge_v3_v4.json | `python x.py --report reports/bridge_v3_v4.json` | 2026-10-25 | GATED | 1 | active |\n'
+              '| X-4 | 诊断 | feagpt_repro/reports/bridge_v3_v4.json | `python x.py --report reports/bridge_v3_v4.json` | 2026-10-25 | GATED | 1 | active |\n',
+        'nc25')
+    ok25 = rc25 != 0 and 'R27' in o25
+    results.append({'id': 'NC-25', 'desc': '官方/诊断同一 artifact 路径 ⇒ FAIL（R27）',
+                    'expect': 'rc!=0 + 报 R27', 'actual': f'rc={rc25}', 'ok': ok25})
+    print(f"  [{'ok ' if ok25 else 'BAD!'}] NC-25 官方/诊断同路径被拒                         "
+          f"expect=FAIL actual=rc{rc25}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
+              'ids': [r['id'] for r in results],
               'results': results}
-    os.makedirs(RUNS, exist_ok=True)
-    json.dump(report, open(os.path.join(RUNS, 'negative_controls.json'), 'w',
-                           encoding='utf-8'), ensure_ascii=False, indent=1)
-    print(f"\n负控: {n_ok}/{len(results)} ok -> eval_runs/negative_controls.json")
+    # W5a'（R25）：负控产物入库 reports/，文件名带条数（官方 artifact 不得在 eval_runs/）
+    rep_dir = os.path.join(HERE, 'reports')
+    os.makedirs(rep_dir, exist_ok=True)
+    out_path = os.path.join(rep_dir, f'negative_controls_{len(results)}.json')
+    json.dump(report, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    print(f"\n负控: {n_ok}/{len(results)} ok -> reports/negative_controls_{len(results)}.json")
     print('红线条 R6：负控未全绿，不得跑 LLM 基线。')
     return 0 if report['all_ok'] else 2
 

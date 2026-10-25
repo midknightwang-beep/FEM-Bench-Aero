@@ -1,0 +1,483 @@
+{
+ "note": "W4d L3 主基线（2026-10-25 拍板口径）：TSR=行为正确性（完备题答对+澄清题问对）；SFR=字段保真（工程层判，配置层只报）；FPR 双向；MSR 全链见 msr 节（红线 R9/R14）。",
+ "model": "glm-5.3-flash",
+ "decode": "json_object + schema_task.json 校验 + 错误反馈修复循环（<=3 轮；SDK 无 logits 级 json_schema）",
+ "n_tasks": 30,
+ "n_tasks_exam_expected": 30,
+ "partial": false,
+ "underpowered": false,
+ "tsr": {
+  "pass": 16,
+  "total": 30,
+  "pct": 53.3
+ },
+ "sfr": {
+  "pass": 15,
+  "of_spec_candidates": 23,
+  "pct": 65.2
+ },
+ "fpr": {
+  "fabricated_on_clarify_tasks": 2,
+  "n_clarify_tasks": 4,
+  "fabrication_rate_pct": 50.0,
+  "overclarify": 1,
+  "clarify_wrong_field": 0
+ },
+ "category_counts": {
+  "fabricated": 2,
+  "spec_pass": 14,
+  "clarify_ok": 2,
+  "spec_fail": 7,
+  "no_output": 4,
+  "clarify_wrong": 1
+ },
+ "by_split": {
+  "boundary_holdout": {
+   "tsr": "2/4"
+  },
+  "extrapolation_test": {
+   "tsr": "3/7"
+  },
+  "train": {
+   "tsr": "7/9"
+  },
+  "val": {
+   "tsr": "4/10"
+  }
+ },
+ "per_task": [
+  {
+   "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+   "split_v2": "extrapolation_test",
+   "family": "fuselage_barrel",
+   "category": "fabricated",
+   "tsr_pass": false,
+   "ec": true,
+   "turns_used": 3,
+   "note": "澄清题静默编造 spec（缺 ['n_frames']）",
+   "expected_clarifications": [
+    "n_frames"
+   ],
+   "sfr_fields": "16/17",
+   "sfr_pass": false
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d1800_l2000_str8_frm3",
+   "split_v2": "val",
+   "family": "fuselage_barrel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 17,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l1600_str8_frm3",
+   "split_v2": "val",
+   "family": "fuselage_barrel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 17,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+   "split_v2": "extrapolation_test",
+   "family": "fuselage_barrel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 17,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
+   "split_v2": "train",
+   "family": "fuselage_barrel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 17,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_naca4412_wingbox",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "clarify_ok",
+   "tsr_pass": true,
+   "ec": true,
+   "turns_used": 1,
+   "clarify": "[\"翼肋数量（或肋间距）未给出：'若干翼肋等距布置'需要明确 n_ribs 数值或 rib_pitch 间距才能建模\"]",
+   "keywords": [
+    "肋"
+   ],
+   "hit": true
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs3_chord1000",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs3_chord800",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 1,
+   "failed_fields": [
+    "load.direction"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs5_chord800",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs7_chord1000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs7_chord800",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 1,
+   "failed_fields": [
+    "load.direction"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs9_chord1000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "no_output",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "note": "3 轮修复未收敛（UNRESOLVED）"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_recombination_algorithm3",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin1p5",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "no_output",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "note": "3 轮修复未收敛（UNRESOLVED）"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin2",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin4",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 1,
+   "failed_fields": [
+    "load.direction"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span1600",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span2400",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span2400_skin2",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span3000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20",
+   "split_v2": "train",
+   "family": "open_hole_panel",
+   "category": "clarify_ok",
+   "tsr_pass": true,
+   "ec": true,
+   "turns_used": 1,
+   "clarify": "[\"开孔直径是多少？\",\"孔的位置（板中心还是偏置？请给出圆心坐标）\"]",
+   "keywords": [
+    "孔"
+   ],
+   "hit": true
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp090s",
+   "split_v2": "train",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 19,
+   "n_fail": 3,
+   "failed_fields": [
+    "params.hole_d",
+    "params.layup",
+    "load.lateral (not in gold)"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "category": "clarify_wrong",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 1,
+   "clarify": "[\"板厚2 mm与铺层厚度冲突：4层×0.5 mm=2 mm已是纯CFRP层合板，请确认是否存在铝基材，还是纯CFRP_T300 [45,-45,-45,45] 铺层（若含铝基材，请给出铝板厚度与CFRP铺层各厚度/层数）。\"]",
+   "note": "该答不答（信息完备却澄清）"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 18,
+   "n_fail": 2,
+   "failed_fields": [
+    "params.hole_d",
+    "params.layup"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrpqi",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 20,
+   "n_fail": 8,
+   "failed_fields": [
+    "params.hole_d",
+    "params.layup",
+    "material.name",
+    "material.youngs_modulus",
+    "material.poisson_ratio",
+    "load.kind"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_offcentre",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "category": "no_output",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "note": "3 轮修复未收敛（UNRESOLVED）"
+  },
+  {
+   "task_id": "L3_stiffened_panel_600x600",
+   "split_v2": "train",
+   "family": "stiffened_panel",
+   "category": "fabricated",
+   "tsr_pass": false,
+   "ec": true,
+   "turns_used": 2,
+   "note": "澄清题静默编造 spec（缺 ['n_stringers']）",
+   "expected_clarifications": [
+    "n_stringers"
+   ],
+   "sfr_fields": "14/14",
+   "sfr_pass": true
+  },
+  {
+   "task_id": "L3_stiffened_panel_600x600_str3",
+   "split_v2": "extrapolation_test",
+   "family": "stiffened_panel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 14,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_stiffened_panel_800x600",
+   "split_v2": "val",
+   "family": "stiffened_panel",
+   "category": "no_output",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "note": "3 轮修复未收敛（UNRESOLVED）"
+  },
+  {
+   "task_id": "L3_stiffened_panel_800x600_str3",
+   "split_v2": "val",
+   "family": "stiffened_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 14,
+   "n_fail": 2,
+   "failed_fields": [
+    "params.length",
+    "params.width"
+   ],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  }
+ ],
+ "value_added": {
+  "TSR_T1_pct": 26.7,
+  "TSR_LLM_pct": 53.3,
+  "delta_pp": 26.6,
+  "criterion": ">= 10 pp 才算 LLM 真有增量（专家 6.3.1）；n=30 >= 20 可判（红线 R12）",
+  "verdict": "PASS"
+ }
+}
