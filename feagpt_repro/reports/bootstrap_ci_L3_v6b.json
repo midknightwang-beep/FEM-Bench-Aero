@@ -1,0 +1,114 @@
+{
+ "note": "exam 任务的 bootstrap 百分位区间（B 次有放回重采样，单位=任务）。CI 只描述抽样波动，**不放宽 n≥20 门槛**；n<20 时任何 CI 都不得用于宣布 PASS（R12/R24）。",
+ "source_scorecard": "reports/baseline_scorecard_L3_v6b.json",
+ "boot": 4000,
+ "seed": 20261025,
+ "n_exam": 25,
+ "underpowered": false,
+ "exam_splits": {
+  "boundary_holdout": 6,
+  "extrapolation_test": 13
+ },
+ "metrics": {
+  "TSR": {
+   "point_pct": 68.0,
+   "ci95": [
+    48.0,
+    84.0
+   ],
+   "n": 25,
+   "n_pass": 17,
+   "denominator": "exam 全部任务"
+  },
+  "SFR": {
+   "point_pct": 66.7,
+   "ci95": [
+    42.9,
+    85.7
+   ],
+   "n": 21,
+   "n_pass": 14,
+   "denominator": "exam 中产出 spec 的候选"
+  },
+  "MSR": {
+   "point_pct": 47.6,
+   "ci95": [
+    28.6,
+    66.7
+   ],
+   "n": 21,
+   "n_pass": 10,
+   "denominator": "exam 中 spec-required 且非澄清题（R23 分母）"
+  }
+ },
+ "by_family_tsr": {
+  "fuselage_barrel": {
+   "n": 2,
+   "tsr_pct": 100.0,
+   "ci95": [
+    100.0,
+    100.0
+   ],
+   "note": "n<10，只报不判"
+  },
+  "open_hole_panel": {
+   "n": 4,
+   "tsr_pct": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "note": "n<10，只报不判"
+  },
+  "stiffened_panel": {
+   "n": 1,
+   "tsr_pct": 100.0,
+   "ci95": [
+    100.0,
+    100.0
+   ],
+   "note": "n<10，只报不判"
+  },
+  "wingbox": {
+   "n": 18,
+   "tsr_pct": 77.8,
+   "ci95": [
+    55.6,
+    94.4
+   ],
+   "note": "n<10，只报不判"
+  }
+ },
+ "by_stratum_tsr": {
+  "boundary": {
+   "n": 6,
+   "n_pass": 5,
+   "tsr_pct": 83.3,
+   "ci95": [
+    50.0,
+    100.0
+   ],
+   "note": "分栏 n<20，只报不判（R12/R30）"
+  },
+  "extrapolation": {
+   "n": 13,
+   "n_pass": 7,
+   "tsr_pct": 53.8,
+   "ci95": [
+    23.1,
+    76.9
+   ],
+   "note": "分栏 n<20，只报不判（R12/R30）"
+  },
+  "interpolation": {
+   "n": 6,
+   "n_pass": 5,
+   "tsr_pct": 83.3,
+   "ci95": [
+    50.0,
+    100.0
+   ],
+   "note": "分栏 n<20，只报不判（R12/R30）"
+  }
+ }
+}

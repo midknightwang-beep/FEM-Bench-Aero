@@ -1,0 +1,49 @@
+{
+ "task_id": "L3_fuselage_barrel_d2000_l1600_str8_frm3",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": null,
+ "spec": null,
+ "turns_used": 3,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/structure/params 不允许的键 \"shell_thickness\"，请删除。params 只允许该族 KNOWN_KEYS 内的键",
+    "/structure/params 不允许的键 \"frame_kind\"，请删除。params 只允许该族 KNOWN_KEYS 内的键",
+    "/structure/params/stringer_kind must be number",
+    "/ must match \"then\" schema",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'yield_strength'",
+    "/mesh must have required property 'size_chord'",
+    "/mesh must have required property 'size_span'",
+    "/mesh 不允许的键 \"element_type\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le",
+    "/mesh 不允许的键 \"size_circumferential\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le",
+    "/mesh 不允许的键 \"size_axial\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le"
+   ]
+  },
+  {
+   "turn": 2,
+   "errors": [
+    "/load must have required property 'kind'",
+    "/load must have required property 'magnitude'",
+    "/load must have required property 'direction'",
+    "/load 不允许的键 \"pressure\"，请删除。",
+    "/analysis 不允许的键 \"type\"，请删除。analysis 允许键: solver/step_type/incremental/initial_increment/total_time/outputs（建议直接写 {}）",
+    "/extra 不允许的键 \"coordinate_system\"，请删除。extra 允许键: end_shear/end_moment/end_tension（柱壳专用，其余族写 {}）",
+    "/extra 不允许的键 \"stringer_profile\"，请删除。extra 允许键: end_shear/end_moment/end_tension（柱壳专用，其余族写 {}）",
+    "/extra 不允许的键 \"frame_profile\"，请删除。extra 允许键: end_shear/end_moment/end_tension（柱壳专用，其余族写 {}）",
+    "/extra/end_shear must be number",
+    "/extra/end_moment must be number"
+   ]
+  },
+  {
+   "turn": 3,
+   "errors": [
+    "/load 不允许的键 \"surface\"，请删除。"
+   ]
+  }
+ ],
+ "raw_len": 854
+}

@@ -9,16 +9,17 @@
 
 | 用途 | 文件 | 口径 |
 |---|---|---|
-| **官方 headline（对外唯一可引用）** | `baseline_scorecard_L3_v4.json` | C-021：考卷 **v4** × 候选 **v4**（`candidates_l3_v3`），exam 11 条 **TSR 5/11 (45.5%) / SFR 5/10 / MSR 4/9**，**n=11 UNDERPOWERED**；CI95 见 `bootstrap_ci_L3_v4.json`（TSR **[18.2, 72.7]**） |
+| **官方 headline（对外唯一可引用）** | `baseline_scorecard_L3_v6b.json` | **C-028**：考卷 **v6b**（55 条 L3 / exam 25 三栏）× 候选 **v6**（`candidates_l3_v6`，55/55 全覆盖）。exam **TSR 17/25 (68.0%) / SFR 14/21 (66.7%) / MSR 10/21 (47.6%)**、全链 MSR 25/44 (56.8%)；**n=25 ⇒ `underpowered=False`（R12 首次可判 PASS）**；CI95 见 `bootstrap_ci_L3_v6b.json`（TSR **[48.0, 84.0]**）。三栏：boundary 5/6、extrapolation 7/13、interpolation 5/6。**与 C-021 的 11 条不可直接比**（R30，`compare_scorecards.py` rc=3）：考卷 30→55 且**题面 26/55 新增坐标系、25/55 新增方向向量（难度下降）** |
+| 上一代 headline（降为历史口径） | `baseline_scorecard_L3_v4.json` | C-021：考卷 **v4** × 候选 **v4**（`candidates_l3_v3`），exam 11 条 **TSR 5/11 (45.5%) / SFR 5/10 / MSR 4/9**，**n=11 UNDERPOWERED**；CI95 见 `bootstrap_ci_L3_v4.json`（TSR **[18.2, 72.7]**） |
 | **诊断（不是模型成绩）** | `baseline_scorecard_L3_v5_rescore.json` | C-025：**旧候选**（v4 生成）打 **v5** 考卷 ⇒ exam TSR 4/11。旧候选不能评新考卷（R28），只用于验证「修题改了什么」 |
-| **待跑（v6b，尚不存在）** | `baseline_scorecard_L3_v6.json`（**未生成**） | C-028（待登记）：考卷 **v6b**（55 条 L3 / exam 25 三栏，内插全翼盒）× `candidates_l3_v6`。**唯一阻塞 = `WORKBUDDY_PUBLISHABLE_KEY`**（R31：先 `--limit 1` 冒烟）。跑出来后与 C-021 的 11 条**不可直接比**（R30，`compare_scorecards.py` 会拒） |
+| **已跑（v6b，C-028）** | `baseline_scorecard_L3_v6b.json` + `bootstrap_ci_L3_v6b.json` | 考卷 **v6b**（55 条 L3 / exam 25 三栏，内插全翼盒）× `candidates_l3_v6`。**已于 2026-10-25 跑通**（生成 16 分 13 秒 / 55 条零缺失；MSR 全链 22 分 17 秒；失败分层 model 12 + contract 4 + solver 3）。**注意文件名是 `_v6b` 不是 `_v6`**：v6 考卷已作废（C-027 §7），成绩单若叫 v6 会留口径错位隐患。**已知压低项**见 `CLAIMS.md` C-028（open_hole_panel 4/4 全败 = prompt 未给开孔键名；2 条 wingbox 败于题面未给 `stringer_flange_width`） |
 | L1 冒烟（非模型基线） | `baseline_scorecard_L1_smoke.json` | C-017：spec-copy 19 条 SFR 0/19，无 schema 约束解码时的指令遵循失败 |
 | 桥接表 | `bridge_v3_v4.json` + `bridge_A/B/C_*.json` | C-024：A 7/11、B 5/11、C 0/11、D 5/11；A→D = −3 wingbox 方向 +1 d2000 |
 | 负控 | `negative_controls_31.json` | C-019：PC-1 + NC-1..22 + NC-15b + **NC-23..26** + **NC-27..29**（语义计数/覆盖/跨口径混比）= **31/31** |
 | T1 检索地板 | `trivial_baselines_L3.json`（v4）/ `trivial_baselines_L3_v6b.json`（v6b，三栏） | `value_added` 的对照项：v4 exam T1 = 0/11；v6b exam T1 = 0/25（三栏全 0）。**v6b 已修「检索到自身」泄漏**（内插题 split_v2 仍是 train，原实现会让 T1 地板虚高） |
 | MSR 明细 | `msr_l3_v4.json` / `msr_l3_v5_rescore.json` | 从对应成绩单抽出的 `msr_section`（逐任务门禁 + 失败分层；v4 = 11/21、exam 4/9） |
-| bootstrap CI | `bootstrap_ci_L3_v4.json` / `bootstrap_ci_L3_v5_rescore.json` | exam 任务重采样（B=4000, seed=20261025）：TSR/SFR/MSR 点估计 + CI95 + by_family（**n<20 不得据此判 PASS**） |
-| 考卷快照 | `papers/tasks_v4.jsonl` / `papers/tasks_v5.jsonl`（+ `nl_human_*`、`SHA256SUMS`） | v4 = `git show 28e66bb:` 逐字节；v5 = tag `v1.0-l3-v5`；sha256 见 `papers/SHA256SUMS` |
+| bootstrap CI | `bootstrap_ci_L3_v4.json` / `bootstrap_ci_L3_v5_rescore.json` / `bootstrap_ci_L3_v6b.json` | exam 任务重采样（B=4000, seed=20261025）：TSR/SFR/MSR 点估计 + CI95 + by_family + **by_stratum（三栏，只报不判）**。v6b：TSR 68.0% **[48.0, 84.0]**、MSR 47.6% **[28.6, 66.7]**、`underpowered=False` |
+| 考卷快照 | `papers/tasks_v4.jsonl` / `tasks_v5.jsonl` / `tasks_v6.jsonl`（作废留档）/ `tasks_v6b.jsonl`（+ `nl_human_*`、`SHA256SUMS`） | v4 = `git show 28e66bb:` 逐字节；v5 = tag `v1.0-l3-v5`；**v6b = tag `v1.0-l3-v6b`（当前考卷）**；v6 原稿不删（D10）；sha256 见 `papers/SHA256SUMS` |
 | 自检输出 | `check_claims.json` | `check_claims.py` 的逐条结果（sha256 + mtime） |
 
 ## 2. 复现命令（一条一条贴，照抄可跑）
@@ -110,16 +111,26 @@ PYTHONIOENCODING=utf-8 "$PY" negative_controls.py
 | 验收项 | 结果 |
 |---|---|
 | 文档语义计数（P1-1..P1-4） | C-010 **165**（L1 55 + L2 55 + L3 55）、C-011 内插 = **v6 interp 6**、C-019 coverage **31**、C-027/RUBRIC/W5B_PLAN 的「C-021 的 N 条」统一为 **11**（另两数 19 / 25 分列）；README 的 RUBRIC 版本统一 **v4** |
-| 语义自检（P1-5/R29） | `check_claims.py --semantic`（**默认开**）：17 项逐条核对文本数字 vs artifact 实读 ⇒ 全过。S-01..S-16 覆盖 行数/内插/负控/exam 条数/三栏/跨文档「C-021 的 N 条」/RUBRIC §1 三行/README 版本与负控数 |
+| 语义自检（P1-5/R29） | `check_claims.py --semantic`（**默认开**）：**21 项**逐条核对文本数字 vs artifact 实读 ⇒ 全过。S-01..S-20 覆盖 行数/内插/负控/exam 条数/三栏/跨文档「C-021 的 N 条」/RUBRIC §1 三行/README 版本与负控数/**C-028 的 TSR·三栏·全链 MSR·exam MSR（W5b-4 新增 S-17..S-20）** |
 | 负控（R29/R30/R31） | **31/31**：NC-27 注入 C-010「140 行」⇒ 语义检查 FAIL（先断言替换命中，防静默空转）；NC-28 候选 30/55 ⇒ `scorecard_coverage_problems` 报 3 条；NC-29 v6(25) vs C-021(11) 混比 ⇒ `comparability` 拒（4 条理由），同文件自比仍可 |
-| 成绩单覆盖记账（R31） | 成绩单新增 `n_tasks_in_paper` / `candidates_missing` / `partial_candidates`；v4 重跑显示「覆盖 30/30 条（完整）」，C-021 逐项不变（5/11、SFR 5/10、dev 11/19、MSR 4/9） |
-| 跨口径闸（R30） | `compare_scorecards.py`：口径不同 ⇒ **rc=3 拒绝**且只打印三栏、不给任何「提升/下降」 |
-| 考卷 v6 状态 | **冻结待跑**（C-027）；`candidates_l3_v6` 未生成 |
+| 成绩单覆盖记账（R31） | 成绩单新增 `n_tasks_in_paper` / `candidates_missing` / `partial_candidates`；v6b 显示「覆盖 **55/55** 条（完整）」，`partial_candidates=false` |
+| 跨口径闸（R30） | `compare_scorecards.py`：口径不同 ⇒ **rc=3 拒绝**且只打印三栏、不给任何「提升/下降」（v4 vs v6b 实测 rc=3，4 条理由：exam 11 vs 25、分层构成、boundary 4 vs 6、extrap 7 vs 13） |
+| 考卷 v6b 状态 | **冻结并已跑出成绩**（C-027 + C-028）；`candidates_l3_v6` 55/55 已入库 |
 
-### 仍未解决（唯一阻塞）
+### key 的出处（W5b-0 已解决，勿再当阻塞）
 
-`WORKBUDDY_PUBLISHABLE_KEY` 未在本机 shell 设置、仓库内也没有 `.env`
-（`gen_candidates_v2.js` 只读 `process.env`，**故意无 fallback**）。
-⇒ W5b-3（55 条生成）→ W5b-4（打分/CI）→ W5b-5（第二模型）→ W5b-6（归因）全部排队。
-**不要**为了绕过它把 key 写进仓库或对话（R31）。
+`WORKBUDDY_PUBLISHABLE_KEY` **不是模型厂商 key**，是 WorkBuddy 云服务应用「FEM基线评测」
+（`wbapp_Tl8jf0GeqRmnK59Hr64PuS`）的 `publicConfig.publishableKey`（`wbpk_` 前缀、无权限语义）。
+取法：`workbuddy_cloud_service` → `action=activate` + `mode=reuse` + 该 appId（`inspect` 不返回 key）。
+**已 `setx` 进用户级环境变量**（新开窗口生效）。`.env` 文件无效（脚本不装 dotenv）。
+**仍不要**把 key 写进仓库或对话（R31 精神）。
+
+### 仍未解决（W5c 候选，非阻塞）
+
+1. **A 类（生成器）**：SYS prompt 未约定开孔板 `hole_d/hole_x/hole_y` 键名 ⇒ `open_hole_panel` exam **4/4 全败**。修 prompt 后可回收最多 4 条（+16pp），需重生成候选。
+2. **B 类（考卷/新红线 R32）**：`airfoil.stringer_flange_width` gold 有值但题面未给 ⇒ 2 条 wingbox 无解。修题面要重新冻结考卷。
+3. **C 类（判分口径）**：模型把载荷冗余记进 `extra.*` 被判 `(not in gold)`，RUBRIC 未定义「多余键」是否算错。
+4. **solver 3 条** = 柱壳 143k/158k 节点超本机内存（已知阈值 158,548），算力边界非模型失败。
+
+明细：`eval_runs/w5b4_defect_analysis_20261025.md`（探针 `_probe_w5b4_fail_fields.py` 可复跑）。
 

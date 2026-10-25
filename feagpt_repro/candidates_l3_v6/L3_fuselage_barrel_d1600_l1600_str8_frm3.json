@@ -1,0 +1,10 @@
+{
+ "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": "[\"普通框（blade 剖面）的数量是多少？请给出具体框数及框截面尺寸（高/厚），以便建模\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 59
+}

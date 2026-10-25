@@ -109,12 +109,13 @@ def artifacts_in(cell):
 # ==================== 语义计数自检（R29，专家第七轮 P1-5） ====================
 TASKS_REL = 'feagpt_repro/tasks/tasks.jsonl'
 SC_V4_REL = 'feagpt_repro/reports/baseline_scorecard_L3_v4.json'
+SC_V6B_REL = 'feagpt_repro/reports/baseline_scorecard_L3_v6b.json'
 PAPERS_V4_REL = 'feagpt_repro/reports/papers/tasks_v4.jsonl'
 RUBRIC_REL = 'FEM-Bench-Aero/RUBRIC.md'
 README_REL = 'FEM-Bench-Aero/README.md'
 PLAN_REL = 'FEM-Bench-Aero/W5B_PLAN.md'
 CLAIMS_REL_FOR_SEM = 'FEM-Bench-Aero/CLAIMS.md'
-REQUIRED_CLAIMS = ('C-010', 'C-011', 'C-019', 'C-021', 'C-027')
+REQUIRED_CLAIMS = ('C-010', 'C-011', 'C-019', 'C-021', 'C-027', 'C-028')
 
 
 def _measures(root):
@@ -134,6 +135,16 @@ def _measures(root):
     p = os.path.join(root, SC_V4_REL)
     if os.path.exists(p):
         m['sc_v4'] = (json.load(open(p, encoding='utf-8')).get('exam') or {})
+    p = os.path.join(root, SC_V6B_REL)
+    if os.path.exists(p):
+        d6 = json.load(open(p, encoding='utf-8'))
+        ms6 = d6.get('msr_section') or {}
+        m['sc_v6b'] = {'exam': d6.get('exam') or {},
+                       'by_stratum': d6.get('exam_by_stratum') or {},
+                       'msr': ms6.get('msr') or '',
+                       'msr_pct': ms6.get('msr_pct'),
+                       'exam_msr': ms6.get('exam_msr') or '',
+                       'exam_msr_pct': ms6.get('exam_msr_pct')}
     p = os.path.join(root, PAPERS_V4_REL)
     if os.path.exists(p):
         rows = [json.loads(l) for l in open(p, encoding='utf-8') if l.strip()]
@@ -260,6 +271,40 @@ def semantic_checks(root, rows):
     exp = f"{nc.get('n_ok')}/{nc.get('n_cases')}"
     got = f'{mm.group(1)}/{mm.group(2)}' if mm else '未找到'
     add('S-16', 'README 负控通过数', exp, got, got == exp)
+
+    # 10) C-028（v6b headline）核心数字必须等于成绩单实读值（R29）
+    v6 = m.get('sc_v6b') or {}
+    tsr6 = ((v6.get('exam') or {}).get('tsr')) or {}
+    if tsr6.get('total'):
+        cl = _txt(os.path.join(root, CLAIMS_REL_FOR_SEM))
+        line = next((l for l in cl.splitlines() if l.startswith('| C-028')), '')
+        want = f"{tsr6['pass']}/{tsr6['total']} ({tsr6['pct']}%)"
+        hit = re.search(r'TSR\s*(\d+/\d+)\s*\(([\d.]+)%\)', line)
+        got_s = f'{hit.group(1)} ({hit.group(2)}%)' if hit else '未找到'
+        add('S-17', 'C-028 exam TSR 与成绩单一致', want, got_s, got_s == want)
+
+        bs = v6.get('by_stratum') or {}
+        ok_s, det = True, []
+        for k in ('boundary', 'extrapolation', 'interpolation'):
+            blk = ((bs.get(k) or {}).get('tsr')) or {}
+            if not blk.get('total'):
+                continue
+            w = f"{blk['pass']}/{blk['total']}"
+            found = re.search(r'\b' + re.escape(w) + r'\b', line) is not None
+            ok_s = ok_s and found
+            det.append(f'{k}={w}{"" if found else "(缺)"}')
+        add('S-18', 'C-028 三栏条数在 C-028 行内', '三栏齐', ','.join(det) or '无三栏数据', ok_s)
+
+        msr6 = v6.get('msr') or ''
+        if isinstance(msr6, str) and '/' in msr6:
+            w = f"{msr6} ({v6.get('msr_pct')}%)"
+            add('S-19', 'C-028 全链 MSR 与成绩单一致', w,
+                '命中' if w in line else '缺', w in line)
+        em6 = v6.get('exam_msr') or ''
+        if isinstance(em6, str) and '/' in em6:
+            w = f"{em6} ({v6.get('exam_msr_pct')}%)"
+            add('S-20', 'C-028 exam MSR 与成绩单一致', w,
+                '命中' if w in line else '缺', w in line)
     return out
 
 

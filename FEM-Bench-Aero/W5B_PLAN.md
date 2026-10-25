@@ -50,13 +50,13 @@ cd feagpt_repro && python _probe_expand.py     # 2026-10-25 实测输出
 
 | 步 | 做什么 | 验收 | 状态 |
 |---|---|---|---|
-| **W5b-0（阻塞项）** | 拿 `WORKBUDDY_PUBLISHABLE_KEY`（当前 shell 未设，只读 env、无 fallback） | `node gen_candidates_v2.js --limit 1` 出 1 条合法候选 | ⛔ 阻塞 |
-| W5b-1 | **v5 考卷重生成 30 条**（R28）——可并入 W5b-3：v6 里这 30 条逐字节未变（已机器验证），故直接生成 v6 的 55 条即可 | `candidates_l3_v6/` 55 条、`turns_used` 全记录 | ⛔ 等 key |
-| W5b-2 | 扩卷 + 冻结考卷 v6 | **已完成**：`tasks.jsonl` 165 行（L3 55）、exam 25、老题零改动（`_verify_tasks_v6.py` PASS）、tag `v1.0-l3-v6`、`papers/tasks_v6.jsonl` | ✅ C-027 |
-| W5b-3 | 生成 55 条候选（v6 全量） | 与 W5b-1 合并执行；**命令见 §6**（`--limit 55` 不可省） | ⛔ 等 key |
-| W5b-4 | 一次打分 + CI：`score_baseline.py` → `msr_l3.py` → `bootstrap_ci.py` | exam 25；三栏（boundary/extrap/interp）分列 CI；`score_baseline.py` 已支持 `exam_stratum`（向后兼容已验：v4 仍 5/11） | 待 |
-| W5b-5 | 第二模型（**先用 SDK 实测可用 id，不猜**） | 两模型 TSR 差异 + 各自 CI | 待 |
-| W5b-6 | 失败归因字段级（env/contract/model/solver + 失败键清单） | 每条失败有原因，落 `reports/` | 待 |
+| **W5b-0（阻塞项）** | 拿 `WORKBUDDY_PUBLISHABLE_KEY` | `node gen_candidates_v2.js --limit 1` 出 1 条合法候选 | ✅ **已完成**（2026-10-25 19:01，见 §6.0 key 出处；冒烟产物 `eval_runs/_smoke_key_v6b/`） |
+| W5b-1 | **v5 考卷重生成 30 条**（R28）——可并入 W5b-3：v6 里这 30 条逐字节未变（已机器验证），故直接生成 v6 的 55 条即可 | `candidates_l3_v6/` 55 条、`turns_used` 全记录 | ✅ **已完成**（55/55 条，spec 44 / clarify 4 / unresolved 7 / error 0，零缺失） |
+| W5b-2 | 扩卷 + 冻结考卷 v6 | **已完成**：`tasks.jsonl` 165 行（L3 55）、exam 25、老题零改动（`_verify_tasks_v6.py` PASS）、tag `v1.0-l3-v6b`、`papers/tasks_v6.jsonl` | ✅ C-027 |
+| W5b-3 | 生成 55 条候选（v6 全量） | 与 W5b-1 合并执行；**命令见 §6**（`--limit 55` 不可省） | ✅ **已完成**（16 分 13 秒） |
+| W5b-4 | 一次打分 + CI：`score_baseline.py` → `msr_l3.py` → `bootstrap_ci.py` | exam 25；三栏分列 CI；`score_baseline.py` 已支持 `exam_stratum` | ✅ **已完成 = C-028**：exam TSR 17/25 (68.0%) CI95 [48.0, 84.0]，`underpowered=False`；MSR 全链 25/44、exam 10/21；R30 闸 rc=3 |
+| W5b-5 | 第二模型（**先用 SDK 实测可用 id，不猜**） | 两模型 TSR 差异 + 各自 CI | ⏭ **下一步**（v6b 考卷 + C-028 已就绪，可直接换 `--model` 跑） |
+| W5b-6 | 失败归因字段级（env/contract/model/solver + 失败键清单） | 每条失败有原因，落 `reports/` | ✅ **已完成（pre-C-028）**：`_probe_w5b4_fail_fields.py` 逐条给出失败字段；三类缺陷归因见 `eval_runs/w5b4_defect_analysis_20261025.md`。**遗留**：成绩单本身仍不存 `failed_fields`（只有 note），建议 W5c 把它落进 per_task |
 
 
 关键纪律：
@@ -86,17 +86,31 @@ cd feagpt_repro && python _probe_expand.py     # 2026-10-25 实测输出
 > **★ 坑**：`gen_candidates_v2.js` 的 `--limit` **默认 30**。v6 有 55 条，**不显式给 `--limit 55` 就只会生成 30 条**，
 > 然后成绩单会「看着 exam n=25、其实部分任务没打分」。已加 `partial_candidates` + NC-28 咬它，但正确做法是别漏。
 >
-> **★ 坑**：key 只读 `process.env.WORKBUDDY_PUBLISHABLE_KEY`（无 fallback）。WorkBuddy 内的 shell 不会继承
-> 你在外部 cmd 设的变量，反之亦然 ⇒ 必须在**同一个窗口**里设 key + 跑 node。
+> **★ 坑（2026-10-25 更新）**：key 只读 `process.env.WORKBUDDY_PUBLISHABLE_KEY`（无 fallback，**脚本不装 dotenv ⇒ `.env` 文件写了也不读**）。
+> ~~必须在同一个窗口里设 key + 跑 node~~ —— 该限制**已解除**：key 已 `setx` 进用户级环境变量，新开窗口自动继承，
+> 沙箱内 `export` 亦可。W5b-0 冒烟（`--limit 1`）已实测通过，产出 `eval_runs/_smoke_key_v6b/L3_naca4412_wingbox.json`。
 
-在 WorkBuddy **外**的普通 cmd 里（一次性，同窗口内完成）：
+### 6.0 key 的出处（W5b-0 查实，免得下次再找一遍）
+
+| 项 | 值 |
+|---|---|
+| 变量 | `WORKBUDDY_PUBLISHABLE_KEY` |
+| 实质 | WorkBuddy 云服务应用「FEM基线评测」`wbapp_Tl8jf0GeqRmnK59Hr64PuS` 的 `publicConfig.publishableKey`（`wbpk_` 前缀、**无权限语义**、服务端按 Origin 校验），**不是**模型厂商 key，**无需到任何网站注册申请** |
+| 取法 | `workbuddy_cloud_service` → `action=activate` + `applicationMode=reuse` + `applicationId=wbapp_Tl8jf0GeqRmnK59Hr64PuS`（`inspect` 只列应用、**不返回 key**） |
+| 本机现状 | 已 `setx` 到用户级环境变量（新开窗口生效）；仓库 `gen_candidates.js:13` 遗留同值 fallback（**未轮换**，与线上取回值逐字符一致） |
+| 反例 | ① 建 `.env` 无效（无 dotenv）；② 本窗口设、另开窗口跑 = 不生效；③ `.gitignore` 原先没有 `.env` 条目（已补 `.env` / `.env.*`） |
+
+两种执行方式（任选，产物相同）：
+- **A（推荐）**：直接在 WorkBuddy 内跑，key 已继承，不用管
+- **B（备选）**：外部 cmd，同窗口内 `set WORKBUDDY_PUBLISHABLE_KEY=<值>` 后立刻跑
 
 ```bat
 cd /d "F:\AI FEA Modeling DataSets\feagpt_repro"
-set WORKBUDDY_PUBLISHABLE_KEY=<你的 key>
+set WORKBUDDY_PUBLISHABLE_KEY=<你的 key>   REM 方式 B 才需要这行
 
 REM ① 冒烟 1 条（R31：不许直接 55 条盲跑）
 node gen_candidates_v2.js --tasks reports/papers/tasks_v6b.jsonl --levels L3 --out _smoke_v6 --limit 1
+
 
 REM ② 全量 55 条（--limit 必须显式给 55）
 node gen_candidates_v2.js --tasks reports/papers/tasks_v6b.jsonl --levels L3 --out candidates_l3_v6 --limit 55
@@ -111,13 +125,21 @@ dir candidates_l3_v6\*.json | find /c ".json"
 cd "F:/AI FEA Modeling DataSets/feagpt_repro"
 PY="C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
 "$PY" score_baseline.py --candidates candidates_l3_v6 --tasks reports/papers/tasks_v6b.jsonl \
-  --report reports/baseline_scorecard_L3_v6.json --trivial reports/trivial_baselines_L3.json \
-  --label "C-028 v6 (paper v6, candidates v6)"
+  --report reports/baseline_scorecard_L3_v6b.json --trivial reports/trivial_baselines_L3_v6b.json \
+  --label "C-028 v6b (paper v6b, candidates v6)"
 "$PY" msr_l3.py --candidates candidates_l3_v6 --tasks reports/papers/tasks_v6b.jsonl \
-  --report reports/baseline_scorecard_L3_v6.json
-"$PY" bootstrap_ci.py --scorecard reports/baseline_scorecard_L3_v6.json
+  --report reports/baseline_scorecard_L3_v6b.json
+"$PY" bootstrap_ci.py --scorecard reports/baseline_scorecard_L3_v6b.json
 "$PY" compare_scorecards.py --a reports/baseline_scorecard_L3_v4.json \
-  --b reports/baseline_scorecard_L3_v6.json     # 必须 rc=3（口径不同）
+  --b reports/baseline_scorecard_L3_v6b.json     # 必须 rc=3（口径不同）
+```
+
+> **★ 已改（2026-10-25 19:0x，W5b-0 执行时查实）**：
+> 1. `--trivial` 原写 `trivial_baselines_L3.json` —— 那是 **v4 考卷（exam 11）** 的地板，套到 v6b（exam 25 三栏）
+>    就是 R30 跨口径混用。已有同口径的 `reports/trivial_baselines_L3_v6b.json`（T0 0/25、T1 0/25、T2 25/25），必须用它。
+> 2. 成绩单文件名由 `baseline_scorecard_L3_v6.json` 改为 **`..._v6b.json`**：考卷是 v6b、地板是 v6b，成绩单叫 v6 会留下口径错位的隐患（v6 已作废，见 §7）。
+> 3. §6 开头那条「必须在外部 cmd 同窗口设 key」的前提**已不成立**：key 已 `setx` 进用户级环境变量，
+>    且实测沙箱内 `export` 后可直接跑（W5b-0 冒烟已通过）。外部 cmd 只是备选路径。
 
 ## 7. v6 → v6b：内插名额修正（2026-10-25 老王拍板 A）
 

@@ -1,0 +1,78 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d40",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": null,
+ "spec": {
+  "name": "open_hole_tension_400x200",
+  "description": "400×200×2mm 铝2024-T3中心开孔(直径40mm)板，两端沿x面内拉伸4000N",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 400,
+    "width": 200,
+    "thickness": 2
+   }
+  },
+  "mesh": {
+   "size_chord": 4,
+   "size_span": 4
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 4000,
+   "direction": [
+    1,
+    0,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {
+   "end_tension": 4000
+  }
+ },
+ "turns_used": 3,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/structure/params 不允许的键 \"hole_diameter\"，请删除。params 只允许该族 KNOWN_KEYS 内的键",
+    "/structure/params 不允许的键 \"hole_position\"，请删除。params 只允许该族 KNOWN_KEYS 内的键",
+    "/ must match \"then\" schema",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'density'",
+    "/material must have required property 'yield_strength'",
+    "/mesh must have required property 'size_chord'",
+    "/mesh must have required property 'size_span'",
+    "/mesh 不允许的键 \"size\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le",
+    "/mesh 不允许的键 \"refine_hole\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le",
+    "/load must have required property 'magnitude'"
+   ]
+  },
+  {
+   "turn": 2,
+   "errors": [
+    "/load 不允许的键 \"application\"，请删除。",
+    "/load/kind 必须是 [\"tip_force\",\"pressure\"] 之一",
+    "/bc 不允许的键 \"lateral_free\"，请删除。bc 允许键: root_surface/clamp（如 {\"root_surface\":\"root\",\"clamp\":true}）",
+    "/analysis 不允许的键 \"type\"，请删除。analysis 允许键: solver/step_type/incremental/initial_increment/total_time/outputs（建议直接写 {}）",
+    "/extra 不允许的键 \"coordinate_system\"，请删除。extra 允许键: end_shear/end_moment/end_tension（柱壳专用，其余族写 {}）",
+    "/extra 不允许的键 \"hole_note\"，请删除。extra 允许键: end_shear/end_moment/end_tension（柱壳专用，其余族写 {}）"
+   ]
+  }
+ ],
+ "raw_len": 502
+}

@@ -1,0 +1,10 @@
+{
+ "task_id": "L3_naca4412_wingbox",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": "[\"翼肋数量或肋间距是多少？请给出具体数值（如 5 根等距或间距 500 mm）\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 54
+}

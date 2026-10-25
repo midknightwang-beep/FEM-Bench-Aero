@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
- "n_active_claims": 19,
- "n_artifacts": 22,
+ "n_active_claims": 20,
+ "n_artifacts": 24,
  "n_fail": 0,
  "n_fail_structural": 0,
  "n_fail_semantic": 0,
@@ -133,8 +133,8 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 4.2",
-   "actual": "4.2",
+   "expect": "全部 = 4.3",
+   "actual": "4.3",
    "ok": true,
    "skip": false
   },
@@ -143,6 +143,38 @@
    "desc": "README 负控通过数",
    "expect": "31/31",
    "actual": "31/31",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-17",
+   "desc": "C-028 exam TSR 与成绩单一致",
+   "expect": "17/25 (68.0%)",
+   "actual": "17/25 (68.0%)",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-18",
+   "desc": "C-028 三栏条数在 C-028 行内",
+   "expect": "三栏齐",
+   "actual": "boundary=5/6,extrapolation=7/13,interpolation=5/6",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-19",
+   "desc": "C-028 全链 MSR 与成绩单一致",
+   "expect": "25/44 (56.8%)",
+   "actual": "命中",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-20",
+   "desc": "C-028 exam MSR 与成绩单一致",
+   "expect": "10/21 (47.6%)",
+   "actual": "命中",
    "ok": true,
    "skip": false
   }
@@ -348,9 +380,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 10774,
-   "sha256": "cba588b86ae90618a42ea95b56e9d21acd441fcefbb9b4d463caa20cc5b186e6",
-   "mtime": 1792924578
+   "size": 13099,
+   "sha256": "37494ce73e93971400f994e34d40790a44ff5f9edef30edc6fd63200932f18ff",
+   "mtime": 1792928708
   },
   {
    "claim_id": "C-027",
@@ -389,6 +421,30 @@
    "mtime": 1792912622
   },
   {
+   "claim_id": "C-028",
+   "artifact": "feagpt_repro/reports/baseline_scorecard_L3_v6b.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 46830,
+   "sha256": "2a4843ee47c4c8e9e072f779a579f4c1c680790c00d29b42bfefc455469645d2",
+   "mtime": 1792928638
+  },
+  {
+   "claim_id": "C-028",
+   "artifact": "feagpt_repro/reports/bootstrap_ci_L3_v6b.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 2091,
+   "sha256": "e7303e1ade77f29d4e10d3f30671a471d3f925b760ae1bcf2472da40612de949",
+   "mtime": 1792928646
+  },
+  {
    "claim_id": "C-021",
    "artifact": "feagpt_repro/reports/baseline_scorecard_L3_v4.json",
    "exists": true,
@@ -408,9 +464,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 5304,
-   "sha256": "3c6a1f1f912b60305d6b473f6f4195f19ea5564e364e4d9c3bf1d39ad61456a0",
-   "mtime": 1792924383
+   "size": 5336,
+   "sha256": "ff56119ae633daaf3979bd9609dfea1f78f05ee8491864d59cc0184f23d2c6d4",
+   "mtime": 1792928872
   }
  ]
 }

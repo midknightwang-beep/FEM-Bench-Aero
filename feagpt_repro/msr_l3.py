@@ -175,10 +175,19 @@ def main():
         ids = [r['task_id'] for r in den_rows if tasks[r['task_id']]['split_v2'] == sp]
         pp = sum(1 for tid in ids if next(r for r in den_rows if r['task_id'] == tid)['msr_pass'])
         by_split[sp] = {'msr': f'{pp}/{len(ids)}', 'pass': pp, 'n': len(ids)}
-    exam_sp = ('boundary_holdout', 'extrapolation_test')
-    exam_ids = [r['task_id'] for r in den_rows if tasks[r['task_id']]['split_v2'] in exam_sp]
+    # W5b-4 修：exam 口径必须跟考卷的 exam_stratum（v6b 三栏 = boundary+extrap+interp 共 25 条）；
+    # 老考卷（v4/v5）无 exam_stratum ⇒ 回退 split_v2 双栏，数字保持不变。
+    # 原实现硬编码 exam_sp 会把内插 6 条算进 dev，导致 exam_msr 报成 x/17（错）而不是 x/21。
+    has_stratum = any(t.get('exam_stratum') for t in tasks.values())
+
+    def _is_exam(t):
+        if has_stratum:
+            return bool(t.get('exam_stratum'))
+        return t.get('split_v2') in ('boundary_holdout', 'extrapolation_test')
+
+    exam_ids = [r['task_id'] for r in den_rows if _is_exam(tasks[r['task_id']])]
     exam_p = sum(1 for tid in exam_ids if next(r for r in den_rows if r['task_id'] == tid)['msr_pass'])
-    dev_ids = [r['task_id'] for r in den_rows if tasks[r['task_id']]['split_v2'] not in exam_sp]
+    dev_ids = [r['task_id'] for r in den_rows if not _is_exam(tasks[r['task_id']])]
     dev_p = sum(1 for tid in dev_ids if next(r for r in den_rows if r['task_id'] == tid)['msr_pass'])
 
     msr = {'note': '全链 MSR（R14/R16/R23，W5a 修正）：契约闸+ccx 求解+关1+关4+fidelity+spec_fidelity 全 PASS；'

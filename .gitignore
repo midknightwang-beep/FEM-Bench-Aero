@@ -55,3 +55,8 @@ feagpt_repro/eval_runs/
 feagpt_repro/node_modules/
 feagpt_repro/candidates/
 feagpt_repro/package-lock.json
+
+# ---- 凭据（W4c P0-4 / R13：key 只走环境变量，绝不入库）----
+.env
+.env.*
+!.env.example

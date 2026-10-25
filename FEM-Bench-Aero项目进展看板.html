@@ -1739,7 +1739,7 @@ const REVIEW = [
     '<b>NC-27 先断言「替换真命中」再判 RC</b>：注入 C-010「140 行」→ 语义检查必须 FAIL；若替换没命中就记 PASS，等于「负控自己静默空转」（W5a 的老坑）',
     '<b>R30 跨口径闸</b>：<code>compare_scorecards.py</code> 比 exam 条数 + definition + 三栏构成，不同 ⇒ <b>rc=3 拒绝</b>，只打印三栏、绝不出差值；NC-29 实测 v6(25) vs C-021(11) 被拒（4 条理由）、同文件自比仍可',
     '<b>R31 覆盖记账</b>：成绩单新增 <code>n_tasks_in_paper</code> / <code>candidates_missing</code> / <code>partial_candidates</code> —— v6 考卷 55 条、候选只有 30 条时会<b>静默出半张成绩单</b>（exam 看着 n=25 实际只有部分被打分）；NC-28 咬这道闸，v4 实跑显示「覆盖 30/30 条（完整）」',
-    '<b>唯一阻塞仍是 key</b>：<code>WORKBUDDY_PUBLISHABLE_KEY</code> 未设、仓库无 <code>.env</code>，<code>gen_candidates_v2.js</code> 故意无 fallback ⇒ W5b-3 生成起全部排队'
+    '<b>唯一阻塞仍是 key</b>：<code>WORKBUDDY_PUBLISHABLE_KEY</code> 未设、仓库无 <code>.env</code>，<code>gen_candidates_v2.js</code> 故意无 fallback ⇒ W5b-3 生成起全部排队 <b>【已于 r63 解除：key 是云服务 publishableKey，取法见 r63；且脚本不装 dotenv ⇒ <code>.env</code> 本就无效】</b>'
    ],
    files:['feagpt_repro/check_claims.py','feagpt_repro/compare_scorecards.py','feagpt_repro/score_baseline.py','feagpt_repro/negative_controls.py','feagpt_repro/reports/negative_controls_31.json','feagpt_repro/reports/INDEX.md','FEM-Bench-Aero/CLAIMS.md','FEM-Bench-Aero/RUBRIC.md']},
   {id:'r62', g:'W5/扩量', c:'<b>考卷 v6 → v6b（老王拍板 A）：内插 6 条全给翼盒</b>；同时修掉一个会污染 value_added 的 bug —— <b>T1 检索库「检索到自己」</b>；v4 回归逐项不变，v6b 三栏地板 T1 = 0/25、四族齐全',
@@ -1753,7 +1753,22 @@ const REVIEW = [
     '<b>三栏 CI 落地</b>：<code>bootstrap_ci.py</code> 加 <code>by_stratum_tsr</code>；v4 数值一字未变（TSR 45.5% CI95 [18.2, 72.7]）',
     '<b>版本链</b>：v6 作废但<b>原稿留档</b>（<code>papers/tasks_v6.jsonl</code>，D10）；采用版 <code>papers/tasks_v6b.jsonl</code> + tag <code>v1.0-l3-v6b</code>；C-027 已改写并记录改因'
    ],
-   files:['feagpt_repro/reports/papers/tasks_v6b.jsonl','feagpt_repro/reports/papers/tasks_v6.jsonl','feagpt_repro/reports/papers/SHA256SUMS','feagpt_repro/reports/trivial_baselines_L3_v6b.json','feagpt_repro/trivial_baselines.py','feagpt_repro/bootstrap_ci.py','feagpt_repro/_probe_interp_w5b3b.py','FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/W5B_PLAN.md']}
+   files:['feagpt_repro/reports/papers/tasks_v6b.jsonl','feagpt_repro/reports/papers/tasks_v6.jsonl','feagpt_repro/reports/papers/SHA256SUMS','feagpt_repro/reports/trivial_baselines_L3_v6b.json','feagpt_repro/trivial_baselines.py','feagpt_repro/bootstrap_ci.py','feagpt_repro/_probe_interp_w5b3b.py','FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/W5B_PLAN.md']},
+  {id:'r63', g:'W5/扩量', c:'<b>C-028 跑通：v6b 考卷 × 55 条新候选 ⇒ exam TSR 17/25 (68.0%) CI95 [48.0, 84.0]，n=25 首次 <code>underpowered=False</code>（R12 可判）</b>；三栏 boundary 5/6 / extrapolation 7/13 / interpolation 5/6；SFR 14/21、exam MSR 10/21、全链 MSR 25/44；<b>但 68.0% 是「含已知缺陷的下界」，且与 C-021 的 45.5% 不可相减</b>',
+   q:'W5b-0 先卡在 key 上（不知道 <code>WORKBUDDY_PUBLISHABLE_KEY</code> 从哪来）。查实后 chain 全部跑通，过程中撞出三件必须记的事：① <b>key 不是模型厂商 key</b>，是 WorkBuddy 云服务应用「FEM基线评测」的 publishableKey，取法是云服务 <code>activate + reuse</code>（<code>inspect</code> 不给），且脚本不装 dotenv ⇒ <b>建 <code>.env</code> 完全无效</b>；② 68.0% 与 45.5% 差距太大，必须拆归因；③ 拆的过程中发现成绩单「exam 失败」有系统模式，逐条查字段才看清真相。',
+   cmd:'node gen_candidates_v2.js --tasks reports/papers/tasks_v6b.jsonl --levels L3 --out candidates_l3_v6 --limit 55    # 16 分 13 秒\nscore_baseline.py --candidates candidates_l3_v6 --tasks reports/papers/tasks_v6b.jsonl --report reports/baseline_scorecard_L3_v6b.json --trivial reports/trivial_baselines_L3_v6b.json\nmsr_l3.py --candidates candidates_l3_v6 --tasks reports/papers/tasks_v6b.jsonl --report reports/baseline_scorecard_L3_v6b.json    # 22 分 17 秒\nbootstrap_ci.py --scorecard reports/baseline_scorecard_L3_v6b.json --out reports/bootstrap_ci_L3_v6b.json\ncompare_scorecards.py --a reports/baseline_scorecard_L3_v4.json --b reports/baseline_scorecard_L3_v6b.json    # 必须 rc=3\n_probe_w5b4_fail_fields.py --scorecard reports/baseline_scorecard_L3_v6b.json --tasks reports/papers/tasks_v6b.jsonl --candidates candidates_l3_v6 --out eval_runs/probe_w5b4_fail_fields_v6b.json',
+   ev:[
+    '<b>候选零缺失</b>：55/55 条（spec 44 / clarify 4 / unresolved 7 / error 0），考卷对账缺 0 条 ⇒ <code>partial_candidates=false</code>；turns 分布 1:4 / 2:1 / 3:50（修复循环几乎都在跑）',
+    '<b>R30 闸实测通过</b>：<code>compare_scorecards.py</code> rc=<b>3</b>，4 条理由（exam 11 vs 25、分层构成不同、boundary 4 vs 6、extrapolation 7 vs 13），只打印三栏不给差值',
+    '<b>★ 难度方向性偏差（必须声明）</b>：v6b 题面相对 v4 <b>26/55 新增「坐标系」约定、25/55 新增显式方向 <code>[x,y,z]</code></b>（题面均长 161→206 字），是 W5b-3a 为过语义完备性检查而加的正确改动，但<b>客观上降低了难度</b> ⇒ 禁止表述为「从 45.5% 提升到 68.0%」',
+    '<b>★ 68.0% 是下界（探针实证）</b>：<code>open_hole_panel</code> exam <b>4/4 全败</b>，同因 <code>params.hole_d/hole_x/hole_y</code> 缺失 —— 生成器 SYS prompt <b>从未列出开孔板键名</b>（M7 教训复刻：模型不行第一嫌疑 = 特征没给全）；另有 2 条 wingbox 败于 <code>airfoil.stringer_flange_width</code>：<b>gold 有值但题面只给了高/厚</b>，模型按「不得编造」正确处理却被判 fail',
+    '<b>新红线 R32</b>：考卷构建期必须断言「gold 的每个判分字段都能从 NL 推出」，否则属不可解题、不得进 exam —— R21 只覆盖了载荷方向完备（NC-20），这是它的补集',
+    '<b>修掉一个口径 bug</b>：<code>msr_l3.py</code> 的 exam 判据硬编码 <code>boundary_holdout+extrapolation_test</code>，在 v6b 下<b>漏掉内插 6 条</b> ⇒ exam MSR 报成 x/17（错）。改为跟 <code>exam_stratum</code>（老卷自动回退）后 = <b>10/21 (47.6%)</b>，与 <code>bootstrap_ci</code> 独立算出的 10/21 <b>交叉验证一致</b>',
+    '<b>修掉一个负控假红</b>：NC-19 原判据「exam 的 split_v2 必须属留出集」在 v6b 下假红——内插题按设计就是从 train 留出的。<b>核心不变式未放宽</b>（未标内插的 train 仍 BAD），并做了反向验证（伪造一条 <code>split=train, stratum=None</code> 的 exam 行 ⇒ 立即 BAD）；负控 <b>31/31</b> 恢复，NC-19 现在显式记「内插豁免 6」',
+    '<b>solver 3 条是算力边界不是模型失败</b>：全是柱壳 143,426 / 158,548 节点，命中已知本机内存阈值（158,548 已失败）；剔除后参考 MSR 25/41 (61.0%)',
+    '<b>自检全绿</b>：<code>check_claims.py</code> active 20 条 / artifact 24 个 / <b>语义项 21 条全过</b>（新增 S-17..S-20 咬 C-028 的 TSR·三栏·全链 MSR·exam MSR）；RUBRIC → <b>v4.3</b>（新增 R32 + §1.1.1 实测三栏 + 偏差声明），README 版本引用同步'
+   ],
+   files:['feagpt_repro/candidates_l3_v6/','feagpt_repro/reports/baseline_scorecard_L3_v6b.json','feagpt_repro/reports/bootstrap_ci_L3_v6b.json','feagpt_repro/_probe_w5b4_fail_fields.py','feagpt_repro/eval_runs/w5b4_defect_analysis_20261025.md','feagpt_repro/msr_l3.py','feagpt_repro/negative_controls.py','feagpt_repro/check_claims.py','feagpt_repro/reports/INDEX.md','FEM-Bench-Aero/CLAIMS.md','FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/W5B_PLAN.md']}
  ];
 
 /* ============ 渲染 ============ */

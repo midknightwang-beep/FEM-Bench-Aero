@@ -1,0 +1,10 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": "[\"开孔直径是多少？\",\"孔位于板中心吗（如居中，孔心坐标为 (0,0)）？\",\"端部 4000 N 拉伸是按总力施加还是换算为端部面压（若面压请给出等效 MPa 值）？\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 99
+}

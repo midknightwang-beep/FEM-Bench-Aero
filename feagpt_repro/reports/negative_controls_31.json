@@ -186,9 +186,9 @@
   },
   {
    "id": "NC-19",
-   "desc": "exam 集不含 train/val（R15）",
+   "desc": "exam 集不含未留出的 train/val（R15）",
    "expect": "empty",
-   "actual": "[]",
+   "actual": "[] / 内插豁免 6",
    "ok": true
   },
   {
@@ -200,7 +200,7 @@
   },
   {
    "id": "NC-21",
-   "desc": "MSR 分母不含澄清题（R23；核对卷=tasks_v4.jsonl）",
+   "desc": "MSR 分母不含澄清题（R23；核对卷=tasks_v6b.jsonl）",
    "expect": "empty",
    "actual": "[]",
    "ok": true
@@ -209,7 +209,7 @@
    "id": "NC-22",
    "desc": "成绩单 exam.msr 汇总字段（P1-1）",
    "expect": "present",
-   "actual": "4/9",
+   "actual": "10/21",
    "ok": true
   },
   {

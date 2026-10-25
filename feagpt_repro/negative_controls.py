@@ -335,18 +335,36 @@ def main():
     print(f"  [{ 'ok ' if has_guard else 'BAD!' }] NC-18 MSR 依赖预检存在                         "
           f"expect=guard actual={'present' if has_guard else 'missing'}")
 
-    # NC-19：headline 检查——成绩单 exam 定义不得含 train/val（R15）
+    # NC-19：headline 检查——成绩单 exam 定义不得含未留出的 train/val（R15）
+    # W5b-4 修：v6b 三栏口径下「内插题」按设计就是从 train 里留出的（split_v2 仍是 train，
+    # exam_stratum='interpolation'，见 C-027）。原判据把这类合法行也算 BAD（假红）。
+    # 新不变式：exam 行要么 split 属于留出集，要么 (split=train 且 stratum=interpolation)；
+    # 其余组合（train 未标内插 / val / 其他）一律 BAD —— 核心「不得混入未留出 train」未放宽。
     sc_path = latest_scorecard()
     print(f'  [info] 负控读取的成绩单 = {sc_path}')
     if os.path.exists(sc_path):
         sc19 = json.load(open(sc_path, encoding='utf-8'))
-        exam_rows = [r for r in sc19.get('per_task', []) if r.get('is_exam')]
-        bad_splits = {r['split_v2'] for r in exam_rows} - {'boundary_holdout', 'extrapolation_test'}
-        ok = not bad_splits
-        results.append({'id': 'NC-19', 'desc': 'exam 集不含 train/val（R15）',
-                        'expect': 'empty', 'actual': str(sorted(bad_splits)) or 'empty', 'ok': ok})
-        print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-19 exam 集不含 train/val                    "
-              f"expect=empty actual={sorted(bad_splits) or 'empty'}")
+        all19 = sc19.get('per_task', [])
+        exam_rows = [r for r in all19 if r.get('is_exam')]
+        has_stratum = any(r.get('exam_stratum') in ('boundary', 'extrapolation', 'interpolation')
+                          for r in all19)
+        allowed = {'boundary_holdout', 'extrapolation_test'}
+        bad, interp_exempt = [], 0
+        for r in exam_rows:
+            sv, st = r.get('split_v2'), r.get('exam_stratum')
+            if sv in allowed:
+                continue
+            if has_stratum and sv == 'train' and st == 'interpolation':
+                interp_exempt += 1
+                continue
+            bad.append(f"{r.get('task_id')}(split={sv},stratum={st})")
+        ok = not bad
+        extra = f' / 内插豁免 {interp_exempt}' if interp_exempt else ''
+        results.append({'id': 'NC-19', 'desc': 'exam 集不含未留出的 train/val（R15）',
+                        'expect': 'empty', 'actual': (str(sorted(bad)[:3]) or 'empty') + extra,
+                        'ok': ok})
+        print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-19 exam 集不含未留出的 train/val            "
+              f"expect=empty actual={(sorted(bad)[:3]) or 'empty'}{extra}")
     else:
         results.append({'id': 'NC-19', 'desc': 'exam 集不含 train/val（成绩单未生成，跳过）',
                         'expect': 'skip', 'actual': 'no scorecard', 'ok': True})
