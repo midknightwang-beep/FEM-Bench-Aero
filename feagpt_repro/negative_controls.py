@@ -232,6 +232,87 @@ def main():
         print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-14 工程层口径四探针                         "
               f"expect=4/4 actual={why}")
 
+    # ---- W4e/W4f 扩展（专家第四轮附录 C）：NC-15..19 ----
+    # NC-15：澄清判分字段级——问错族键名（含关键词'长桁'）必须 FAIL（R17）
+    from score_baseline import judge_clarify_field_level
+    panel_t = tasks.get('L3_stiffened_panel_600x600')
+    if panel_t and panel_t.get('clarify_aliases'):
+        ok15, det15 = judge_clarify_field_level(
+            "长桁根数 n_stringers_per_skin 具体是多少？", panel_t)
+        results.append({'id': 'NC-15', 'desc': '澄清问错族键 n_stringers_per_skin',
+                        'expect': 'FAIL', 'actual': 'FAIL' if not ok15 else 'PASS',
+                        'ok': not ok15, 'detail': {k: det15.get(k) for k in ('wrong_keys_hit', 'alias_hits')}})
+        print(f"  [{ 'ok ' if (not ok15) else 'BAD!' }] NC-15 澄清问错族键（含'长桁'仍须FAIL）       "
+              f"expect=FAIL actual={'FAIL' if not ok15 else 'PASS'}")
+        # 反向：问对别名（无错键）必须 PASS
+        ok15b, _ = judge_clarify_field_level("请问长桁根数是多少？", panel_t)
+        results.append({'id': 'NC-15b', 'desc': '澄清问对别名（长桁根数）',
+                        'expect': 'PASS', 'actual': 'PASS' if ok15b else 'FAIL',
+                        'ok': ok15b})
+        print(f"  [{ 'ok ' if ok15b else 'BAD!' }] NC-15b 澄清问对别名                            "
+              f"expect=PASS actual={'PASS' if ok15b else 'FAIL'}")
+
+    # NC-16：panel bc.support 自创键（bc_skip 曾漏判）⇒ spec_fidelity FAIL（R19/P0-4）
+    panel_l1 = next((t for t in tasks.values() if t['family'] == 'stiffened_panel'), None)
+    if panel_l1:
+        cid16 = panel_l1['task_id'].replace('L1_', '').replace('L3_', '')
+        g16 = json.load(open(os.path.join(FEA, 'modeling', cid16, 'spec.json'), encoding='utf-8'))
+        g16.pop('workdir', None)
+        c16 = json.loads(json.dumps(g16))
+        c16['bc'] = {'root_surface': 'root', 'clamp': True, 'support': 'simply-supported'}
+        r16 = spec_fidelity(c16, g16, panel_l1['family'], engineering_layer=True)
+        ok = not r16['pass']
+        results.append({'id': 'NC-16', 'desc': 'panel bc.support 自创键', 'expect': 'FAIL',
+                        'actual': 'PASS' if r16['pass'] else 'FAIL', 'ok': ok})
+        print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-16 panel bc.support 自创键                  "
+              f"expect=FAIL actual={'PASS' if r16['pass'] else 'FAIL'}")
+
+    # NC-17：open_hole load.distribution / material.ply_material 自创键 ⇒ FAIL（P0-4）
+    oh_l1 = next((t for t in tasks.values() if t['family'] == 'open_hole_panel'), None)
+    if oh_l1:
+        cid17 = oh_l1['task_id'].replace('L1_', '').replace('L3_', '')
+        g17 = json.load(open(os.path.join(FEA, 'modeling', cid17, 'spec.json'), encoding='utf-8'))
+        g17.pop('workdir', None)
+        c17 = json.loads(json.dumps(g17))
+        c17['load']['distribution'] = 'uniform'
+        r17 = spec_fidelity(c17, g17, oh_l1['family'], engineering_layer=True)
+        c17b = json.loads(json.dumps(g17))
+        c17b['material']['ply_material'] = 'T300/epoxy'
+        r17b = spec_fidelity(c17b, g17, oh_l1['family'], engineering_layer=True)
+        ok = (not r17['pass']) and (not r17b['pass'])
+        results.append({'id': 'NC-17', 'desc': 'open_hole 自创键 load.distribution+material.ply_material',
+                        'expect': 'FAIL/FAIL',
+                        'actual': f"{'FAIL' if not r17['pass'] else 'PASS'}/{'FAIL' if not r17b['pass'] else 'PASS'}",
+                        'ok': ok})
+        print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-17 open_hole 自创键（load/material）         "
+              f"expect=FAIL/FAIL actual={'FAIL' if not r17['pass'] else 'PASS'}/{'FAIL' if not r17b['pass'] else 'PASS'}")
+
+    # NC-18：MSR 运行器依赖预检存在（R16）——源码级断言 + 有 gmsh 时 rc 非 1
+    msr_src = open(os.path.join(HERE, 'msr_l3.py'), encoding='utf-8').read()
+    has_guard = ("import gmsh" in msr_src or "'gmsh'" in msr_src) and 'return 2' in msr_src
+    results.append({'id': 'NC-18', 'desc': 'MSR 依赖预检（gmsh 缺失 => 环境退出 rc=2）',
+                    'expect': 'guard present', 'actual': 'present' if has_guard else 'missing',
+                    'ok': has_guard})
+    print(f"  [{ 'ok ' if has_guard else 'BAD!' }] NC-18 MSR 依赖预检存在                         "
+          f"expect=guard actual={'present' if has_guard else 'missing'}")
+
+    # NC-19：headline 检查——成绩单 exam 定义不得含 train/val（R15）
+    sc_path = os.path.join(RUNS, 'baseline_scorecard_L3.json')
+    if os.path.exists(sc_path):
+        sc19 = json.load(open(sc_path, encoding='utf-8'))
+        exam_rows = [r for r in sc19.get('per_task', []) if r.get('is_exam')]
+        bad_splits = {r['split_v2'] for r in exam_rows} - {'boundary_holdout', 'extrapolation_test'}
+        ok = not bad_splits
+        results.append({'id': 'NC-19', 'desc': 'exam 集不含 train/val（R15）',
+                        'expect': 'empty', 'actual': str(sorted(bad_splits)) or 'empty', 'ok': ok})
+        print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-19 exam 集不含 train/val                    "
+              f"expect=empty actual={sorted(bad_splits) or 'empty'}")
+    else:
+        results.append({'id': 'NC-19', 'desc': 'exam 集不含 train/val（成绩单未生成，跳过）',
+                        'expect': 'skip', 'actual': 'no scorecard', 'ok': True})
+        print('  [ ok ] NC-19 exam 集不含 train/val（成绩单未生成，跳过）')
+
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'results': results}

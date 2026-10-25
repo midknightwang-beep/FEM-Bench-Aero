@@ -7,11 +7,11 @@
 
 | 想做什么 | 去哪里 |
 |---|---|
-| 看当前计划 | [ROADMAP.md](ROADMAP.md)（W1–W4d 已收口：W4d = **L3 主基线 TSR 18/30、全链 MSR 11/30、value_added Δ+36.7pp PASS**，C-020） |
+| 看当前计划 | [ROADMAP.md](ROADMAP.md)（W1–W4f 已收口。**对外 headline = 留出集 exam 11 条：TSR 5/11、SFR 5/10，n=11 underpowered**（C-021；C-020 的 18/30 已 superseded——混入 train/val + MSR 环境失败，专家第四轮 R15/R16）） |
 | 拿数据本体 | `../feagpt_repro/fetch_data.py --src <FEM-Bench-Aero-v1.0-data.tar.gz>`（SHA256 校验 + 55 条核对） |
-| 看任务/考卷 | `../feagpt_repro/tasks/tasks.jsonl`（L1 55 + L2 55 + L3 30；split_v2 = train/val/boundary_holdout/extrapolation_test；L3 含 4 条澄清型 + clarify_keywords） |
-| 跑评测 | `python ../feagpt_repro/evaluate.py --batch --use-gold`；负控 `python ../feagpt_repro/negative_controls.py`（15/15，红线条 R5/R6） |
-| 看基线成绩单 | `../feagpt_repro/eval_runs/baseline_scorecard_L3.json`（TSR/SFR/FPR/MSR 四指标；全链 msr_l3.py 须 venv 解释器） |
+| 看任务/考卷 | `../feagpt_repro/tasks/tasks.jsonl`（L1 55 + L2 55 + L3 30 = 考卷 v4；L3 含 4 条澄清型，字段级别名判据 clarify_aliases/clarify_wrong_keys；**exam = boundary_holdout + extrapolation_test 共 11 条**，R15） |
+| 跑评测 | `python ../feagpt_repro/evaluate.py --batch --use-gold`；负控 `python ../feagpt_repro/negative_controls.py`（**21/21**，PC-1 + NC-1..19，红线 R5/R6）；判分口径见 [RUBRIC.md](RUBRIC.md)（预注册，R18） |
+| 看基线成绩单 | `../feagpt_repro/eval_runs/baseline_scorecard_L3.json`（exam/dev 分栏；全链 msr_l3.py 须 venv 解释器 `"C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"`，含依赖预检与失败分层 env/contract/model/solver，R16） |
 | 查对外数字 | [external_numbers.md](external_numbers.md) ← [CLAIMS.md](CLAIMS.md) 主张账本（禁止手抄） |
 | 看 v1.0 已知限制 | [dataset_card.md](dataset_card.md)（8 条，含 vM 峰值未收敛 ≥13 %） |
 | 契约/schema | [schema_truth.json](schema_truth.json)（严格枚举）+ [schema_task.json](schema_task.json)（约束解码用，mesh 已收紧 required/additionalProperties） |

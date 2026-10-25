@@ -1,0 +1,10 @@
+{
+ "task_id": "L3_naca4412_wingbox",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": "[\"翼肋数量（或肋间距）未给出：'若干翼肋等距布置'需要明确 n_ribs 数值或 rib_pitch 间距才能建模\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 72
+}

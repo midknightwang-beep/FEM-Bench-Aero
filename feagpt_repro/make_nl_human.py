@@ -72,14 +72,24 @@ def oh_text(p, style, mesh_size=None):
             f"网格尺寸 {fnum(sz)} mm（弦向/展向同值），孔周加密。")
 
 def fb_text(p, style):
+    # W4f（专家第四轮 P0-3/R19）：长桁剖面尺寸明示（builder 默认 25/2.5 实读，
+    # feagpt/fuselage.py FuselageSpec）——旧版只说 blade 剖面不给尺寸，模型要么编要么填 0
     return (f"机身柱壳段：直径 {fnum(p['diameter'])} mm、长度 {fnum(p['length'])} mm，壳厚 {fnum(p['thickness'])} mm，"
-            f"{int(p['n_stringers'])} 根长桁、{int(p['n_frames'])} 个普通框（blade 剖面）。"
+            f"{int(p['n_stringers'])} 根长桁（blade 剖面，高 25 mm、厚 2.5 mm）、"
+            f"{int(p['n_frames'])} 个普通框（blade 剖面）。"
             f"载荷组合：内压 0.05 MPa + 端部剪力 50 kN + 端部弯矩 50 kN·m。"
             f"材料铝 2024-T3，壳单元，周向与轴向网格各 25 mm。")
 
 def sp_text(p, style, mesh_size=3.0):
+    ns = int(p.get('n_stringers', 0))
+    # W4f（P0-3/R19）：长桁尺寸明示（panel builder 默认 20/2.5，feagpt/panel.py）；
+    # n_stringers=0 时写「无长桁」而非「0 根」（防模型照抄 0 进 spec）
+    if ns > 0:
+        st = f"{ns} 根 blade 长桁等距（高 20 mm、厚 2.5 mm）。"
+    else:
+        st = "无长桁（素板）。"
     return (f"加筋壁板：{fnum(p['width'])} × {fnum(p['length'])} mm，板厚 {fnum(p['thickness'])} mm，"
-            f"{int(p['n_stringers'])} 根 blade 长桁等距。四边简支，受 {fnum(p.get('pressure_mpa', 0.0001))} MPa 均布面压。"
+            f"{st}四边简支，受 {fnum(p.get('pressure_mpa', 0.0001))} MPa 均布面压。"
             f"材料铝 2024-T3，板与筋全壳单元，网格尺寸 {fnum(mesh_size)} mm（弦向/展向同值）。")
 
 STYLE_CYCLE = ['描述', '任务单', '图纸']
@@ -135,12 +145,13 @@ def main():
             elif fam_ == 'fuselage_barrel':
                 txt = fb_text(norm['structure']['params'], STYLE_CYCLE[i % 3])
                 if omit == 'n_frames':
-                    txt = txt.replace(f"、{int(norm['structure']['params']['n_frames'])} 个普通框（blade 剖面）", "")
+                    txt = txt.replace(f"{int(norm['structure']['params']['n_frames'])} 个普通框（blade 剖面）",
+                                      "若干个普通框（blade 剖面）")
             else:
                 ms = float(norm.get('mesh', {}).get('size_chord', 3.0))
                 txt = sp_text(norm['structure']['params'], STYLE_CYCLE[i % 3], mesh_size=ms)
                 if omit == 'n_stringers':
-                    txt = txt.replace(f"{int(norm['structure']['params']['n_stringers'])} 根 blade 长桁等距。", "若干根长桁。")
+                    txt = txt.replace("3 根 blade 长桁等距（高 20 mm、厚 2.5 mm）。", "若干根长桁。")
             row = {
                 'task_id': f"L3_{t['task_id'][3:]}",
                 'family': fam_, 'input_level': 'L3', 'input_source': 'human',
@@ -151,9 +162,22 @@ def main():
             }
             if omit:
                 row['expected_clarifications'] = [omit]
-                # W4d 拍板：澄清题「问对=对」的判定关键词（人工登记，落盘可审计）
-                row['clarify_keywords'] = {'n_ribs': ['肋'], 'hole_d': ['孔'],
-                                           'n_frames': ['框'], 'n_stringers': ['长桁']}[omit]
+                # W4e（专家第四轮 P0-5/R17）：字段级澄清判据——别名表含正确键名+语义短语；
+                # wrong_keys = 其他族的同义键名（键名即契约 R19，问错族键 = FAIL）。
+                # 旧版单字关键词（'肋'/'孔'/'框'/'长桁'）可被任何顺带提及命中，废弃。
+                row['clarify_aliases'] = {
+                    'n_ribs': ['n_ribs', '翼肋', '肋数', '多少道肋', '几道翼肋', '肋的数量'],
+                    'hole_d': ['hole_d', '孔径', '孔的直径', '开孔直径', '孔直径', '孔洞直径'],
+                    'n_frames': ['n_frames', '框数', '普通框', '多少个框', '几个框', '框的数量'],
+                    'n_stringers': ['n_stringers', '长桁根数', '多少根长桁', '几根长桁',
+                                    '长桁数量', '长桁数目', '筋的数量'],
+                }[omit]
+                row['clarify_wrong_keys'] = {
+                    'n_ribs': ['n_stringers_per_skin'],
+                    'hole_d': [],
+                    'n_frames': ['n_stringers_per_skin'],
+                    'n_stringers': ['n_stringers_per_skin', '每侧蒙皮'],
+                }[omit]
                 row['gates'] = ['clarify_then_' + g if g == 'semantics' else g for g in t['gates']]
             out.append(row)
 

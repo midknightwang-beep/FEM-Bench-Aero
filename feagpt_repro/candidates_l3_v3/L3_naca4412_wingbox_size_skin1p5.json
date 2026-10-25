@@ -1,0 +1,48 @@
+{
+ "task_id": "L3_naca4412_wingbox_size_skin1p5",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": null,
+ "spec": null,
+ "turns_used": 3,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/airfoil must have required property 'chord'",
+    "/airfoil must have required property 'span'",
+    "/airfoil must have required property 'skin_thickness'",
+    "/airfoil must have required property 'n_ribs'",
+    "/airfoil must have required property 'rib_thickness'",
+    "/airfoil must have required property 'spar_chordwise'",
+    "/airfoil must have required property 'n_stringers_per_skin'",
+    "/airfoil must have required property 'tip_chord_ratio'",
+    "/airfoil must have required property 'sweep_deg'",
+    "/airfoil must have required property 'web_chordwise'",
+    "/structure/params 不允许的键 \"spar_thickness\"，请删除。params 只允许该族 KNOWN_KEYS 内的键",
+    "/structure/params 不允许的键 \"spar_chord_positions\"，请删除。params 只允许该族 KNOWN_KEYS 内的键"
+   ]
+  },
+  {
+   "turn": 2,
+   "errors": [
+    "/structure/params/web_chordwise must be number",
+    "/ must match \"then\" schema",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'density'",
+    "/material must have required property 'yield_strength'",
+    "/mesh 不允许的键 \"element\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le",
+    "/analysis 不允许的键 \"type\"，请删除。analysis 允许键: solver/step_type/incremental/initial_increment/total_time/outputs（建议直接写 {}）"
+   ]
+  },
+  {
+   "turn": 3,
+   "errors": [
+    "/airfoil/web_chordwise must be array",
+    "/ must match \"then\" schema"
+   ]
+  }
+ ],
+ "raw_len": 786
+}

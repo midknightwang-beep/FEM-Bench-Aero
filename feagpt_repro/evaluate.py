@@ -52,11 +52,11 @@ EXEC_CONFIG_KEYS = {
     # gold 内部编码键（数据集离散索引/方向轴表示，NL 任务书永远不会提及）
     'extra': {'sweep_index', 'shear_axis', 'moment_axis'},
 }
-# W4d 补充（实测 30 条候选后）：纯元数据自创键白名单——描述性说明不动语义，REPORTED；
-# 白名单外自创键（载荷/几何/边界语义编造）照罚 FAIL。键名即契约，同义键（size_axial）不豁。
-METADATA_KEY_NAMES = {'note', 'units', 'unit_system', 'type', 'element',
-                      'element_type', 'elements', 'order', 'description',
-                      'application', 'point'}
+# W4e 收紧（专家第四轮 P0-4/R18，预注册于 RUBRIC.md）：纯元数据自创键白名单只保留
+# 真正的描述性说明；'type'/'element(s)'/'order'/'application'/'point' 等可承载语义的键
+# 一律移出（schema additionalProperties=false 同步拒收，修复循环会删）。
+# 白名单外自创键（载荷/几何/边界/材料语义编造）照罚 FAIL。键名即契约，同义键不豁。
+METADATA_KEY_NAMES = {'note', 'units', 'unit_system', 'description'}
 METADATA_KEY_SUFFIXES = ('_units', '_note')
 # 死字段：无长桁（n_stringers_per_skin=0/缺）时 gold 里的模板默认值——不可知，豁免。
 DEAD_STRINGER_KEYS = {'stringer_height', 'stringer_thickness', 'stringer_kind',
@@ -150,11 +150,11 @@ def spec_fidelity(cand_spec, gold_spec, family, input_mesh_keys=None, input_load
             ok = _field_equal(cv, gv)
             fields.append({'field': f'{holder}.{k}', 'expected': gv, 'actual': cv, 'pass': ok})
     # 候选自创键（gold 没有、candidate 写了的非空键）：
-    #   纯元数据（METADATA_*）REPORTED NOT GATED；载荷/几何/边界语义编造照罚（W4d 拍板）
+    #   纯元数据（METADATA_*）REPORTED NOT GATED；载荷/几何/边界语义编造照罚（W4d 拍板）。
+    #   W4e（专家第四轮 P0-4）：bc_skip 时仍查 bc 自创键（panel bc.support 曾借 skip 漏判）；
+    #   material 块自创键（ply_material 等）照罚——builder 按 TypeError 拒收，SFR 必须同口径。
     metadata_extra = []
     for holder in ('mesh', 'load', 'bc', 'analysis', 'extra'):
-        if holder == 'bc' and bc_skip:
-            continue
         gh, ch = gold_spec.get(holder, {}), cand_spec.get(holder, {})
         for k in sorted(set(ch) - set(gh)):
             if ch[k] in ('', {}, None, []):
@@ -165,6 +165,16 @@ def spec_fidelity(cand_spec, gold_spec, family, input_mesh_keys=None, input_load
             else:
                 fields.append({'field': f'{holder}.{k} (not in gold)',
                                'expected': '<absent>', 'actual': ch[k], 'pass': False})
+    for k in sorted(set(cand_spec.get('material', {})) - set(gold_spec.get('material', {}))):
+        if cand_spec['material'][k] in ('', {}, None, []):
+            continue
+        is_meta = k in METADATA_KEY_NAMES or any(k.endswith(s) for s in METADATA_KEY_SUFFIXES)
+        if is_meta:
+            metadata_extra.append({'field': f'material.{k}', 'actual': cand_spec['material'][k]})
+        else:
+            fields.append({'field': f'material.{k} (not in gold)',
+                           'expected': '<absent>', 'actual': cand_spec['material'][k],
+                           'pass': False})
     fails = [f for f in fields if not f['pass']]
     out = {'pass': not fails, 'n_fields': len(fields), 'n_fail': len(fails),
            'failed': fails[:15]}
@@ -271,6 +281,23 @@ def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800, skip_solve=F
     json.dump(raw_cand, open(cand_spec_path, 'w', encoding='utf-8'),
               ensure_ascii=False, indent=1)
     result['metadata_stripped'] = metadata_stripped
+
+    # ---- 0b. W4f（专家第四轮 P0-4/R19）：契约试建闸——可判的 spec 必须可建。
+    # FEASpec 构造 + 族校验在进入 run_pipeline 之前完成；失败 ⇒ contract FAIL，
+    # 不浪费求解时间，且失败分层明确（TypeError=自创键 / ValueError=族校验拒收）。
+    try:
+        from feagpt.spec import FEASpec
+        FEASpec.from_dict(json.loads(json.dumps(raw_cand)))
+    except Exception as e:      # TypeError/ValueError 都算模型 spec 质量问题
+        result['gates']['pipeline'] = {
+            'pass': False, 'field': 'contract_buildable', 'expected': 'FEASpec constructable',
+            'actual': f'{type(e).__name__}: {e}',
+            'detail': 'R19 试建闸：schema/builder/grader 三层一致；构造失败不进入求解'}
+        result['failure_class'] = 'model'
+        result['overall_pass'] = False
+        out_path = os.path.join(run_dir, 'evaluation.json')
+        json.dump(result, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+        return result
 
     # ---- 1. 跑 pipeline（ccx 全链）----
     t0 = time.time()

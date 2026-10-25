@@ -14,15 +14,15 @@ const { createWorkBuddyCloud } = require('@tencent-ai/workbuddy-cloud-sdk');
 
 const publicConfig = {
   endpoint: 'https://fem-bench-baseline.app.workbuddy.host',
-  publishableKey: process.env.WORKBUDDY_PUBLISHABLE_KEY ||
-                  'wbpk_Tl8jf0GeqRmnK59Hr64PuS_YbTt47wyoaLYqpM6XxSjSowLCwffsO8Z',
+  // P1-2（专家第四轮）：只读 env，无 fallback 硬编码 key
+  publishableKey: process.env.WORKBUDDY_PUBLISHABLE_KEY,
 };
 
 const SYS = `你是飞机结构有限元建模专家。根据用户给出的结构描述，输出一个 FEM-Bench-Aero 规范的 spec JSON（mm-t-s 单位制）：
 {"name":"<case名>","description":"<一句话>","material":{...},"structure":{"family":"<wingbox|open_hole_panel|fuselage_barrel|stiffened_panel>","params":{...}},"airfoil":{仅wingbox},"mesh":{},"load":{},"bc":{},"analysis":{},"extra":{}}
 ★ 铁律：用户给出的每个数值必须【逐字段采用】（键名数值都不许改、不许省略）。
-★ 缺失信息处理：用户没给的尺寸参数【不得编造】，输出 {"clarify": ["问题1", ...]} 列出需要澄清的字段（json_object 模式下澄清也必须是这个 JSON 形式）。仅当缺失字段使模型无法定义时才澄清；以下工程惯例视为"无该特征"而非缺失：未提锥度→tip_chord_ratio=1.0；未提后掠→sweep_deg=0；未提长桁→n_stringers_per_skin=0；未提中间腹板→web_chordwise=[]（不要把前后梁位置复制到 web_chordwise）；铺层板基材按用户描述（铝板则 material 用铝）。
-★ stringer_height/stringer_thickness/stringer_kind/stringer_flange_width 仅当 n_stringers_per_skin>0 时才需要填写。
+★ 缺失信息处理：用户没给的尺寸参数【不得编造】，输出 {"clarify": ["问题1", ...]} 列出需要澄清的字段（json_object 模式下澄清也必须是这个 JSON 形式）。仅当缺失字段使模型无法定义时才澄清；以下工程惯例视为"无该特征"而非缺失：未提锥度→tip_chord_ratio=1.0；未提后掠→sweep_deg=0；未提长桁→长桁数=0；未提中间腹板→web_chordwise=[]（不要把前后梁位置复制到 web_chordwise）；铺层板基材按用户描述（铝板则 material 用铝）。
+★ 长桁键名按族（键名即契约）：翼盒用 n_stringers_per_skin；柱壳与加筋壁板用 n_stringers。长桁细节键（stringer_height/stringer_thickness/stringer_kind/stringer_flange_width）只有当该族确有长桁且用户给出了具体尺寸时才填写；用户没给尺寸时【直接省略这些键】（求解器按族默认取值），绝不要填 0。
 ★ 词汇约定（必须用这些词）：材料名 "Aluminium 2024-T3" 或 "CFRP-LAYUP"；翼型 code "4412"（不是 NACA4412）；载荷 kind "tip_force"（集中力）或 "pressure"（分布压力）；加筋长桁 kind "blade" 或 "T"；边界条件用 {"root_surface":"root","clamp":true}；载荷方向 direction 用 [x,y,z] 数组（法向即 [0,1,0]）；开孔板/加筋板载荷 kind="pressure" 用 magnitude（面压 MPa）或面内拉伸按用户描述；网格键 size_chord/size_span（翼盒）、size（板壳类）。
 ★ fuselage_barrel 的载荷组合（端剪/端弯）写进 extra.end_shear / extra.end_moment（数值用 N 和 N·mm）。
 材料按名称给出 E/ν/密度/屈服（铝 2024-T3: E=73100 MPa, ν=0.33, ρ=2.78e-9 t/mm^3, 屈服=345 MPa；T300/环氧参考用户给定）。
@@ -139,10 +139,21 @@ async function main() {
         const ok = validate(spec);
         const cerr = ok ? contractErrors(spec) : [];
         if (ok && !cerr.length) break;
-        const errors = (ok ? [] : validate.errors.map(e =>
-          e.keyword === 'enum'
-            ? `${e.instancePath || '/'} 必须是 ${JSON.stringify(e.params.allowedValues)} 之一`
-            : `${e.instancePath || '/'} ${e.message}`)).concat(cerr);
+        const ALLOWED_HINT = {
+          '/analysis': "analysis 允许键: solver/step_type/incremental/initial_increment/total_time/outputs（建议直接写 {}）",
+          '/bc': "bc 允许键: root_surface/clamp（如 {\"root_surface\":\"root\",\"clamp\":true}）",
+          '/extra': "extra 允许键: end_shear/end_moment/end_tension（柱壳专用，其余族写 {}）",
+          '/mesh': "mesh 允许键: size_chord/size_span/order/refine_le",
+          '/structure/params': "params 只允许该族 KNOWN_KEYS 内的键",
+          '/material': "material 允许键: name/youngs_modulus/poisson_ratio/density/yield_strength",
+        };
+        const errors = (ok ? [] : validate.errors.map(e => {
+          if (e.keyword === 'enum')
+            return `${e.instancePath || '/'} 必须是 ${JSON.stringify(e.params.allowedValues)} 之一`;
+          if (e.keyword === 'additionalProperties')
+            return `${e.instancePath || '/'} 不允许的键 "${e.params.additionalProperty}"，请删除。${ALLOWED_HINT[e.instancePath] || ''}`;
+          return `${e.instancePath || '/'} ${e.message}`;
+        })).concat(cerr);
         valHistory.push({ turn, errors: errors.slice(0, 12) });
         spec = null;
         messages.push({ role: 'assistant', content: answer });

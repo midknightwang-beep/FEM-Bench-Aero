@@ -126,16 +126,57 @@
      "minItems": 3,
      "maxItems": 3
     }
-   }
+   },
+   "additionalProperties": false
   },
   "bc": {
-   "type": "object"
+   "type": "object",
+   "properties": {
+    "root_surface": {
+     "type": "string"
+    },
+    "clamp": {
+     "type": "boolean"
+    }
+   },
+   "additionalProperties": false
   },
   "analysis": {
-   "type": "object"
+   "type": "object",
+   "properties": {
+    "solver": {
+     "type": "string"
+    },
+    "incremental": {
+     "type": "boolean"
+    },
+    "initial_increment": {
+     "type": "number"
+    },
+    "outputs": {},
+    "step_type": {
+     "type": "string"
+    },
+    "total_time": {
+     "type": "number"
+    }
+   },
+   "additionalProperties": false
   },
   "extra": {
-   "type": "object"
+   "type": "object",
+   "properties": {
+    "end_shear": {
+     "type": "number"
+    },
+    "end_moment": {
+     "type": "number"
+    },
+    "end_tension": {
+     "type": "number"
+    }
+   },
+   "additionalProperties": false
   }
  },
  "allOf": [
@@ -254,6 +295,61 @@
         }
        }
       }
+     },
+     "structure": {
+      "properties": {
+       "params": {
+        "type": "object",
+        "properties": {
+         "code": {
+          "type": "number"
+         },
+         "chord": {
+          "type": "number"
+         },
+         "span": {
+          "type": "number"
+         },
+         "skin_thickness": {
+          "type": "number"
+         },
+         "n_ribs": {
+          "type": "number"
+         },
+         "rib_thickness": {
+          "type": "number"
+         },
+         "spar_chordwise": {
+          "type": "number"
+         },
+         "n_stringers_per_skin": {
+          "type": "number"
+         },
+         "stringer_height": {
+          "type": "number"
+         },
+         "stringer_thickness": {
+          "type": "number"
+         },
+         "stringer_kind": {
+          "type": "number"
+         },
+         "stringer_flange_width": {
+          "type": "number"
+         },
+         "tip_chord_ratio": {
+          "type": "number"
+         },
+         "sweep_deg": {
+          "type": "number"
+         },
+         "web_chordwise": {
+          "type": "number"
+         }
+        },
+        "additionalProperties": false
+       }
+      }
      }
     }
    }
@@ -276,52 +372,30 @@
       "properties": {
        "params": {
         "type": "object",
-        "required": [
-         "length",
-         "width",
-         "thickness",
-         "hole_d"
-        ],
         "properties": {
          "length": {
-          "type": "number",
-          "minimum": 400.0,
-          "maximum": 600.0
+          "type": "number"
          },
          "width": {
-          "type": "number",
-          "minimum": 200.0,
-          "maximum": 300.0
+          "type": "number"
          },
          "thickness": {
-          "type": "number",
-          "minimum": 2.0,
-          "maximum": 2.0
+          "type": "number"
          },
          "hole_d": {
-          "type": "number",
-          "minimum": 20.0,
-          "maximum": 60.0
-         },
-         "layup": {
-          "type": "object",
-          "required": [
-           "plies"
-          ],
-          "properties": {
-           "plies": {
-            "type": "array",
-            "minItems": 2
-           }
-          }
+          "type": "number"
          },
          "hole_x": {
           "type": "number"
          },
          "hole_y": {
           "type": "number"
+         },
+         "layup": {
+          "type": "number"
          }
-        }
+        },
+        "additionalProperties": false
        }
       }
      },
@@ -349,40 +423,42 @@
       "properties": {
        "params": {
         "type": "object",
-        "required": [
-         "diameter",
-         "length",
-         "thickness",
-         "n_stringers",
-         "n_frames"
-        ],
         "properties": {
          "diameter": {
-          "type": "number",
-          "minimum": 1600.0,
-          "maximum": 2000.0
+          "type": "number"
          },
          "length": {
-          "type": "number",
-          "minimum": 1600.0,
-          "maximum": 2000.0
+          "type": "number"
          },
          "thickness": {
-          "type": "number",
-          "minimum": 2.0,
-          "maximum": 3.0
+          "type": "number"
          },
          "n_stringers": {
-          "type": "number",
-          "minimum": 8.0,
-          "maximum": 12.0
+          "type": "number"
+         },
+         "stringer_height": {
+          "type": "number"
+         },
+         "stringer_thickness": {
+          "type": "number"
+         },
+         "stringer_kind": {
+          "type": "number"
+         },
+         "stringer_flange_width": {
+          "type": "number"
          },
          "n_frames": {
-          "type": "number",
-          "minimum": 3.0,
-          "maximum": 4.0
+          "type": "number"
+         },
+         "frame_height": {
+          "type": "number"
+         },
+         "frame_thickness": {
+          "type": "number"
          }
-        }
+        },
+        "additionalProperties": false
        }
       }
      },
@@ -410,34 +486,33 @@
       "properties": {
        "params": {
         "type": "object",
-        "required": [
-         "length",
-         "width",
-         "thickness",
-         "n_stringers"
-        ],
         "properties": {
          "length": {
-          "type": "number",
-          "minimum": 600.0,
-          "maximum": 800.0
+          "type": "number"
          },
          "width": {
-          "type": "number",
-          "minimum": 600.0,
-          "maximum": 600.0
+          "type": "number"
          },
          "thickness": {
-          "type": "number",
-          "minimum": 2.0,
-          "maximum": 2.0
+          "type": "number"
          },
          "n_stringers": {
-          "type": "number",
-          "minimum": 0.0,
-          "maximum": 3.0
+          "type": "number"
+         },
+         "stringer_height": {
+          "type": "number"
+         },
+         "stringer_thickness": {
+          "type": "number"
+         },
+         "stringer_kind": {
+          "type": "number"
+         },
+         "stringer_flange_width": {
+          "type": "number"
          }
-        }
+        },
+        "additionalProperties": false
        }
       }
      },

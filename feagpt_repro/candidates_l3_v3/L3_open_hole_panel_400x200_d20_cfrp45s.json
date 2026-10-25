@@ -1,0 +1,10 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": "[\"板厚2 mm与铺层厚度冲突：4层×0.5 mm=2 mm已是纯CFRP层合板，请确认是否存在铝基材，还是纯CFRP_T300 [45,-45,-45,45] 铺层（若含铝基材，请给出铝板厚度与CFRP铺层各厚度/层数）。\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 126
+}

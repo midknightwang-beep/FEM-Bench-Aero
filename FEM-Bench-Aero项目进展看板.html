@@ -1686,7 +1686,18 @@ const REVIEW = [
     '<b>MSR 全链 11/30 (36.7%)</b>：翼盒有 spec 12 条中 11 条全绿（fidelity ≤0.024%）；13 条 pipeline 失败<b>全部为模型 spec 质量</b>（把翼盒概念带进其他族 stringer_height=0/材料卡放错块/单位换算错/语义自创键被族校验拒收）；★ 坑：全链必须 venv 解释器（系统 Python 无 gmsh 假报 pipeline 失败）；★ 判分层豁免的元数据键须在全链构造前剥离（FEASpec dataclass 拒收未知键，两层口径要一致）',
     '<b>负控 15/15</b>（NC-14 工程层口径四探针：配置键错值豁免/死字段错值豁免/web_chordwise 编值照罚/判层错闸不松）；T1 L3 地板 23.3%（同任务集），n=30≥20 满足 R12；FPR 双向：编造 1/4、过度澄清 1'
    ],
-   files:['feagpt_repro/eval_runs/baseline_scorecard_L3.json','feagpt_repro/eval_runs/trivial_baselines_L3.json','feagpt_repro/eval_runs/negative_controls.json','feagpt_repro/eval_runs/msr_pipeline_failure_attribution.json','feagpt_repro/gen_candidates_v2.js','feagpt_repro/msr_l3.py','FEM-Bench-Aero/CLAIMS.md']}
+   files:['feagpt_repro/eval_runs/baseline_scorecard_L3.json','feagpt_repro/eval_runs/trivial_baselines_L3.json','feagpt_repro/eval_runs/negative_controls.json','feagpt_repro/eval_runs/msr_pipeline_failure_attribution.json','feagpt_repro/gen_candidates_v2.js','feagpt_repro/msr_l3.py','FEM-Bench-Aero/CLAIMS.md']},
+  {id:'r57', g:'W4/基线收口', c:'<b>W4e/W4f（专家第四轮整改）：headline 改留出集口径 — exam TSR 5/11 (45.5%)、SFR 5/10 (50%)、value_added Δ+45.5pp UNDERPOWERED；C-020 superseded；负控 21/21；RUBRIC.md 预注册</b>',
+   q:'专家第四轮实锤：① 30 条含 train 9+val 10，真留出只有 boundary 4+extrap 7=11 条，混入平均掉真实成绩（R15）② MSR 13 条失败里 6 条是 gmsh 环境失败被记成模型失败（R16）③ 澄清判分单字关键词可被 gaming（R17）④ rubric post-hoc 未预注册（R18）⑤ barrel stringer 尺寸 schema 不要求/builder 要求/考卷没说 ⑥ 额外键三层漏判。整改顺序：先修度量（W4e）再修契约（W4f），重跑在后。',
+   cmd:'python negative_controls.py   # 21/21（PC-1 + NC-1..19）\npython score_baseline.py --candidates candidates_l3_v3   # exam/dev 分栏\n"C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe" msr_l3.py   # venv + 依赖预检 + 失败分层',
+   ev:[
+    '<b>W4e 修度量</b>：msr_l3.py 依赖预检（gmsh/numpy 缺失 ⇒ rc=2 环境退出，绝不记候选 FAIL）+ 失败分层 env/contract/model/solver + 分母=spec-required；score_baseline.py exam/dev 分栏（headline 只用 exam，R15）、value_added 用 exam 口径（T1 exam 0%，不再用 all_pct）、SFR 编造口径对齐（fabricated ⇒ SFR FAIL，R20）；澄清判分字段级（别名表 clarify_aliases + 错族键名 clarify_wrong_keys 反判，panel「长桁根数 n_stringers_per_skin」实锤 FAIL，R17）',
+    '<b>W4f 修契约（三层一致 R19）</b>：schema_task.json 四族 params 白名单（逐键抄 builder KNOWN_KEYS）+ bc/analysis/extra/load additionalProperties:false；考卷 v4（变 9 条 = barrel 5 + panel 4：NL 补长桁尺寸 25/2.5 与 20/2.5 builder 默认实读、n_stringers=0 改写「无长桁」）；prompt 长桁键名按族 + 未给尺寸省绝不填 0；evaluate.py METADATA 白名单收紧（type/element(s)/order/application/point 移出）、bc_skip 时仍查自创键、material 自创键照罚、<b>R19 试建闸</b>（FEASpec.from_dict 构造前移，TypeError/ValueError ⇒ contract FAIL 不进求解）；RUBRIC.md 预注册（W4d 口径标 post-hoc）',
+    '<b>负控 21/21</b>：新增 NC-15（问错族键含关键词仍 FAIL）/NC-15b（问对别名 PASS）/NC-16（panel bc.support）/NC-17（load.distribution + material.ply_material）/NC-18（MSR 预检存在）/NC-19（exam 集不含 train/val）；红线条 R15–R20 挂账',
+    '<b>冒烟行为改变实证</b>：barrel 澄清题（考卷 v4 唯一缺 n_frames）从 v3「静默编造」变 v4「正确 CLARIFY 问框数」——考卷补齐信息 + prompt 按族键名后模型行为改变；★ 坑：msr_l3.py CAND_DIR 硬编码 v2 曾对着旧候选跑出 0/25（目录参数化）；★ schema analysis 白名单一度含 type 而 AnalysisSpec dataclass 拒收——试建闸立即抓到两层不一致',
+    '<b>exam 11 条构成（如实）</b>：spec_pass 5 / spec_fail 4（wingbox×3 全是 load.direction 真实语义错 [0,1,0]→[0,0,1]、cfrp45s_d40 hole_d/layup 错）/ fabricated 1（barrel d1600 静默填 n_frames）/ no_output 1（offcentre hole_radius 3 轮删不掉）；dev 19 条：TSR 11/19、SFR 9/13（不进对外）；2 条 HTTP 502 服务瞬时故障已重试补齐（R16 环境失败不计模型失败）'
+   ],
+   files:['FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/CLAIMS.md','feagpt_repro/eval_runs/baseline_scorecard_L3.json','feagpt_repro/eval_runs/negative_controls.json','feagpt_repro/score_baseline.py','feagpt_repro/msr_l3.py','feagpt_repro/candidates_l3_v3']}
  ];
 
 /* ============ 渲染 ============ */
