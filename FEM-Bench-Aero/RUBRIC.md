@@ -1,6 +1,6 @@
 # RUBRIC.md — L3 判分口径预注册（W4e/W4f → W5a，专家第四/五轮 R18）
 
-> **版本**：v3（2026-10-25，W5a 修题后冻结；变更记录见文末）。
+> **版本**：v4（2026-10-25，W5b 扩卷前预注册；三栏 exam 见 §1.1；判分细则沿用 v3，变更记录见文末）。
 > **纪律（R18）**：本文件冻结后，跑基线期间不得再改；每次改动必须新开版本号 + 记录原因。
 > **post-hoc 声明**：W4d 版口径（EXEC_CONFIG_KEYS / METADATA_KEY_NAMES / bc_skip）是看过
 > 30 条候选后调整的，属 **post-hoc**——其成绩（C-020，已 superseded）只能作开发参考；
@@ -10,9 +10,24 @@
 
 | 集合 | 定义 | 用途 |
 |---|---|---|
-| **exam** | `boundary_holdout + extrapolation_test`（11 条） | **对外 headline 唯一来源** |
-| dev | `train + val`（19 条） | 开发/诊断，不进对外 |
-| 全集 30 | 任务层规模 | 只作「考卷规模」描述 |
+| **exam** | `boundary_holdout + extrapolation_test`（19 条，全 L3 化后） | 对外 headline 来源之一（**v4 口径**，C-021 用过） |
+| **exam（v6 口径）** | `exam_stratum ∈ {boundary, extrapolation, interpolation}`，**共 25 条** | **W5b 起的对外 headline**（见 §1.1） |
+| dev | `train + val`（内插留出后 30 条） | 开发/诊断，不进对外 |
+
+### 1.1 三栏 exam（v6 预注册，2026-10-25 老王拍板）
+
+- **为什么分三栏**：`interpolation_test`（训练包络内的点）明显比 boundary/extrap **更容易**，
+  合并报会虚高；但只报 boundary+extrap 又永远只有 **19 条 < 20**，无法满足 R12/R24 的功效门槛
+  （6 + 13 = 19 是数据集固定值，不随内插条数变化）⇒ 两者互斥，必须显式取舍。
+- **拍板结论**：headline = **合并 25 条**（6 boundary + 13 extrapolation + 6 interpolation），
+  **三栏明细必须并列给出**，并在任何对外引用处写明「与 C-021 的 19 条口径不可直接比较」。
+- **R12/R24 的分母 = 合并 25**；分栏各自 n 太小（6/13/6）只报不判。
+- `exam_stratum` 字段由 `make_nl_human.py --interp-quota` 写入考卷；`score_baseline.py`
+  的 `is_exam` 判据 = `split_v2 ∈ exam_splits 或 exam_stratum 非空`（**向后兼容**：
+  v4/v5 考卷没有该字段 ⇒ 行为与旧版完全一致，C-021 仍可复现）。
+- 内插留出名额（族平衡）：wingbox 2 / open_hole_panel 2 / fuselage_barrel 1 / stiffened_panel 1 = 6，
+  从 `train` 分割里按 `task_id` 字典序取前 N 条（**确定性选择，可复现**）。
+  代价：barrel/panel 的 train 条数被抽空（dev 里仍有 val），必须如实标注。
 
 ## 2. TSR（主 KPI，行为正确性）
 
@@ -97,3 +112,4 @@
 | v2 | 2026-10-25 W4e/f | exam/dev 分栏 + 澄清字段级 + SFR 编造对齐 + 试建闸 | 专家第四轮 R15-R20 |
 | v3 | 2026-10-25 W5a | MSR 分母按任务属性排除（R23）+ R21 任务构建期方向检查 + NC-20..22 + exam.msr/dev.msr 汇总 | 专家第五轮 P0-1/P0-3/P1-1/P1-2；考卷 v5（坐标系写死 + panel 澄清题迁移 str3） |
 | **v3.1** | 2026-10-25 W5a' | **仅文档/计数/产物纪律**：负控计数 23→24→27（补 NC-15b、NC-23..25）+ 新增 §8 产物纪律；**判分口径零改动** | 专家第六轮 P1-2（RUBRIC 说 NC-1..22 = 23，实为 24）+ R25–R28。**不触发重跑**（口径未变，C-021 仍有效） |
+| **v4** | 2026-10-25 W5b | **§1.1 三栏 exam 预注册**：headline = 合并 25（boundary 6 + extrap 13 + interp 6）、三栏明细并列、R12 分母 = 25；新增 `exam_stratum` 字段约定；**判分细则未动** | 老王拍板「扩卷路径 A + headline 全 exam 25」；发现「headline=boundary+extrap 恒为 19」与 R12 的 n≥20 互斥，必须显式取舍 |

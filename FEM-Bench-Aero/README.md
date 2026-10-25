@@ -9,7 +9,7 @@
 |---|---|
 | 看当前计划 | [ROADMAP.md](ROADMAP.md)（**W5a + W5a′ 已收口**：官方产物入 `reports/` + `check_claims.py`（R25/R26）。对外 headline 仍 = C-021 exam 11 条 TSR 5/11 / SFR 5/10 / **MSR 4/9（R23 修订）**，n=11 underpowered（R24：不得调优/承诺）；C-024 桥接表实锤 v3→v4 变化、C-025 修题后重打分（考卷 v5，**diagnostic**）；下一步 **W5b** = v5 重生成 + exam 扩到 n≥20 + bootstrap CI + 第二模型 |
 | 拿数据本体 | `../feagpt_repro/fetch_data.py --src <FEM-Bench-Aero-v1.0-data.tar.gz>`（SHA256 校验 + 55 条核对） |
-| 看任务/考卷 | `../feagpt_repro/tasks/tasks.jsonl`（L1 55 + L2 55 + L3 30 = **考卷 v5**：四族 NL 坐标系+方向写死（R21，coordinate_convention 字段）；panel 澄清题修正迁 str3；判分口径 [RUBRIC.md](RUBRIC.md) **v3**（MSR 分母按任务属性排除 R23）|
+| 看任务/考卷 | **考卷 v6（W5b，C-027）**：`../feagpt_repro/tasks/tasks.jsonl`（L1 55 + L2 55 + **L3 55**），exam **25 条 = boundary 6 + extrapolation 13 + interpolation 6**（三栏口径 RUBRIC §1.1；快照 `../feagpt_repro/reports/papers/tasks_v6.jsonl`）；历史 v4/v5 快照同在 `papers/`；判分口径 [RUBRIC.md](RUBRIC.md) **v4**（MSR 分母按任务属性排除 R23；三栏 exam 预注册）|
 | 跑评测 | `python ../feagpt_repro/evaluate.py --batch --use-gold`；负控 `python ../feagpt_repro/negative_controls.py`（**27/27**，PC-1 + NC-1..22 + NC-15b + NC-23..25，红线 R5/R6）；判分口径见 [RUBRIC.md](RUBRIC.md)（v3.1 预注册，R18） |
 | 看基线成绩单 | **先看 [`../feagpt_repro/reports/INDEX.md`](../feagpt_repro/reports/INDEX.md)**（官方 vs 诊断分文件，R27）：**官方 = `reports/baseline_scorecard_L3_v4.json`（C-021 exam 5/11）**；`baseline_scorecard_L3_v5_rescore.json` 是**诊断**（旧候选打新卷，不是模型成绩，R28）。全链 MSR 须 venv 解释器 `"C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"`（含依赖预检与失败分层 env/contract/model/solver，R16） |
 | 查证据是否可复现 | `python ../feagpt_repro/check_claims.py`（逐条 active CLAIM：artifact 存在 + git 追踪 + 与命令路径一致 + sha256，红线 R25/R26） |

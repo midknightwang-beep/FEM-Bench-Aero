@@ -90,9 +90,9 @@
   },
   {
    "id": "NC-8",
-   "desc": "L3 已接入任务层（30 条）",
-   "expect": "30 条",
-   "actual": "30",
+   "desc": "L3 已接入任务层（L3 行数 == nl_human 行数 55）",
+   "expect": "==55",
+   "actual": "55",
    "ok": true
   },
   {

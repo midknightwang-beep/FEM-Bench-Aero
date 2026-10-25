@@ -109,7 +109,17 @@ def main():
     ap.add_argument('--quota', default=None,
                     help='每族名额，如 "wingbox:34,open_hole_panel:11,fuselage_barrel:6,stiffened_panel:4"')
     ap.add_argument('--out', default=None, help='输出路径（默认 tasks/nl_human.jsonl）')
+    ap.add_argument('--interp-quota', default=None,
+                    help='内插留出名额（W5b/RUBRIC §1.1），如 "wingbox:2,open_hole_panel:2,'
+                         'fuselage_barrel:1,stiffened_panel:1"；从 train 里按 task_id 字典序确定性取')
     args = ap.parse_args()
+
+    def parse_q(s):
+        d = {}
+        for kv in s.split(','):
+            k, _, v = kv.partition(':')
+            d[k.strip()] = int(v)
+        return d
 
     tasks = [json.loads(ln) for ln in open(TASKS, encoding='utf-8') if ln.strip()]
     l1 = [t for t in tasks if t['input_level'] == 'L1']
@@ -120,10 +130,21 @@ def main():
     # 名额：wingbox 15 / open_hole 6 / fuselage_barrel 5 / stiffened_panel 4 = 30
     quota = {'wingbox': 15, 'open_hole_panel': 6, 'fuselage_barrel': 5, 'stiffened_panel': 4}
     if args.quota:
-        quota = {}
-        for kv in args.quota.split(','):
-            k, _, v = kv.partition(':')
-            quota[k.strip()] = int(v)
+        quota = parse_q(args.quota)
+
+    # W5b（RUBRIC §1.1，老王 2026-10-25 拍板）：内插留出——从各族 train 里确定性取前 N 条，
+    # 标 exam_stratum='interpolation'。它**不改 dataset 的 split_v2**（D12 冻结不破），
+    # 只在任务层加难度分层；scoring 的 is_exam 认这个字段。
+    interp_pick = set()
+    if args.interp_quota:
+        iq = parse_q(args.interp_quota)
+        for fam_, n_i in iq.items():
+            train_cases = sorted([t for t in by_fam.get(fam_, []) if t['split_v2'] == 'train'],
+                                 key=lambda t: t['task_id'])
+            if len(train_cases) < n_i:
+                raise SystemExit(f'内插名额不足：{fam_} 只有 {len(train_cases)} 条 train，要 {n_i} 条')
+            interp_pick |= {t['task_id'][3:] for t in train_cases[:n_i]}
+        print(f'[interp] 内插留出 {len(interp_pick)} 条：{sorted(interp_pick)}')
     # W4d 修正：omit 池只保留「文本真挖得掉」的字段。
     # rib_thickness 三个句式无条件书写、n_stringers_per_skin/tip_chord_ratio/stringer_height
     # 在「无长桁/无锥度」时本来就不书写（死字段，gold 为模板默认值）——登记它们是伪缺
@@ -188,6 +209,11 @@ def main():
                 'truth_ref': t['truth_ref'], 'gates': t['gates'],
                 'split_v2': t['split_v2'], 'split_reason': t['split_reason'] + ' | L3 人工 NL',
                 'geometry_class': t['geometry_class'],
+                # W5b（RUBRIC §1.1）：难度分层——boundary/extrapolation 来自 dataset split，
+                # interpolation 是任务层内插留出（split_v2 仍为 train，不破 D12）
+                'exam_stratum': ('boundary' if t['split_v2'] == 'boundary_holdout' else
+                                 'extrapolation' if t['split_v2'] == 'extrapolation_test' else
+                                 'interpolation' if t['task_id'][3:] in interp_pick else None),
                 # W5a（R21）：坐标系约定随任务落盘——载荷方向属任务输入，不属于隐藏约定
                 'coordinate_convention': {
                     'wingbox': 'x=弦向, y=弯曲方向(翼型法向), z=展向; 翼尖载荷 [0,1,0] (+y)',
@@ -219,11 +245,16 @@ def main():
 
     path = args.out or os.path.join(HERE, 'tasks', 'nl_human.jsonl')
     os.makedirs(os.path.dirname(os.path.abspath(path)) or '.', exist_ok=True)
+    # 内插名额必须真的落进考卷（否则「留出」是空的，评分时静默少 6 条）
+    produced = {r['task_id'][3:] for r in out}
+    lost = interp_pick - produced
+    assert not lost, f'内插名额未落进考卷（名额大于该族 quota？）：{sorted(lost)}'
     with open(path, 'w', encoding='utf-8') as f:
         for r in out:
             f.write(json.dumps(r, ensure_ascii=False) + '\n')
     n_l2c = sum(1 for r in out if 'expected_clarifications' in r)
-    print(f"[OK] {path}（{len(out)} 行，其中缺字段澄清型 {n_l2c} 条）")
+    n_i = sum(1 for r in out if r.get('exam_stratum') == 'interpolation')
+    print(f"[OK] {path}（{len(out)} 行，clarify {n_l2c} 条，interp 留出 {n_i} 条）")
     for r in out[:3]:
         print(' ', r['task_id'], r['input']['nl'][:60], '...')
 

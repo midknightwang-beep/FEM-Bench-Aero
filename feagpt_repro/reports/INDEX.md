@@ -51,7 +51,8 @@ PYTHONIOENCODING=utf-8 "$PY" negative_controls.py
 |---|---|---|---|---|
 | v3 | 考卷 v3（b2e9b74） | `candidates_l3_v2` | gen_candidates_v2.js | 历史（C-020 superseded） |
 | **v4** | 考卷 v4（28e66bb，`papers/tasks_v4.jsonl`） | `candidates_l3_v3` | gen_candidates_v2.js | **官方（C-021）** |
-| v5 | 考卷 v5（tag `v1.0-l3-v5`，`papers/tasks_v5.jsonl`） | 同 v4（**只重打分**） | — | **诊断（C-025）**，正式 v5 待 W5b 重生成 |
+| v5 | 考卷 v5（tag `v1.0-l3-v5`，`papers/tasks_v5.jsonl`） | 同 v4（**只重打分**） | — | **诊断（C-025）** |
+| **v6** | 考卷 v6（tag `v1.0-l3-v6`，`papers/tasks_v6.jsonl`，55 条 L3 / exam 25 三栏） | **待生成**（`candidates_l3_v6`） | gen_candidates_v2.js | **冻结待跑（C-027）**：W5b 生成本机缺 key 阻塞中 |
 
 > `papers/tasks_v4.jsonl` 是 `git show 28e66bb:feagpt_repro/tasks/tasks.jsonl` 的逐字节快照。
 > 用它（而不是 `_bridge_v3/tasks/`）才能复现 C-021 的 dev TSR 11/19 与「问错字段 0」；

@@ -143,12 +143,16 @@ def main():
               f"expect=FAIL actual={'PASS' if r['overall_pass'] else 'FAIL'}")
 
     # NC-8：L3 集成自检（nl 行在任务层、可被评测器索引）
+    # ★ W5b 修正：不再硬编码 30 条——改成断言「tasks.jsonl 的 L3 行数 == nl_human.jsonl 行数」。
+    #   旧写法在考卷扩到 55 条时直接假红（把旧结论写进期望值 = 改一次卷子就要改一次检查）。
     l3 = [t for t in tasks.values() if t['input_level'] == 'L3']
-    ok = len(l3) == 30
-    results.append({'id': 'NC-8', 'desc': 'L3 已接入任务层（30 条）', 'expect': '30 条',
-                    'actual': str(len(l3)), 'ok': ok})
+    nl_path = os.path.join(HERE, 'tasks', 'nl_human.jsonl')
+    n_nl = sum(1 for ln in open(nl_path, encoding='utf-8') if ln.strip())
+    ok = len(l3) == n_nl
+    results.append({'id': 'NC-8', 'desc': f'L3 已接入任务层（L3 行数 == nl_human 行数 {n_nl}）',
+                    'expect': f'=={n_nl}', 'actual': str(len(l3)), 'ok': ok})
     print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-8  L3 已接入任务层                           "
-          f"expect=30 actual={len(l3)}")
+          f"expect=={n_nl} actual={len(l3)}")
 
     # ---- W4c 扩展（专家第三轮附录 C）：NC-9..13 ----
     from evaluate import spec_fidelity

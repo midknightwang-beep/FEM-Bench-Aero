@@ -1719,7 +1719,17 @@ const REVIEW = [
     '<b>计数与归因修正（P1-1..P1-4）</b>：C-019 21→<b>27</b>（并写明旧「21/23」是漏计 NC-15b 的错账）；RUBRIC §6 同步；C-024 归因改 <b>−3 wingbox load.direction +1 d2000</b> 并给 per_task 四列；C-009 标 superseded；README「看成绩单」改链 <code>reports/INDEX.md</code>，不再直链工作文件',
     '<b>★ 两个新坑</b>：① <code>_bridge_v3/tasks/tasks.jsonl</code> 打出来 exam 也是 5/11，但 dev 10/19、问错字段 1 ⇒ <b>「总数对上」≠「复现对了」</b>，必须用 <code>papers/tasks_v4.jsonl</code>；② NC-21 拿当前 v5 卷的澄清题清单去核 v4 成绩单分母，报出假红（str3 在 v4 不是澄清题）⇒ 负控必须按成绩单 <code>provenance.tasks_path</code> 回读它当时那张卷子。<b>「拿现态判历史产物」= 假红/假绿</b>'
    ],
-   files:['feagpt_repro/reports/INDEX.md','feagpt_repro/reports/baseline_scorecard_L3_v4.json','feagpt_repro/reports/negative_controls_27.json','feagpt_repro/reports/bootstrap_ci_L3_v4.json','feagpt_repro/reports/papers/SHA256SUMS','feagpt_repro/check_claims.py','feagpt_repro/bootstrap_ci.py','feagpt_repro/export_msr.py','FEM-Bench-Aero/W5B_PLAN.md','FEM-Bench-Aero/CLAIMS.md']}
+   files:['feagpt_repro/reports/INDEX.md','feagpt_repro/reports/baseline_scorecard_L3_v4.json','feagpt_repro/reports/negative_controls_27.json','feagpt_repro/reports/bootstrap_ci_L3_v4.json','feagpt_repro/reports/papers/SHA256SUMS','feagpt_repro/check_claims.py','feagpt_repro/bootstrap_ci.py','feagpt_repro/export_msr.py','FEM-Bench-Aero/W5B_PLAN.md','FEM-Bench-Aero/CLAIMS.md']},
+  {id:'r60', g:'W5/扩量', c:'<b>考卷 v6 冻结（C-027）：L3 30→55，exam 11→25 三栏（boundary 6 / extrapolation 13 / interpolation 6）</b>；RUBRIC v4 预注册 headline = 合并 25、三栏明细并列；<b>机器验收：老 30 题零改动</b>（v5 候选对新卷仍有效）',
+   q:'专家第六轮把「exam n=11」列为唯一硬缺口（P1-6/P1-7）。实测发现一条算术互斥：<b>把 55 条全做成 L3，exam 上限只有 19</b>（boundary 6 + extrapolation 13 是数据集固定值，差 1 条到 n≥20）；而「headline = boundary+extrap」永远只有 19 条 ⇒ 与 R12/R24 的 n≥20 门槛不可同时满足。老王拍板：走内插留出路径（零建模成本），headline 改合并 25 并把三栏明细并列。',
+   cmd:'make_nl_human.py --quota "wingbox:34,open_hole_panel:11,fuselage_barrel:6,stiffened_panel:4" --interp-quota "wingbox:2,open_hole_panel:2,fuselage_barrel:1,stiffened_panel:1"\nmake_tasks.py   # 165 行（L1 55 + L2 55 + L3 55）\npython _verify_tasks_v6.py   # PASS：L1/L2 零改动、老 L3 只加 exam_stratum',
+   ev:[
+    '<b>扩卷实现</b>：<code>make_nl_human.py</code> 名额参数化（<code>--quota</code> / <code>--interp-quota</code> / <code>--out</code>），内插按族 wingbox 2 / open_hole 2 / barrel 1 / panel 1 从 train 里按 task_id 字典序确定性取；新增 <code>exam_stratum</code> 字段承载难度分层——<b>dataset 的 split_v2 一字未改</b>（D12 冻结不破，不需要重跑九闸）',
+    '<b>机器验收（三项全 PASS）</b>：① L1/L2 140 行内容零改动；② 老 30 条 L3 除新增 <code>exam_stratum</code> 外零改动 ⇒ <b>v5 生成的候选在 v6 老题上仍然有效（R28 可证，不用重生成老题）</b>；③ interp 6 条全部来自 train、dataset exam 与 stratum 一一对应',
+    '<b>三栏口径预注册（RUBRIC v4 §1.1）</b>：headline = 合并 25，三栏明细必须并列，R12/R24 分母 = 25；对外引用须写「与 C-021 的 19 条口径不可直接比」。<b>代价同引</b>：内插明显更易 ⇒ 合并数会高于 45.5 %（题目构成变化不是模型变好）；barrel/panel 的 train 被抽空（dev 仍有 val）',
+    '<b>判分器向后兼容</b>：<code>score_baseline.py</code> 的 <code>is_exam</code> 改为认 <code>exam_stratum</code>（缺字段则回退 split_v2 映射），并新增 <code>exam_by_stratum</code> 三栏汇总；<b>实测 v4 重跑仍 5/11、dev 11/19</b>，且老卷也能看到分层（boundary 2/4、extrap 3/7）。<b>★ 连带坑</b>：NC-8 把「30 条 L3」硬编码进期望值，扩卷后直接假红 ⇒ 改成断言「L3 行数 == nl_human 行数」（负控 27/27 复绿）'
+   ],
+   files:['feagpt_repro/reports/papers/tasks_v6.jsonl','feagpt_repro/reports/papers/SHA256SUMS','feagpt_repro/make_nl_human.py','feagpt_repro/_verify_tasks_v6.py','feagpt_repro/score_baseline.py','FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/W5B_PLAN.md']}
  ];
 
 /* ============ 渲染 ============ */

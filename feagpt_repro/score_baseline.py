@@ -27,6 +27,22 @@ sys.path.insert(0, HERE)
 from evaluate import evaluate_one, load_tasks, RUNS
 
 EXAM_SPLITS = ('boundary_holdout', 'extrapolation_test')
+# W5b（RUBRIC §1.1，老王拍板）：exam 三栏——boundary / extrapolation 来自 dataset split，
+# interpolation 是任务层内插留出（split_v2 仍为 train）。headline = 合并 25，三栏明细必须并列。
+STRATA = ('boundary', 'extrapolation', 'interpolation')
+
+
+def stratum_of(task):
+    """任务的难度分层；老考卷（v4/v5）没有 exam_stratum ⇒ 回退到 split_v2 映射（向后兼容）。"""
+    s = task.get('exam_stratum')
+    if s:
+        return s
+    if task.get('split_v2') == 'boundary_holdout':
+        return 'boundary'
+    if task.get('split_v2') == 'extrapolation_test':
+        return 'extrapolation'
+    return None
+
 # R25：官方 artifact 一律写 reports/（被 git 追踪），eval_runs/ 只作工作目录
 REPORT_DIR = os.path.join(HERE, 'reports')
 
@@ -128,13 +144,15 @@ def main():
     report_dir = get('--report-dir', REPORT_DIR)
     report_path = get('--report', os.path.join(report_dir, 'baseline_scorecard_L3.json'))
     trivial_path = get('--trivial', os.path.join(report_dir, 'trivial_baselines_L3.json'))
-    n_tasks_exam = int(get('--n-tasks-exam', '11'))
+    n_tasks_exam_arg = int(get('--n-tasks-exam', '0'))
     label = get('--label', '')
     os.makedirs(os.path.dirname(os.path.abspath(report_path)) or '.', exist_ok=True)
     print(f'[score_baseline] candidates={os.path.basename(cand_dir)}  tasks={tasks_path}')
 
     tasks = {t['task_id']: t for t in load_tasks(tasks_path)
              if t['input_level'] == 'L3'}
+    # W5b：exam 期望条数从考卷自动推（硬编码 11 在扩到 25 条后会让 partial 判断失真）
+    n_tasks_exam = n_tasks_exam_arg or sum(1 for t in tasks.values() if stratum_of(t) is not None)
     rows = []
     for fn in sorted(os.listdir(cand_dir)):
         if not fn.endswith('.json'):
@@ -146,8 +164,10 @@ def main():
             continue
         cand['_path'] = os.path.join(cand_dir, fn)
         cat, ok, detail = judge_l3_candidate(cand, t)
+        st = stratum_of(t)
         rows.append({'task_id': tid, 'split_v2': t['split_v2'], 'family': t['family'],
-                     'category': cat, 'tsr_pass': ok, 'is_exam': t['split_v2'] in EXAM_SPLITS,
+                     'category': cat, 'tsr_pass': ok,
+                     'exam_stratum': st, 'is_exam': st is not None,
                      'ec': bool(t.get('expected_clarifications')),
                      'turns_used': cand.get('turns_used'), **detail})
 
@@ -189,6 +209,9 @@ def main():
                 'clarify_wrong_field': len([r for r in clar_wrong if r['ec']])},
         'by_split': {s: agg([r for r in rows if r['split_v2'] == s], s)
                      for s in sorted({r['split_v2'] for r in rows})},
+        # W5b：exam 三栏明细（RUBRIC §1.1——合并报会虚高，必须拆开看难度）
+        'exam_by_stratum': {s: agg([r for r in exam_rows if r['exam_stratum'] == s], s)
+                            for s in STRATA if any(r['exam_stratum'] == s for r in exam_rows)},
         'per_task': rows,
     }
 
@@ -228,6 +251,9 @@ def main():
     print(f"  DEV   TSR {d['tsr']['pass']}/{d['n']} ({d['tsr']['pct']}%)  "
           f"SFR {d['sfr']['pass']}/{d['sfr']['of_spec_candidates']} ({d['sfr']['pct']}%)  (不进对外)")
     print(f"  分类(exam): {e['categories']}")
+    for s, a in scorecard['exam_by_stratum'].items():
+        print(f"  └ {s:<13} TSR {a['tsr']['pass']}/{a['n']} ({a['tsr']['pct']}%)"
+              f"  SFR {a['sfr']['pass']}/{a['sfr']['of_spec_candidates']}")
     print(f"  FPR: 编造 {len(fab)}/{n_ec}、过度澄清 {scorecard['fpr']['overclarify']}、问错字段 {scorecard['fpr']['clarify_wrong_field']}")
     if 'value_added' in scorecard:
         v = scorecard['value_added']

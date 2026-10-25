@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
- "n_active_claims": 18,
- "n_artifacts": 19,
+ "n_active_claims": 19,
+ "n_artifacts": 21,
  "n_fail": 0,
  "all_ok": true,
  "fails": [],
@@ -110,9 +110,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 197780,
-   "sha256": "a690760386ae715b3621addd039a95f6fb9f206f331d6af98a8277370eca2bd6",
-   "mtime": 1792893480
+   "size": 222583,
+   "sha256": "0120299ded524f44b8864b56db6d0ec937b48072bb6d06c5711fb35ce4fc1e22",
+   "mtime": 1792912570
   },
   {
    "claim_id": "C-011",
@@ -122,9 +122,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 197780,
-   "sha256": "a690760386ae715b3621addd039a95f6fb9f206f331d6af98a8277370eca2bd6",
-   "mtime": 1792893480
+   "size": 222583,
+   "sha256": "0120299ded524f44b8864b56db6d0ec937b48072bb6d06c5711fb35ce4fc1e22",
+   "mtime": 1792912570
   },
   {
    "claim_id": "C-012",
@@ -206,9 +206,33 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 6470,
-   "sha256": "b3f00155b411e7d5386c10080fc99b25f5ee1fc08478a449ab6a66777bd4942d",
-   "mtime": 1792910632
+   "size": 6669,
+   "sha256": "23e3040cafa5f9d68b6cbfa522e7bd7607cdf632b30868fb7ab8f6159bbb8e57",
+   "mtime": 1792912711
+  },
+  {
+   "claim_id": "C-027",
+   "artifact": "feagpt_repro/reports/papers/tasks_v6.jsonl",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 222583,
+   "sha256": "0120299ded524f44b8864b56db6d0ec937b48072bb6d06c5711fb35ce4fc1e22",
+   "mtime": 1792912622
+  },
+  {
+   "claim_id": "C-027",
+   "artifact": "feagpt_repro/reports/papers/nl_human_v6.jsonl",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 53190,
+   "sha256": "497ff9a8b137769c24b96e51f18d41bbcdb025450942a69dca4332ec9285e5e5",
+   "mtime": 1792912623
   },
   {
    "claim_id": "C-021",
@@ -218,9 +242,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 26062,
-   "sha256": "291b616690760b7897168f5a5a7604e7b72051a5f8722426a27f0276b5865f60",
-   "mtime": 1792910542
+   "size": 27528,
+   "sha256": "94a2ae702a6a5ef033c5d8110ddbaf50f13479d2bffe68e79b4636f6be601590",
+   "mtime": 1792912621
   },
   {
    "claim_id": "C-019",
@@ -230,9 +254,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 4444,
-   "sha256": "8d0c612b058b64cbb03b50f96ae4be65a3109974abc1a6475aef3484bb3a6012",
-   "mtime": 1792910608
+   "size": 4467,
+   "sha256": "259d5a126d1451544297ca92f6a0d5337f703714a721e1313029064ff1317e3c",
+   "mtime": 1792912816
   }
  ]
 }
