@@ -2,16 +2,12 @@
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
  "n_active_claims": 19,
  "n_artifacts": 21,
- "n_fail": 1,
- "n_fail_structural": 1,
+ "n_fail": 0,
+ "n_fail_structural": 0,
  "n_fail_semantic": 0,
- "all_ok": false,
- "fails": [
-  "C-019: feagpt_repro/reports/negative_controls_31.json -> artifact 未被 git 追踪（R25）"
- ],
- "structural_fails": [
-  "C-019: feagpt_repro/reports/negative_controls_31.json -> artifact 未被 git 追踪（R25）"
- ],
+ "all_ok": true,
+ "fails": [],
+ "structural_fails": [],
  "semantic_fails": [],
  "semantic": [
   {
@@ -396,12 +392,10 @@
    "claim_id": "C-019",
    "artifact": "feagpt_repro/reports/negative_controls_31.json",
    "exists": true,
-   "git_tracked": false,
+   "git_tracked": true,
    "external": false,
-   "ok": false,
-   "problems": [
-    "artifact 未被 git 追踪（R25）"
-   ],
+   "ok": true,
+   "problems": [],
    "size": 5304,
    "sha256": "3c6a1f1f912b60305d6b473f6f4195f19ea5564e364e4d9c3bf1d39ad61456a0",
    "mtime": 1792923697

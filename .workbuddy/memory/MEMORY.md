@@ -48,12 +48,16 @@
 
 ## 当前状态（2026-10-25）
 - **代理模型线（M7/M14/D01–D37）完全冻结**（D37 拍板）；对外 KPI = TSR/FPR/修复/拒答/澄清。计划看 `FEM-Bench-Aero/ROADMAP.md`。
-- **W1–W5a′ 收口**；下一步 **W5b**（v5 重生成 → 扩卷 → n≥20 + CI + 第二模型），计划见 `FEM-Bench-Aero/W5B_PLAN.md`。
+- **W1–W5a′ + W5b-2 + W5b-3a 收口**；**W5b-3 生成等 key**（v6 55 条候选），计划见 `FEM-Bench-Aero/W5B_PLAN.md` §6。
+- **考卷 v6 已冻结**（C-027，tag `v1.0-l3-v6`）：L3 55 条、exam **25 = boundary 6 + extrap 13 + interp 6**（三栏口径 RUBRIC v4.1 §1.1）。
 - **官方 artifact 唯一出处 = `feagpt_repro/reports/`**（入库），`eval_runs/` 只作工作目录；入口 `reports/INDEX.md`（官方 vs 诊断）。
 - **对外 headline = C-021 v4 exam 11 条：TSR 5/11 (45.5%)、SFR 5/10、MSR 4/9**，TSR **CI95 [18.2, 72.7]**（n=11 UNDERPOWERED，不得判 PASS）。
   复现：`score_baseline.py --tasks reports/papers/tasks_v4.jsonl --report reports/baseline_scorecard_L3_v4.json`（+ `msr_l3.py` 同参数，18 min）。
   **C-025 v5 重打分 4/11 是诊断不是成绩**（旧候选不能评新考卷，R28）。
-- **红线 R1–R28**；R25 官方 artifact 必须入 `reports/`；R26 `check_claims.py` 自检（负控 28/28 含 NC-23..26）；R27 官方/诊断分文件；R28 旧候选不评新考卷。
+- **红线 R1–R31**；R25 官方 artifact 必须入 `reports/`；R26 `check_claims.py` 自检（**负控 31/31** 含 NC-23..29）；R27 官方/诊断分文件；R28 旧候选不评新考卷；
+  **R29 语义计数必须自检**（`check_claims.py --semantic` 默认开，17 项，期望值全从 artifact 实读）；
+  **R30 跨口径不得直接比**（C-021=11 / v6 boundary+extrap=19 / v6 headline=25 三个数，`compare_scorecards.py` rc=3 拒绝）；
+  **R31 生成前 key 预检 + 1 条冒烟**，候选未覆盖全卷的成绩单必须标 `partial_candidates`。
 - **扩卷缺口（实测）**：55 条全 L3 化后 exam 上限 **19**（差 1 条到 n≥20）；推荐 6 条 `interpolation_test` 内插留出 ⇒ 25，**三栏分报**。
-- 生成口径：SDK 无 json_schema logits 约束 ⇒ json_object + ajv（放宽 required）+ 错误反馈修复 ≤3 轮；pin `glm-5.3-flash`；key 只读 env `WORKBUDDY_PUBLISHABLE_KEY`（本机 shell 默认未设）。
+- 生成口径：SDK 无 json_schema logits 约束 ⇒ json_object + ajv（放宽 required）+ 错误反馈修复 ≤3 轮；pin `glm-5.3-flash`；key 只读 env `WORKBUDDY_PUBLISHABLE_KEY`（本机 shell 默认未设）；**`gen_candidates_v2.js --limit` 默认 30**，v6 55 条必须显式 `--limit 55`。
 - 已知红线级坑：**「总数对上」≠「复现对了」**（`_bridge_v3/tasks` 打 exam 同为 5/11 但 dev 10/19）；**拿现态判历史产物必假红/假绿**（NC-21 用当前卷核旧成绩单分母）；**负控检查对象要动态取**（NC-15 曾静默消失）。
