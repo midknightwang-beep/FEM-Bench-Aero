@@ -96,6 +96,19 @@ def main():
                        'note': 'n<10，只报不判'}
     out['by_family_tsr'] = by_fam
 
+    # 三栏（RUBRIC §1.1，W5b-3b）：boundary / extrapolation / interpolation 各自 CI。
+    # 合并 25 条会因 interp 更容易而虚高，三栏必须并列；分栏 n 只有 6/13/6 ⇒ 只报不判（R12）。
+    by_str = {}
+    for s in ('boundary', 'extrapolation', 'interpolation'):
+        s_rows = [r for r in rows if (r.get('exam_stratum') or r.get('split_v2')) == s]
+        if not s_rows:
+            continue
+        p, lo, hi = boot_rate([1 if r['tsr_pass'] else 0 for r in s_rows], args.boot, args.seed)
+        by_str[s] = {'n': len(s_rows), 'n_pass': sum(1 for r in s_rows if r['tsr_pass']),
+                     'tsr_pct': p, 'ci95': [lo, hi],
+                     'note': '分栏 n<20，只报不判（R12/R30）'}
+    out['by_stratum_tsr'] = by_str
+
     out_path = args.out or os.path.join(HERE, 'reports', 'bootstrap_ci.json')
     os.makedirs(os.path.dirname(os.path.abspath(out_path)) or '.', exist_ok=True)
     json.dump(out, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
@@ -106,6 +119,8 @@ def main():
         print(f"  {k}: {v['n_pass']}/{v['n']} = {v['point_pct']}%  CI95 [{v['ci95'][0]}, {v['ci95'][1]}]")
     for fam, v in by_fam.items():
         print(f"  [{fam}] n={v['n']} TSR {v['tsr_pct']}% CI95 {v['ci95']}")
+    for s, v in by_str.items():
+        print(f"  <{s}> n={v['n']} TSR {v['tsr_pct']}% CI95 {v['ci95']}  (分栏只报不判)")
     print(f'report -> {out_path}')
     return 0
 
