@@ -101,6 +101,16 @@ def sp_text(p, style, mesh_size=3.0):
 STYLE_CYCLE = ['描述', '任务单', '图纸']
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    # W5b-2 前置（专家第六轮 §5.2 任务 9）：名额可配，才能扩卷到「全 55 条 L3」。
+    # 默认值 = 现役 30 条口径，**必须与已冻结的 tasks/nl_human.jsonl 逐字节一致**
+    # （验收：--out 到临时路径后 diff，见 W5B_PLAN.md W5b-2）。
+    ap.add_argument('--quota', default=None,
+                    help='每族名额，如 "wingbox:34,open_hole_panel:11,fuselage_barrel:6,stiffened_panel:4"')
+    ap.add_argument('--out', default=None, help='输出路径（默认 tasks/nl_human.jsonl）')
+    args = ap.parse_args()
+
     tasks = [json.loads(ln) for ln in open(TASKS, encoding='utf-8') if ln.strip()]
     l1 = [t for t in tasks if t['input_level'] == 'L1']
     by_fam = {}
@@ -109,6 +119,11 @@ def main():
 
     # 名额：wingbox 15 / open_hole 6 / fuselage_barrel 5 / stiffened_panel 4 = 30
     quota = {'wingbox': 15, 'open_hole_panel': 6, 'fuselage_barrel': 5, 'stiffened_panel': 4}
+    if args.quota:
+        quota = {}
+        for kv in args.quota.split(','):
+            k, _, v = kv.partition(':')
+            quota[k.strip()] = int(v)
     # W4d 修正：omit 池只保留「文本真挖得掉」的字段。
     # rib_thickness 三个句式无条件书写、n_stringers_per_skin/tip_chord_ratio/stringer_height
     # 在「无长桁/无锥度」时本来就不书写（死字段，gold 为模板默认值）——登记它们是伪缺
@@ -202,12 +217,13 @@ def main():
                 row['gates'] = ['clarify_then_' + g if g == 'semantics' else g for g in t['gates']]
             out.append(row)
 
-    path = os.path.join(HERE, 'tasks', 'nl_human.jsonl')
+    path = args.out or os.path.join(HERE, 'tasks', 'nl_human.jsonl')
+    os.makedirs(os.path.dirname(os.path.abspath(path)) or '.', exist_ok=True)
     with open(path, 'w', encoding='utf-8') as f:
         for r in out:
             f.write(json.dumps(r, ensure_ascii=False) + '\n')
     n_l2c = sum(1 for r in out if 'expected_clarifications' in r)
-    print(f"[OK] tasks/nl_human.jsonl（{len(out)} 行，其中缺字段澄清型 {n_l2c} 条）")
+    print(f"[OK] {path}（{len(out)} 行，其中缺字段澄清型 {n_l2c} 条）")
     for r in out[:3]:
         print(' ', r['task_id'], r['input']['nl'][:60], '...')
 
