@@ -1,0 +1,41 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": null,
+ "spec": null,
+ "turns_used": 3,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/structure/params must have required property 'hole_d'",
+    "/ must match \"then\" schema",
+    "/material must have required property 'name'",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'density'",
+    "/material must have required property 'yield_strength'",
+    "/mesh must have required property 'size_chord'",
+    "/mesh must have required property 'size_span'",
+    "/mesh must NOT have additional properties",
+    "/mesh must NOT have additional properties",
+    "/load must have required property 'magnitude'"
+   ]
+  },
+  {
+   "turn": 2,
+   "errors": [
+    "/mesh must NOT have additional properties",
+    "/load/kind 必须是 [\"tip_force\",\"pressure\"] 之一"
+   ]
+  },
+  {
+   "turn": 3,
+   "errors": [
+    "/mesh must NOT have additional properties"
+   ]
+  }
+ ],
+ "raw_len": 1220
+}

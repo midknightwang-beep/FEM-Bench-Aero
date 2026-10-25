@@ -21,29 +21,32 @@
 | C-013 | 数据本体可获取：v1.0-data.tar.gz 86 MB + SHA256SUMS + fetch_data 全链验证 | F:/FEA_Archive_20261024/SHA256SUMS.txt | `python fetch_data.py --src <path>` | 2026-10-24 | GATED | 55/55 | active |
 | C-017 | **L1 spec-copy smoke（W4b，非模型基线）**：考卷 19 条 SFR **0/19**（boundary 0/6、extrap 0/13）；归因 airfoil.chord×12 + bc.clamp×7——无 schema 约束解码时 LLM 指令遵循失败（airfoil 整组缺失/bc 块丢失），非建模能力结论；n=19 UNDERPOWERED | feagpt_repro/eval_runs/baseline_scorecard.json | `python score_baseline.py candidates` | 2026-10-24 | GATED (spec-only) | 19/19 | active |
 | C-018 | 「LLM 基线 TSR 2/2 = 100%」 | eval_runs/baseline_scorecard.json（22:08 旧快照） | — | 2026-10-24 | — | 2 条 | **superseded**（partial + skip_solve + 旧快照，被 C-017 取代；红线 R11/R14） |
-| C-019 | 评测器负控 14/14（PC-1 + NC-1..13，含契约拒绝/L3 删块） | feagpt_repro/eval_runs/negative_controls.json | `python negative_controls.py` | 2026-10-24 | GATED | 14 条 | active |
+| C-020 | **L3 主基线（W4d，正式）**：glm-5.3-flash + json_object/schema 校验/错误反馈修复循环≤3 轮（SDK 无 logits 级 json_schema，如实标注）；考卷 v3（n=30，ec 澄清题 4 条）；拍板口径「工程层判+配置层只报 / 问对=对编造=错」。**TSR 18/30 (60%)**、**SFR 16/25 (64%)**、**MSR 11/30 (36.7%)**（全链 ccx，翼盒有 spec 12 条中 11 条全绿、fidelity ≤0.024%）；**value_added Δ+36.7pp PASS**（T1 地板同任务集 23.3%，n=30≥20 满足 R12）；FPR：编造 1/4（柱壳静默填 n_frames）、过度澄清 1；MSR 失败 13 条全为模型 spec 质量（语义自创键/字段错位/单位换算，归因见 msr_pipeline_failure_attribution.json）；考卷三轮修正实锤：ec 伪缺 bug / CFRP 材料卡缺失 / 网格尺寸+孔位硬编码（gold 4.0 写成 3mm） | feagpt_repro/eval_runs/baseline_scorecard_L3.json | `python score_baseline.py` + `python msr_l3.py`（venv） | 2026-10-25 | GATED (full-chain MSR) | 30/30 | active |
+| C-019 | 评测器负控 15/15（PC-1 + NC-1..14，含契约拒绝/L3 删块/NC-14 工程层口径四探针） | feagpt_repro/eval_runs/negative_controls.json | `python negative_controls.py` | 2026-10-25 | GATED | 15 条 | active |（PC-1 + NC-1..13，含契约拒绝/L3 删块） | feagpt_repro/eval_runs/negative_controls.json | `python negative_controls.py` | 2026-10-24 | GATED | 14 条 | active |
 | C-014 | 「关 3 55/55 全部双码验证」 | — | — | 2026-10-24 | — | — | **retracted**（被 C-003 取代；reported-only 不得计入 PASS，红线 R2） |
 | C-015 | 「30 条人工 NL」 | tasks/nl_human.jsonl | — | 2026-10-24 | — | 30 | **superseded**（实为 template_human_designed，红线 R4；老王人工抽检后可升级） |
 | C-016 | 「ID test 测内插」 | — | — | 2026-10-24 | — | — | **retracted**（边界留出 ≠ 内插，被 C-011 取代；内插留出 = v1.1） |
 
-## 十维评分卡（W4a 后自评，模板见专家复评 §6.6/附录 D）
+## 十维评分卡（W4a/W4d 后自评，模板见专家复评 §6.6/附录 D）
 
-| # | 维度 | W3 时 | W4a 后 | 依据 |
-|---|---|---:|---:|---|
-| 1 | 目标一致性 | 3 | 3 | ROADMAP 主轴不变 |
-| 2 | 任务有效性 | 1 | 2 | L2 轮换+去泄漏 ✅、L3 接入 ✅；ID 内插留 v1.1 |
-| 3 | 判分有效性 | 1 | 3 | spec_fidelity 强制闸 + 负控 9/9（C-009） |
-| 4 | 证据等级 | 2 | 3 | 关 3 分级 34/15/6 + CLAIMS 账本 |
-| 5 | 可复现性 | 1 | 3 | fetch_data 全链验证（C-013）+ validate_schema 一条命令 |
-| 6 | 版本治理 | 2 | 2 | git + tag；数据以归档包分发（DVC = v1.1 可选） |
-| 7 | 文档真实性 | 2 | 3 | CLAIMS 账本 + human 标签改正 + 单一数字源同步 |
-| 8 | 统计有效性 | 1 | 1 | test 13 条、n 小——W4b 分报 + T0/T1 对照后重评 |
-| 9 | 范围纪律 | 3 | 3 | 红线 R1–R8 挂账 |
-| 10 | 计划执行 | 2 | 3 | W4a 按期、负控全绿 |
-| **总分** | | **18/30** | **26/30** | **≥24 且无单项 ≤1 ⇒ 允许进入 W4b** |
+| # | 维度 | W3 时 | W4a 后 | W4d 后 | 依据 |
+|---|---|---:|---:|---:|---|
+| 1 | 目标一致性 | 3 | 3 | 3 | ROADMAP 主轴不变（评测基础设施） |
+| 2 | 任务有效性 | 1 | 2 | 3 | L3 主口径落地（30 条 + 4 澄清型 + clarify_keywords 可审计） |
+| 3 | 判分有效性 | 1 | 3 | 3 | spec_fidelity 工程层口径 + 负控 15/15（NC-14 四探针护口径） |
+| 4 | 证据等级 | 2 | 3 | 3 | C-020 全链 MSR GATED（翼盒 fidelity ≤0.024%） |
+| 5 | 可复现性 | 1 | 3 | 3 | score_baseline/msr_l3/negative_controls 一条命令；venv 说明落盘 |
+| 6 | 版本治理 | 2 | 2 | 3 | git 全程（W4a–W4d 逐 commit）+ 考卷版本三轮留痕 |
+| 7 | 文档真实性 | 2 | 3 | 3 | C-020 如实标注修复循环非 logits 级约束、MSR 失败归因落盘 |
+| 8 | 统计有效性 | 1 | 1 | 2 | L3 n=30≥20 + 同任务集 T1 对照；boundary/extrap 子集仍小 |
+| 9 | 范围纪律 | 3 | 3 | 3 | 红线 R1–R14 挂账 |
+| 10 | 计划执行 | 2 | 3 | 3 | W4a–W4d 四轮按期收口 |
+| **总分** | | **18/30** | **26/30** | **29/30** | **≥24 且无单项 ≤1 ⇒ 基线成绩单可对外引用（C-020）** |
 
-## 红线条（R1–R8，挂账常设）
+## 红线条（R1–R14，挂账常设）
 
 R1 v1.0 冻结后不改 test/task ｜ R2 reported-only 不得计入 PASS ｜ R3 对外数字必须有 artifact+command（引 CLAIMS）
 ｜ R4 `human` 标签只用于人工撰写 ｜ R5 评测器改动必跑负控 ｜ R6 负控未全绿不得跑基线
-｜ R7 不得用 test/boundary_holdout 训练或调参 ｜ R8 不得复活代理模型 KPI
+｜ R7 不得用 test/boundary_holdout 训练或调参 ｜ R8 不得复活代理模型 KPI ｜ R9 SFR≠MSR≠TSR 不得互称
+｜ R10 候选必须过契约校验（拒绝静默降级）｜ R11 成绩单必须覆盖全部考卷（partial 显式警告）
+｜ R12 n<20 不判 value_added ｜ R13 模型 id 必须可引用 ｜ R14 skip_solve 不得称基线（正式基线必含全链 MSR）

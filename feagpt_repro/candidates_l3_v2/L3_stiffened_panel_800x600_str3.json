@@ -1,0 +1,10 @@
+{
+ "task_id": "L3_stiffened_panel_800x600_str3",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": "[\"3 根 blade 长桁的截面高度 stringer_height 是多少(mm)?\",\"3 根 blade 长桁的厚度 stringer_thickness 是多少(mm)?\",\"加筋壁板的 600 mm 和 800 mm 分别对应哪个方向(length_spanwise 与 width_chordwise 如何分配)?\",\"四边简支但铁律要求边界条件格式为 {'root_surface':'root','clamp':true}(固支)，请确认简支是否可按简支边界单独说明处理?\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 259
+}

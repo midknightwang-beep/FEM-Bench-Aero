@@ -194,6 +194,44 @@ def main():
     print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-13 L3 候选删 mesh/load/bc/extra             "
           f"expect=FAIL actual={'PASS' if r13['pass'] else 'FAIL'}")
 
+    # NC-14：工程层口径四探针（W4d 拍板：配置层只报、死字段豁免、语义编造照罚、判层闸不松）
+    l3t_eng = tasks.get('L3_naca4412_wingbox_size_skin4')
+    if l3t_eng:
+        cid_e = l3t_eng['task_id'].replace('L3_', '')
+        g_e = json.load(open(os.path.join(FEA, 'modeling', cid_e, 'spec.json'), encoding='utf-8'))
+        g_e.pop('workdir', None)
+
+        def sf_eng(cand):
+            return spec_fidelity(cand, g_e, l3t_eng['family'], engineering_layer=True)
+
+        probes = []
+        # a) 执行配置键错值 => 豁免（PASS）
+        c = json.loads(json.dumps(g_e)); c['mesh']['recombine'] = False
+        ra = sf_eng(c)
+        probes.append(('配置键错值豁免', ra['pass'] and len(ra.get('exec_config_mismatch', [])) == 1,
+                       f"pass={ra['pass']} mism={len(ra.get('exec_config_mismatch', []))}"))
+        # b) 死字段错值（ns=0）=> 豁免（PASS）
+        c = json.loads(json.dumps(g_e)); c['airfoil']['stringer_height'] = 999.0
+        rb = sf_eng(c)
+        probes.append(('死字段错值豁免', rb['pass'] and 'airfoil.stringer_height' in rb.get('dead_fields_skipped', []),
+                       f"pass={rb['pass']} skipped={rb.get('dead_fields_skipped')}"))
+        # c) web_chordwise 编值（无腹板任务）=> 照罚（FAIL）
+        c = json.loads(json.dumps(g_e)); c['airfoil']['web_chordwise'] = [0.25, 0.7]
+        rc = sf_eng(c)
+        probes.append(('web_chordwise 编值照罚', not rc['pass'],
+                       f"pass={rc['pass']}"))
+        # d) 判层字段错（n_ribs 5->7）=> 闸不松（FAIL）
+        c = json.loads(json.dumps(g_e)); c['airfoil']['n_ribs'] = 7
+        rd = sf_eng(c)
+        probes.append(('判层字段错闸不松', not rd['pass'],
+                       f"pass={rd['pass']}"))
+        ok = all(p[1] for p in probes)
+        why = '; '.join(f"{n}={'OK' if good else 'BAD(' + d + ')'}" for n, good, d in probes)
+        results.append({'id': 'NC-14', 'desc': '工程层口径四探针', 'expect': '4/4',
+                        'actual': why, 'ok': ok})
+        print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-14 工程层口径四探针                         "
+              f"expect=4/4 actual={why}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'results': results}

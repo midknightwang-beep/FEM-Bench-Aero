@@ -41,6 +41,27 @@ GRADED_FIELDS = {
 GRADED_MATERIAL = ['name', 'youngs_modulus', 'poisson_ratio']          # 必判
 REPORTED_MATERIAL = ['density', 'yield_strength']                      # 只报不判
 
+# W4d 拍板（2026-10-25，工程层判+配置层只报）：
+# 执行配置键 = 求解器内部配置，NL 任务书永远不会提及——REPORTED NOT GATED（填错单独报告，不进 TSR）。
+EXEC_CONFIG_KEYS = {
+    'mesh': {'algorithm_2d', 'element_order', 'leading_edge_threshold',
+             'min_jacobian', 'recombination_algorithm', 'recombine',
+             'refine_at_leading_edge'},
+    'analysis': {'incremental', 'initial_increment', 'outputs', 'step_type',
+                 'total_time'},
+    # gold 内部编码键（数据集离散索引/方向轴表示，NL 任务书永远不会提及）
+    'extra': {'sweep_index', 'shear_axis', 'moment_axis'},
+}
+# W4d 补充（实测 30 条候选后）：纯元数据自创键白名单——描述性说明不动语义，REPORTED；
+# 白名单外自创键（载荷/几何/边界语义编造）照罚 FAIL。键名即契约，同义键（size_axial）不豁。
+METADATA_KEY_NAMES = {'note', 'units', 'unit_system', 'type', 'element',
+                      'element_type', 'elements', 'order', 'description',
+                      'application', 'point'}
+METADATA_KEY_SUFFIXES = ('_units', '_note')
+# 死字段：无长桁（n_stringers_per_skin=0/缺）时 gold 里的模板默认值——不可知，豁免。
+DEAD_STRINGER_KEYS = {'stringer_height', 'stringer_thickness', 'stringer_kind',
+                      'stringer_flange_width'}
+
 
 def _field_equal(a, b):
     if isinstance(a, list) and isinstance(b, list):
@@ -51,15 +72,32 @@ def _field_equal(a, b):
     return a == b
 
 
-def spec_fidelity(cand_spec, gold_spec, family, input_mesh_keys=None, input_load_keys=None):
-    """W4a P0-1：字段级真值校验（强制闸）。任一字段 FAIL ⇒ 整体 FAIL。"""
+def spec_fidelity(cand_spec, gold_spec, family, input_mesh_keys=None, input_load_keys=None,
+                  engineering_layer=False):
+    """W4a P0-1：字段级真值校验（强制闸）。任一字段 FAIL ⇒ 整体 FAIL。
+
+    engineering_layer（W4d 拍板，仅 L3）：
+      - 死字段豁免：wingbox 且候选 n_stringers_per_skin=0/缺 时，stringer_* 不判
+      - 执行配置键（EXEC_CONFIG_KEYS）：填错 REPORTED NOT GATED，不 FAIL
+      - 自创键检查照旧 FAIL（编造语义字段不可豁免）
+    """
     fields = []
+    dead_skipped, exec_mismatch = [], []
     holder_key, keys = GRADED_FIELDS.get(family, ('params', []))
     cand_holder = (cand_spec.get('airfoil', {}) if holder_key == 'airfoil'
                    else cand_spec.get('structure', {}).get('params', {}))
     gold_holder = (gold_spec.get('airfoil', {}) if holder_key == 'airfoil'
                    else gold_spec.get('structure', {}).get('params', {}))
+    # W4d：死字段豁免判定（仅 engineering_layer 且无长桁时生效）
+    cand_ns = cand_holder.get('n_stringers_per_skin', 0)
+    skip_dead = engineering_layer and holder_key == 'airfoil' and not cand_ns
+    # W4d：bc 块只对 wingbox 判——pipeline 不消费 spec.bc（边界由各族 builder 代码决定，
+    # 非 wingbox 族 gold bc 是死模板值 {root_surface,clamp}，NL 推不出且语义误导）
+    bc_skip = engineering_layer and family != 'wingbox'
     for k in keys:
+        if skip_dead and k in DEAD_STRINGER_KEYS:
+            dead_skipped.append(f'{holder_key}.{k}')
+            continue
         cv, gv = cand_holder.get(k, '<missing>'), gold_holder.get(k, '<missing>')
         if cv == '<missing>' and gv == '<missing>':
             ok = True          # 双方一致缺省（可选字段，如 hole_x 仅偏心孔有）= 一致
@@ -87,6 +125,8 @@ def spec_fidelity(cand_spec, gold_spec, family, input_mesh_keys=None, input_load
     # L3 只有 nl 时旧逻辑完全不判；柱壳 extra={}（端剪/端弯是主载荷）曾 23/23 PASS）。
     # analysis.solver 是执行选择，不作真值（专家 3.2）。
     for holder in ('mesh', 'load', 'bc', 'analysis', 'extra'):
+        if holder == 'bc' and bc_skip:
+            continue
         gh = gold_spec.get(holder, {})
         ch = cand_spec.get(holder, {})
         for k in sorted(gh.keys()):
@@ -94,18 +134,46 @@ def spec_fidelity(cand_spec, gold_spec, family, input_mesh_keys=None, input_load
                 continue
             gv = gh[k]
             cv = ch.get(k, '<missing>')
+            # W4d：执行配置键 REPORTED NOT GATED（填错单独报告，不 FAIL）
+            if engineering_layer and k in EXEC_CONFIG_KEYS.get(holder, ()):
+                if cv != '<missing>' and not _field_equal(cv, gv):
+                    exec_mismatch.append({'field': f'{holder}.{k}',
+                                          'expected': gv, 'actual': cv})
+                continue
+            # W4d：pressure 的 direction 是数据集内部约定（内压径向，NL 不会给向量）——豁免
+            if engineering_layer and holder == 'load' and k == 'direction' \
+                    and gh.get('kind') == 'pressure':
+                if cv != '<missing>' and not _field_equal(cv, gv):
+                    exec_mismatch.append({'field': 'load.direction (pressure)',
+                                          'expected': gv, 'actual': cv})
+                continue
             ok = _field_equal(cv, gv)
             fields.append({'field': f'{holder}.{k}', 'expected': gv, 'actual': cv, 'pass': ok})
-    # 候选自创键（gold 没有、candidate 写了的非空键）也算错答案
+    # 候选自创键（gold 没有、candidate 写了的非空键）：
+    #   纯元数据（METADATA_*）REPORTED NOT GATED；载荷/几何/边界语义编造照罚（W4d 拍板）
+    metadata_extra = []
     for holder in ('mesh', 'load', 'bc', 'analysis', 'extra'):
+        if holder == 'bc' and bc_skip:
+            continue
         gh, ch = gold_spec.get(holder, {}), cand_spec.get(holder, {})
         for k in sorted(set(ch) - set(gh)):
-            if ch[k] not in ('', {}, None, []):
+            if ch[k] in ('', {}, None, []):
+                continue
+            is_meta = k in METADATA_KEY_NAMES or any(k.endswith(s) for s in METADATA_KEY_SUFFIXES)
+            if is_meta:
+                metadata_extra.append({'field': f'{holder}.{k}', 'actual': ch[k]})
+            else:
                 fields.append({'field': f'{holder}.{k} (not in gold)',
                                'expected': '<absent>', 'actual': ch[k], 'pass': False})
     fails = [f for f in fields if not f['pass']]
-    return {'pass': not fails, 'n_fields': len(fields), 'n_fail': len(fails),
-            'failed': fails[:15]}
+    out = {'pass': not fails, 'n_fields': len(fields), 'n_fail': len(fails),
+           'failed': fails[:15]}
+    if engineering_layer:
+        out['engineering_layer'] = True
+        out['dead_fields_skipped'] = dead_skipped
+        out['exec_config_mismatch'] = exec_mismatch[:10]
+        out['metadata_extra'] = metadata_extra[:10]
+    return out
 
 
 def load_tasks(path):
@@ -144,7 +212,8 @@ def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800, skip_solve=F
                 cand_json = cand_json['spec'] or {}   # gen_candidates 包装结构解包
             cand_json.pop('workdir', None)
             mk, lk = _input_mesh_load_keys(task)
-            sf = spec_fidelity(cand_json, gold_spec, task['family'], input_mesh_keys=mk, input_load_keys=lk)
+            sf = spec_fidelity(cand_json, gold_spec, task['family'], input_mesh_keys=mk, input_load_keys=lk,
+                               engineering_layer=(task.get('input_level') == 'L3'))
         else:
             sf = {'pass': False, 'n_fields': 0, 'n_fail': 1,
                   'failed': [{'field': 'gold spec', 'expected': gold_spec_path, 'actual': 'missing'}]}
@@ -179,10 +248,29 @@ def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800, skip_solve=F
         out_path = os.path.join(run_dir, 'evaluation.json')
         json.dump(result, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
         return result
-    # 解包后的 spec 落盘，run_pipeline 只见纯 FEASpec
+    # 解包后的 spec 落盘，run_pipeline 只见纯 FEASpec。
+    # W4d：剥离「gold 没有且属纯元数据」的自创键（FEASpec dataclass 不收未知键，
+    # 判分层豁免的元数据不能在全链炸掉模型——两层口径一致）；语义自创键保留，
+    # 由 FEASpec/pipeline 拒绝（编造语义候选 MSR 照死）。
+    case_id_early = (task_id.replace('L1_', '').replace('L2_', '').replace('L3_', '')
+                     .replace('_final', '').replace('cand_', ''))
+    gold_early_path = os.path.join(FEA, 'modeling', case_id_early, 'spec.json')
+    metadata_stripped = []
+    if os.path.exists(gold_early_path):
+        gold_early = json.load(open(gold_early_path, encoding='utf-8'))
+        for holder in ('mesh', 'load', 'bc', 'analysis', 'extra'):
+            gh = gold_early.get(holder, {})
+            ch = raw_cand.get(holder)
+            if not isinstance(ch, dict):
+                continue
+            for k in sorted(set(ch) - set(gh)):
+                if k in METADATA_KEY_NAMES or any(k.endswith(s) for s in METADATA_KEY_SUFFIXES):
+                    ch.pop(k, None)
+                    metadata_stripped.append(f'{holder}.{k}')
     cand_spec_path = os.path.join(run_dir, 'candidate.spec.json')
     json.dump(raw_cand, open(cand_spec_path, 'w', encoding='utf-8'),
               ensure_ascii=False, indent=1)
+    result['metadata_stripped'] = metadata_stripped
 
     # ---- 1. 跑 pipeline（ccx 全链）----
     t0 = time.time()
@@ -262,7 +350,8 @@ def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800, skip_solve=F
             cand_json = cand_json['spec'] or {}   # gen_candidates 包装结构解包
         cand_json.pop('workdir', None)
         mk, lk = _input_mesh_load_keys(task)
-        sf = spec_fidelity(cand_json, gold_spec, task['family'], input_mesh_keys=mk, input_load_keys=lk)
+        sf = spec_fidelity(cand_json, gold_spec, task['family'], input_mesh_keys=mk, input_load_keys=lk,
+                           engineering_layer=(task.get('input_level') == 'L3'))
         sf['field'] = 'spec_fidelity (field-level, mandatory)'
         sf['expected'] = 'all graded fields equal (float tol 1e-6)'
         sf['actual'] = f"{sf['n_fields'] - sf['n_fail']}/{sf['n_fields']} fields"

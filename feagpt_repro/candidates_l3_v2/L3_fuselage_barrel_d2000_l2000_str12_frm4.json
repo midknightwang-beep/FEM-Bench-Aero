@@ -1,0 +1,89 @@
+{
+ "task_id": "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": null,
+ "spec": {
+  "name": "fuselage_barrel_2000_press_shear_moment",
+  "description": "直径2000mm、长2000mm铝机身柱壳段，12根长桁4个blade框，承受内压0.05MPa、端剪50kN与端弯50kN·m组合载荷。",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "fuselage_barrel",
+   "params": {
+    "diameter": 2000,
+    "length": 2000,
+    "thickness": 3,
+    "n_stringers": 12,
+    "n_frames": 4,
+    "frame_kind": "blade"
+   }
+  },
+  "mesh": {
+   "size_chord": 25,
+   "size_span": 25
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.05,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {
+   "type": "linear_static",
+   "solver": "FEM-Bench-Aero"
+  },
+  "extra": {
+   "end_shear": {
+    "magnitude": 50000,
+    "direction": [
+     0,
+     1,
+     0
+    ]
+   },
+   "end_moment": {
+    "magnitude": 50000000
+   }
+  }
+ },
+ "turns_used": 3,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/structure/params must have required property 'thickness'",
+    "/ must match \"then\" schema",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'density'",
+    "/material must have required property 'yield_strength'",
+    "/mesh must have required property 'size_chord'",
+    "/mesh must have required property 'size_span'",
+    "/mesh must NOT have additional properties",
+    "/mesh must NOT have additional properties",
+    "/mesh must NOT have additional properties",
+    "/load must have required property 'kind'"
+   ]
+  },
+  {
+   "turn": 2,
+   "errors": [
+    "/load must have required property 'direction'"
+   ]
+  }
+ ],
+ "raw_len": 729
+}

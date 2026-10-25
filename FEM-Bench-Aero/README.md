@@ -3,17 +3,18 @@
 > **这是什么**：一套飞机结构有限元建模的 benchmark + verifier。数据集（55 条 × 2 棵求解器树，T1–T7 七种结构形式、九道质量闸）是**手段**；
 > 考卷（任务层 `../feagpt_repro/tasks/`）+ 判分器（`../feagpt_repro/evaluate.py`）+ 判据体系（九道闸）才是产品（D37 方向转向，2026-10-24）。
 
-## 从这里开始（当前状态 · 2026-10-24）
+## 从这里开始（当前状态 · 2026-10-25）
 
 | 想做什么 | 去哪里 |
 |---|---|
-| 看当前计划 | [ROADMAP.md](ROADMAP.md)（W1–W3 已收口，W4a 修判分已收口，W4b = LLM 基线） |
+| 看当前计划 | [ROADMAP.md](ROADMAP.md)（W1–W4d 已收口：W4d = **L3 主基线 TSR 18/30、全链 MSR 11/30、value_added Δ+36.7pp PASS**，C-020） |
 | 拿数据本体 | `../feagpt_repro/fetch_data.py --src <FEM-Bench-Aero-v1.0-data.tar.gz>`（SHA256 校验 + 55 条核对） |
-| 看任务/考卷 | `../feagpt_repro/tasks/tasks.jsonl`（L1 55 + L2 55 + L3 30；split_v2 = train/val/boundary_holdout/extrapolation_test） |
-| 跑评测 | `python ../feagpt_repro/evaluate.py --batch --use-gold`；负控 `python ../feagpt_repro/negative_controls.py`（红线条 R5/R6） |
+| 看任务/考卷 | `../feagpt_repro/tasks/tasks.jsonl`（L1 55 + L2 55 + L3 30；split_v2 = train/val/boundary_holdout/extrapolation_test；L3 含 4 条澄清型 + clarify_keywords） |
+| 跑评测 | `python ../feagpt_repro/evaluate.py --batch --use-gold`；负控 `python ../feagpt_repro/negative_controls.py`（15/15，红线条 R5/R6） |
+| 看基线成绩单 | `../feagpt_repro/eval_runs/baseline_scorecard_L3.json`（TSR/SFR/FPR/MSR 四指标；全链 msr_l3.py 须 venv 解释器） |
 | 查对外数字 | [external_numbers.md](external_numbers.md) ← [CLAIMS.md](CLAIMS.md) 主张账本（禁止手抄） |
 | 看 v1.0 已知限制 | [dataset_card.md](dataset_card.md)（8 条，含 vM 峰值未收敛 ≥13 %） |
-| 契约/schema | [schema_truth.json](schema_truth.json)（严格枚举）+ [schema_task.json](schema_task.json)（约束解码用，无答案枚举） |
+| 契约/schema | [schema_truth.json](schema_truth.json)（严格枚举）+ [schema_task.json](schema_task.json)（约束解码用，mesh 已收紧 required/additionalProperties） |
 | 里程碑决策链 | [BASELINE.md](BASELINE.md)（M1–M14）+ [STAGE_GATE_M14.md](STAGE_GATE_M14.md)（阶段审计） |
 
 **三条硬限制（对外承诺必读）**：① vM 峰值网格未收敛（≥13 % 偏不安全低估）；② 代理基线 2.63 % 是「组合插值」成绩，对外承诺写 **5–9 %**；

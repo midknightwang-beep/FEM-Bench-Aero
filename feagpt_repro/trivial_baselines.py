@@ -30,17 +30,27 @@ def dist(v1, v2):
     return math.sqrt(s)
 
 def main():
+    ap_args = sys.argv[1:]
+    def get(k, d):
+        return ap_args[ap_args.index(k) + 1] if k in ap_args else d
+    levels = get('--levels', 'L1').split(',')
+    out_name = get('--out', 'trivial_baselines.json')
+    eng_layer = 'L3' in levels   # W4d：L3 走工程层口径（配置层只报、死字段豁免）
+
     tasks = [t for t in load_tasks(os.path.join(HERE, 'tasks', 'tasks.jsonl'))
-             if t['input_level'] == 'L1']
+             if t['input_level'] in levels]
     train = [t for t in tasks if t['split_v2'] == 'train']
     test = [t for t in tasks if t['split_v2'] in ('boundary_holdout', 'extrapolation_test')]
 
     # gold specs
     def gold_of(t):
-        cid = t['task_id'].replace('L1_', '')
+        cid = t['task_id'].replace('L1_', '').replace('L3_', '')
         s = json.load(open(os.path.join(FEA, 'modeling', cid, 'spec.json'), encoding='utf-8'))
         s.pop('workdir', None)
         return s
+
+    def judge(cand, gold, t):
+        return spec_fidelity(cand, gold, t['family'], engineering_layer=eng_layer)
 
     # ---- T0：train 众数 spec（按族取最常见参数组合，不读任何输入）----
     fam_of_task = {}
@@ -59,7 +69,7 @@ def main():
         cand = copy.deepcopy(t0_spec_by_fam[t['family']]) if (copy := __import__('copy')) else None
         cand.pop('workdir', None)
         gold = gold_of(t)
-        sf = spec_fidelity(cand, gold, t['family'])
+        sf = judge(cand, gold, t)
         t0_pass.append(sf['pass'])
 
     # ---- T1：最近邻检索（检索库 = train only，红线 R7）----
@@ -73,14 +83,14 @@ def main():
             t1_pass.append(False); t1_hits.append(None); continue
         nn, d = min(same_fam, key=lambda x: x[1])
         nn_spec = gold_of(nn)
-        sf = spec_fidelity(nn_spec, g, t['family'])
+        sf = judge(nn_spec, g, t)
         t1_pass.append(sf['pass'])
         t1_hits.append({'nn': nn['task_id'], 'dist': round(d, 4)})
 
     # ---- T2：gold 上界（评测器自检）----
     t2_pass = []
     for t in tasks:
-        sf = spec_fidelity(gold_of(t), gold_of(t), t['family'])
+        sf = judge(gold_of(t), gold_of(t), t)
         t2_pass.append(sf['pass'])
 
     # ---- 汇总（考卷 = boundary_holdout + extrapolation_test；train 单列）----
@@ -88,7 +98,7 @@ def main():
         idx = [i for i, t in enumerate(tasks) if t['split_v2'] in subset]
         return (sum(passes[i] for i in idx), len(idx))
 
-    report = {'note': '平凡基线地板（专家 6.3.1）。考卷 = boundary_holdout + extrapolation_test；'
+    report = {'note': f'平凡基线地板（levels={levels}, eng_layer={eng_layer}）。考卷 = boundary_holdout + extrapolation_test；'
                       'value_added = TSR_LLM − TSR_T1 ≥ 10 pp 才算 LLM 真有增量。',
               'T0_constant': {}, 'T1_retrieval': {}, 'T2_gold': {}, 'per_task': []}
     for name, passes in (('T0_constant', t0_pass), ('T1_retrieval', t1_pass), ('T2_gold', t2_pass)):
@@ -103,10 +113,10 @@ def main():
                                    'T0': t0_pass[i], 'T1': t1_pass[i],
                                    'T1_nn': (t1_hits[i] or {}).get('nn') if t1_hits[i] else None})
 
-    out = os.path.join(RUNS, 'trivial_baselines.json')
+    out = os.path.join(RUNS, out_name)
     os.makedirs(RUNS, exist_ok=True)
     json.dump(report, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-    print('== 平凡基线地板（考卷 = boundary_holdout 6 + extrapolation_test 13 = 19 条）==')
+    print(f'== 平凡基线地板（levels={levels}）==')
     for name in ('T0_constant', 'T1_retrieval', 'T2_gold'):
         r = report[name]
         print(f"  {name:14s} 考卷 TSR {r['exam_tsr']} ({r['exam_pct']}%)   全量 {r['all_pct']}%")

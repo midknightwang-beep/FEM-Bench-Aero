@@ -1,0 +1,81 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20_offcentre",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": null,
+ "spec": {
+  "name": "open_hole_panel_400x200_tension",
+  "description": "400×200×2mm 铝2024-T3开孔板，孔心(120,60)直径20mm，端部均布4000 N面内拉伸，横向自由，网格4mm孔周加密。",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 400,
+    "width": 200,
+    "thickness": 2,
+    "hole_center": [
+     120,
+     60
+    ],
+    "hole_d": 20
+   }
+  },
+  "mesh": {
+   "size_chord": 4,
+   "size_span": 4
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 4000,
+   "direction": [
+    1,
+    0,
+    0
+   ],
+   "distribution": "end_uniform"
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true,
+   "lateral_free": true
+  },
+  "analysis": {
+   "type": "static"
+  },
+  "extra": {
+   "hole_refinement": true
+  }
+ },
+ "turns_used": 3,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/structure/params must have required property 'hole_d'",
+    "/ must match \"then\" schema",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'density'",
+    "/material must have required property 'yield_strength'",
+    "/mesh must have required property 'size_chord'",
+    "/mesh must have required property 'size_span'",
+    "/mesh must NOT have additional properties",
+    "/mesh must NOT have additional properties",
+    "/load/kind 必须是 [\"tip_force\",\"pressure\"] 之一"
+   ]
+  },
+  {
+   "turn": 2,
+   "errors": [
+    "/mesh must NOT have additional properties"
+   ]
+  }
+ ],
+ "raw_len": 635
+}

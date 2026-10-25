@@ -1,0 +1,10 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": "[\"开孔直径是多少？孔的位置（默认居中）是否正确？\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 39
+}

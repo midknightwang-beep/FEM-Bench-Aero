@@ -1,446 +1,451 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://fem-bench-aero.local/schema/v1.0/task-spec.json",
-  "title": "FEM-Bench-Aero v1.0 任务层 spec（约束解码用；物理范围，不含观测值枚举）",
-  "description": "W4a P1-1 拆分：本文件供 JSON Schema 约束解码——枚举会泄漏答案空间（candidate 只能从观测值里挑）。严格枚举版 = schema_truth.json（数据集校验与反向探针用）。范围外参数由拒答闸判定，不由本 schema 静默拒绝生成。",
-  "type": "object",
-  "required": [
-    "name",
-    "material",
-    "structure",
-    "mesh",
-    "load",
-    "bc",
-    "analysis"
-  ],
-  "properties": {
-    "name": {
-      "type": "string",
-      "minLength": 1
-    },
-    "description": {
-      "type": "string"
-    },
-    "material": {
-      "type": "object",
-      "required": [
-        "name",
-        "youngs_modulus",
-        "poisson_ratio",
-        "density",
-        "yield_strength"
-      ],
-      "properties": {
-        "name": {
-          "enum": [
-            "Aluminium 2024-T3",
-            "CFRP-LAYUP"
-          ]
-        },
-        "youngs_modulus": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "poisson_ratio": {
-          "type": "number",
-          "exclusiveMinimum": 0,
-          "exclusiveMaximum": 0.5
-        },
-        "density": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "yield_strength": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        }
-      }
-    },
-    "structure": {
-      "type": "object",
-      "required": [
-        "family",
-        "params"
-      ],
-      "properties": {
-        "family": {
-          "enum": [
-            "wingbox",
-            "open_hole_panel",
-            "fuselage_barrel",
-            "stiffened_panel"
-          ]
-        }
-      }
-    },
-    "mesh": {
-      "type": "object",
-      "properties": {
-        "size_chord": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "size_span": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "order": {
-          "enum": [
-            1,
-            2
-          ]
-        },
-        "refine_le": {
-          "type": "boolean"
-        }
-      }
-    },
-    "load": {
-      "type": "object",
-      "required": [
-        "kind",
-        "magnitude",
-        "direction"
-      ],
-      "properties": {
-        "kind": {
-          "enum": [
-            "tip_force",
-            "pressure"
-          ]
-        },
-        "magnitude": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "direction": {
-          "type": "array",
-          "items": {
-            "type": "number"
-          },
-          "minItems": 3,
-          "maxItems": 3
-        }
-      }
-    },
-    "bc": {
-      "type": "object"
-    },
-    "analysis": {
-      "type": "object"
-    },
-    "extra": {
-      "type": "object"
-    }
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "$id": "https://fem-bench-aero.local/schema/v1.0/task-spec.json",
+ "title": "FEM-Bench-Aero v1.0 任务层 spec（约束解码用；物理范围，不含观测值枚举）",
+ "description": "W4a P1-1 拆分：本文件供 JSON Schema 约束解码——枚举会泄漏答案空间（candidate 只能从观测值里挑）。严格枚举版 = schema_truth.json（数据集校验与反向探针用）。范围外参数由拒答闸判定，不由本 schema 静默拒绝生成。",
+ "type": "object",
+ "required": [
+  "name",
+  "material",
+  "structure",
+  "mesh",
+  "load",
+  "bc",
+  "analysis"
+ ],
+ "properties": {
+  "name": {
+   "type": "string",
+   "minLength": 1
   },
-  "allOf": [
-    {
-      "if": {
-        "properties": {
-          "structure": {
-            "properties": {
-              "family": {
-                "const": "wingbox"
-              }
-            }
-          }
+  "description": {
+   "type": "string"
+  },
+  "material": {
+   "type": "object",
+   "required": [
+    "name",
+    "youngs_modulus",
+    "poisson_ratio",
+    "density",
+    "yield_strength"
+   ],
+   "properties": {
+    "name": {
+     "enum": [
+      "Aluminium 2024-T3",
+      "CFRP-LAYUP"
+     ]
+    },
+    "youngs_modulus": {
+     "type": "number",
+     "exclusiveMinimum": 0
+    },
+    "poisson_ratio": {
+     "type": "number",
+     "exclusiveMinimum": 0,
+     "exclusiveMaximum": 0.5
+    },
+    "density": {
+     "type": "number",
+     "exclusiveMinimum": 0
+    },
+    "yield_strength": {
+     "type": "number",
+     "exclusiveMinimum": 0
+    }
+   }
+  },
+  "structure": {
+   "type": "object",
+   "required": [
+    "family",
+    "params"
+   ],
+   "properties": {
+    "family": {
+     "enum": [
+      "wingbox",
+      "open_hole_panel",
+      "fuselage_barrel",
+      "stiffened_panel"
+     ]
+    }
+   }
+  },
+  "mesh": {
+   "type": "object",
+   "properties": {
+    "size_chord": {
+     "type": "number",
+     "exclusiveMinimum": 0
+    },
+    "size_span": {
+     "type": "number",
+     "exclusiveMinimum": 0
+    },
+    "order": {
+     "enum": [
+      1,
+      2
+     ]
+    },
+    "refine_le": {
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "size_chord",
+    "size_span"
+   ],
+   "additionalProperties": false
+  },
+  "load": {
+   "type": "object",
+   "required": [
+    "kind",
+    "magnitude",
+    "direction"
+   ],
+   "properties": {
+    "kind": {
+     "enum": [
+      "tip_force",
+      "pressure"
+     ]
+    },
+    "magnitude": {
+     "type": "number",
+     "exclusiveMinimum": 0
+    },
+    "direction": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     },
+     "minItems": 3,
+     "maxItems": 3
+    }
+   }
+  },
+  "bc": {
+   "type": "object"
+  },
+  "analysis": {
+   "type": "object"
+  },
+  "extra": {
+   "type": "object"
+  }
+ },
+ "allOf": [
+  {
+   "if": {
+    "properties": {
+     "structure": {
+      "properties": {
+       "family": {
+        "const": "wingbox"
+       }
+      }
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "airfoil"
+    ],
+    "properties": {
+     "airfoil": {
+      "type": "object",
+      "required": [
+       "code",
+       "chord",
+       "span",
+       "skin_thickness",
+       "n_ribs",
+       "rib_thickness",
+       "spar_chordwise",
+       "n_stringers_per_skin",
+       "stringer_height",
+       "stringer_thickness",
+       "stringer_kind",
+       "stringer_flange_width",
+       "tip_chord_ratio",
+       "sweep_deg",
+       "web_chordwise"
+      ],
+      "properties": {
+       "code": {
+        "enum": [
+         "4412"
+        ]
+       },
+       "chord": {
+        "type": "number",
+        "minimum": 500,
+        "maximum": 3000
+       },
+       "span": {
+        "type": "number",
+        "minimum": 800,
+        "maximum": 6000
+       },
+       "skin_thickness": {
+        "type": "number",
+        "minimum": 0.5,
+        "maximum": 12.0
+       },
+       "n_ribs": {
+        "type": "number",
+        "minimum": 2,
+        "maximum": 30
+       },
+       "rib_thickness": {
+        "type": "number",
+        "minimum": 0.5,
+        "maximum": 20.0
+       },
+       "spar_chordwise": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2
+       },
+       "n_stringers_per_skin": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 20
+       },
+       "stringer_height": {
+        "type": "number",
+        "minimum": 5,
+        "maximum": 100
+       },
+       "stringer_thickness": {
+        "type": "number",
+        "minimum": 0.5,
+        "maximum": 10.0
+       },
+       "stringer_kind": {
+        "enum": [
+         "blade",
+         "T"
+        ]
+       },
+       "stringer_flange_width": {
+        "type": "number",
+        "minimum": 5,
+        "maximum": 100
+       },
+       "tip_chord_ratio": {
+        "type": "number",
+        "minimum": 0.2,
+        "maximum": 1.0
+       },
+       "sweep_deg": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 60
+       },
+       "web_chordwise": {
+        "type": "array",
+        "items": {
+         "type": "number"
         }
-      },
-      "then": {
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "structure": {
+      "properties": {
+       "family": {
+        "const": "open_hole_panel"
+       }
+      }
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "structure": {
+      "properties": {
+       "params": {
+        "type": "object",
         "required": [
-          "airfoil"
+         "length",
+         "width",
+         "thickness",
+         "hole_d"
         ],
         "properties": {
-          "airfoil": {
-            "type": "object",
-            "required": [
-              "code",
-              "chord",
-              "span",
-              "skin_thickness",
-              "n_ribs",
-              "rib_thickness",
-              "spar_chordwise",
-              "n_stringers_per_skin",
-              "stringer_height",
-              "stringer_thickness",
-              "stringer_kind",
-              "stringer_flange_width",
-              "tip_chord_ratio",
-              "sweep_deg",
-              "web_chordwise"
-            ],
-            "properties": {
-              "code": {
-                "enum": [
-                  "4412"
-                ]
-              },
-              "chord": {
-                "type": "number",
-                "minimum": 500,
-                "maximum": 3000
-              },
-              "span": {
-                "type": "number",
-                "minimum": 800,
-                "maximum": 6000
-              },
-              "skin_thickness": {
-                "type": "number",
-                "minimum": 0.5,
-                "maximum": 12.0
-              },
-              "n_ribs": {
-                "type": "number",
-                "minimum": 2,
-                "maximum": 30
-              },
-              "rib_thickness": {
-                "type": "number",
-                "minimum": 0.5,
-                "maximum": 20.0
-              },
-              "spar_chordwise": {
-                "type": "array",
-                "minItems": 2,
-                "maxItems": 2
-              },
-              "n_stringers_per_skin": {
-                "type": "number",
-                "minimum": 0,
-                "maximum": 20
-              },
-              "stringer_height": {
-                "type": "number",
-                "minimum": 5,
-                "maximum": 100
-              },
-              "stringer_thickness": {
-                "type": "number",
-                "minimum": 0.5,
-                "maximum": 10.0
-              },
-              "stringer_kind": {
-                "enum": [
-                  "blade",
-                  "T"
-                ]
-              },
-              "stringer_flange_width": {
-                "type": "number",
-                "minimum": 5,
-                "maximum": 100
-              },
-              "tip_chord_ratio": {
-                "type": "number",
-                "minimum": 0.2,
-                "maximum": 1.0
-              },
-              "sweep_deg": {
-                "type": "number",
-                "minimum": 0,
-                "maximum": 60
-              },
-              "web_chordwise": {
-                "type": "array",
-                "items": {
-                  "type": "number"
-                }
-              }
-            }
+         "length": {
+          "type": "number",
+          "minimum": 400.0,
+          "maximum": 600.0
+         },
+         "width": {
+          "type": "number",
+          "minimum": 200.0,
+          "maximum": 300.0
+         },
+         "thickness": {
+          "type": "number",
+          "minimum": 2.0,
+          "maximum": 2.0
+         },
+         "hole_d": {
+          "type": "number",
+          "minimum": 20.0,
+          "maximum": 60.0
+         },
+         "layup": {
+          "type": "object",
+          "required": [
+           "plies"
+          ],
+          "properties": {
+           "plies": {
+            "type": "array",
+            "minItems": 2
+           }
           }
+         },
+         "hole_x": {
+          "type": "number"
+         },
+         "hole_y": {
+          "type": "number"
+         }
         }
+       }
       }
-    },
-    {
-      "if": {
-        "properties": {
-          "structure": {
-            "properties": {
-              "family": {
-                "const": "open_hole_panel"
-              }
-            }
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "structure": {
-            "properties": {
-              "params": {
-                "type": "object",
-                "required": [
-                  "length",
-                  "width",
-                  "thickness",
-                  "hole_d"
-                ],
-                "properties": {
-                  "length": {
-                    "type": "number",
-                    "minimum": 400.0,
-                    "maximum": 600.0
-                  },
-                  "width": {
-                    "type": "number",
-                    "minimum": 200.0,
-                    "maximum": 300.0
-                  },
-                  "thickness": {
-                    "type": "number",
-                    "minimum": 2.0,
-                    "maximum": 2.0
-                  },
-                  "hole_d": {
-                    "type": "number",
-                    "minimum": 20.0,
-                    "maximum": 60.0
-                  },
-                  "layup": {
-                    "type": "object",
-                    "required": [
-                      "plies"
-                    ],
-                    "properties": {
-                      "plies": {
-                        "type": "array",
-                        "minItems": 2
-                      }
-                    }
-                  },
-                  "hole_x": {
-                    "type": "number"
-                  },
-                  "hole_y": {
-                    "type": "number"
-                  }
-                }
-              }
-            }
-          },
-          "airfoil": {
-            "not": {}
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "structure": {
-            "properties": {
-              "family": {
-                "const": "fuselage_barrel"
-              }
-            }
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "structure": {
-            "properties": {
-              "params": {
-                "type": "object",
-                "required": [
-                  "diameter",
-                  "length",
-                  "thickness",
-                  "n_stringers",
-                  "n_frames"
-                ],
-                "properties": {
-                  "diameter": {
-                    "type": "number",
-                    "minimum": 1600.0,
-                    "maximum": 2000.0
-                  },
-                  "length": {
-                    "type": "number",
-                    "minimum": 1600.0,
-                    "maximum": 2000.0
-                  },
-                  "thickness": {
-                    "type": "number",
-                    "minimum": 2.0,
-                    "maximum": 3.0
-                  },
-                  "n_stringers": {
-                    "type": "number",
-                    "minimum": 8.0,
-                    "maximum": 12.0
-                  },
-                  "n_frames": {
-                    "type": "number",
-                    "minimum": 3.0,
-                    "maximum": 4.0
-                  }
-                }
-              }
-            }
-          },
-          "airfoil": {
-            "not": {}
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "structure": {
-            "properties": {
-              "family": {
-                "const": "stiffened_panel"
-              }
-            }
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "structure": {
-            "properties": {
-              "params": {
-                "type": "object",
-                "required": [
-                  "length",
-                  "width",
-                  "thickness",
-                  "n_stringers"
-                ],
-                "properties": {
-                  "length": {
-                    "type": "number",
-                    "minimum": 600.0,
-                    "maximum": 800.0
-                  },
-                  "width": {
-                    "type": "number",
-                    "minimum": 600.0,
-                    "maximum": 600.0
-                  },
-                  "thickness": {
-                    "type": "number",
-                    "minimum": 2.0,
-                    "maximum": 2.0
-                  },
-                  "n_stringers": {
-                    "type": "number",
-                    "minimum": 0.0,
-                    "maximum": 3.0
-                  }
-                }
-              }
-            }
-          },
-          "airfoil": {
-            "not": {}
-          }
-        }
-      }
+     },
+     "airfoil": {
+      "not": {}
+     }
     }
-  ]
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "structure": {
+      "properties": {
+       "family": {
+        "const": "fuselage_barrel"
+       }
+      }
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "structure": {
+      "properties": {
+       "params": {
+        "type": "object",
+        "required": [
+         "diameter",
+         "length",
+         "thickness",
+         "n_stringers",
+         "n_frames"
+        ],
+        "properties": {
+         "diameter": {
+          "type": "number",
+          "minimum": 1600.0,
+          "maximum": 2000.0
+         },
+         "length": {
+          "type": "number",
+          "minimum": 1600.0,
+          "maximum": 2000.0
+         },
+         "thickness": {
+          "type": "number",
+          "minimum": 2.0,
+          "maximum": 3.0
+         },
+         "n_stringers": {
+          "type": "number",
+          "minimum": 8.0,
+          "maximum": 12.0
+         },
+         "n_frames": {
+          "type": "number",
+          "minimum": 3.0,
+          "maximum": 4.0
+         }
+        }
+       }
+      }
+     },
+     "airfoil": {
+      "not": {}
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "structure": {
+      "properties": {
+       "family": {
+        "const": "stiffened_panel"
+       }
+      }
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "structure": {
+      "properties": {
+       "params": {
+        "type": "object",
+        "required": [
+         "length",
+         "width",
+         "thickness",
+         "n_stringers"
+        ],
+        "properties": {
+         "length": {
+          "type": "number",
+          "minimum": 600.0,
+          "maximum": 800.0
+         },
+         "width": {
+          "type": "number",
+          "minimum": 600.0,
+          "maximum": 600.0
+         },
+         "thickness": {
+          "type": "number",
+          "minimum": 2.0,
+          "maximum": 2.0
+         },
+         "n_stringers": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 3.0
+         }
+        }
+       }
+      }
+     },
+     "airfoil": {
+      "not": {}
+     }
+    }
+   }
+  }
+ ]
 }

@@ -1,0 +1,10 @@
+{
+ "task_id": "L3_naca4412_wingbox",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": "[\"翼肋数量 n_ribs 未明确（描述为'若干'），请给出具体肋数及是否含根部/端部肋\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 59
+}

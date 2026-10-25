@@ -1,0 +1,10 @@
+{
+ "task_id": "L3_stiffened_panel_600x600",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": "[\"长桁根数 n_stringers_per_skin 具体是多少？\",\"长桁截面形式 kind 是 blade 还是 T？（若非 blade 还需给定 flange 宽度）\",\"长桁截面尺寸 stringer_height 和 stringer_thickness 分别是多少？\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 154
+}

@@ -1673,7 +1673,20 @@ const REVIEW = [
     '<b>★ 澄清闸双向验证</b>：L2 协议 clarification.json{questions, final_spec 补全后完整 spec}。坏例（静默默认 3.0 不提问）clarify FAIL 精准抓 silent_default；好例第一版暴露<b>分层闸兜底</b>——clarify PASS 但 final_spec 缺字段 → pipeline 静默默认 ≠ gold → 保真闸 FAIL（98.4%）。修后好例 4 闸全 PASS 保真 0.0%',
     '<b>README 1523 → 965 行</b> + DECISIONS.md(247) + SPEC.md(331)；§7 实测留原地（被看板/BASELINE 引用），7 处断链清零'
    ],
-   files:['FEM-Bench-Aero/gate3_all55_d37.json','FEM-Bench-Aero/schema.json','FEM-Bench-Aero/dataset_card.md','FEM-Bench-Aero/external_numbers.md','feagpt_repro/tasks/tasks.jsonl','feagpt_repro/tasks/nl_human.jsonl','feagpt_repro/evaluate.py','feagpt_repro/make_tasks.py','feagpt_repro/DECISIONS.md','feagpt_repro/SPEC.md']}
+   files:['FEM-Bench-Aero/gate3_all55_d37.json','FEM-Bench-Aero/schema.json','FEM-Bench-Aero/dataset_card.md','FEM-Bench-Aero/external_numbers.md','feagpt_repro/tasks/tasks.jsonl','feagpt_repro/tasks/nl_human.jsonl','feagpt_repro/evaluate.py','feagpt_repro/make_tasks.py','feagpt_repro/DECISIONS.md','feagpt_repro/SPEC.md']},
+  {id:'r56', g:'W4/基线收口', c:'<b>W4d L3 主基线（正式）：TSR 18/30 (60%)、全链 MSR 11/30 (36.7%)、value_added Δ+36.7pp PASS（n=30≥20）</b>',
+   q:'W4 四轮：W4a 修判分（字段级强制闸）→ W4b 平凡基线地板（T0/T1/T2）→ W4c 修契约（全链解包+负控扩展）→ W4d L3 主基线（glm-5.3-flash + schema 校验修复循环）。口径两条拍板：工程层判+配置层只报；澄清题问对=对、编造=错。',
+   cmd:'python score_baseline.py   # -> eval_runs/baseline_scorecard_L3.json\npython msr_l3.py   # venv 解释器（gmsh），全链 ccx 串行 -> msr 节\npython negative_controls.py   # 15/15（PC-1 + NC-1..14）\npython trivial_baselines.py --levels L3 --out trivial_baselines_L3.json',
+   ev:[
+    '<b>W4a 判分修复</b>：spec_fidelity 字段级强制闸（位移容差判不了参数对错——benchmark 与 verifier 本质区别）；负控 9/9；闸顺序 = 判分类闸在求解类闸之前（负控从分钟级变秒级）',
+    '<b>W4b 地板</b>：T2 gold 上界 19/19=100%（评测器自检）、T0/T1 考卷双 0（无泄漏、背诵无效）；L1 spec-copy smoke SFR <b>0/19</b>（C-017）——无 schema 约束时指令遵循失败（airfoil.chord×12 + bc.clamp×7），n=19 UNDERPOWERED',
+    '<b>W4c 契约修复</b>（专家第三轮 P0 全项）：全链候选解包 + contract 闸（bc 空/柱壳缺 end_shear 不求解）+ gold 权威全块判定 + FEASpec.from_dict 严格化 + 负控 14/14（NC-9..13）',
+    '<b>W4d L3 主基线</b>：模型 pin <code>glm-5.3-flash</code>（R13 可引用）；SDK 实锤无 json_schema logits 约束 ⇒ <b>约束解码 = json_object + schema_task.json 校验 + 错误反馈修复循环 ≤3 轮</b>（如实标注）；词汇枚举披露、死字段放宽 required。<b>拍板口径落地</b>：执行配置层（gmsh 内部键/analysis 执行键/extra 内部编码键/pressure 方向）REPORTED NOT GATED、死字段（stringer_*，ns=0）豁免、语义编造照罚、bc 只对 wingbox 判（实锤 pipeline 不消费 spec.bc）',
+    '<b>考卷三轮实锤修正</b>（第三轮后停止迭代）：v1 ec 伪缺 bug（rib_thickness 登记了却没挖掉，NL byte 级不变）；v2 图纸风补梁位 + CFRP 材料卡 11 常数从 gold 写全；v3 网格尺寸/孔位从 gold 读（<b>gold=4.0mm 硬编码成「网格 3 mm」</b>、offcentre 孔心 (120,60) 写成「中心孔」）——迭代轨迹 TSR 3/30→12/30→16/30→18/30',
+    '<b>MSR 全链 11/30 (36.7%)</b>：翼盒有 spec 12 条中 11 条全绿（fidelity ≤0.024%）；13 条 pipeline 失败<b>全部为模型 spec 质量</b>（把翼盒概念带进其他族 stringer_height=0/材料卡放错块/单位换算错/语义自创键被族校验拒收）；★ 坑：全链必须 venv 解释器（系统 Python 无 gmsh 假报 pipeline 失败）；★ 判分层豁免的元数据键须在全链构造前剥离（FEASpec dataclass 拒收未知键，两层口径要一致）',
+    '<b>负控 15/15</b>（NC-14 工程层口径四探针：配置键错值豁免/死字段错值豁免/web_chordwise 编值照罚/判层错闸不松）；T1 L3 地板 23.3%（同任务集），n=30≥20 满足 R12；FPR 双向：编造 1/4、过度澄清 1'
+   ],
+   files:['feagpt_repro/eval_runs/baseline_scorecard_L3.json','feagpt_repro/eval_runs/trivial_baselines_L3.json','feagpt_repro/eval_runs/negative_controls.json','feagpt_repro/eval_runs/msr_pipeline_failure_attribution.json','feagpt_repro/gen_candidates_v2.js','feagpt_repro/msr_l3.py','FEM-Bench-Aero/CLAIMS.md']}
  ];
 
 /* ============ 渲染 ============ */

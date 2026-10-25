@@ -1,0 +1,70 @@
+{
+ "task_id": "L3_stiffened_panel_800x600",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": null,
+ "spec": {
+  "name": "stiffened_panel_600x800_shell",
+  "description": "600x800mm铝加筋壁板（0根blade长桁），四边简支，0.0001 MPa均布面压，全壳单元网格3mm",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "stiffened_panel",
+   "params": {
+    "length": 800,
+    "width": 600,
+    "thickness": 2,
+    "n_stringers": 0
+   }
+  },
+  "mesh": {
+   "size_chord": 3,
+   "size_span": 3
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.0001,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": false,
+   "edge_support": "simply_supported_all_edges"
+  },
+  "analysis": {
+   "type": "static"
+  },
+  "extra": {
+   "stringer_kind": "blade"
+  }
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/structure/params must have required property 'thickness'",
+    "/structure/params must have required property 'n_stringers'",
+    "/structure/params/width must be <= 600",
+    "/ must match \"then\" schema",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'density'",
+    "/material must have required property 'yield_strength'",
+    "/mesh must have required property 'size_chord'",
+    "/mesh must have required property 'size_span'",
+    "/mesh must NOT have additional properties"
+   ]
+  }
+ ],
+ "raw_len": 596
+}

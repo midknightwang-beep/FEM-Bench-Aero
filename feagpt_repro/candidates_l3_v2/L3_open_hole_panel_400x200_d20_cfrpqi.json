@@ -1,0 +1,107 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20_cfrpqi",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": null,
+ "spec": {
+  "name": "open_hole_plate_tension_400x200",
+  "description": "400×200 mm 中心孔径20 mm 开孔铝板（含CFRP_T300铺层定义）两端施加4000 N面内拉伸分析",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 400,
+    "width": 200,
+    "thickness": 2,
+    "hole_d": 20,
+    "hole_position": [
+     0,
+     0
+    ]
+   }
+  },
+  "mesh": {
+   "size_chord": 4,
+   "size_span": 4
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 4000,
+   "direction": [
+    1,
+    0,
+    0
+   ],
+   "distribution": "end_uniform"
+  },
+  "bc": {
+   "root_surface": "end",
+   "clamp": true,
+   "lateral_free": true
+  },
+  "analysis": {
+   "type": "static"
+  },
+  "extra": {
+   "mesh_refinement": "hole_edge_local_refine",
+   "ply_material": {
+    "name": "CFRP_T300",
+    "E1": 140000,
+    "E2": 10000,
+    "E3": 10000,
+    "nu12": 0.3,
+    "nu13": 0.3,
+    "nu23": 0.45,
+    "G12": 5000,
+    "G13": 5000,
+    "G23": 4000,
+    "rho": 1.6e-9
+   },
+   "layup": {
+    "angles": [
+     0,
+     45,
+     -45,
+     90,
+     90,
+     -45,
+     45,
+     0
+    ],
+    "ply_thickness": 0.25
+   }
+  }
+ },
+ "turns_used": 3,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/structure/params must have required property 'hole_d'",
+    "/ must match \"then\" schema",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'density'",
+    "/material must have required property 'yield_strength'",
+    "/mesh must have required property 'size_chord'",
+    "/mesh must have required property 'size_span'",
+    "/mesh must NOT have additional properties",
+    "/mesh must NOT have additional properties",
+    "/load/kind 必须是 [\"tip_force\",\"pressure\"] 之一"
+   ]
+  },
+  {
+   "turn": 2,
+   "errors": [
+    "/mesh must NOT have additional properties"
+   ]
+  }
+ ],
+ "raw_len": 1214
+}
