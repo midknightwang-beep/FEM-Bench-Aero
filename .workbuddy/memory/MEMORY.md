@@ -49,7 +49,10 @@
 ## 当前状态（2026-10-25）
 - **代理模型线（M7/M14/D01–D37）完全冻结**（D37 拍板）；对外 KPI = TSR/FPR/修复/拒答/澄清。计划看 `FEM-Bench-Aero/ROADMAP.md`。
 - **W1–W5a′ + W5b-2 + W5b-3a 收口**；**W5b-3 生成等 key**（v6 55 条候选），计划见 `FEM-Bench-Aero/W5B_PLAN.md` §6。
-- **考卷 v6 已冻结**（C-027，tag `v1.0-l3-v6`）：L3 55 条、exam **25 = boundary 6 + extrap 13 + interp 6**（三栏口径 RUBRIC v4.1 §1.1）。
+- **考卷 v6b 已冻结**（C-027，tag `v1.0-l3-v6b`）：L3 55 条、exam **25 = boundary 6 + extrap 13 + interp 6**，
+  内插**全给翼盒**（v6 的 2/2/1/1 把三族 train 抽空、T1 地板只剩 1/4 族可算 ⇒ 作废留档 `papers/tasks_v6.jsonl`）。
+  口径 RUBRIC **v4.2** §1.1。**★ 内插考题 `split_v2` 仍是 train ⇒ 任何「train 池」必须先剔 `exam_stratum`**，
+  否则 T1 检索到自己（地板 100%）把 value_added 算成负数。
 - **官方 artifact 唯一出处 = `feagpt_repro/reports/`**（入库），`eval_runs/` 只作工作目录；入口 `reports/INDEX.md`（官方 vs 诊断）。
 - **对外 headline = C-021 v4 exam 11 条：TSR 5/11 (45.5%)、SFR 5/10、MSR 4/9**，TSR **CI95 [18.2, 72.7]**（n=11 UNDERPOWERED，不得判 PASS）。
   复现：`score_baseline.py --tasks reports/papers/tasks_v4.jsonl --report reports/baseline_scorecard_L3_v4.json`（+ `msr_l3.py` 同参数，18 min）。
