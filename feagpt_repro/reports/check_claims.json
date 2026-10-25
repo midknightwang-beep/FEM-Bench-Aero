@@ -2,9 +2,155 @@
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
  "n_active_claims": 19,
  "n_artifacts": 21,
- "n_fail": 0,
- "all_ok": true,
- "fails": [],
+ "n_fail": 1,
+ "n_fail_structural": 1,
+ "n_fail_semantic": 0,
+ "all_ok": false,
+ "fails": [
+  "C-019: feagpt_repro/reports/negative_controls_31.json -> artifact 未被 git 追踪（R25）"
+ ],
+ "structural_fails": [
+  "C-019: feagpt_repro/reports/negative_controls_31.json -> artifact 未被 git 追踪（R25）"
+ ],
+ "semantic_fails": [],
+ "semantic": [
+  {
+   "id": "S-00",
+   "desc": "必需 claim 存在性",
+   "expect": "全部在",
+   "actual": "无缺失",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-01",
+   "desc": "C-010 任务层总行数",
+   "expect": "165",
+   "actual": "165",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-02",
+   "desc": "C-010 其中 L3 行数",
+   "expect": "55",
+   "actual": "55",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-03",
+   "desc": "C-011 内插 ID test 条数",
+   "expect": "6",
+   "actual": "6",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-04",
+   "desc": "C-019 负控通过数（源 negative_controls_31.json）",
+   "expect": "31/31",
+   "actual": "31/31",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-05",
+   "desc": "C-019 coverage 列",
+   "expect": "31",
+   "actual": "31",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-06",
+   "desc": "C-021 exam 条数",
+   "expect": "11",
+   "actual": "11",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-07",
+   "desc": "C-027 三栏 boundary/extrap/interp",
+   "expect": "(6, 13, 6)",
+   "actual": "(6, 13, 6)",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-08",
+   "desc": "C-027 exam 合计",
+   "expect": "25",
+   "actual": "25",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-09",
+   "desc": "W5B_PLAN.md 里「C-021 的 N 条」",
+   "expect": "11",
+   "actual": "11",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-10",
+   "desc": "RUBRIC.md 里「C-021 的 N 条」",
+   "expect": "11",
+   "actual": "11",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-11",
+   "desc": "CLAIMS.md 里「C-021 的 N 条」",
+   "expect": "11",
+   "actual": "11",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-12",
+   "desc": "RUBRIC §1 三栏条数行",
+   "expect": "存在",
+   "actual": "存在",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-13",
+   "desc": "RUBRIC §1 三栏条数行",
+   "expect": "存在",
+   "actual": "存在",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-14",
+   "desc": "RUBRIC §1 三栏条数行",
+   "expect": "存在",
+   "actual": "存在",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-15",
+   "desc": "README 引用的 RUBRIC 版本",
+   "expect": "全部 = 4.1",
+   "actual": "4.1",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-16",
+   "desc": "README 负控通过数",
+   "expect": "31/31",
+   "actual": "31/31",
+   "ok": true,
+   "skip": false
+  }
+ ],
  "results": [
   {
    "claim_id": "C-001",
@@ -206,9 +352,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 7555,
-   "sha256": "0d80cd2d8f91eed5e6f1892aea3a72baff81f331fc31538b6725737bb12e42a4",
-   "mtime": 1792913227
+   "size": 10296,
+   "sha256": "c7078082ea4f19c8b176bfab79e4e212e3e64148f026f9e61179c1d16011c8f1",
+   "mtime": 1792923816
   },
   {
    "claim_id": "C-027",
@@ -242,21 +388,23 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 27528,
-   "sha256": "94a2ae702a6a5ef033c5d8110ddbaf50f13479d2bffe68e79b4636f6be601590",
-   "mtime": 1792912621
+   "size": 27613,
+   "sha256": "6ec82c1aa492a8c4550a8c3447aa5a450d65d2ba59c66afe9dbaced339f09bf9",
+   "mtime": 1792923639
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_28.json",
+   "artifact": "feagpt_repro/reports/negative_controls_31.json",
    "exists": true,
-   "git_tracked": true,
+   "git_tracked": false,
    "external": false,
-   "ok": true,
-   "problems": [],
-   "size": 4685,
-   "sha256": "345f9934d003161796bb354383d96da7f2a8f8b4a03cdca941a1e94f42d4c1e0",
-   "mtime": 1792913153
+   "ok": false,
+   "problems": [
+    "artifact 未被 git 追踪（R25）"
+   ],
+   "size": 5304,
+   "sha256": "3c6a1f1f912b60305d6b473f6f4195f19ea5564e364e4d9c3bf1d39ad61456a0",
+   "mtime": 1792923697
   }
  ]
 }

@@ -32,13 +32,39 @@ EXAM_SPLITS = ('boundary_holdout', 'extrapolation_test')
 STRATA = ('boundary', 'extrapolation', 'interpolation')
 
 
+def scorecard_coverage_problems(sc):
+    """成绩单覆盖自检（W5b-3，专家第七轮 NC-28 / R31）。
+
+    为什么：v6 考卷 55 条 L3，若候选只有 30 条（例如只跑了老题）就出成绩单，
+    exam 会「看着 n=25、其实只有一部分被打分」，而且**不报错**——静默出半张成绩单。
+    返回问题列表；空列表 = 覆盖完整。
+    """
+    probs = []
+    prov = sc.get('provenance') or {}
+    n_paper = sc.get('n_tasks_in_paper')
+    n_cand = prov.get('n_candidates', sc.get('n_tasks'))
+    miss = sc.get('candidates_missing') or []
+    if n_paper is None:
+        probs.append('成绩单缺 n_tasks_in_paper（旧版成绩单，无法判候选覆盖）')
+    elif n_cand is None:
+        probs.append('成绩单缺 provenance.n_candidates')
+    elif n_cand < n_paper:
+        probs.append(f'候选 {n_cand} < 考卷 {n_paper} 条（缺 {len(miss) or n_paper - n_cand} 条'
+                     + (f'：{",".join(miss[:5])}{"..." if len(miss) > 5 else ""}' if miss else '') + '）')
+    if sc.get('partial_candidates'):
+        probs.append('partial_candidates=True（候选未覆盖全卷）')
+    if sc.get('partial'):
+        probs.append(f"partial=True（exam 实测 {sc.get('exam', {}).get('n')} < 期望 "
+                     f"{sc.get('n_tasks_exam_expected')}）")
+    return probs
+
+
 def stratum_of(task):
     """任务的难度分层；老考卷（v4/v5）没有 exam_stratum ⇒ 回退到 split_v2 映射（向后兼容）。"""
     s = task.get('exam_stratum')
     if s:
         return s
-    if task.get('split_v2') == 'boundary_holdout':
-        return 'boundary'
+    if task.get('split_v2') == 'boundary_holdout':        return 'boundary'
     if task.get('split_v2') == 'extrapolation_test':
         return 'extrapolation'
     return None
@@ -200,8 +226,14 @@ def main():
             'generated_by': 'score_baseline.py',
         },
         'n_tasks': len(rows),
+        # W5b-3（专家第七轮 NC-28）：候选覆盖必须显式记账——v6 考卷 55 条，
+        # 若只拿 30 条候选出成绩单，exam 会「看着 n=25、其实只有 13 条被打分」，
+        # 而且不报错（静默出半张成绩单），比报错危险得多。
+        'n_tasks_in_paper': len(tasks),
+        'candidates_missing': sorted(set(tasks) - {r['task_id'] for r in rows}),
         'n_tasks_exam_expected': n_tasks_exam,
         'partial': n_exam < n_tasks_exam,
+        'partial_candidates': len(rows) < len(tasks),
         'underpowered': n_exam < 20,
         'tsr': agg(rows, 'tsr')['tsr'],
         'exam': agg(exam_rows, 'exam'),
@@ -263,6 +295,13 @@ def main():
         v = scorecard['value_added']
         print(f"  value_added(exam): T1 {v['TSR_T1_exam_pct']}% -> LLM {v['TSR_LLM_exam_pct']}% "
               f"(Δ{v['delta_pp']}pp, {v['verdict']})")
+    cov = scorecard_coverage_problems(scorecard)
+    if cov:
+        print('  [WARN] 候选/考卷覆盖不全（NC-28/R31）：' + '；'.join(cov))
+        print('         => 这份成绩单不得当正式成绩引用（exam 可能只覆盖部分任务）')
+    else:
+        print(f"  覆盖: 候选 {scorecard['provenance']['n_candidates']}/"
+              f"{scorecard['n_tasks_in_paper']} 条（完整）")
     print('report ->', report_path)
     return 0
 

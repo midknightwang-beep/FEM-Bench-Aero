@@ -12,8 +12,11 @@
   "generated_by": "score_baseline.py"
  },
  "n_tasks": 30,
+ "n_tasks_in_paper": 30,
+ "candidates_missing": [],
  "n_tasks_exam_expected": 11,
  "partial": false,
+ "partial_candidates": false,
  "underpowered": true,
  "tsr": {
   "pass": 16,

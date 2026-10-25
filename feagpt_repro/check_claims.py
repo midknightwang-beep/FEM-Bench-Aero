@@ -16,10 +16,22 @@ check_claims.py — CLAIMS 账本自检（W5a'/专家第六轮 P0-3，红线 R25
 
 用法：
   python check_claims.py                # 全量检查，rc=0 全过 / rc=1 有失败
+  python check_claims.py --no-semantic  # 只做结构检查（旧行为）
   python check_claims.py --claims <path> --root <repo>   # 负控注入（NC-23/24/25）
   python check_claims.py --json reports/check_claims.json
+
+### 语义计数自检（W5b-3，专家第七轮 P1-5，红线 R29）
+
+结构检查只问「artifact 在不在、有没有被 git 追踪」，**抓不到文本里的数字**。第七轮复评实测
+5 处漂移全部 PASS：C-010 写 140 行（实际 165）、C-011 写「真内插 = v1.1」（v6 已有 interp 6）、
+C-019 coverage 写 27（实际 28）、C-027/RUBRIC/W5B_PLAN 写「C-021 的 19 条」（实际 11）、
+README 同时写 RUBRIC v3.1 与 v4。**每轮靠人查不可持续 ⇒ 数字也上闸。**
+
+做法：每条期望值都从 artifact **实读**，账本文本里的数字只作「声称值」；
+声称值 != 实测值 ⇒ FAIL。注入模式（账本里没有 C-xxx claim，例如 NC-23..25 的临时账本）
+自动跳过，只留一条 skip 记录。
 """
-import argparse, hashlib, json, os, re, subprocess, sys
+import argparse, collections, glob, hashlib, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)                      # 仓库根 = F:/AI FEA Modeling DataSets
@@ -94,6 +106,163 @@ def artifacts_in(cell):
     return out
 
 
+# ==================== 语义计数自检（R29，专家第七轮 P1-5） ====================
+TASKS_REL = 'feagpt_repro/tasks/tasks.jsonl'
+SC_V4_REL = 'feagpt_repro/reports/baseline_scorecard_L3_v4.json'
+PAPERS_V4_REL = 'feagpt_repro/reports/papers/tasks_v4.jsonl'
+RUBRIC_REL = 'FEM-Bench-Aero/RUBRIC.md'
+README_REL = 'FEM-Bench-Aero/README.md'
+PLAN_REL = 'FEM-Bench-Aero/W5B_PLAN.md'
+CLAIMS_REL_FOR_SEM = 'FEM-Bench-Aero/CLAIMS.md'
+REQUIRED_CLAIMS = ('C-010', 'C-011', 'C-019', 'C-021', 'C-027')
+
+
+def _measures(root):
+    """从 artifact 实读所有「可核对的量」。缺文件就留空，由检查项显式报 FAIL。"""
+    m = {}
+    p = os.path.join(root, TASKS_REL)
+    if os.path.exists(p):
+        rows = [json.loads(l) for l in open(p, encoding='utf-8') if l.strip()]
+        l3 = [r for r in rows if r.get('input_level') == 'L3']
+        st = collections.Counter(r.get('exam_stratum') for r in l3)
+        m['tasks'] = {'total': len(rows), 'n_l3': len(l3),
+                      'boundary': st.get('boundary', 0),
+                      'extrapolation': st.get('extrapolation', 0),
+                      'interpolation': st.get('interpolation', 0)}
+        m['tasks']['exam'] = (m['tasks']['boundary'] + m['tasks']['extrapolation']
+                              + m['tasks']['interpolation'])
+    p = os.path.join(root, SC_V4_REL)
+    if os.path.exists(p):
+        m['sc_v4'] = (json.load(open(p, encoding='utf-8')).get('exam') or {})
+    p = os.path.join(root, PAPERS_V4_REL)
+    if os.path.exists(p):
+        rows = [json.loads(l) for l in open(p, encoding='utf-8') if l.strip()]
+        c = collections.Counter(r.get('split_v2') for r in rows if r.get('input_level') == 'L3')
+        m['v4'] = {'boundary': c.get('boundary_holdout', 0),
+                   'extrapolation': c.get('extrapolation_test', 0)}
+    ncs = glob.glob(os.path.join(root, 'feagpt_repro', 'reports', 'negative_controls_*.json'))
+    if ncs:
+        def _num(p):
+            mm = re.search(r'_(\d+)\.json$', p)
+            return int(mm.group(1)) if mm else -1
+        best = max(ncs, key=_num)
+        m['nc'] = json.load(open(best, encoding='utf-8'))
+        m['nc_file'] = os.path.basename(best)
+    return m
+
+
+def _txt(path):
+    return open(path, encoding='utf-8').read() if os.path.exists(path) else ''
+
+
+def semantic_checks(root, rows):
+    """逐条核对：账本文本里声称的数字 vs artifact 实读的数字（R29）。"""
+    out, m = [], _measures(root)
+    by = {}
+    for r in rows:
+        cid = (r.get('claim_id') or '').strip()
+        by.setdefault(cid, r)
+    if not any(k.startswith('C-') for k in by):
+        out.append({'id': 'S-0', 'desc': '语义计数检查', 'expect': '-', 'skip': True, 'ok': True,
+                    'actual': '注入模式（账本无 C-xxx claim）⇒ 跳过'})
+        return out
+
+    def add(sid, desc, expect, actual, ok):
+        out.append({'id': sid, 'desc': desc, 'expect': str(expect), 'actual': str(actual),
+                    'ok': bool(ok), 'skip': False})
+
+    # 0) 必需 claim 必须还在（整行被删掉比写错数字更危险）
+    missing = [c for c in REQUIRED_CLAIMS if c not in by]
+    add('S-00', '必需 claim 存在性', '全部在', '无缺失' if not missing else '缺失 ' + ','.join(missing),
+        not missing)
+
+    st_of = lambda cid: (by.get(cid) or {}).get('statement', '')
+
+    # 1) C-010 任务层行数 + L3 行数
+    t = m.get('tasks') or {}
+    txt = st_of('C-010')
+    mm = re.search(r'任务层[^0-9]{0,8}(\d+)', txt)
+    add('S-01', 'C-010 任务层总行数', t.get('total'), mm.group(1) if mm else '未找到',
+        mm and t.get('total') is not None and int(mm.group(1)) == t['total'])
+    mm = re.search(r'L3[^0-9]{0,4}(\d+)', txt)
+    add('S-02', 'C-010 其中 L3 行数', t.get('n_l3'), mm.group(1) if mm else '未找到',
+        mm and t.get('n_l3') is not None and int(mm.group(1)) == t['n_l3'])
+
+    # 2) C-011 内插条数（必须与 v6 的 exam_stratum=interpolation 一致）
+    txt = st_of('C-011')
+    mm = re.search(r'interpolation[^0-9]{0,6}(\d+)', txt)
+    add('S-03', 'C-011 内插 ID test 条数', t.get('interpolation'), mm.group(1) if mm else '未找到',
+        mm and t.get('interpolation') is not None and int(mm.group(1)) == t['interpolation'])
+
+    # 3) C-019 负控 n_ok/n_cases（正文 + coverage 列）
+    nc = m.get('nc') or {}
+    txt = st_of('C-019')
+    mm = re.search(r'全绿[：:]?[^\d]{0,6}(\d+)\s*/\s*(\d+)', txt)
+    exp = f"{nc.get('n_ok')}/{nc.get('n_cases')}"
+    got = f'{mm.group(1)}/{mm.group(2)}' if mm else '未找到'
+    add('S-04', f'C-019 负控通过数（源 {m.get("nc_file", "缺")}）', exp, got, got == exp)
+    mm = re.search(r'(\d+)', (by.get('C-019') or {}).get('coverage', ''))
+    add('S-05', 'C-019 coverage 列', nc.get('n_cases'), mm.group(1) if mm else '未找到',
+        mm and nc.get('n_cases') is not None and int(mm.group(1)) == nc['n_cases'])
+
+    # 4) C-021 exam 条数（v4 成绩单实读）
+    sc = m.get('sc_v4') or {}
+    txt = st_of('C-021')
+    mm = re.search(r'exam\s*\**\s*(\d+)\s*\**\s*条', txt)
+    add('S-06', 'C-021 exam 条数', sc.get('n'), mm.group(1) if mm else '未找到',
+        mm and sc.get('n') is not None and int(mm.group(1)) == sc['n'])
+
+    # 5) C-027 三栏和 exam 合计（v6 考卷实读）
+    txt = st_of('C-027')
+    mm = re.search(r'boundary\s*(\d+)\s*\+\s*extrapolation\s*(\d+)\s*\+\s*interpolation\s*(\d+)', txt)
+    got = tuple(int(x) for x in mm.groups()) if mm else ('未找到',)
+    exp = (t.get('boundary'), t.get('extrapolation'), t.get('interpolation'))
+    add('S-07', 'C-027 三栏 boundary/extrap/interp', exp, got, got == exp)
+    mm = re.search(r'=\s*\**\s*exam\s*\**\s*(\d+)', txt)
+    add('S-08', 'C-027 exam 合计', t.get('exam'), mm.group(1) if mm else '未找到',
+        mm and t.get('exam') is not None and int(mm.group(1)) == t['exam'])
+
+    # 6) 「C-021 的 N 条」在四处文档里必须都等于 C-021 真实条数（R30 的文本面）
+    c021_n = sc.get('n')
+    for rel, sid in ((PLAN_REL, 'S-09'), (RUBRIC_REL, 'S-10'), (CLAIMS_REL_FOR_SEM, 'S-11')):
+        body = _txt(os.path.join(root, rel))
+        nums = {int(x) for x in re.findall(r'C-021\s*的\s*\**\s*(\d+)\s*\**\s*条', body)}
+        ok = (not nums) or (c021_n is not None and nums == {c021_n})
+        add(sid, f'{os.path.basename(rel)} 里「C-021 的 N 条」', c021_n or '?',
+            ','.join(map(str, nums)) or '无此表述', ok)
+
+    # 7) RUBRIC §1 三行条数与 artifact 一致（11 / 19 / 25）
+    rub = _txt(os.path.join(root, RUBRIC_REL))
+    v4 = m.get('v4') or {}
+    n_19 = None
+    if t and v4:
+        n_19 = t['boundary'] + t['extrapolation']
+    wants = []
+    if c021_n is not None and v4:
+        wants.append(('S-12', f'**{c021_n}**（boundary {v4["boundary"]} + extrap {v4["extrapolation"]}）'))
+    if n_19 is not None:
+        wants.append(('S-13', f'**{n_19}**（boundary {t["boundary"]} + extrap {t["extrapolation"]}）'))
+    if t.get('exam'):
+        wants.append(('S-14', f'**{t["exam"]}**（{t["boundary"]} + {t["extrapolation"]} + {t["interpolation"]}）'))
+    for sid, s in wants:
+        add(sid, 'RUBRIC §1 三栏条数行', '存在', '存在' if s in rub else f'缺「{s}」', s in rub)
+
+    # 8) README 里引用的 RUBRIC 版本必须与 RUBRIC.md 顶部一致
+    mm = re.search(r'\*\*版本\*\*[：:]\s*v(\d+(?:\.\d+)?)', rub)
+    rub_v = mm.group(1) if mm else None
+    rd = _txt(os.path.join(root, README_REL))
+    refs = set(re.findall(r'RUBRIC\.md[^\n]{0,40}?v(\d+(?:\.\d+)?)', rd))
+    add('S-15', 'README 引用的 RUBRIC 版本', f'全部 = {rub_v}',
+        ','.join(sorted(refs)) or '无引用', bool(refs) and refs == {rub_v})
+
+    # 9) README 里的负控通过数
+    mm = re.search(r'negative_controls\.py[^\n]{0,20}?\**(\d+)\s*/\s*(\d+)', rd)
+    exp = f"{nc.get('n_ok')}/{nc.get('n_cases')}"
+    got = f'{mm.group(1)}/{mm.group(2)}' if mm else '未找到'
+    add('S-16', 'README 负控通过数', exp, got, got == exp)
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--claims', default=CLAIMS_DEFAULT)
@@ -101,6 +270,10 @@ def main():
     ap.add_argument('--json', default=os.path.join(HERE, 'reports', 'check_claims.json'))
     ap.add_argument('--include-nonactive', action='store_true',
                     help='连 superseded/retracted 一起查（默认只查 active）')
+    ap.add_argument('--semantic', dest='semantic', action='store_true', default=True,
+                    help='同时核对文本数字 vs artifact 实读（R29，默认开）')
+    ap.add_argument('--no-semantic', dest='semantic', action='store_false',
+                    help='只做结构检查（旧行为）')
     args = ap.parse_args()
     root = os.path.abspath(args.root)
 
@@ -165,24 +338,43 @@ def main():
             if problems:
                 fails.append(f"{cid}: {rel} -> {'; '.join(problems)}")
 
+    # ---- 语义计数（R29）：文本数字必须等于 artifact 实读 ----
+    sem = semantic_checks(root, rows) if args.semantic else []
+    sem_fails = [f"{s['id']}: {s['desc']} -> 声称 {s['actual']} / 实测 {s['expect']}"
+                 for s in sem if not s['ok']]
+    fails_all = fails + sem_fails
+
     report = {'claims_file': os.path.relpath(args.claims, root).replace('\\', '/'),
               'n_active_claims': len({r['claim_id'] for r in results}),
               'n_artifacts': len(results),
-              'n_fail': len(fails),
-              'all_ok': not fails, 'fails': fails, 'results': results}
+              'n_fail': len(fails_all),
+              'n_fail_structural': len(fails),
+              'n_fail_semantic': len(sem_fails),
+              'all_ok': not fails_all, 'fails': fails_all,
+              'structural_fails': fails, 'semantic_fails': sem_fails,
+              'semantic': sem, 'results': results}
     os.makedirs(os.path.dirname(os.path.abspath(args.json)) or '.', exist_ok=True)
     json.dump(report, open(args.json, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 
-    print('== CLAIMS 自检（R25/R26/R27）==')
+    print('== CLAIMS 自检（R25/R26/R27 结构 + R29 语义计数）==')
     for rec in results:
         tag = 'ok  ' if rec['ok'] else 'FAIL'
         extra = '' if rec['ok'] else '  <- ' + '; '.join(rec['problems'])
         print(f"  [{tag}] {rec['claim_id']:<7} {rec['artifact']}{extra}")
-    print(f"\nactive claims {report['n_active_claims']} 条 / artifact {report['n_artifacts']} 个 "
-          f"-> {'全过' if report['all_ok'] else f'{len(fails)} 项失败'}")
+    if sem:
+        print('-- 语义计数（声称值 vs artifact 实读）--')
+        for s in sem:
+            if s.get('skip'):
+                print(f"  [skip] {s['id']:<5} {s['desc']}: {s['actual']}")
+                continue
+            tag = 'ok  ' if s['ok'] else 'FAIL'
+            print(f"  [{tag}] {s['id']:<5} {s['desc']:<34} 声称={s['actual']} 实测={s['expect']}")
+    print(f"\nactive claims {report['n_active_claims']} 条 / artifact {report['n_artifacts']} 个 / "
+          f"语义项 {len([s for s in sem if not s.get('skip')])} 条 "
+          f"-> {'全过' if report['all_ok'] else f'结构 {len(fails)} 项 + 语义 {len(sem_fails)} 项失败'}")
     print(f"report -> {args.json}")
-    if fails:
-        print('红线条 R26：CLAIMS 自检未过，不得对外引用这些数字。')
+    if fails_all:
+        print('红线条 R26/R29：CLAIMS 自检未过，不得对外引用这些数字。')
         return 1
     return 0
 

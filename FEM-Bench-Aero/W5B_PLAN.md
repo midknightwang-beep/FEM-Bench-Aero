@@ -38,7 +38,7 @@ cd feagpt_repro && python _probe_expand.py     # 2026-10-25 实测输出
 起草时发现一条算术互斥必须记下来：`boundary_holdout = 6`、`extrapolation_test = 13` 是数据集固定值，
 **「headline = boundary+extrap」永远是 19 条 < 20**，与 R12/R24 的 n≥20 门槛不可同时满足。
 故取「headline = 合并 25（含 6 条 interp），三栏明细并列，R12 分母 = 25」，
-并在所有对外引用处写明**与 C-021 的 19 条口径不可直接比**（已写入 RUBRIC §1.1 v4）。
+并在所有对外引用处写明**与 C-021 的 11 条口径不可直接比**（三个数：C-021 = **11**、v6 boundary+extrap = **19**、v6 headline 合并 = **25**；已写入 RUBRIC §1.1 v4 与 R30）。
 
 **代价（必须同引）**：
 1. 内插题明显更容易 ⇒ 合并数会比 C-021 的 45.5% 高，这是题目构成变化不是模型变好；
@@ -53,7 +53,7 @@ cd feagpt_repro && python _probe_expand.py     # 2026-10-25 实测输出
 | **W5b-0（阻塞项）** | 拿 `WORKBUDDY_PUBLISHABLE_KEY`（当前 shell 未设，只读 env、无 fallback） | `node gen_candidates_v2.js --limit 1` 出 1 条合法候选 | ⛔ 阻塞 |
 | W5b-1 | **v5 考卷重生成 30 条**（R28）——可并入 W5b-3：v6 里这 30 条逐字节未变（已机器验证），故直接生成 v6 的 55 条即可 | `candidates_l3_v6/` 55 条、`turns_used` 全记录 | ⛔ 等 key |
 | W5b-2 | 扩卷 + 冻结考卷 v6 | **已完成**：`tasks.jsonl` 165 行（L3 55）、exam 25、老题零改动（`_verify_tasks_v6.py` PASS）、tag `v1.0-l3-v6`、`papers/tasks_v6.jsonl` | ✅ C-027 |
-| W5b-3 | 生成 55 条候选（v6 全量） | 与 W5b-1 合并执行 | ⛔ 等 key |
+| W5b-3 | 生成 55 条候选（v6 全量） | 与 W5b-1 合并执行；**命令见 §6**（`--limit 55` 不可省） | ⛔ 等 key |
 | W5b-4 | 一次打分 + CI：`score_baseline.py` → `msr_l3.py` → `bootstrap_ci.py` | exam 25；三栏（boundary/extrap/interp）分列 CI；`score_baseline.py` 已支持 `exam_stratum`（向后兼容已验：v4 仍 5/11） | 待 |
 | W5b-5 | 第二模型（**先用 SDK 实测可用 id，不猜**） | 两模型 TSR 差异 + 各自 CI | 待 |
 | W5b-6 | 失败归因字段级（env/contract/model/solver + 失败键清单） | 每条失败有原因，落 `reports/` | 待 |
@@ -70,3 +70,51 @@ cd feagpt_repro && python _probe_expand.py     # 2026-10-25 实测输出
 - ❌ 不把 C-025 的 4/11 当模型成绩（旧候选 × 新卷，已标 diagnostic）；
 - ❌ 不用单模型成绩做榜单（W5d 才谈榜单协议）；
 - ❌ 不新增几何同时改判据（混叠，无法归因）。
+
+## 5. 第七轮整改（W5b-3a，✅ 已完成 2026-10-25）
+
+| 项 | 结果 |
+|---|---|
+| 文档语义计数 5 处漂移（P1-1..P1-4） | C-010 **165**（L3 55）/ C-011 内插 = **v6 interp 6** / C-019 coverage **31** / C-027·RUBRIC·W5B_PLAN·看板 的「C-021 的 N 条」统一 **11**（19·25 分列）/ README RUBRIC **v4.1** |
+| `check_claims.py --semantic`（P1-5/R29） | 默认开；17 项，期望值全部从 artifact 实读 ⇒ 全过 |
+| 负控（R29/R30/R31） | **31/31**：NC-27 语义计数漂移 / NC-28 覆盖不全 / NC-29 跨口径混比 |
+| 跨口径闸（R30） | `compare_scorecards.py`（rc=3 拒绝混比） |
+| 覆盖记账（R31） | 成绩单 `n_tasks_in_paper` / `candidates_missing` / `partial_candidates` |
+
+## 6. W5b-3 生成命令（key 不在对话/仓库里传）
+
+> **★ 坑**：`gen_candidates_v2.js` 的 `--limit` **默认 30**。v6 有 55 条，**不显式给 `--limit 55` 就只会生成 30 条**，
+> 然后成绩单会「看着 exam n=25、其实部分任务没打分」。已加 `partial_candidates` + NC-28 咬它，但正确做法是别漏。
+>
+> **★ 坑**：key 只读 `process.env.WORKBUDDY_PUBLISHABLE_KEY`（无 fallback）。WorkBuddy 内的 shell 不会继承
+> 你在外部 cmd 设的变量，反之亦然 ⇒ 必须在**同一个窗口**里设 key + 跑 node。
+
+在 WorkBuddy **外**的普通 cmd 里（一次性，同窗口内完成）：
+
+```bat
+cd /d "F:\AI FEA Modeling DataSets\feagpt_repro"
+set WORKBUDDY_PUBLISHABLE_KEY=<你的 key>
+
+REM ① 冒烟 1 条（R31：不许直接 55 条盲跑）
+node gen_candidates_v2.js --tasks reports/papers/tasks_v6.jsonl --levels L3 --out _smoke_v6 --limit 1
+
+REM ② 全量 55 条（--limit 必须显式给 55）
+node gen_candidates_v2.js --tasks reports/papers/tasks_v6.jsonl --levels L3 --out candidates_l3_v6 --limit 55
+
+REM ③ 回读条数（必须是 55）
+dir candidates_l3_v6\*.json | find /c ".json"
+```
+
+拿到 `candidates_l3_v6/` 后，在 WorkBuddy 内（不需要 key）：
+
+```bash
+cd "F:/AI FEA Modeling DataSets/feagpt_repro"
+PY="C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+"$PY" score_baseline.py --candidates candidates_l3_v6 --tasks reports/papers/tasks_v6.jsonl \
+  --report reports/baseline_scorecard_L3_v6.json --trivial reports/trivial_baselines_L3.json \
+  --label "C-028 v6 (paper v6, candidates v6)"
+"$PY" msr_l3.py --candidates candidates_l3_v6 --tasks reports/papers/tasks_v6.jsonl \
+  --report reports/baseline_scorecard_L3_v6.json
+"$PY" bootstrap_ci.py --scorecard reports/baseline_scorecard_L3_v6.json
+"$PY" compare_scorecards.py --a reports/baseline_scorecard_L3_v4.json \
+  --b reports/baseline_scorecard_L3_v6.json     # 必须 rc=3（口径不同）

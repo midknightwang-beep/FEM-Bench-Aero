@@ -11,9 +11,10 @@
 |---|---|---|
 | **官方 headline（对外唯一可引用）** | `baseline_scorecard_L3_v4.json` | C-021：考卷 **v4** × 候选 **v4**（`candidates_l3_v3`），exam 11 条 **TSR 5/11 (45.5%) / SFR 5/10 / MSR 4/9**，**n=11 UNDERPOWERED**；CI95 见 `bootstrap_ci_L3_v4.json`（TSR **[18.2, 72.7]**） |
 | **诊断（不是模型成绩）** | `baseline_scorecard_L3_v5_rescore.json` | C-025：**旧候选**（v4 生成）打 **v5** 考卷 ⇒ exam TSR 4/11。旧候选不能评新考卷（R28），只用于验证「修题改了什么」 |
+| **待跑（v6，尚不存在）** | `baseline_scorecard_L3_v6.json`（**未生成**） | C-028（待登记）：考卷 **v6**（55 条 L3 / exam 25 三栏）× `candidates_l3_v6`。**唯一阻塞 = `WORKBUDDY_PUBLISHABLE_KEY`**（R31：先 `--limit 1` 冒烟）。跑出来后与 C-021 的 11 条**不可直接比**（R30，`compare_scorecards.py` 会拒） |
 | L1 冒烟（非模型基线） | `baseline_scorecard_L1_smoke.json` | C-017：spec-copy 19 条 SFR 0/19，无 schema 约束解码时的指令遵循失败 |
 | 桥接表 | `bridge_v3_v4.json` + `bridge_A/B/C_*.json` | C-024：A 7/11、B 5/11、C 0/11、D 5/11；A→D = −3 wingbox 方向 +1 d2000 |
-| 负控 | `negative_controls_28.json` | C-019：PC-1 + NC-1..22 + NC-15b + **NC-23..26** = **28/28** |
+| 负控 | `negative_controls_31.json` | C-019：PC-1 + NC-1..22 + NC-15b + **NC-23..26** + **NC-27..29**（语义计数/覆盖/跨口径混比）= **31/31** |
 | T1 检索地板 | `trivial_baselines_L3.json` | `value_added` 的对照项（exam T1 = 0/11） |
 | MSR 明细 | `msr_l3_v4.json` / `msr_l3_v5_rescore.json` | 从对应成绩单抽出的 `msr_section`（逐任务门禁 + 失败分层；v4 = 11/21、exam 4/9） |
 | bootstrap CI | `bootstrap_ci_L3_v4.json` / `bootstrap_ci_L3_v5_rescore.json` | exam 任务重采样（B=4000, seed=20261025）：TSR/SFR/MSR 点估计 + CI95 + by_family（**n<20 不得据此判 PASS**） |
@@ -54,7 +55,11 @@ PY="C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"  
 
 # ③ 负控 + CLAIMS 自检（每个 W 块收口必跑）
 PYTHONIOENCODING=utf-8 "$PY" negative_controls.py
-"$PY" check_claims.py
+"$PY" check_claims.py            # 结构（R25/R26/R27）+ 语义计数（R29），默认都开
+
+# ④ 跨口径比较闸（R30）：不同 exam 条数的两份成绩单必须被拒
+"$PY" compare_scorecards.py --a reports/baseline_scorecard_L3_v4.json \
+  --b reports/baseline_scorecard_L3_v6.json    # v6 未跑时这行会报文件不存在
 ```
 
 ## 3. 版本对照表
@@ -75,7 +80,7 @@ PYTHONIOENCODING=utf-8 "$PY" negative_controls.py
 | 红线 | 落点 |
 |---|---|
 | R25 官方 artifact 必须入库（非 `eval_runs/`） | 本目录；`check_claims.py` 检查 git 追踪 |
-| R26 CLAIMS 自检必须进 CI | `check_claims.py`（rc=1）+ NC-23..26 |
+| R26 CLAIMS 自检必须进 CI | `check_claims.py`（结构 + **`--semantic` 语义计数**，rc=1）+ NC-23..29 |
 | R27 官方 vs 诊断必须分文件 | `_v4` / `_v5_rescore` 两个文件；`check_claims` 检查同路径占用 |
 | R28 旧候选不得评新考卷 | C-025 标 diagnostic；W5b 必须重生成 |
 
@@ -86,8 +91,8 @@ PYTHONIOENCODING=utf-8 "$PY" negative_controls.py
 | C-021 可复现 | 重跑 `score_baseline.py --tasks papers/tasks_v4.jsonl` ⇒ **exam TSR 5/11 (45.5%)、SFR 5/10、dev 11/19、问错字段 0**，与 C-021 文本**逐项一致** |
 | C-021 全链 MSR 可复现 | `msr_l3.py --tasks papers/tasks_v4.jsonl` ⇒ **MSR 11/21 (52.4%)、exam 4/9、dev 7/12**（失败分层 model 7 + contract 3，env 0），与 C-021 的 4/9 一致；实耗 18 min（两个 barrel 案各 362/468 s） |
 | CI 落地 | `bootstrap_ci.py` ⇒ exam TSR 45.5% **CI95 [18.2, 72.7]**；SFR 50% [20.0, 80.0]；MSR 44.4% [11.1, 77.8] —— n=11 的区间宽度就是「为何不得对外承诺」的量化证明 |
-| CLAIMS 自检 | `check_claims.py`：18 条 active claim / 19 个 artifact，逐条查存在 + 追踪 + 路径一致 + sha256 |
-| 负控 | **28/28**（NC-23/24/25 注入临时 CLAIMS 打 check_claims；NC-26 缺 gold ⇒ 硬报错） |
+| CLAIMS 自检 | `check_claims.py`：19 条 active claim / 21 个 artifact，逐条查存在 + 追踪 + 路径一致 + sha256 + **语义计数（R29）** |
+| 负控 | **31/31**（NC-23/24/25 注入临时 CLAIMS 打结构检查；NC-26 缺 gold 硬报错；NC-27 文本计数漂移被语义检查抓到；NC-28 候选未覆盖全卷被标记；NC-29 跨口径混比被拒） |
 
 ### ★ 两个新踩到的坑（已修，写进这里防复发）
 
@@ -98,4 +103,22 @@ PYTHONIOENCODING=utf-8 "$PY" negative_controls.py
    v4 成绩单的卷子里 str3 不是澄清题（600x600 才是），于是报 `L3_stiffened_panel_600x600_str3` 混进分母。
    修法：负控按成绩单自带的 `provenance.tasks_path` 回读**它当时那张卷子**再核对。
    （同源教训：任何「拿现态去判历史产物」的检查都会假红或假绿。）
+
+## 6. W5b-3 验收记录（2026-10-25，专家第七轮 P1-1..P1-7）
+
+| 验收项 | 结果 |
+|---|---|
+| 文档语义计数（P1-1..P1-4） | C-010 **165**（L1 55 + L2 55 + L3 55）、C-011 内插 = **v6 interp 6**、C-019 coverage **31**、C-027/RUBRIC/W5B_PLAN 的「C-021 的 N 条」统一为 **11**（另两数 19 / 25 分列）；README 的 RUBRIC 版本统一 **v4** |
+| 语义自检（P1-5/R29） | `check_claims.py --semantic`（**默认开**）：17 项逐条核对文本数字 vs artifact 实读 ⇒ 全过。S-01..S-16 覆盖 行数/内插/负控/exam 条数/三栏/跨文档「C-021 的 N 条」/RUBRIC §1 三行/README 版本与负控数 |
+| 负控（R29/R30/R31） | **31/31**：NC-27 注入 C-010「140 行」⇒ 语义检查 FAIL（先断言替换命中，防静默空转）；NC-28 候选 30/55 ⇒ `scorecard_coverage_problems` 报 3 条；NC-29 v6(25) vs C-021(11) 混比 ⇒ `comparability` 拒（4 条理由），同文件自比仍可 |
+| 成绩单覆盖记账（R31） | 成绩单新增 `n_tasks_in_paper` / `candidates_missing` / `partial_candidates`；v4 重跑显示「覆盖 30/30 条（完整）」，C-021 逐项不变（5/11、SFR 5/10、dev 11/19、MSR 4/9） |
+| 跨口径闸（R30） | `compare_scorecards.py`：口径不同 ⇒ **rc=3 拒绝**且只打印三栏、不给任何「提升/下降」 |
+| 考卷 v6 状态 | **冻结待跑**（C-027）；`candidates_l3_v6` 未生成 |
+
+### 仍未解决（唯一阻塞）
+
+`WORKBUDDY_PUBLISHABLE_KEY` 未在本机 shell 设置、仓库内也没有 `.env`
+（`gen_candidates_v2.js` 只读 `process.env`，**故意无 fallback**）。
+⇒ W5b-3（55 条生成）→ W5b-4（打分/CI）→ W5b-5（第二模型）→ W5b-6（归因）全部排队。
+**不要**为了绕过它把 key 写进仓库或对话（R31）。
 

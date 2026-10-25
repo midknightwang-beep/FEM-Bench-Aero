@@ -482,6 +482,54 @@ def main():
           f"expect=raise/None actual={'raise' if err_bad else 'pass'}/"
           f"{'None' if err_ok is None else 'raise'}")
 
+    # ---- W5b-3 扩展（专家第七轮 6.2/R29/R30/R31）：NC-27..29 ----
+    # NC-27（P1-5/R29）：文本数字漂移必须被语义检查抓到——注入 C-010「140 行」，artifact 仍 165。
+    # 先断言替换真的命中：W5a 的教训是「替换没命中却记 PASS」= 静默空转的负控。
+    real_md = open(os.path.join(ROOT_, 'FEM-Bench-Aero', 'CLAIMS.md'), encoding='utf-8').read()
+    mut_md = real_md.replace('任务层 **165 行**', '任务层 140 行')
+    hit27 = (mut_md != real_md)
+    rc27, o27 = run_check_claims(mut_md, 'nc27')
+    ok27 = hit27 and rc27 != 0 and 'S-01' in o27
+    results.append({'id': 'NC-27', 'desc': '文本计数漂移（C-010 140 vs artifact 165）⇒ 语义检查 FAIL',
+                    'expect': 'rc!=0 + 报 S-01', 'actual': f'hit={hit27} rc={rc27}', 'ok': ok27})
+    print(f"  [{'ok ' if ok27 else 'BAD!'}] NC-27 文本计数漂移被语义检查抓到                    "
+          f"expect=rc!=0+S-01 actual=hit={hit27} rc{rc27}")
+
+    # NC-28（R31）：v6 考卷 55 条、候选只有 30 条 ⇒ 成绩单必须拒绝当正式成绩（覆盖不全）
+    from score_baseline import scorecard_coverage_problems
+    fake_incomplete = {'n_tasks_in_paper': 55, 'provenance': {'n_candidates': 30},
+                       'candidates_missing': [f'miss_{i}' for i in range(25)],
+                       'partial_candidates': True, 'partial': True,
+                       'exam': {'n': 13}, 'n_tasks_exam_expected': 25}
+    bad28 = scorecard_coverage_problems(fake_incomplete)
+    sc28_path = os.path.join(HERE, 'reports', 'baseline_scorecard_L3_v4.json')
+    good28 = (scorecard_coverage_problems(json.load(open(sc28_path, encoding='utf-8')))
+              if os.path.exists(sc28_path) else ['no scorecard'])
+    ok28 = bool(bad28) and not good28
+    results.append({'id': 'NC-28', 'desc': '候选未覆盖全卷 ⇒ 成绩单标记不可当正式成绩（R31）',
+                    'expect': f'bad={len(bad28)}>0 / good=0',
+                    'actual': f'bad={len(bad28)} / good={len(good28)}', 'ok': ok28})
+    print(f"  [{'ok ' if ok28 else 'BAD!'}] NC-28 候选覆盖不全被标记                            "
+          f"expect=bad>0/good=0 actual=bad{len(bad28)}/good{len(good28)}")
+
+    # NC-29（R30）：v6 的 25 条与 C-021 的 11 条混比必须被拒绝（同文件自比必须允许）
+    from compare_scorecards import comparability
+    if os.path.exists(sc28_path):
+        v4sc = json.load(open(sc28_path, encoding='utf-8'))
+        fake_v6 = {'exam': {'n': 25}, 'exam_definition': v4sc.get('exam_definition'),
+                   'exam_by_stratum': {'boundary': {'n': 6}, 'extrapolation': {'n': 13},
+                                       'interpolation': {'n': 6}}}
+        cross_ok, why = comparability(v4sc, fake_v6)
+        same_ok, _ = comparability(v4sc, v4sc)
+        ok29 = (not cross_ok) and bool(why) and same_ok
+        actual29 = f'cross={"可" if cross_ok else "拒"}({len(why)} 理由) / same={"可" if same_ok else "拒"}'
+    else:
+        ok29, actual29 = False, 'no scorecard'
+    results.append({'id': 'NC-29', 'desc': 'v6(25) 与 C-021(11) 混比被拒（R30）',
+                    'expect': 'cross=拒 / same=可', 'actual': actual29, 'ok': ok29})
+    print(f"  [{'ok ' if ok29 else 'BAD!'}] NC-29 跨口径混比被拒                                "
+          f"expect=cross拒/same可 actual={actual29}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],

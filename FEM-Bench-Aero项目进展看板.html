@@ -1727,10 +1727,21 @@ const REVIEW = [
    ev:[
     '<b>扩卷实现</b>：<code>make_nl_human.py</code> 名额参数化（<code>--quota</code> / <code>--interp-quota</code> / <code>--out</code>），内插按族 wingbox 2 / open_hole 2 / barrel 1 / panel 1 从 train 里按 task_id 字典序确定性取；新增 <code>exam_stratum</code> 字段承载难度分层——<b>dataset 的 split_v2 一字未改</b>（D12 冻结不破，不需要重跑九闸）',
     '<b>机器验收（三项全 PASS）</b>：① L1/L2 140 行内容零改动；② 老 30 条 L3 除新增 <code>exam_stratum</code> 外零改动 ⇒ <b>v5 生成的候选在 v6 老题上仍然有效（R28 可证，不用重生成老题）</b>；③ interp 6 条全部来自 train、dataset exam 与 stratum 一一对应',
-    '<b>三栏口径预注册（RUBRIC v4 §1.1）</b>：headline = 合并 25，三栏明细必须并列，R12/R24 分母 = 25；对外引用须写「与 C-021 的 19 条口径不可直接比」。<b>代价同引</b>：内插明显更易 ⇒ 合并数会高于 45.5 %（题目构成变化不是模型变好）；barrel/panel 的 train 被抽空（dev 仍有 val）',
+    '<b>三栏口径预注册（RUBRIC v4 §1.1）</b>：headline = 合并 25，三栏明细必须并列，R12/R24 分母 = 25；对外引用须写「与 C-021 的 11 条口径不可直接比」（三个数：11 / 19 / 25，R30）。<b>代价同引</b>：内插明显更易 ⇒ 合并数会高于 45.5 %（题目构成变化不是模型变好）；barrel/panel 的 train 被抽空（dev 仍有 val）',
     '<b>判分器向后兼容</b>：<code>score_baseline.py</code> 的 <code>is_exam</code> 改为认 <code>exam_stratum</code>（缺字段则回退 split_v2 映射），并新增 <code>exam_by_stratum</code> 三栏汇总；<b>实测 v4 重跑仍 5/11、dev 11/19</b>，且老卷也能看到分层（boundary 2/4、extrap 3/7）。<b>★ 连带坑</b>：NC-8 把「30 条 L3」硬编码进期望值，扩卷后直接假红 ⇒ 改成断言「L3 行数 == nl_human 行数」（负控 27/27 复绿）'
    ],
-   files:['feagpt_repro/reports/papers/tasks_v6.jsonl','feagpt_repro/reports/papers/SHA256SUMS','feagpt_repro/make_nl_human.py','feagpt_repro/_verify_tasks_v6.py','feagpt_repro/score_baseline.py','FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/W5B_PLAN.md']}
+   files:['feagpt_repro/reports/papers/tasks_v6.jsonl','feagpt_repro/reports/papers/SHA256SUMS','feagpt_repro/make_nl_human.py','feagpt_repro/_verify_tasks_v6.py','feagpt_repro/score_baseline.py','FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/W5B_PLAN.md']},
+  {id:'r61', g:'W5/扩量', c:'<b>专家第七轮 P1 全部整改：文档语义计数上闸（R29）+ 跨口径混比闸（R30）+ 生成前预检（R31）</b>；<code>check_claims.py --semantic</code> 17 项全过、负控 <b>31/31</b>（+NC-27/28/29）；C-021 逐项复现不变（5/11 / SFR 5/10 / dev 11/19 / MSR 4/9）',
+   q:'第七轮实测：<code>check_claims.py</code> 19 条 active / 21 artifact 全过，但 <b>5 处文本计数漂移它一个都没抓到</b> —— C-010 写 140 行（实际 165）、C-011 写「真内插 = v1.1」（v6 已有 interp 6）、C-019 coverage 写 27（实际 28）、C-027/RUBRIC/W5B_PLAN 写「C-021 的 19 条」（实际 <b>11</b>）、README 同时写 RUBRIC v3.1 与 v4。<b>结构检查骗过了自己</b>：文件在、被追踪、路径也对，只是数字是错的。',
+   cmd:'check_claims.py            # 默认含 --semantic（结构 + 语义计数）\nnegative_controls.py        # 31 条\ncompare_scorecards.py --a reports/baseline_scorecard_L3_v4.json --b reports/baseline_scorecard_L3_v6.json',
+   ev:[
+    '<b>语义计数自检（R29）</b>：<code>check_claims.py --semantic</code>（默认开）17 项，每项期望值都从 artifact <b>实读</b>：任务层 165 行 / L3 55 / 内插 6 / 负控 31 / C-021 exam 11 / C-027 三栏 (6,13,6) 与合计 25 / 四份文档里「C-021 的 N 条」/ RUBRIC §1 三行 11·19·25 / README 版本号与负控数 —— <b>不再有任何手写期望值</b>',
+    '<b>NC-27 先断言「替换真命中」再判 RC</b>：注入 C-010「140 行」→ 语义检查必须 FAIL；若替换没命中就记 PASS，等于「负控自己静默空转」（W5a 的老坑）',
+    '<b>R30 跨口径闸</b>：<code>compare_scorecards.py</code> 比 exam 条数 + definition + 三栏构成，不同 ⇒ <b>rc=3 拒绝</b>，只打印三栏、绝不出差值；NC-29 实测 v6(25) vs C-021(11) 被拒（4 条理由）、同文件自比仍可',
+    '<b>R31 覆盖记账</b>：成绩单新增 <code>n_tasks_in_paper</code> / <code>candidates_missing</code> / <code>partial_candidates</code> —— v6 考卷 55 条、候选只有 30 条时会<b>静默出半张成绩单</b>（exam 看着 n=25 实际只有部分被打分）；NC-28 咬这道闸，v4 实跑显示「覆盖 30/30 条（完整）」',
+    '<b>唯一阻塞仍是 key</b>：<code>WORKBUDDY_PUBLISHABLE_KEY</code> 未设、仓库无 <code>.env</code>，<code>gen_candidates_v2.js</code> 故意无 fallback ⇒ W5b-3 生成起全部排队'
+   ],
+   files:['feagpt_repro/check_claims.py','feagpt_repro/compare_scorecards.py','feagpt_repro/score_baseline.py','feagpt_repro/negative_controls.py','feagpt_repro/reports/negative_controls_31.json','feagpt_repro/reports/INDEX.md','FEM-Bench-Aero/CLAIMS.md','FEM-Bench-Aero/RUBRIC.md']}
  ];
 
 /* ============ 渲染 ============ */
