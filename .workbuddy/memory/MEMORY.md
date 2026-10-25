@@ -88,7 +88,9 @@
   **W4c 已落地**：FEASpec.from_dict 严格化（缺 structure/family 未知 => raise）；evaluate 全链解包+contract 闸（bc 空/柱壳缺 end_shear 不求解）；spec_fidelity 补 bc/analysis/extra（gold 权威全键判，L3 也判）；**负控 14/14**（新增 NC-9..13）；score_baseline partial 警告+underpowered（R12）；gen_candidates prompt 补 bc/extra+response_format+key 入 env；gate3 n_gated_pass 15→49；L3 boundary_holdout 统一（id_test 清零）；fetch_data tarfile；validate_schema UTF-8。
   **红线新增 R9–R14**（SFR≠MSR≠TSR / 候选契约校验 / 成绩单全覆盖 / n<20 不判 value_added / 模型 id 必录 / skip_solve 不得称基线）。
   **待办（已全部收口）**：W4b 成绩单（C-017，L1 smoke SFR 0/19）→ W4d L3 主基线（commit b2e9b74）。
-- **★★★★ W4d L3 主基线收口（2026-10-25，commit b2e9b74，C-020，评分卡 29/30）——ROADMAP W1–W4 全部收口**：
+- **★★★★ W4e/W4f 收口（2026-10-25，commit 28e66bb，C-021）——W4d 成绩已被 superseded（专家第四轮实锤：headline 混入 train/val + MSR 6 条 gmsh 环境失败记成模型失败 + rubric post-hoc）**：
+  **对外 headline = 留出集 exam 11 条（boundary 4 + extrap 7，R15）：TSR 5/11 (45.5%)、SFR 5/10 (50%)、MSR 4/10 (40%)**（失败分层 model 8 + contract 3 + env 0）；**value_added Δ+45.5pp vs T1 exam 0/11 —— n=11 UNDERPOWERED 不得判 PASS（R12）**；dev 19 条 TSR 11/19 不进对外。负控 **21/21**（NC-15..19）。**RUBRIC.md 预注册**（R18）；红线条扩到 R20；考卷 v4 冻结 tag `v1.0-l3-v4` + sha256。W4e=修度量（msr 依赖预检/失败分层 env·contract·model·solver/exam-dev 分栏/澄清字段级别名判据）；W4f=修契约（schema 四族 params 白名单抄 builder KNOWN_KEYS + addProps:false + **R19 试建闸 FEASpec 构造前移**；考卷 v4 补 barrel/panel 长桁尺寸；prompt 按族键名「未给尺寸省略绝不填 0」）。★ 坑：msr_l3 CAND_DIR 硬编码曾对旧候选跑出 0/25；schema 白名单必须逐键对齐 dataclass（试建闸抓到 analysis.type）；ajv additionalProperties 错误必须附键名+允许键否则模型 3 轮盲修不掉；502 删文件重跑补齐。**遗留 W5**：exam n=11→≥20 扩样、L2 澄清基线、A3 修复基线。
+- **W4d 收口存档（2026-10-25，commit b2e9b74，C-020 superseded）**：
   老王两项口径拍板：① **工程层判+配置层只报**（EXEC_CONFIG_KEYS=mesh gmsh 键/analysis 执行键/extra 内部编码键/
   pressure 方向 → REPORTED；死字段 stringer_* 豁免（ns=0）；元数据自创键白名单；语义编造照罚；**bc 只对 wingbox 判
   ——实锤 pipeline 不消费 spec.bc，非翼盒族 gold bc 是死模板值**）② **澄清题问对=对（clarify_keywords 落盘）、编造=错**。
