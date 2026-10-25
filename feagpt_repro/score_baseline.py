@@ -24,7 +24,7 @@ import json, os, sys, hashlib, collections
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from evaluate import evaluate_one, load_tasks, RUNS
+from evaluate import evaluate_one, load_tasks, RUNS, require_dataset
 
 EXAM_SPLITS = ('boundary_holdout', 'extrapolation_test')
 # W5b（RUBRIC §1.1，老王拍板）：exam 三栏——boundary / extrapolation 来自 dataset split，
@@ -136,6 +136,10 @@ def agg(rows, key):
 
 
 def main():
+    err = require_dataset()          # W5a'：缺 gold 数据集必须硬报错，不能静默算成 0/11
+    if err:
+        print('[dataset] ' + err)
+        return 2
     argv = sys.argv[1:]
     def get(k, d):
         return argv[argv.index(k) + 1] if k in argv else d

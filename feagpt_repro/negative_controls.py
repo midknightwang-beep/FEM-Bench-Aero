@@ -467,6 +467,21 @@ def main():
     print(f"  [{'ok ' if ok25 else 'BAD!'}] NC-25 官方/诊断同路径被拒                         "
           f"expect=FAIL actual=rc{rc25}")
 
+    # NC-26：缺金标准数据集必须硬报错（W5a' clean-clone 实锤）——`modeling/` 不在 git，
+    # 缺 gold 时 spec_fidelity 把全部候选判 spec_fail，成绩单显示 0/11「像模型全错」。
+    from evaluate import require_dataset
+    err_bad = require_dataset(os.path.join(HERE, 'reports', '__no_such_dataset__'))
+    err_ok = require_dataset()
+    ok26 = bool(err_bad) and (err_ok is None)
+    results.append({'id': 'NC-26', 'desc': '缺 gold 数据集 ⇒ 前置闸硬报错（防静默算成 0/11）',
+                    'expect': 'bad=raise / good=None',
+                    'actual': f"bad={'raise' if err_bad else 'pass'} / "
+                              f"good={'None' if err_ok is None else 'raise'}",
+                    'ok': ok26})
+    print(f"  [{'ok ' if ok26 else 'BAD!'}] NC-26 缺 gold 数据集硬报错                       "
+          f"expect=raise/None actual={'raise' if err_bad else 'pass'}/"
+          f"{'None' if err_ok is None else 'raise'}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],

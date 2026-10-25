@@ -80,11 +80,11 @@
 
 - 每次改判分/考卷必跑负控套件（R5/R6）；未全绿不得跑基线。
 - 套件 = **27 条**：`PC-1` + `NC-1..22`（W4d 15 / W4e NC-15..19 / W5a NC-20 载荷方向完备、
-  NC-21 MSR 分母、NC-22 exam.msr）+ **`NC-15b`**（澄清双向探针，W4e）+ **`NC-23..25`**
+  NC-21 MSR 分母、NC-22 exam.msr）+ **`NC-15b`**（澄清双向探针，W4e）+ **`NC-23..26`**
   （W5a' artifact 入库 / git 追踪 / 官方·诊断分文件）。
 - **计数口径（P1-2 修正）**：旧文写「PC-1 + NC-1..22」= 23 是**漏计 NC-15b** 的错账；
   实际为 24（W5a 时）／27（W5a' 起）。**报负控必须报总数 + 编号集合**，只报「全绿」不算。
-- 产物：`reports/negative_controls_27.json`（入库，R25）；`negative_controls.py` 读最新成绩单，
+- 产物：`reports/negative_controls_28.json`（入库，R25）；`negative_controls.py` 读最新成绩单，
   缺成绩单时相关条目显式记 `skip` 而不是静默消失（W5a 教训：NC-15 曾因澄清题迁移而无声消失）。
 
 ## 7. 任务构建期检查（R21，W5a 新增）

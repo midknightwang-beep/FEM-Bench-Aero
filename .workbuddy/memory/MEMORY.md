@@ -53,7 +53,7 @@
 - **对外 headline = C-021 v4 exam 11 条：TSR 5/11 (45.5%)、SFR 5/10、MSR 4/9**，TSR **CI95 [18.2, 72.7]**（n=11 UNDERPOWERED，不得判 PASS）。
   复现：`score_baseline.py --tasks reports/papers/tasks_v4.jsonl --report reports/baseline_scorecard_L3_v4.json`（+ `msr_l3.py` 同参数，18 min）。
   **C-025 v5 重打分 4/11 是诊断不是成绩**（旧候选不能评新考卷，R28）。
-- **红线 R1–R28**；R25 官方 artifact 必须入 `reports/`；R26 `check_claims.py` 自检（负控 27/27 含 NC-23..25）；R27 官方/诊断分文件；R28 旧候选不评新考卷。
+- **红线 R1–R28**；R25 官方 artifact 必须入 `reports/`；R26 `check_claims.py` 自检（负控 28/28 含 NC-23..26）；R27 官方/诊断分文件；R28 旧候选不评新考卷。
 - **扩卷缺口（实测）**：55 条全 L3 化后 exam 上限 **19**（差 1 条到 n≥20）；推荐 6 条 `interpolation_test` 内插留出 ⇒ 25，**三栏分报**。
 - 生成口径：SDK 无 json_schema logits 约束 ⇒ json_object + ajv（放宽 required）+ 错误反馈修复 ≤3 轮；pin `glm-5.3-flash`；key 只读 env `WORKBUDDY_PUBLISHABLE_KEY`（本机 shell 默认未设）。
 - 已知红线级坑：**「总数对上」≠「复现对了」**（`_bridge_v3/tasks` 打 exam 同为 5/11 但 dev 10/19）；**拿现态判历史产物必假红/假绿**（NC-21 用当前卷核旧成绩单分母）；**负控检查对象要动态取**（NC-15 曾静默消失）。

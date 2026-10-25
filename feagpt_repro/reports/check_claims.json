@@ -206,9 +206,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 6669,
-   "sha256": "23e3040cafa5f9d68b6cbfa522e7bd7607cdf632b30868fb7ab8f6159bbb8e57",
-   "mtime": 1792912711
+   "size": 7555,
+   "sha256": "0d80cd2d8f91eed5e6f1892aea3a72baff81f331fc31538b6725737bb12e42a4",
+   "mtime": 1792913227
   },
   {
    "claim_id": "C-027",
@@ -248,15 +248,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_27.json",
+   "artifact": "feagpt_repro/reports/negative_controls_28.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 4467,
-   "sha256": "259d5a126d1451544297ca92f6a0d5337f703714a721e1313029064ff1317e3c",
-   "mtime": 1792912816
+   "size": 4685,
+   "sha256": "345f9934d003161796bb354383d96da7f2a8f8b4a03cdca941a1e94f42d4c1e0",
+   "mtime": 1792913153
   }
  ]
 }

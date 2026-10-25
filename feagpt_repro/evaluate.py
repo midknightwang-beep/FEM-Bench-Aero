@@ -21,6 +21,25 @@ FEA = os.path.join(ROOT, 'FEM-Bench-Aero')
 RUNS = os.path.join(HERE, 'eval_runs')
 PY = sys.executable
 
+
+def require_dataset(fea=None):
+    """前置闸（W5a'）：金标准数据集本体不在 git（`modeling/` 被 .gitignore 排除，由
+    fetch_data.py 解包分发）。缺 gold 时 spec_fidelity 会把所有候选判成 spec_fail，
+    于是 clean clone 上「0/11」看起来像模型全错——**静默空转必须改成硬错误**。
+
+    返回 None 表示可用；否则返回错误说明字符串。
+    """
+    fea = fea or FEA
+    # 只硬性要求 modeling/（ccx 可发布树，evaluate 用它的 spec.json 作金标准）；
+    # _xval/（Abaqus 树）按发布策略不随数据包分发，只有双码交叉校验才需要 ⇒ 不阻断评测。
+    need = [os.path.join(fea, 'modeling')]
+    missing = [p for p in need if not os.path.isdir(p)]
+    if missing:
+        return (f'缺少金标准数据集：{missing}（git 里没有数据集本体）。'
+                f'先跑 `python fetch_data.py --src <FEM-Bench-Aero-v1.0-data.tar.gz>` 解包后再评测；'
+                f'否则所有候选都会被判 spec_fail，看起来像模型全错（W5a\' 已加此闸防静默空转）。')
+    return None
+
 MIN_J = 0.30          # 关1 判据（D10）
 FID_TOL_PCT = 1.0     # 辅助闸：max_disp 相对偏差（只证"算得像"，不再承担"答案正确"——W4a 纠偏 3.1）
 FLOAT_TOL = 1e-6      # spec_fidelity 浮点相对容差（W4a 纠偏 P0-1）

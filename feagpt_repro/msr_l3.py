@@ -22,7 +22,7 @@ import json, os, sys, hashlib, collections, argparse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from evaluate import evaluate_one, load_tasks, RUNS
+from evaluate import evaluate_one, load_tasks, RUNS, require_dataset
 
 REPORT_DIR = os.path.join(HERE, 'reports')
 REPORT = os.path.join(REPORT_DIR, 'baseline_scorecard_L3.json')
@@ -68,6 +68,10 @@ def main():
                     help='W5a\'：复用某份既有成绩单的 per_task 求解结果，只按新考卷**重算分母**'
                          '（求解与考卷无关；用于 v4 分母口径复现，不起求解器）')
     args = ap.parse_args()
+    err = require_dataset()          # W5a'：缺 gold 数据集必须硬报错（否则全链会集体假 FAIL）
+    if err:
+        print('[dataset] ' + err)
+        return 2
     cand_dir = args.candidates
     tasks_path = args.tasks
     report_path = args.report or os.path.join(args.report_dir, 'baseline_scorecard_L3.json')

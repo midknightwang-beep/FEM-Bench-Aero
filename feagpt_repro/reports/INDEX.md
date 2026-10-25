@@ -13,7 +13,7 @@
 | **诊断（不是模型成绩）** | `baseline_scorecard_L3_v5_rescore.json` | C-025：**旧候选**（v4 生成）打 **v5** 考卷 ⇒ exam TSR 4/11。旧候选不能评新考卷（R28），只用于验证「修题改了什么」 |
 | L1 冒烟（非模型基线） | `baseline_scorecard_L1_smoke.json` | C-017：spec-copy 19 条 SFR 0/19，无 schema 约束解码时的指令遵循失败 |
 | 桥接表 | `bridge_v3_v4.json` + `bridge_A/B/C_*.json` | C-024：A 7/11、B 5/11、C 0/11、D 5/11；A→D = −3 wingbox 方向 +1 d2000 |
-| 负控 | `negative_controls_27.json` | C-019：PC-1 + NC-1..22 + NC-15b + **NC-23..25** = **27/27** |
+| 负控 | `negative_controls_28.json` | C-019：PC-1 + NC-1..22 + NC-15b + **NC-23..26** = **28/28** |
 | T1 检索地板 | `trivial_baselines_L3.json` | `value_added` 的对照项（exam T1 = 0/11） |
 | MSR 明细 | `msr_l3_v4.json` / `msr_l3_v5_rescore.json` | 从对应成绩单抽出的 `msr_section`（逐任务门禁 + 失败分层；v4 = 11/21、exam 4/9） |
 | bootstrap CI | `bootstrap_ci_L3_v4.json` / `bootstrap_ci_L3_v5_rescore.json` | exam 任务重采样（B=4000, seed=20261025）：TSR/SFR/MSR 点估计 + CI95 + by_family（**n<20 不得据此判 PASS**） |
@@ -21,6 +21,18 @@
 | 自检输出 | `check_claims.json` | `check_claims.py` 的逐条结果（sha256 + mtime） |
 
 ## 2. 复现命令（一条一条贴，照抄可跑）
+
+> **★ 前置：复现是两步**（W5a' clean-clone 实测）。`git clone` 只有考卷+候选+产物，
+> **数据集本体 `FEM-Bench-Aero/modeling/` 不在 git**（发布策略：由 `fetch_data.py` 解包分发）。
+> 缺 gold 时 `spec_fidelity` 会把**全部候选判成 spec_fail**，成绩单显示 `0/11`——看起来像模型全错。
+> 现已加 `require_dataset()` 前置闸（rc=2 硬报错，NC-26 咬它），但解包这一步必须做：
+>
+> ```bash
+> python fetch_data.py --src "F:/FEA_Archive_20261024/FEM-Bench-Aero-v1.0-data.tar.gz"
+> # [OK] SHA256 校验通过；modeling 目录条数 55（manifest 期望 55）
+> ```
+>
+> 解包后 `score_baseline.py` 才能复现 C-021 的 5/11（已实测：clone + fetch_data ⇒ 与 main 工作区逐项一致）。
 
 ```bash
 cd "F:/AI FEA Modeling DataSets/feagpt_repro"
@@ -63,7 +75,7 @@ PYTHONIOENCODING=utf-8 "$PY" negative_controls.py
 | 红线 | 落点 |
 |---|---|
 | R25 官方 artifact 必须入库（非 `eval_runs/`） | 本目录；`check_claims.py` 检查 git 追踪 |
-| R26 CLAIMS 自检必须进 CI | `check_claims.py`（rc=1）+ NC-23..25 |
+| R26 CLAIMS 自检必须进 CI | `check_claims.py`（rc=1）+ NC-23..26 |
 | R27 官方 vs 诊断必须分文件 | `_v4` / `_v5_rescore` 两个文件；`check_claims` 检查同路径占用 |
 | R28 旧候选不得评新考卷 | C-025 标 diagnostic；W5b 必须重生成 |
 
@@ -75,7 +87,7 @@ PYTHONIOENCODING=utf-8 "$PY" negative_controls.py
 | C-021 全链 MSR 可复现 | `msr_l3.py --tasks papers/tasks_v4.jsonl` ⇒ **MSR 11/21 (52.4%)、exam 4/9、dev 7/12**（失败分层 model 7 + contract 3，env 0），与 C-021 的 4/9 一致；实耗 18 min（两个 barrel 案各 362/468 s） |
 | CI 落地 | `bootstrap_ci.py` ⇒ exam TSR 45.5% **CI95 [18.2, 72.7]**；SFR 50% [20.0, 80.0]；MSR 44.4% [11.1, 77.8] —— n=11 的区间宽度就是「为何不得对外承诺」的量化证明 |
 | CLAIMS 自检 | `check_claims.py`：18 条 active claim / 19 个 artifact，逐条查存在 + 追踪 + 路径一致 + sha256 |
-| 负控 | **27/27**（新增 NC-23/24/25，注入临时 CLAIMS 打 check_claims，不删真实文件） |
+| 负控 | **28/28**（NC-23/24/25 注入临时 CLAIMS 打 check_claims；NC-26 缺 gold ⇒ 硬报错） |
 
 ### ★ 两个新踩到的坑（已修，写进这里防复发）
 
