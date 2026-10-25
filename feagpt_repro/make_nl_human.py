@@ -34,15 +34,25 @@ def wb_text(p, style, omit=None):
     ns = int(p.get('n_stringers_per_skin', 0))
     if ns > 0 and omit != 'n_stringers_per_skin':
         kind = p.get('stringer_kind', 'blade')
+        # W5c（专家第八轮 §3.1 B 类 / R32）：T 剖面**必须**给缘条宽——gold 有
+        # airfoil.stringer_flange_width、旧题面只给高/厚，模型按「不得编造」省略却被判 fail
+        # （考卷不可解）。blade 剖面物理上无缘条（sections.tee: flange_width<=0 ⇒ blade），
+        # 故 blade 不写缘条宽，判分侧按死字段豁免（evaluate.spec_fidelity skip_flange）。
+        flange = (f"、缘条宽 {fnum(p['stringer_flange_width'])} mm"
+                  if kind == 'T' and p.get('stringer_flange_width') else "")
         txt += (f"每侧蒙皮 {ns} 根{kind}长桁（高 {fnum(p.get('stringer_height', 0))} mm、"
-                f"厚 {fnum(p.get('stringer_thickness', 0))} mm），")
+                f"厚 {fnum(p.get('stringer_thickness', 0))} mm{flange}），")
     if omit != 'tip_chord_ratio' and 'tip_chord_ratio' in p and p['tip_chord_ratio'] != 1.0:
         txt += f"梢根比 {p['tip_chord_ratio']:g}，"
     if p.get('sweep_deg', 0) != 0:
         txt += f"后掠 {p['sweep_deg']:g} 度，"
     if int(p.get('n_web', 0) or 0) > 0:
-        pos = p.get('web_pos', 'centre')
-        txt += f"加 {int(p['n_web'])} 道中间腹板（{pos}），"
+        # W5c（R32 实锤）：旧版从 structure.params 取 n_web/web_pos，而金黄标的中间腹板在
+        # airfoil.web_chordwise（params 是空的）⇒ 3 条 web 任务的题面**完全没提腹板**，
+        # 模型按 SYS prompt「未提中间腹板 ⇒ []」正确输出 [] 却被判 fail。现从 gold 实读位置。
+        pos = p.get('web_pos') or []
+        where = ("、".join(f"{float(x):g}" for x in pos) + " 弦向") if isinstance(pos, list) else str(pos)
+        txt += f"加 {int(p['n_web'])} 道中间腹板（位于 {where}），"
     # W5a（专家第五轮 P0-1/R21）：载荷方向属任务输入，NL 必须给坐标系与方向向量——
     # 旧版只写「法向」，同一任务模型两次分别猜 [0,1,0]/[0,0,1]（exam 3 条因此失败）
     txt += ("材料铝 2024-T3。坐标系：x 弦向、y 弯曲方向（翼型法向）、z 展向。"
@@ -69,7 +79,8 @@ def oh_text(p, style, mesh_size=None):
     hole = f"孔心位于 ({fnum(p['hole_x'])}, {fnum(p['hole_y'])}) mm，" \
         if p.get('hole_x') or p.get('hole_y') else "中心孔"
     sz = mesh_size if mesh_size is not None else 3.0
-    return (f"开孔拉伸板：{fnum(p['length'])} × {fnum(p['width'])} mm，厚 {fnum(p['thickness'])} mm，"
+    return (f"开孔拉伸板：长度 {fnum(p['length'])} mm × 宽度 {fnum(p['width'])} mm（length × width），"
+            f"厚 {fnum(p['thickness'])} mm，"
             f"{hole}直径 {fnum(p['hole_d'])} mm，{mat}。"
             f"坐标系：x 沿板长（拉伸方向）、y 板宽、z 板面法向。"
             f"两端施加 {fnum(p.get('load_n', 4000))} N 面内拉伸（端部均布），方向 [1,0,0]（沿 +x），横向自由。"
@@ -93,7 +104,12 @@ def sp_text(p, style, mesh_size=3.0):
         st = f"{ns} 根 blade 长桁等距（高 20 mm、厚 2.5 mm）。"
     else:
         st = "无长桁（素板）。"
-    return (f"加筋壁板：{fnum(p['width'])} × {fnum(p['length'])} mm，板厚 {fnum(p['thickness'])} mm，"
+    # ★ W5c / R41：旧版写 `{width} × {length}`，于是 800x600 变成「600 × 800」而 gold 是
+    # length=800 / width=600 —— 两个数都在题面出现过，但「哪个是 length」不可判，
+    # 模型按常规「长 × 宽」读法写 length=600 被误判错（R32 局限二：数值出现 ≠ 角色可判）。
+    # 改为显式标注角色，与 W5b-3a 给方向 [x,y,z] 同源。v6c 已冻结，本修复只对下一版生效。
+    return (f"加筋壁板：长度 {fnum(p['length'])} mm × 宽度 {fnum(p['width'])} mm（length × width），"
+            f"板厚 {fnum(p['thickness'])} mm，"
             f"{st}四边简支，受 {fnum(p.get('pressure_mpa', 0.0001))} MPa 均布面压，"
             f"方向 [0,0,-1]（沿 -z 压向板面；z 为板面法向，板位于 z=0 平面）。"
             f"材料铝 2024-T3，板与筋全壳单元，网格尺寸 {fnum(mesh_size)} mm（弦向/展向同值）。")
@@ -173,12 +189,11 @@ def main():
                 omit = pool[i % len(pool)]
             if fam_ == 'wingbox':
                 p = dict(norm.get('airfoil', {}))
-                p.setdefault('n_web', 0)
-                for k in ('n_web',):
-                    if k in norm.get('structure', {}).get('params', {}):
-                        p[k] = norm['structure']['params'][k]
-                if 'web_pos' in norm.get('structure', {}).get('params', {}):
-                    p['web_pos'] = norm['structure']['params']['web_pos']
+                # W5c（R32）：中间腹板位置在 airfoil.web_chordwise（structure.params 是空的），
+                # 旧版这里读 params 的 n_web/web_pos ⇒ 永远取不到 ⇒ 题面漏写腹板
+                wc = p.get('web_chordwise') or []
+                p['n_web'] = len(wc)
+                p['web_pos'] = wc
                 txt = wb_text(p, STYLE_CYCLE[i % 3], omit=omit)
                 if omit == 'n_ribs':
                     txt = txt.replace(f"{int(p['n_ribs'])} 道翼肋", "若干翼肋").replace(f"肋 {int(p['n_ribs'])} 根、", "").replace(f"肋数 {int(p['n_ribs'])}。", "")
@@ -202,12 +217,19 @@ def main():
                     old = f"{int(norm['structure']['params']['n_stringers'])} 根 blade 长桁等距（高 20 mm、厚 2.5 mm）。"
                     assert old in txt, f'panel omit 替换失配: {t["task_id"]}'
                     txt = txt.replace(old, "若干根长桁。")
+            # W5c（专家第八轮 §3.5 / R36）：内插考题的 split_v2 必须语义自洽。
+            # v6b 里 6 条内插题 split_v2 仍是 train（只多 exam_stratum）⇒ 任何只用 split_v2 的
+            # 下游工具（旧脚本/外部复现/T1 以外的检索）都会把它们当 train 用，发生泄漏。
+            is_interp = t['task_id'][3:] in interp_pick
+            sv2 = 'interpolation_test' if is_interp else t['split_v2']
             row = {
                 'task_id': f"L3_{t['task_id'][3:]}",
                 'family': fam_, 'input_level': 'L3', 'input_source': 'human',
                 'input': {'nl': txt},
                 'truth_ref': t['truth_ref'], 'gates': t['gates'],
-                'split_v2': t['split_v2'], 'split_reason': t['split_reason'] + ' | L3 人工 NL',
+                'split_v2': sv2,
+                'split_reason': t['split_reason'] + ' | L3 人工 NL'
+                                + (' | 任务层内插留出（W5c/R36）' if is_interp else ''),
                 'geometry_class': t['geometry_class'],
                 # W5b（RUBRIC §1.1）：难度分层——boundary/extrapolation 来自 dataset split，
                 # interpolation 是任务层内插留出（split_v2 仍为 train，不破 D12）

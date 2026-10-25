@@ -1,0 +1,39 @@
+{
+ "scorecard": "baseline_scorecard_L3_v6c.json",
+ "n_fail": 2,
+ "rows": [
+  {
+   "task_id": "L3_naca4412_wingbox_web1_offcentre",
+   "family": "wingbox",
+   "exam_stratum": "extrapolation",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "detail": {
+    "n_fields": 26,
+    "n_fail": 2,
+    "failed_fields": [
+     "extra.end_torque",
+     "extra.torque_axis_dof"
+    ],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 4
+   }
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
+   "family": "open_hole_panel",
+   "exam_stratum": "extrapolation",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "detail": {
+    "n_fields": 18,
+    "n_fail": 1,
+    "failed_fields": [
+     "params.layup"
+    ],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  }
+ ]
+}

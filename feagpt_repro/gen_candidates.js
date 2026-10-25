@@ -8,10 +8,16 @@ const { createWorkBuddyCloud } = require('@tencent-ai/workbuddy-cloud-sdk');
 // publicConfig（来自 workbuddy_cloud_service activate；publishableKey 无权限语义，服务器强制 Origin 校验）
 const publicConfig = {
   endpoint: 'https://fem-bench-baseline.app.workbuddy.host',
-  // W4c P0-4：publishable key 入环境变量（.env 不入 git）；R13：模型 id 必须记录
-  publishableKey: process.env.WORKBUDDY_PUBLISHABLE_KEY ||
-                  'wbpk_Tl8jf0GeqRmnK59Hr64PuS_YbTt47wyoaLYqpM6XxSjSowLCwffsO8Z',
+  // W5c（专家第八轮 §3.9 / D5）：**删除硬编码 fallback**。
+  // 此前这里明文躺着线上同值的 key（从未轮换）——「tracked + live」是凭据卫生问题，
+  // publishable 也要按凭据管理。现只读环境变量（无 fallback），取值方法见 W5B_PLAN §6.0。
+  publishableKey: process.env.WORKBUDDY_PUBLISHABLE_KEY,
 };
+if (!publicConfig.publishableKey) {
+  console.error('[gen_candidates] 缺 WORKBUDDY_PUBLISHABLE_KEY（只读环境变量、无 fallback）；'
+    + '取值方法见 FEM-Bench-Aero/W5B_PLAN.md §6.0');
+  process.exit(2);
+}
 
 const SYS = `你是飞机结构有限元建模专家。根据用户给出的结构描述，输出一个 FEM-Bench-Aero 规范的 spec JSON。
 必须严格遵循以下结构（mm-t-s 单位制）：

@@ -1,0 +1,61 @@
+[msr_l3] candidates=candidates_l3_v6c  tasks=reports/papers/tasks_v6c.jsonl
+[msr_l3] report=reports/baseline_scorecard_L3_v6c.json
+[msr_l3] REUSE 模式：分母重算自 reports/baseline_scorecard_L3_v6c.json（55 条既有结果，不起求解器）
+  [--] L3_fuselage_barrel_d1600_l1600_str8_frm3: clarify task -> 不进分母
+  [FAIL] L3_fuselage_barrel_d1800_l2000_str8_frm3: (reuse) msr_pass=False
+  [ok] L3_fuselage_barrel_d2000_l1600_str8_frm3: (reuse) msr_pass=True
+  [FAIL] L3_fuselage_barrel_d2000_l2000_str12_frm4: (reuse) msr_pass=False
+  [FAIL] L3_fuselage_barrel_d2000_l2000_str8_frm3: (reuse) msr_pass=False
+  [FAIL] L3_fuselage_barrel_d2000_l2000_t2_str8_frm3: (reuse) msr_pass=False
+  [--] L3_naca4412_wingbox: clarify task -> 不进分母
+  [ok] L3_naca4412_wingbox_n_ribs3_chord1000: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_n_ribs3_chord800: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_n_ribs5_chord800: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_n_ribs7_chord1000: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_n_ribs7_chord800: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_n_ribs9_chord1000: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_recombination_algorithm3: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_size_skin1p5: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_size_skin2: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_size_skin4: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_size_span1600: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_size_span2400: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_size_span2400_skin2: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_size_span3000: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_size_span3000_skin1p5: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_str3: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_str3_T: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_str5: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_sweep10: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_sweep20: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_sweep20_taper060: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_sweep30: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_sweep30_taper080: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_sweep35: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_sweep40: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_sweep40_taper040: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_taper040: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_taper060: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_taper080: (reuse) msr_pass=True
+  [ok] L3_naca4412_wingbox_taper090: (reuse) msr_pass=True
+  [FAIL] L3_naca4412_wingbox_web1: (reuse) msr_pass=False
+  [FAIL] L3_naca4412_wingbox_web1_offcentre: (reuse) msr_pass=False
+  [FAIL] L3_naca4412_wingbox_web2: (reuse) msr_pass=False
+  [--] L3_open_hole_panel_400x200_d20: clarify task -> 不进分母
+  [FAIL] L3_open_hole_panel_400x200_d20_cfrp090s: (reuse) msr_pass=False
+  [FAIL] L3_open_hole_panel_400x200_d20_cfrp45s: (reuse) msr_pass=False
+  [FAIL] L3_open_hole_panel_400x200_d20_cfrp45s_d40: (reuse) msr_pass=False
+  [FAIL] L3_open_hole_panel_400x200_d20_cfrpqi: (reuse) msr_pass=False
+  [ok] L3_open_hole_panel_400x200_d20_offcentre: (reuse) msr_pass=True
+  [ok] L3_open_hole_panel_400x200_d40: (reuse) msr_pass=True
+  [ok] L3_open_hole_panel_400x200_d40_offcentre: (reuse) msr_pass=True
+  [ok] L3_open_hole_panel_400x200_d50: (reuse) msr_pass=True
+  [ok] L3_open_hole_panel_600x300_d30: (reuse) msr_pass=True
+  [ok] L3_open_hole_panel_600x300_d60: (reuse) msr_pass=True
+  [ok] L3_stiffened_panel_600x600: (reuse) msr_pass=True
+  [--] L3_stiffened_panel_600x600_str3: clarify task -> 不进分母
+  [FAIL] L3_stiffened_panel_800x600: (reuse) msr_pass=False
+  [FAIL] L3_stiffened_panel_800x600_str3: (reuse) msr_pass=False
+
+MSR = 38/51 (74.5%)  exam=19/22 dev=19/29  失败分层={'solver': 4, 'model': 8, 'contract': 1}
+merged -> reports/baseline_scorecard_L3_v6c.json

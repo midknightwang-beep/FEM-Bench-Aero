@@ -110,12 +110,22 @@ def spec_fidelity(cand_spec, gold_spec, family, input_mesh_keys=None, input_load
     # W4d：死字段豁免判定（仅 engineering_layer 且无长桁时生效）
     cand_ns = cand_holder.get('n_stringers_per_skin', 0)
     skip_dead = engineering_layer and holder_key == 'airfoil' and not cand_ns
+    # W5c（专家第八轮 §3.1 B 类，R32 配套）：**gold 是 blade 剖面 ⇒ 缘条宽是死字段**。
+    # 依据不是「模型没写就放过」，而是物理与代码：feagpt/sections.py 的 tee() 在
+    # flange_width<=0 时直接返回 blade()，geometry.py 对 blade 只挤出单条竖板（flange 不参与建模）；
+    # check_forms T5 反向证明 blade ≡ T(flange=0)。故 gold 的 30.0 是模板默认值，题面永远推不出。
+    # ★ 判定用 **gold** 的 kind（不用候选的）——否则模型写 kind="blade" 就能顺手豁免缘条宽。
+    gold_kind = str(gold_holder.get('stringer_kind', 'blade'))
+    skip_flange = engineering_layer and holder_key == 'airfoil' and gold_kind != 'T'
     # W4d：bc 块只对 wingbox 判——pipeline 不消费 spec.bc（边界由各族 builder 代码决定，
     # 非 wingbox 族 gold bc 是死模板值 {root_surface,clamp}，NL 推不出且语义误导）
     bc_skip = engineering_layer and family != 'wingbox'
     for k in keys:
         if skip_dead and k in DEAD_STRINGER_KEYS:
             dead_skipped.append(f'{holder_key}.{k}')
+            continue
+        if skip_flange and k == 'stringer_flange_width' and not skip_dead:
+            dead_skipped.append(f'{holder_key}.{k}（blade 剖面无缘条）')
             continue
         cv, gv = cand_holder.get(k, '<missing>'), gold_holder.get(k, '<missing>')
         if cv == '<missing>' and gv == '<missing>':

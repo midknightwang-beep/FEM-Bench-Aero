@@ -48,26 +48,38 @@
 
 ## 当前状态（2026-10-25）
 - **代理模型线（M7/M14/D01–D37）完全冻结**（D37 拍板）；对外 KPI = TSR/FPR/修复/拒答/澄清。计划看 `FEM-Bench-Aero/ROADMAP.md`。
-- **W1–W5b-4 全部收口**（key 查实 → 55 条候选 → 打分/CI = **C-028**）；下一步 **W5b-5 第二模型**（换 `--model` 即可），计划见 `FEM-Bench-Aero/W5B_PLAN.md` §3。
-- **考卷 v6b 已冻结**（C-027，tag `v1.0-l3-v6b`）：L3 55 条、exam **25 = boundary 6 + extrap 13 + interp 6**，
-  内插**全给翼盒**（v6 的 2/2/1/1 把三族 train 抽空、T1 地板只剩 1/4 族可算 ⇒ 作废留档 `papers/tasks_v6.jsonl`）。
-  口径 RUBRIC **v4.2** §1.1。**★ 内插考题 `split_v2` 仍是 train ⇒ 任何「train 池」必须先剔 `exam_stratum`**，
-  否则 T1 检索到自己（地板 100%）把 value_added 算成负数。
-- **官方 artifact 唯一出处 = `feagpt_repro/reports/`**（入库），`eval_runs/` 只作工作目录；入口 `reports/INDEX.md`（官方 vs 诊断）。
-- **对外 headline = C-028（v6b，exam 25 条）：TSR 17/25 (68.0%)、SFR 14/21、exam MSR 10/21、全链 MSR 25/44**，TSR **CI95 [48.0, 84.0]**，
-  n=25 ⇒ `underpowered=False`（R12 首次可判）。三栏 **boundary 5/6 · extrapolation 7/13 · interpolation 5/6**。
-  **★ 与 C-021 的 5/11 (45.5%) 绝不可相减**（R30，compare rc=3）：差异含两变量 —— ①考卷 30→55、exam 11→25；
-  ②**题面 26/55 新增「坐标系」、25/55 新增显式方向 `[x,y,z]`（W5b-3a 消歧）⇒ 难度下降**。45.5% 降为历史口径。
-  **★ 68.0% 是「含已知缺陷的下界」**：`open_hole_panel` exam **4/4 全败**，同因生成器 SYS prompt **从未列出** `params.hole_d/hole_x/hole_y` 键名
-  （M7 教训复刻：模型不行第一嫌疑 = 特征没给全 ⇒ 修 prompt 可回收最多 4 条/+16pp）；2 条 wingbox 败于 `airfoil.stringer_flange_width`
-  —— **gold 有值但题面只给高/厚**，模型按「不得编造」正确处理却被判 fail ⇒ 新红线 **R32**（gold 判分字段必须可从 NL 推出）。
-  **solver 3 条 = 柱壳 143,426/158,548 节点超本机内存**（已知阈值 158,548），算力边界非模型失败；剔除后参考 MSR 25/41 (61.0%)。
-  复现：`score_baseline.py --tasks reports/papers/tasks_v4.jsonl --report reports/baseline_scorecard_L3_v4.json`（+ `msr_l3.py` 同参数，18 min）。
+- **W1–W5c 全部收口**；**对外 headline = C-029（v6c，exam 25 条）**：考卷 v6c（C-030，sha `9c1faa3a…`）× `candidates_l3_v6c`。
+  exam **TSR 23/25 (92.0%)**、TSR **CI95 [80.0, 100.0]**、SFR 20/22、三栏 **boundary 6/6 · extrapolation 11/13 · interpolation 6/6**；
+  dev 23/30（**下界**）。`n_unresolved` 7→**0**、`underpowered=False`、FPR 编造 0/4。
+  **MSR（R35 四行，原始/剔除 solver 并列）**：exam **19/22 (86.4%)** → 剔 solver **19/21 (90.5%)**；dev **19/29** → 剔 **19/26**；full **38/51 (74.5%)** → 剔 **38/47 (80.9%)**；CI95 MSR **[72.7, 100.0]**。exam 分母 22 = 25 − 3 澄清题（R23）。
+- **★ 92.0% 不是「模型变强 24 pp」**——bridge 四格拆开（`reports/diagnostics/bridge_w5c_table.md`，**唯一允许相减的场景**）：
+  A v6b×旧候选×旧口径 **17/25** → B 新口径 **18/25**（判分修正 blade 死字段 +1，唯一翻转 `wingbox_str5`）
+  → C v6c×旧候选 **18/25**（**考卷修复对已定型候选 +0：改题面必须配重生成才有收益——本表最有价值的一格**）
+  → D v6c×新候选 **23/25**（重生成 +5 = R34 补 prompt 键名 4 条 + R32 补题面依据 1 条）。
+- **剩余 2 条 exam 失败全是 C 类（模型侧）**：`cfrp45s_d40` 的 `params.layup` 写成标量 `2`；`web1_offcentre` 的 `extra.end_torque` 自创键。
+  **卷子已无可解性缺陷 ⇒ 92.0% 是「缺陷已清」的成绩，不是又一个下界。**
+- **★ W5c 自查出新缺陷（第八轮报告没发现）**：加筋板模板 `f"{width} × {length}"` ⇒ 题面「600 × 800」而 gold `length=800/width=600`；
+  两数都在题面出现过（`num_derivable` 判 derivable）但**字段角色不可判**，模型按惯例读反被判错。
+  ⇒ **R41 数值角色** + RUBRIC **§7.3** + `r32_audit._role_pos()` 闸。影响 **2 条 dev、0 条 exam**；模板已修，v6c 候选不重生成。
+- **R33 改两端口径**：exam 必须 0 违规；非 exam 允许违规但**白名单逐字相等、只许缩小**（新违规自动变红）。
+  审计：v6b all=**8** → v6c all=**4**（全 dev）→ v6c exam=**0**（rc=0）。`r32_audit` JSON 带 `violations_by_task`。
+- **★ solver 桶是「候选相关」的，不是题目固有属性**：同题 `barrel_d2000_l2000_str12_frm4` 在 v6b 旧候选 4.2s 就被 pipeline 拒
+  （class=model），v6c 新候选算到 169,606 节点才撞 158,548 阈值（class=solver）⇒ **「剔除 solver 后的分母/得分」同样不可跨版本直减**。
+- **★ 观测量也可能一直是空的**：成绩单顶层 `msr` 键在 W5c 之前**恒为 null**（score_baseline 不写、msr_l3 只写 msr_section）；
+  同类还有「先 bootstrap 后 msr」会静默产出 null 的 MSR CI ⇒ **正确顺序 score → msr → bootstrap**，且**注释与实现不符要当 bug 记**。
+- 考卷 v6b（C-027，tag `v1.0-l3-v6b`）保留为历史卷；v6c = v6b + **10 行**（4 条 NL 补 R32 缺项 + 6 条 `split_v2→interpolation_test`），
+  L1/L2 110 条逐字节不变，`_verify_tasks_v6c.py` **PASS**（含「题面只做 insert 不改写」的 difflib 断言）。
+- **官方 artifact 唯一出处 = `feagpt_repro/reports/`**（入库），诊断放 `reports/diagnostics/`（**R37：官方文档不引 `eval_runs/`**）；
+  入口 `reports/INDEX.md`（官方 vs 诊断）。
+- **C-028（v6b，17/25 = 68.0%）已降级为 `diagnostic lower bound`**（第八轮 D1），**与 C-029 不可相减**：
+  同 25 条 exam id 但**题面已改**（paper sha 不同，`compare_scorecards.py` 增了这条硬理由）；与 C-021 的 45.5% 另加 exam 11→25、族构成变化。
   **C-025 v5 重打分 4/11 是诊断不是成绩**（旧候选不能评新考卷，R28）。
-- **红线 R1–R32**；R25 官方 artifact 必须入 `reports/`；R26 `check_claims.py` 自检（**负控 31/31** 含 NC-23..29）；R27 官方/诊断分文件；R28 旧候选不评新考卷；
-  **R29 语义计数必须自检**（`check_claims.py --semantic` 默认开，17 项，期望值全从 artifact 实读）；
-  **R30 跨口径不得直接比**（C-021=11 / v6 boundary+extrap=19 / v6 headline=25 三个数，`compare_scorecards.py` rc=3 拒绝）；
-  **R31 生成前 key 预检 + 1 条冒烟**，候选未覆盖全卷的成绩单必须标 `partial_candidates`。
+- **红线 R1–R41**；R25 artifact 入 `reports/`；R26 `check_claims.py`（**负控 39/39**，含 NC-23..37；语义 29 项；22 claims / 34 artifacts）；R27 官方/诊断分文件；R28 旧候选不评新考卷；
+  **R29 语义计数必须自检**（`check_claims.py --semantic` 默认开，**29 项**，期望值全从 artifact 实读；
+  **缺 MSR ⇒ S-19/S-20 必须响亮失败，不得静默消失**，NC-36 三端守）；
+  **R30 跨口径不得直接比**；**R31 生成前 key 预检 + 1 条冒烟**；**R33–R41** 见 CLAIMS 正文。
+- **判分无放水**：`spec_fidelity` 所有循环按 **gold 键集**遍历 ⇒ 单边缺=FAIL、自创键=FAIL，候选**不能靠漏写缩小分母**
+  （`n_fields` 差异来自自创键**加**进去）。这条要能随时复述。
 - **扩卷缺口（实测）**：55 条全 L3 化后 exam 上限 **19**（差 1 条到 n≥20）；推荐 6 条 `interpolation_test` 内插留出 ⇒ 25，**三栏分报**。
 - 生成口径：SDK 无 json_schema logits 约束 ⇒ json_object + ajv（放宽 required）+ 错误反馈修复 ≤3 轮；pin `glm-5.3-flash`；**`gen_candidates_v2.js --limit` 默认 30**，v6 55 条必须显式 `--limit 55`。
 - **key 出处（2026-10-25 查实）**：`WORKBUDDY_PUBLISHABLE_KEY` 不是模型厂商 key，是 **WorkBuddy 云服务应用「FEM基线评测」`wbapp_Tl8jf0GeqRmnK59Hr64PuS` 的 publicConfig.publishableKey**（`wbpk_<appid中段>_<secret>`，**无权限语义**，服务端靠 Origin 校验）⇒ 取法：`workbuddy_cloud_service` action=activate + reuse 该 appId 回读（inspect 不返回 key）；或看仓库遗留 `gen_candidates.js:13` 的 fallback（**与线上同值、未轮换**）。**无 dotenv ⇒ `.env` 文件根本不读**，只认真实环境变量；已 `setx` 到用户级（新开窗口生效）。

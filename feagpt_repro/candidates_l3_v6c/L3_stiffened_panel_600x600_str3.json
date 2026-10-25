@@ -1,0 +1,10 @@
+{
+ "task_id": "L3_stiffened_panel_600x600_str3",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "clarify": "[\"长桁的具体根数是多少？（描述为'若干根'，需明确 n_stringers 数值）\",\"长桁是否有具体剖面尺寸（高度/厚度/形式 blade 或 T）？如未给出将按默认处理\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 103
+}

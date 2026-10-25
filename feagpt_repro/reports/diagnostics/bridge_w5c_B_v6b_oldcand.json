@@ -1,0 +1,1108 @@
+{
+ "note": "W5c L3 主基线（考卷 v6b × 候选 candidates_l3_v6，文案由考卷自动生成）：headline = exam 25 条（exam_stratum 三栏 boundary 6 / extrapolation 13 / interpolation 6）；dev（非 exam）30 条只作开发诊断。TSR=行为正确性（完备题答对+澄清题字段级问对 R17）；SFR=字段保真（R20：编造一律不计 PASS）；FPR 双向；MSR 全链见 msr 节（R14/R16/R35：solver 失败单列，不进 exam MSR）。",
+ "model": "glm-5.3-flash",
+ "decode": "json_object + schema_task.json 校验 + 错误反馈修复循环（<=3 轮；SDK 无 logits 级 json_schema）",
+ "exam_definition": "exam = exam_stratum 非空 = boundary 6 + extrapolation 13 + interpolation 6 = 25（RUBRIC §1.1；dev = 非 exam 30 条 = train 13 + val 17）（R15/R36）",
+ "exam_task_ids_sha256": "53210d8db63991cfdc6a7f62553b55bcbcc53007c17faab6dfd7687551e85ca9",
+ "exam_by_family": {
+  "fuselage_barrel": 2,
+  "wingbox": 18,
+  "open_hole_panel": 4,
+  "stiffened_panel": 1
+ },
+ "turns_histogram": {
+  "1": 4,
+  "2": 1,
+  "3": 50
+ },
+ "first_pass_valid": 4,
+ "n_unresolved": 7,
+ "provenance": {
+  "label": "",
+  "tasks_path": "reports/papers/tasks_v6b.jsonl",
+  "tasks_sha256": "4c089c62413b29751889a0b927ffd4d3f1590722318b56157fd067ce11c6ffe8",
+  "candidates_dir": "candidates_l3_v6",
+  "n_candidates": 55,
+  "generated_by": "score_baseline.py"
+ },
+ "n_tasks": 55,
+ "n_tasks_in_paper": 55,
+ "candidates_missing": [],
+ "n_tasks_exam_expected": 25,
+ "partial": false,
+ "partial_candidates": false,
+ "underpowered": false,
+ "tsr": {
+  "pass": 37,
+  "total": 55,
+  "pct": 67.3
+ },
+ "exam": {
+  "n": 25,
+  "tsr": {
+   "pass": 18,
+   "total": 25,
+   "pct": 72.0
+  },
+  "sfr": {
+   "pass": 15,
+   "of_spec_candidates": 21,
+   "pct": 71.4
+  },
+  "categories": {
+   "clarify_ok": 3,
+   "spec_pass": 15,
+   "no_output": 1,
+   "spec_fail": 6
+  }
+ },
+ "dev": {
+  "n": 30,
+  "tsr": {
+   "pass": 19,
+   "total": 30,
+   "pct": 63.3
+  },
+  "sfr": {
+   "pass": 18,
+   "of_spec_candidates": 23,
+   "pct": 78.3
+  },
+  "categories": {
+   "spec_pass": 18,
+   "no_output": 6,
+   "spec_fail": 5,
+   "clarify_ok": 1
+  },
+  "note": "开发集，不进对外（R15）"
+ },
+ "sfr_all": {
+  "pass": 33,
+  "of_spec_candidates": 44,
+  "pct": 75.0
+ },
+ "fpr": {
+  "fabricated_on_clarify_tasks": 0,
+  "n_clarify_tasks": 4,
+  "fabrication_rate_pct": 0.0,
+  "overclarify": 0,
+  "clarify_wrong_field": 0
+ },
+ "by_split": {
+  "train": {
+   "n": 13,
+   "tsr": {
+    "pass": 10,
+    "total": 13,
+    "pct": 76.9
+   },
+   "sfr": {
+    "pass": 9,
+    "of_spec_candidates": 11,
+    "pct": 81.8
+   },
+   "categories": {
+    "spec_pass": 9,
+    "no_output": 1,
+    "spec_fail": 2,
+    "clarify_ok": 1
+   }
+  },
+  "val": {
+   "n": 17,
+   "tsr": {
+    "pass": 9,
+    "total": 17,
+    "pct": 52.9
+   },
+   "sfr": {
+    "pass": 9,
+    "of_spec_candidates": 12,
+    "pct": 75.0
+   },
+   "categories": {
+    "spec_pass": 9,
+    "no_output": 5,
+    "spec_fail": 3
+   }
+  }
+ },
+ "by_split_note": "by_split 仅含非 exam 行（R36）；exam 25 条另见 exam_by_stratum。纯 train = 13 条。",
+ "exam_by_stratum": {
+  "boundary": {
+   "n": 6,
+   "tsr": {
+    "pass": 6,
+    "total": 6,
+    "pct": 100.0
+   },
+   "sfr": {
+    "pass": 6,
+    "of_spec_candidates": 6,
+    "pct": 100.0
+   },
+   "categories": {
+    "spec_pass": 6
+   }
+  },
+  "extrapolation": {
+   "n": 13,
+   "tsr": {
+    "pass": 7,
+    "total": 13,
+    "pct": 53.8
+   },
+   "sfr": {
+    "pass": 5,
+    "of_spec_candidates": 11,
+    "pct": 45.5
+   },
+   "categories": {
+    "clarify_ok": 2,
+    "spec_pass": 5,
+    "spec_fail": 6
+   }
+  },
+  "interpolation": {
+   "n": 6,
+   "tsr": {
+    "pass": 5,
+    "total": 6,
+    "pct": 83.3
+   },
+   "sfr": {
+    "pass": 4,
+    "of_spec_candidates": 4,
+    "pct": 100.0
+   },
+   "categories": {
+    "clarify_ok": 1,
+    "spec_pass": 4,
+    "no_output": 1
+   }
+  }
+ },
+ "per_task": [
+  {
+   "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+   "split_v2": "extrapolation_test",
+   "family": "fuselage_barrel",
+   "category": "clarify_ok",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "ec": true,
+   "turns_used": 1,
+   "text": "[\"普通框（blade 剖面）的数量是多少？请给出具体框数及框截面尺寸（高/厚），以便建模\"]",
+   "expected": [
+    "n_frames"
+   ],
+   "alias_hits": {
+    "n_frames": [
+     "框数",
+     "普通框"
+    ]
+   }
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d1800_l2000_str8_frm3",
+   "split_v2": "val",
+   "family": "fuselage_barrel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 17,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l1600_str8_frm3",
+   "split_v2": "val",
+   "family": "fuselage_barrel",
+   "category": "no_output",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "note": "3 轮修复未收敛（UNRESOLVED）"
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+   "split_v2": "extrapolation_test",
+   "family": "fuselage_barrel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 17,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
+   "split_v2": "train",
+   "family": "fuselage_barrel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 17,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+   "split_v2": "val",
+   "family": "fuselage_barrel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 17,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_naca4412_wingbox",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "clarify_ok",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
+   "ec": true,
+   "turns_used": 1,
+   "text": "[\"翼肋数量或肋间距是多少？请给出具体数值（如 5 根等距或间距 500 mm）\"]",
+   "expected": [
+    "n_ribs"
+   ],
+   "alias_hits": {
+    "n_ribs": [
+     "翼肋",
+     "肋数"
+    ]
+   }
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs3_chord1000",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "boundary",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs3_chord800",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "boundary",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs5_chord800",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs7_chord1000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs7_chord800",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs9_chord1000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_recombination_algorithm3",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin1p5",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin2",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin4",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "boundary",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span1600",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "boundary",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span2400",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span2400_skin2",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span3000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span3000_skin1p5",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_str3",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "no_output",
+   "tsr_pass": false,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "note": "3 轮修复未收敛（UNRESOLVED）"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_str3_T",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 28,
+   "n_fail": 1,
+   "failed_fields": [
+    "airfoil.stringer_flange_width"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_str5",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "boundary",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 27,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 1
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep10",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep20",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep20_taper060",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "no_output",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "note": "3 轮修复未收敛（UNRESOLVED）"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep30",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep30_taper080",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep35",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep40",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep40_taper040",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_taper040",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_taper060",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_taper080",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_taper090",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "boundary",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_web1",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 26,
+   "n_fail": 3,
+   "failed_fields": [
+    "airfoil.web_chordwise",
+    "extra.end_torque",
+    "extra.torque_axis_dof"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_web1_offcentre",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 26,
+   "n_fail": 3,
+   "failed_fields": [
+    "airfoil.web_chordwise",
+    "extra.end_torque",
+    "extra.torque_axis_dof"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_web2",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 26,
+   "n_fail": 3,
+   "failed_fields": [
+    "airfoil.web_chordwise",
+    "extra.end_torque",
+    "extra.torque_axis_dof"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20",
+   "split_v2": "train",
+   "family": "open_hole_panel",
+   "category": "clarify_ok",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": true,
+   "turns_used": 1,
+   "text": "[\"开孔直径是多少？\",\"孔位于板中心吗（如居中，孔心坐标为 (0,0)）？\",\"端部 4000 N 拉伸是按总力施加还是换算为端部面压（若面压请给出等效 MPa 值）？\"]",
+   "expected": [
+    "hole_d"
+   ],
+   "alias_hits": {
+    "hole_d": [
+     "开孔直径",
+     "孔直径"
+    ]
+   }
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp090s",
+   "split_v2": "train",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 18,
+   "n_fail": 3,
+   "failed_fields": [
+    "params.hole_d",
+    "params.layup",
+    "load.kind"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "category": "no_output",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "note": "3 轮修复未收敛（UNRESOLVED）"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 19,
+   "n_fail": 3,
+   "failed_fields": [
+    "params.hole_d",
+    "params.layup",
+    "material.ply_material (not in gold)"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrpqi",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "category": "no_output",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "note": "3 轮修复未收敛（UNRESOLVED）"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_offcentre",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 18,
+   "n_fail": 4,
+   "failed_fields": [
+    "params.hole_d",
+    "params.hole_x",
+    "params.hole_y",
+    "load.kind"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d40",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 19,
+   "n_fail": 2,
+   "failed_fields": [
+    "params.hole_d",
+    "extra.end_tension (not in gold)"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d40_offcentre",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 19,
+   "n_fail": 4,
+   "failed_fields": [
+    "params.hole_d",
+    "params.hole_x",
+    "params.hole_y",
+    "extra.end_tension (not in gold)"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d50",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "category": "no_output",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "note": "3 轮修复未收敛（UNRESOLVED）"
+  },
+  {
+   "task_id": "L3_open_hole_panel_600x300_d30",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "category": "no_output",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "note": "3 轮修复未收敛（UNRESOLVED）"
+  },
+  {
+   "task_id": "L3_open_hole_panel_600x300_d60",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 19,
+   "n_fail": 2,
+   "failed_fields": [
+    "params.hole_d",
+    "extra.end_tension (not in gold)"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_stiffened_panel_600x600",
+   "split_v2": "train",
+   "family": "stiffened_panel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 14,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_stiffened_panel_600x600_str3",
+   "split_v2": "extrapolation_test",
+   "family": "stiffened_panel",
+   "category": "clarify_ok",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "ec": true,
+   "turns_used": 1,
+   "text": "[\"长桁数量：'若干根长桁'具体为几根？请给出 n_stringers 的数值\",\"长桁是否需要具体尺寸（stringer_height/stringer_thickness/stringer_kind/stringer_flange_width）？未给出则按族默认取值\"]",
+   "expected": [
+    "n_stringers"
+   ],
+   "alias_hits": {
+    "n_stringers": [
+     "n_stringers",
+     "长桁数量"
+    ]
+   }
+  },
+  {
+   "task_id": "L3_stiffened_panel_800x600",
+   "split_v2": "val",
+   "family": "stiffened_panel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 14,
+   "n_fail": 0,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_stiffened_panel_800x600_str3",
+   "split_v2": "val",
+   "family": "stiffened_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 14,
+   "n_fail": 2,
+   "failed_fields": [
+    "params.length",
+    "params.width"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  }
+ ],
+ "value_added": {
+  "basis": "exam 三栏 25 条 TSR（T1 同任务集 exam_pct；T1 地板已 leave-one-out，R40）",
+  "TSR_T1_exam_pct": 0.0,
+  "TSR_LLM_exam_pct": 72.0,
+  "delta_pp": 72.0,
+  "criterion": ">= 10 pp 才算 LLM 真有增量（专家 6.3.1）；n_exam<20 ⇒ underpowered 不得判 PASS（R12）",
+  "verdict": "PASS"
+ }
+}

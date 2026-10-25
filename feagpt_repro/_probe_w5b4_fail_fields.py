@@ -4,10 +4,10 @@
 成绩单 per_task 只存了 note/ec，没存 judge_l3_candidate 的 detail.failed_fields，
 导致「哪条挂了、挂在哪个字段」要重跑才能看到。本探针只为诊断，不产出官方 artifact。
 
-用法：
+用法（输出必须带里程碑标签 + 显式 --out，R37：不落 eval_runs/，官方文档不引用）：
   python _probe_w5b4_fail_fields.py --scorecard reports/baseline_scorecard_L3_v6b.json \
       --tasks reports/papers/tasks_v6b.jsonl --candidates candidates_l3_v6 \
-      --out eval_runs/probe_w5b4_fail_fields_v6b.json
+      --out reports/diagnostics/probe_w5b4_fail_fields_v6b.json
 """
 import argparse
 import json

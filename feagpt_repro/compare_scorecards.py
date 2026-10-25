@@ -47,6 +47,21 @@ def comparability(a, b):
         for k in set(sa['strata']) & set(sb['strata']):
             if sa['strata'][k]['n'] != sb['strata'][k]['n']:
                 reasons.append(f"分层 {k} 条数不同（{sa['strata'][k]['n']} vs {sb['strata'][k]['n']}）")
+    # W5c（专家第八轮 §3.10 / R39）：跨卷比较按 **task-id 集**，不按条数。
+    # 条数相同也可能是换了一批题（v6b 与 v6 都是 25 条，却换了 8 条 exam 标签）
+    ha, hb = a.get('exam_task_ids_sha256'), b.get('exam_task_ids_sha256')
+    if ha and hb and ha != hb:
+        reasons.append(f'exam 任务 id 集不同（{ha[:12]}… vs {hb[:12]}…）——同条数 ≠ 同一批题')
+    fa, fb = a.get('exam_by_family'), b.get('exam_by_family')
+    if fa and fb and fa != fb:
+        reasons.append(f'exam 族构成不同（{fa} vs {fb}）')
+    # W5c 补（R39 第三端）：**考卷内容**不同 ⇒ 题目还是那批 id，但题面变了。
+    # v6b vs v6c 就是这种情形（同一批 25 条 id，4 条题面被 R32 修补）——只靠
+    # exam_definition 文本差异来拒太脆（文案微调也会命中），故直接用 paper sha 判。
+    pa = (a.get('provenance') or {}).get('tasks_sha256')
+    pb = (b.get('provenance') or {}).get('tasks_sha256')
+    if pa and pb and pa != pb:
+        reasons.append(f'考卷内容不同（paper sha {pa[:12]}… vs {pb[:12]}…）——同 id 集但题面已改，属不同条件')
     return (not reasons), reasons
 
 

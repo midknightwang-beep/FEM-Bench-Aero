@@ -67,6 +67,9 @@ def stratum_of(task):
     if task.get('split_v2') == 'boundary_holdout':        return 'boundary'
     if task.get('split_v2') == 'extrapolation_test':
         return 'extrapolation'
+    # W5c（R36）：v6c 起内插留出在任务层是独立 split（旧卷只有 exam_stratum）
+    if task.get('split_v2') == 'interpolation_test':
+        return 'interpolation'
     return None
 
 # R25：官方 artifact 一律写 reports/（被 git 追踪），eval_runs/ 只作工作目录
@@ -209,14 +212,37 @@ def main():
     clar_wrong = [r for r in rows if r['category'] == 'clarify_wrong']
     n_ec = sum(1 for r in rows if r['ec'])
 
+    stratum_counts = collections.Counter(r['exam_stratum'] for r in exam_rows)
+    fam_counts = collections.Counter(r['family'] for r in exam_rows)
+    dev_split = collections.Counter(r['split_v2'] for r in dev_rows)
+    turns_hist = collections.Counter(r['turns_used'] for r in rows if r.get('turns_used'))
+    n_unresolved = sum(1 for r in rows if r['category'] == 'no_output')
+    paper_tag = os.path.basename(tasks_path).replace('tasks_', '').replace('.jsonl', '')
+    exam_ids = sorted(r['task_id'] for r in exam_rows)
+
     scorecard = {
-        'note': 'W4d L3 主基线（W4e 修正，专家第四轮 P0-1/R15）：headline=exam（boundary_holdout+'
-                'extrapolation_test）；dev（train+val）只作开发诊断。TSR=行为正确性（完备题答对+'
-                '澄清题字段级问对 R17）；SFR=字段保真（R20：编造一律不计 PASS）；FPR 双向；'
-                'MSR 全链见 msr 节（R14/R16）。',
+        # W5c（专家第八轮 §3.7 / R38）：这三条字符串**必须由考卷推出来**，不得再硬编码 W4d 文案
+        'note': (f'W5c L3 主基线（考卷 {paper_tag} × 候选 {os.path.basename(cand_dir)}，文案由考卷自动生成）：'
+                 f'headline = exam {n_exam} 条（exam_stratum 三栏 '
+                 f'boundary {stratum_counts.get("boundary", 0)} / extrapolation '
+                 f'{stratum_counts.get("extrapolation", 0)} / interpolation '
+                 f'{stratum_counts.get("interpolation", 0)}）；dev（非 exam）{len(dev_rows)} 条只作开发诊断。'
+                 f'TSR=行为正确性（完备题答对+澄清题字段级问对 R17）；SFR=字段保真（R20：编造一律不计 PASS）；'
+                 f'FPR 双向；MSR 全链见 msr 节（R14/R16/R35：solver 失败单列，不进 exam MSR）。'),
         'model': 'glm-5.3-flash',
         'decode': 'json_object + schema_task.json 校验 + 错误反馈修复循环（<=3 轮；SDK 无 logits 级 json_schema）',
-        'exam_definition': 'exam = boundary_holdout + extrapolation_test；dev = train + val（R15）',
+        'exam_definition': (f'exam = exam_stratum 非空 = boundary {stratum_counts.get("boundary", 0)} '
+                            f'+ extrapolation {stratum_counts.get("extrapolation", 0)} '
+                            f'+ interpolation {stratum_counts.get("interpolation", 0)} = {n_exam}（RUBRIC §1.1；'
+                            f'dev = 非 exam {len(dev_rows)} 条 = ' +
+                            ' + '.join(f'{k} {v}' for k, v in sorted(dev_split.items())) + '）（R15/R36）'),
+        # W5c（R39）：跨卷比较按 task-id 集，不按条数——条数相同也可能换了一批题
+        'exam_task_ids_sha256': hashlib.sha256(
+            json.dumps(exam_ids, ensure_ascii=False).encode('utf-8')).hexdigest(),
+        'exam_by_family': dict(fam_counts),
+        'turns_histogram': {str(k): v for k, v in sorted(turns_hist.items())},
+        'first_pass_valid': turns_hist.get(1, 0),
+        'n_unresolved': n_unresolved,
         'provenance': {   # W5a'（R25/R27）：成绩单自带溯源，替代「靠人记当时跑了什么」
             'label': label,
             'tasks_path': os.path.relpath(os.path.abspath(tasks_path), HERE).replace('\\', '/'),
@@ -243,8 +269,13 @@ def main():
                 'fabrication_rate_pct': round(100 * len(fab) / max(1, n_ec), 1),
                 'overclarify': len([r for r in clar_wrong if not r['ec']]),
                 'clarify_wrong_field': len([r for r in clar_wrong if r['ec']])},
-        'by_split': {s: agg([r for r in rows if r['split_v2'] == s], s)
-                     for s in sorted({r['split_v2'] for r in rows})},
+        'by_split': {s: agg([r for r in dev_rows if r['split_v2'] == s], s)
+                     for s in sorted({r['split_v2'] for r in dev_rows})},
+        # W5c（专家第八轮 §3.5 / S-24 / R36）：by_split 只统计**非 exam** 行。
+        # 旧版把 6 条内插考题算进 train（n=19 = 13 纯 train + 6 内插），
+        # 于是「train 15/19」既不是纯 train 也不是 exam，两不像。
+        'by_split_note': (f'by_split 仅含非 exam 行（R36）；exam {n_exam} 条另见 exam_by_stratum。'
+                          f'纯 train = {dev_split.get("train", 0)} 条。'),
         # W5b：exam 三栏明细（RUBRIC §1.1——合并报会虚高，必须拆开看难度）
         'exam_by_stratum': {s: agg([r for r in exam_rows if r['exam_stratum'] == s], s)
                             for s in STRATA if any(r['exam_stratum'] == s for r in exam_rows)},
@@ -257,7 +288,7 @@ def main():
         t1_exam = trivial['T1_retrieval']['exam_pct']
         llm_exam = scorecard['exam']['tsr']['pct']
         scorecard['value_added'] = {
-            'basis': 'exam（boundary+extrap）TSR，T1 同任务集 exam_pct',
+            'basis': f'exam 三栏 {n_exam} 条 TSR（T1 同任务集 exam_pct；T1 地板已 leave-one-out，R40）',
             'TSR_T1_exam_pct': t1_exam, 'TSR_LLM_exam_pct': llm_exam,
             'delta_pp': round(llm_exam - t1_exam, 1),
             'criterion': '>= 10 pp 才算 LLM 真有增量（专家 6.3.1）；n_exam<20 ⇒ underpowered 不得判 PASS（R12）',
@@ -274,6 +305,10 @@ def main():
             prev_msr = None
     if prev_msr:
         scorecard['msr_section'] = prev_msr
+        # W5c：顶层 msr 也要一并保留 —— 此前顶层 `msr` 一直是 null（没人写），
+        # 重打分后又会被写成缺省值，NC-36 因此报 msr=False。
+        scorecard['msr'] = prev_msr.get('msr')
+        scorecard['msr_pct'] = prev_msr.get('msr_pct')
         scorecard.setdefault('exam', {})['msr'] = prev_msr.get('exam_msr')
         scorecard.setdefault('dev', {})['msr'] = prev_msr.get('dev_msr')
 
@@ -291,6 +326,8 @@ def main():
         print(f"  └ {s:<13} TSR {a['tsr']['pass']}/{a['n']} ({a['tsr']['pct']}%)"
               f"  SFR {a['sfr']['pass']}/{a['sfr']['of_spec_candidates']}")
     print(f"  FPR: 编造 {len(fab)}/{n_ec}、过度澄清 {scorecard['fpr']['overclarify']}、问错字段 {scorecard['fpr']['clarify_wrong_field']}")
+    print(f"  turns: {scorecard['turns_histogram']}  一次通过 {scorecard['first_pass_valid']} 条"
+          f"  未收敛 {scorecard['n_unresolved']} 条")
     if 'value_added' in scorecard:
         v = scorecard['value_added']
         print(f"  value_added(exam): T1 {v['TSR_T1_exam_pct']}% -> LLM {v['TSR_LLM_exam_pct']}% "

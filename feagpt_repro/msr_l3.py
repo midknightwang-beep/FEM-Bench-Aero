@@ -170,8 +170,9 @@ def main():
         print(f'环境失败 {len(env_fails)} 条——不进 MSR 分母（R16），请检查解释器后重跑。')
 
     # W5a（专家第五轮 P1-1/P1-2）：exam/dev MSR 汇总落盘——不再手算；by_split 全指标
+    # W5c（R36）：split 取值由数据推（v6c 新增 interpolation_test），不再硬编码 4 个键
     by_split = {}
-    for sp in ('train', 'val', 'boundary_holdout', 'extrapolation_test'):
+    for sp in sorted({tasks[r['task_id']]['split_v2'] for r in den_rows}):
         ids = [r['task_id'] for r in den_rows if tasks[r['task_id']]['split_v2'] == sp]
         pp = sum(1 for tid in ids if next(r for r in den_rows if r['task_id'] == tid)['msr_pass'])
         by_split[sp] = {'msr': f'{pp}/{len(ids)}', 'pass': pp, 'n': len(ids)}
@@ -190,19 +191,73 @@ def main():
     dev_ids = [r['task_id'] for r in den_rows if not _is_exam(tasks[r['task_id']])]
     dev_p = sum(1 for tid in dev_ids if next(r for r in den_rows if r['task_id'] == tid)['msr_pass'])
 
+    # W5c（专家第八轮 §3.2/§3.3 / R35）：exam MSR 必须能按族/栏拆开看——
+    # 「族级 TSR 100%」可能全靠澄清题，MSR 分母为 0；不分列就会被读成「该族全链可用」。
+    def _msr_of(ids):
+        pp = sum(1 for tid in ids if next(r for r in den_rows if r['task_id'] == tid)['msr_pass'])
+        return {'msr': f'{pp}/{len(ids)}', 'pass': pp, 'n': len(ids),
+                'pct': round(100 * pp / len(ids), 1) if ids else None}
+
+    exam_by_family = {fam: _msr_of([tid for tid in exam_ids if tasks[tid]['family'] == fam])
+                      for fam in sorted({tasks[tid]['family'] for tid in exam_ids})}
+    def _stratum(tid):
+        t = tasks[tid]
+        if t.get('exam_stratum'):
+            return t['exam_stratum']
+        return {'boundary_holdout': 'boundary', 'extrapolation_test': 'extrapolation',
+                'interpolation_test': 'interpolation'}.get(t.get('split_v2'))
+    exam_by_stratum = {s: _msr_of([tid for tid in exam_ids if _stratum(tid) == s])
+                       for s in ('boundary', 'extrapolation', 'interpolation')
+                       if any(_stratum(tid) == s for tid in exam_ids)}
+    # R35：solver/算力失败必须单列。
+    # ★ W5c 修（2026-10-25，审计发现「注释与实现相反」）：原注释写「exam MSR **不含** solver」，
+    #   但实现里 exam_msr / dev_msr 都是**原始口径（含 solver）** —— 求解失败对模型确实是失败，
+    #   剔掉是「能力上限口径」，两者都必须给，不能只留一个。
+    #   ⇒ 现在显式输出四行：exam_msr / exam_msr_excl_solver / dev_msr / dev_msr_excl_solver
+    #     + full msr / msr_excl_solver，并在 solver_task_ids 上再标一次归属（exam/dev）。
+    #   ★ 附带实证：solver 桶是**候选相关**的 —— 同一题 `barrel_d2000_l2000_str12_frm4`
+    #     v6b 旧候选 4.2s 就 pipeline 拒（class=model），v6c 新候选网格 169,606 节点
+    #     才撞 158,548 阈值（class=solver）。所以跨版本「剔除 solver 后的分母」也会变，
+    #     R30/R39 的不可比判定同样适用于剔除口径。
+    solver_fails = [r for r in den_rows if not r['msr_pass'] and r.get('failure_class') == 'solver']
+    n_solver = len(solver_fails)
+    _sol_set = {r['task_id'] for r in solver_fails}
+    exam_sol = [tid for tid in exam_ids if tid in _sol_set]
+    dev_sol = [tid for tid in dev_ids if tid in _sol_set]
+
+    def _msr_excl(ids):
+        keep = [tid for tid in ids if tid not in _sol_set]
+        pp = sum(1 for tid in keep if next(r for r in den_rows if r['task_id'] == tid)['msr_pass'])
+        return f'{pp}/{len(keep)}', (round(100 * pp / len(keep), 1) if keep else None)
+
     msr = {'note': '全链 MSR（R14/R16/R23，W5a 修正）：契约闸+ccx 求解+关1+关4+fidelity+spec_fidelity 全 PASS；'
                    '分母 = spec-required 且非澄清题（R23：澄清/未收敛候选不计，编造归 FPR）；'
                    '依赖预检不过即环境退出；失败分层 env/contract/model/solver，env 不计模型失败。',
            'provenance': {'tasks_path': os.path.relpath(os.path.abspath(tasks_path), HERE).replace('\\', '/'),
                           'tasks_sha256': sha256_file(tasks_path),
                           'candidates_dir': os.path.relpath(os.path.abspath(cand_dir), HERE).replace('\\', '/'),
-                          'reuse_source': (os.path.relpath(os.path.abspath(args.reuse), HERE).replace('\\', '/')
-                                           if args.reuse else None)},
+                          'reuse_source': (
+                              'self(recompute-only, no re-solve — 统计段由同一成绩单的 per_task 重算，须与实跑逐数一致)'
+                              if args.reuse and os.path.abspath(args.reuse) == os.path.abspath(report_path)
+                              else (os.path.relpath(os.path.abspath(args.reuse), HERE).replace('\\', '/')
+                                    if args.reuse else None))},
            'n_not_run': sum(1 for r in rows if not r.get('denominator')
                             and 'not-run' in (r.get('reason') or '')),
            'msr': f'{p}/{n}', 'msr_pct': round(100 * p / max(1, n), 1),
            'exam_msr': f'{exam_p}/{len(exam_ids)}',
            'exam_msr_pct': round(100 * exam_p / max(1, len(exam_ids)), 1),
+           'exam_by_family': exam_by_family,
+           'exam_by_stratum': exam_by_stratum,
+           'n_solver_excluded': n_solver,
+           'solver_task_ids': [r['task_id'] for r in solver_fails],
+           'solver_in_exam': exam_sol,
+           'solver_in_dev': dev_sol,
+           'exam_msr_excl_solver': _msr_excl(exam_ids)[0],
+           'exam_msr_excl_solver_pct': _msr_excl(exam_ids)[1],
+           'dev_msr_excl_solver': _msr_excl(dev_ids)[0],
+           'dev_msr_excl_solver_pct': _msr_excl(dev_ids)[1],
+           'msr_excl_solver': f'{p}/{n - n_solver}',
+           'msr_excl_solver_pct': round(100 * p / max(1, n - n_solver), 1),
            'dev_msr': f'{dev_p}/{len(dev_ids)}',
            'by_split': by_split,
            'n_denominator': n, 'n_clarify_excluded': sum(1 for r in rows if not r.get('denominator')),
@@ -216,6 +271,11 @@ def main():
     # 顶层同步（NC-22 检查点：成绩单必须含 exam.msr）
     sc.setdefault('exam', {})['msr'] = msr['exam_msr']
     sc.setdefault('dev', {})['msr'] = msr['dev_msr']
+    # ★ W5c 修（NC-36 抓到）：顶层 `msr` 键此前一直是 **null** —— score_baseline 从不写它，
+    #   msr_l3 也只写 msr_section/exam/dev。任何按 `scorecard['msr']` 读的消费者都会拿到
+    #   None 而误以为「没跑 MSR」。现在显式同步。
+    sc['msr'] = msr['msr']
+    sc['msr_pct'] = msr['msr_pct']
     json.dump(sc, open(report_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print(f"\nMSR = {p}/{n} ({msr['msr_pct']}%)  exam={msr['exam_msr']} dev={msr['dev_msr']}"
           f"  失败分层={msr['failure_class_counts']}")

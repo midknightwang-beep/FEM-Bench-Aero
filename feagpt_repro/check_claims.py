@@ -39,6 +39,11 @@ CLAIMS_DEFAULT = os.path.join(ROOT, 'FEM-Bench-Aero', 'CLAIMS.md')
 
 PATH_RE = re.compile(r'[A-Za-z0-9_./\\:\-]+\.(?:jsonl|json|md|csv|tar\.gz|txt)')
 FLAG_RE = re.compile(r'--(?:report|json|out|report-dir)\s+([^\s`;+]+)')
+# W5c：产出方式不止 --out/--report。考卷快照是 `cp tasks/tasks.jsonl reports/papers/xxx.jsonl`，
+# sha 清单是 `sha256sum … >> reports/papers/SHA256SUMS`。这两种也是**真实产出**，不纳入的话
+# 结构检查会误判「artifact 与 command 不一致」（R26）。只补这两种，不引入通配。
+CP_RE = re.compile(r'\bcp\s+[^\s`;+]+\s+([^\s`;+]+)')
+APPEND_RE = re.compile(r'>>\s*([^\s`;+]+)')
 BAD_DIRS = ('eval_runs',)
 
 
@@ -110,6 +115,7 @@ def artifacts_in(cell):
 TASKS_REL = 'feagpt_repro/tasks/tasks.jsonl'
 SC_V4_REL = 'feagpt_repro/reports/baseline_scorecard_L3_v4.json'
 SC_V6B_REL = 'feagpt_repro/reports/baseline_scorecard_L3_v6b.json'
+SC_V6C_REL = 'feagpt_repro/reports/baseline_scorecard_L3_v6c.json'
 PAPERS_V4_REL = 'feagpt_repro/reports/papers/tasks_v4.jsonl'
 RUBRIC_REL = 'FEM-Bench-Aero/RUBRIC.md'
 README_REL = 'FEM-Bench-Aero/README.md'
@@ -144,7 +150,67 @@ def _measures(root):
                        'msr': ms6.get('msr') or '',
                        'msr_pct': ms6.get('msr_pct'),
                        'exam_msr': ms6.get('exam_msr') or '',
-                       'exam_msr_pct': ms6.get('exam_msr_pct')}
+                       'exam_msr_pct': ms6.get('exam_msr_pct'),
+                       'sfr': (d6.get('exam') or {}).get('sfr') or {},
+                       'by_split': d6.get('by_split') or {},
+                       'exam_definition': d6.get('exam_definition') or '',
+                       'value_added_basis': (d6.get('value_added') or {}).get('basis') or '',
+                       'raw': d6}
+    p = os.path.join(root, SC_V6C_REL)
+    if os.path.exists(p):
+        d7 = json.load(open(p, encoding='utf-8'))
+        ms7 = d7.get('msr_section') or {}
+        m['sc_v6c'] = {'exam': d7.get('exam') or {},
+                       'by_stratum': d7.get('exam_by_stratum') or {},
+                       'msr': ms7.get('msr') or '', 'msr_pct': ms7.get('msr_pct'),
+                       'exam_msr': ms7.get('exam_msr') or '',
+                       'exam_msr_pct': ms7.get('exam_msr_pct'),
+                       'sfr': d7.get('exam', {}).get('sfr') or {},
+                       'dev': d7.get('dev') or {}, 'fpr': d7.get('fpr') or {},
+                       'n_solver': ms7.get('n_solver_excluded'),
+                       'exam_by_family': d7.get('exam_by_family') or {},
+                       'exam_task_ids_sha256': d7.get('exam_task_ids_sha256'),
+                       'by_split': d7.get('by_split') or {},
+                       'exam_definition': d7.get('exam_definition') or '',
+                       'value_added_basis': (d7.get('value_added') or {}).get('basis') or '',
+                       'raw': d7}
+    # W5c（R29/R38）：headline 指针——有 v6c 就用 C-029×v6c，否则 C-028×v6b
+    m['headline'] = ('C-029', m['sc_v6c']) if m.get('sc_v6c') else (('C-028', m['sc_v6b'])
+                     if m.get('sc_v6b') else (None, {}))
+    # W5c（R29/R36/R39）：headline 成绩单 → 对应考卷的 exam id 集 / 纯 train / 内插族分布
+    _cid, _hl = m.get('headline') or (None, {})
+    _tp = (((_hl.get('raw') or {}).get('provenance') or {}).get('tasks_path') or '')
+    if _tp:
+        _fp = os.path.join(root, _tp)
+        if not os.path.exists(_fp):
+            _fp = os.path.join(root, 'feagpt_repro', _tp)
+        if os.path.exists(_fp):
+            _rows = [json.loads(l) for l in open(_fp, encoding='utf-8') if l.strip()]
+            _l3 = [r for r in _rows if r.get('input_level') == 'L3']
+            m['paper_exam_ids'] = [r['task_id'] for r in _l3 if r.get('exam_stratum')]
+            m.setdefault('tasks', {})
+            m['tasks']['pure_train'] = sum(1 for r in _l3
+                                           if r['split_v2'] == 'train' and not r.get('exam_stratum'))
+            m['tasks']['interp_fams'] = dict(collections.Counter(
+                r['family'] for r in _l3 if r.get('exam_stratum') == 'interpolation'))
+    # C-028 的题面消歧计数（S-22）必须从 v4 / v6b 两版 paper 实算，不许手抄
+    _p4 = os.path.join(root, PAPERS_V4_REL)
+    _p6 = os.path.join(root, 'feagpt_repro', 'reports', 'papers', 'tasks_v6b.jsonl')
+    if os.path.exists(_p4) and os.path.exists(_p6):
+        _l4 = {t['task_id']: t['input']['nl'] for t in
+               (json.loads(l) for l in open(_p4, encoding='utf-8') if l.strip())
+               if t.get('input_level') == 'L3'}
+        _l6 = {t['task_id']: t['input']['nl'] for t in
+               (json.loads(l) for l in open(_p6, encoding='utf-8') if l.strip())
+               if t.get('input_level') == 'L3'}
+        _com = set(_l4) & set(_l6)
+        m['nl_diff'] = {
+            'coord_added': sum(1 for k in _com if '坐标系' in _l6[k] and '坐标系' not in _l4[k]),
+            'dir_added': sum(1 for k in _com if re.search(r'方向\s*\[', _l6[k])
+                             and not re.search(r'方向\s*\[', _l4[k])),
+            'len_v4': round(sum(len(_l4[k]) for k in _com) / max(1, len(_com))),
+            'len_v6b': round(sum(len(_l6[k]) for k in _com) / max(1, len(_com))),
+        }
     p = os.path.join(root, PAPERS_V4_REL)
     if os.path.exists(p):
         rows = [json.loads(l) for l in open(p, encoding='utf-8') if l.strip()]
@@ -272,18 +338,18 @@ def semantic_checks(root, rows):
     got = f'{mm.group(1)}/{mm.group(2)}' if mm else '未找到'
     add('S-16', 'README 负控通过数', exp, got, got == exp)
 
-    # 10) C-028（v6b headline）核心数字必须等于成绩单实读值（R29）
-    v6 = m.get('sc_v6b') or {}
-    tsr6 = ((v6.get('exam') or {}).get('tsr')) or {}
-    if tsr6.get('total'):
-        cl = _txt(os.path.join(root, CLAIMS_REL_FOR_SEM))
-        line = next((l for l in cl.splitlines() if l.startswith('| C-028')), '')
-        want = f"{tsr6['pass']}/{tsr6['total']} ({tsr6['pct']}%)"
-        hit = re.search(r'TSR\s*(\d+/\d+)\s*\(([\d.]+)%\)', line)
-        got_s = f'{hit.group(1)} ({hit.group(2)}%)' if hit else '未找到'
-        add('S-17', 'C-028 exam TSR 与成绩单一致', want, got_s, got_s == want)
-
-        bs = v6.get('by_stratum') or {}
+    # 10) headline claim（有 v6c 就是 C-029，否则 C-028）核心数字必须等于成绩单实读值（R29/R38）
+    cid, hl = m.get('headline') or (None, {})
+    cl = _txt(os.path.join(root, CLAIMS_REL_FOR_SEM))
+    line = next((l for l in cl.splitlines() if l.startswith(f'| {cid}')), '') if cid else ''
+    if cid and hl:
+        tsrH = ((hl.get('exam') or {}).get('tsr')) or {}
+        if tsrH.get('total'):
+            want = f"{tsrH['pass']}/{tsrH['total']} ({tsrH['pct']}%)"
+            hit = re.search(r'TSR\s*(\d+/\d+)\s*\(([\d.]+)%\)', line)
+            got_s = f'{hit.group(1)} ({hit.group(2)}%)' if hit else '未找到'
+            add('S-17', f'{cid} exam TSR 与成绩单一致', want, got_s, got_s == want)
+        bs = hl.get('by_stratum') or {}
         ok_s, det = True, []
         for k in ('boundary', 'extrapolation', 'interpolation'):
             blk = ((bs.get(k) or {}).get('tsr')) or {}
@@ -293,18 +359,101 @@ def semantic_checks(root, rows):
             found = re.search(r'\b' + re.escape(w) + r'\b', line) is not None
             ok_s = ok_s and found
             det.append(f'{k}={w}{"" if found else "(缺)"}')
-        add('S-18', 'C-028 三栏条数在 C-028 行内', '三栏齐', ','.join(det) or '无三栏数据', ok_s)
+        add('S-18', f'{cid} 三栏条数在 claim 行内', '三栏齐', ','.join(det) or '无三栏数据', ok_s)
+        # ★ W5c：MSR 缺失时必须**响亮失败**，不能静默消失——「不参与判定的检查不是检查」。
+        # 旧版 `if '/' in msrH` 在成绩单还没跑 MSR 时让 S-19/S-20 直接不出现，
+        # 语义项总数从 29 掉到 27 也没人发现。
+        msrH = hl.get('msr') or ''
+        emH = hl.get('exam_msr') or ''
+        if isinstance(msrH, str) and '/' in msrH:
+            w = f"{msrH} ({hl.get('msr_pct')}%)"
+            add('S-19', f'{cid} 全链 MSR 与成绩单一致', w, '命中' if w in line else '缺', w in line)
+        else:
+            add('S-19', f'{cid} 全链 MSR 与成绩单一致', '成绩单须有 msr 节',
+                f'成绩单缺 msr 节（跑 msr_l3.py 后再自检）', False)
+        if isinstance(emH, str) and '/' in emH:
+            w = f"{emH} ({hl.get('exam_msr_pct')}%)"
+            add('S-20', f'{cid} exam MSR 与成绩单一致', w, '命中' if w in line else '缺', w in line)
+        else:
+            add('S-20', f'{cid} exam MSR 与成绩单一致', '成绩单须有 exam.msr',
+                f'成绩单缺 exam.msr（跑 msr_l3.py 后再自检）', False)
+        # S-25：SFR / dev / FPR / solver 四条也必须是实读值（旧版只咬 TSR+MSR，SFR 漂了没人抓）
+        sf = hl.get('sfr') or {}
+        if sf.get('of_spec_candidates'):
+            w = f"{sf['pass']}/{sf['of_spec_candidates']}"
+            add('S-25', f'{cid} exam SFR 与成绩单一致', w, '命中' if w in line else '缺', w in line)
+        # S-26：候选覆盖必须同时给「文件覆盖」与「产出类型分解」
+        prov = ((hl.get('raw') or {}).get('provenance') or {})
+        n_cand, n_paper = prov.get('n_candidates'), (hl.get('raw') or {}).get('n_tasks_in_paper')
+        unres = (hl.get('raw') or {}).get('n_unresolved')
+        cats = (((hl.get('raw') or {}).get('exam') or {}).get('categories') or {})
+        add('S-26', f'{cid} 覆盖记账含产出类型分解',
+            '行内含 N/N + spec/clarify/unresolved',
+            f'{n_cand}/{n_paper} unres={unres} {cats}', bool(n_cand) and 'unresolved' in line)
+        # S-23：成绩单口径字符串必须由考卷生成（R38）
+        ed, vb = hl.get('exam_definition') or '', hl.get('value_added_basis') or ''
+        note = (hl.get('raw') or {}).get('note') or ''
+        add('S-23', f'{cid} 成绩单口径字符串由考卷生成（R38）',
+            'exam_definition 含 exam_stratum / basis 含三栏 / note 非 W4d',
+            f'ed={bool(ed and "exam_stratum" in ed)} vb={bool("三栏" in vb)} w4d={"W4d" in note}',
+            bool(ed and 'exam_stratum' in ed) and '三栏' in vb and 'W4d' not in note)
+        # S-24：by_split 必须只含非 exam 行，且纯 train 条数与考卷一致
+        tinfo = m.get('tasks') or {}
+        bsp = hl.get('by_split') or {}
+        pure_train = tinfo.get('pure_train')
+        got_train = ((bsp.get('train') or {}).get('n'))
+        add('S-24', f'{cid} by_split 只含非 exam 行（R36）',
+            f'train={pure_train}', f'train={got_train} keys={sorted(bsp)}',
+            got_train == pure_train and 'boundary_holdout' not in bsp)
+        # S-28：成绩单 exam task-id 集 == 考卷 exam 集（逐 id）
+        pexam = set(m.get('paper_exam_ids') or [])
+        sexam = {r['task_id'] for r in ((hl.get('raw') or {}).get('per_task') or []) if r.get('is_exam')}
+        add('S-28', f'{cid} exam task-id 集与考卷逐 id 相等',
+            f'{len(pexam)} 条', f'{len(sexam)} 条 差集={sorted(pexam ^ sexam)[:3]}',
+            bool(pexam) and pexam == sexam)
 
-        msr6 = v6.get('msr') or ''
-        if isinstance(msr6, str) and '/' in msr6:
-            w = f"{msr6} ({v6.get('msr_pct')}%)"
-            add('S-19', 'C-028 全链 MSR 与成绩单一致', w,
-                '命中' if w in line else '缺', w in line)
-        em6 = v6.get('exam_msr') or ''
-        if isinstance(em6, str) and '/' in em6:
-            w = f"{em6} ({v6.get('exam_msr_pct')}%)"
-            add('S-20', 'C-028 exam MSR 与成绩单一致', w,
-                '命中' if w in line else '缺', w in line)
+    # S-21：C-011 内插族分布必须是 wingbox 6（v6b 改因后），不得残留 2/2/1/1
+    ifams = (m.get('tasks') or {}).get('interp_fams') or {}
+    c11 = next((l for l in cl.splitlines() if l.startswith('| C-011')), '')
+    nwx = ifams.get('wingbox', 0)
+    ok21 = (f'wingbox {nwx}' in c11) and ('open_hole 2' not in c11) and ('barrel 1' not in c11)
+    add('S-21', 'C-011 内插族分布', f'wingbox {nwx}', '命中' if ok21 else f'未命中({ifams})', ok21)
+
+    # S-22：C-028 的题面消歧计数（26/55 坐标系、25/55 方向、161→206 字）必须从两版 paper 实算
+    if m.get('nl_diff'):
+        d = m['nl_diff']
+        ok22 = all(str(v) in (line28 := (next((l for l in cl.splitlines()
+                                              if l.startswith('| C-028')), '')))
+                   for v in (d['coord_added'], d['dir_added']))
+        ok22 = ok22 and (f"{d['len_v4']}→{d['len_v6b']}" in line28)
+        add('S-22', 'C-028 题面消歧计数（从 paper 实算）',
+            f"{d['coord_added']}/55、{d['dir_added']}/55、{d['len_v4']}→{d['len_v6b']}",
+            '命中' if ok22 else '未命中', ok22)
+    else:
+        add('S-22', 'C-028 题面消歧计数（从 paper 实算）', 'paper 齐', '缺 paper', False)
+
+    # S-27（R37）：active claim 引用的路径必须被 git 追踪，且不得指向 eval_runs/
+    try:
+        tracked = set(subprocess.run(['git', 'ls-files'], cwd=root, capture_output=True,
+                                     text=True, encoding='utf-8', errors='replace').stdout.split())
+        bad27 = []
+        for ln in cl.splitlines():
+            if not ln.startswith('| C-'):
+                continue
+            if 'superseded' in ln or 'retracted' in ln:
+                continue
+            for tok in PATH_RE.findall(ln):
+                tok = tok.replace('\\', '/')
+                if tok.startswith('eval_runs/') or '/eval_runs/' in tok:
+                    bad27.append(tok)
+                elif tok.startswith(('feagpt_repro/', 'FEM-Bench-Aero/')):
+                    if tok not in tracked and not any(t.startswith(tok) for t in tracked):
+                        bad27.append(tok)
+        add('S-27', 'active claim 路径全部被 git 追踪（R37）', 'empty',
+            str(sorted(set(bad27))[:3]) or 'empty', not bad27)
+    except Exception as e:
+        add('S-27', 'active claim 路径全部被 git 追踪（R37）', 'git 可用', f'err={e}', False)
+
     return out
 
 
@@ -339,7 +488,9 @@ def main():
                             'problems': ['artifact 列为空（无法自证）']})
             fails.append(f'{cid}: artifact 列为空')
             continue
-        flags = [t.strip('`.,;()（）') for t in FLAG_RE.findall(r.get('command', ''))]
+        _cmd = r.get('command', '')
+        flags = [t.strip('`.,;()（）') for t in
+                 (FLAG_RE.findall(_cmd) + CP_RE.findall(_cmd) + APPEND_RE.findall(_cmd))]
         flags = [f for f in flags if not f.startswith('<')]
         for art in arts:
             rel, exists, external = resolve(art, root)

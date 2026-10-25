@@ -52,7 +52,8 @@ def main():
     # ★ W5b-3b：考卷任务即使 split_v2=='train'（内插留出）也不得进检索库/众数池
     exam_flags = [stratum_of(t) is not None for t in tasks]
     train = [t for t in tasks if t['split_v2'] == 'train' and stratum_of(t) is None]
-    test = [t for t in tasks if t['split_v2'] in ('boundary_holdout', 'extrapolation_test')]
+    test = [t for t in tasks if t['split_v2'] in ('boundary_holdout', 'extrapolation_test',
+                                                   'interpolation_test')]
 
     # gold specs
     def gold_of(t):
@@ -92,19 +93,24 @@ def main():
         t0_pass.append(sf['pass'])
 
     # ---- T1：最近邻检索（检索库 = train only，红线 R7）----
+    # W5c-5（专家第八轮 §3.6 / R40）：**必须 leave-one-out**。
+    # 旧版检索库含目标自身 ⇒ train 的 12/13「通过」全是 T1_nn == task_id（把题面自己检索回来），
+    # 地板 92.3% 是稻草人，value_added 的 Δ≥10 被判据本身满足。现把自身从候选集剔除。
     train_vecs = [(t, spec_vec(gold_of(t), t['family'])) for t in train]
     t1_pass, t1_hits = [], []
     for t in tasks:
         g = gold_of(t)
         v = spec_vec(g, t['family'])
-        same_fam = [(tt, dist(vv, v)) for tt, vv in train_vecs if tt['family'] == t['family']]
+        same_fam = [(tt, dist(vv, v)) for tt, vv in train_vecs
+                    if tt['family'] == t['family'] and tt['task_id'] != t['task_id']]
         if not same_fam:
             t1_pass.append(False); t1_hits.append(None); continue
         nn, d = min(same_fam, key=lambda x: x[1])
         nn_spec = gold_of(nn)
         sf = judge(nn_spec, g, t)
         t1_pass.append(sf['pass'])
-        t1_hits.append({'nn': nn['task_id'], 'dist': round(d, 4)})
+        t1_hits.append({'nn': nn['task_id'], 'dist': round(d, 4),
+                        'self_hit': nn['task_id'] == t['task_id']})
 
     # ---- T2：gold 上界（评测器自检）----
     t2_pass = []
@@ -122,30 +128,37 @@ def main():
     report = {'note': f'平凡基线地板（levels={levels}, eng_layer={eng_layer}）。考卷 = exam_stratum 非空'
                       '（v6 三栏；老考卷无该字段则 boundary_holdout+extrapolation_test）。'
                       '检索库/众数池已排除考卷任务（W5b-3b：内插题 split_v2 仍是 train，不排除会检索到自己）。'
+                      '★ W5c-5/R40：T1 已 leave-one-out（检索库剔除目标自身）——旧版 train 12/13 全是自命中。'
                       'value_added = TSR_LLM − TSR_T1 ≥ 10 pp 才算 LLM 真有增量。',
               'tasks_path': os.path.relpath(os.path.abspath(tasks_path), HERE).replace('\\', '/'),
               'n_tasks': len(tasks), 'n_exam': len(exam_idx), 'n_train_pool': len(train),
-              't0_families_missing': fam_missing,
+              't0_families_missing': fam_missing, 't1_leave_one_out': True,
               'T0_constant': {}, 'T1_retrieval': {}, 'T2_gold': {}, 'per_task': []}
     for name, passes in (('T0_constant', t0_pass), ('T1_retrieval', t1_pass), ('T2_gold', t2_pass)):
         ep, en = rate(passes, exam_idx)
         tp, tn = rate(passes, train_idx)
         rec = {'exam_tsr': f'{ep}/{en}', 'exam_pct': round(100*ep/max(1, en), 1),
                'train_tsr': f'{tp}/{tn}', 'all_pct': round(100*sum(passes)/max(1, len(passes)), 1),
-               'by_stratum': {}}
+               'by_stratum': {}, 'train_by_family': {}}
         for s in ('boundary', 'extrapolation', 'interpolation'):
             si = [i for i in exam_idx if stratum_of(tasks[i]) == s]
             p_, n_ = rate(passes, si)
             if n_:
                 rec['by_stratum'][s] = {'tsr': f'{p_}/{n_}', 'pct': round(100*p_/n_, 1),
                                         'note': '分栏 n 小，只报不判（R12）'}
+        # W5c-5：train 族级地板（value_added 必须对 per-family 非自检索地板比对）
+        for fam in sorted({tasks[i]['family'] for i in train_idx}):
+            fi = [i for i in train_idx if tasks[i]['family'] == fam]
+            p_, n_ = rate(passes, fi)
+            rec['train_by_family'][fam] = {'tsr': f'{p_}/{n_}', 'pct': round(100*p_/max(1, n_), 1)}
         report[name] = rec
     for i, t in enumerate(tasks):
         report['per_task'].append({'task_id': t['task_id'], 'split_v2': t['split_v2'],
                                    'exam_stratum': stratum_of(t), 'is_exam': exam_flags[i],
                                    'family': t['family'],
                                    'T0': t0_pass[i], 'T1': t1_pass[i],
-                                   'T1_nn': (t1_hits[i] or {}).get('nn') if t1_hits[i] else None})
+                                   'T1_nn': (t1_hits[i] or {}).get('nn') if t1_hits[i] else None,
+                                   'T1_self_hit': bool((t1_hits[i] or {}).get('self_hit'))})
 
     os.makedirs(out_dir, exist_ok=True)
     out = os.path.join(out_dir, out_name)

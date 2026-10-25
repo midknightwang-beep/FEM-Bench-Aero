@@ -1,0 +1,44 @@
+== 负控套件（spec_fidelity 快通道）==
+  [ok ] PC-1  gold spec                                    expect=PASS actual=PASS
+  [ok ] NC-1  rib_thickness 4->8                           expect=FAIL actual=FAIL
+  [ok ] NC-3  n_stringers_per_skin 0->3                    expect=FAIL actual=FAIL
+  [ok ] NC-4  mesh.size_chord 12->20                       expect=FAIL actual=FAIL
+  [ok ] NC-5  load.magnitude 500->600                      expect=FAIL actual=FAIL
+  [ok ] NC-6  E 73100->60000                               expect=FAIL actual=FAIL
+  [ok ] NC-2  L2 问对填错 8.0                          expect=FAIL actual=FAIL
+  [ok ] NC-7  L2 静默默认                              expect=FAIL actual=FAIL
+  [ok ] NC-8  L3 已接入任务层                           expect==55 actual=55
+  [ok ] NC-9  删 bc                                    expect=FAIL actual=FAIL
+  [ok ] NC-10 删 extra.end_shear                      expect=FAIL actual=FAIL
+  [ok ] NC-11 包装候选拒绝契约                         expect=raise raise ok
+  [ok ] NC-12 family=unknown 拒绝                      expect=raise raise ok
+  [ok ] NC-13 L3 候选删 mesh/load/bc/extra             expect=FAIL actual=FAIL
+  [ok ] NC-14 工程层口径四探针                         expect=4/4 actual=配置键错值豁免=OK; 死字段错值豁免=OK; web_chordwise 编值照罚=OK; 判层字段错闸不松=OK
+  [ok ] NC-15 澄清问错族键（n_stringers_per_skin）           expect=FAIL actual=FAIL
+  [ok ] NC-15b 澄清问对别名（n_ribs）               expect=PASS actual=PASS
+  [ok ] NC-16 panel bc.support 自创键                  expect=FAIL actual=FAIL
+  [ok ] NC-17 open_hole 自创键（load/material）         expect=FAIL/FAIL actual=FAIL/FAIL
+  [ok ] NC-18 MSR 依赖预检存在                         expect=guard actual=present
+  [info] 负控读取的成绩单 = F:\AI FEA Modeling DataSets\feagpt_repro\reports\baseline_scorecard_L3_v6c.json
+  [ok ] NC-19 exam 集与 split 语义一致              expect=empty actual=empty
+  [ok ] NC-20 L3 NL 载荷方向完备（R21）               expect=empty actual=empty
+  [ok ] NC-21 MSR 分母排除澄清题（R23, 卷=tasks_v6c.jsonl）  expect=empty actual=empty
+  [ok ] NC-22 成绩单含 exam.msr                        expect=present actual=19/22
+  [ok ] NC-23 artifact 缺失被检出                          expect=FAIL actual=rc1
+  [ok ] NC-24 eval_runs/ 未追踪被拒                         expect=FAIL actual=rc1
+  [ok ] NC-25 官方/诊断同路径被拒                         expect=FAIL actual=rc1
+  [ok ] NC-26 缺 gold 数据集硬报错                       expect=raise/None actual=raise/None
+  [ok ] NC-27 文本计数漂移被语义检查抓到                    expect=rc!=0+S-01 actual=hit=True rc1
+  [ok ] NC-28 候选覆盖不全被标记                            expect=bad>0/good=0 actual=bad3/good0
+  [ok ] NC-29 跨口径混比被拒                                expect=cross拒/same可 actual=cross=拒(4 理由) / same=可
+  [ok ] NC-30 审计闸（exam 0 + 白名单 + 反向）              expect=exam0/viol=白名单/mut>0 actual=exam0/viol2/mut1
+  [ok ] NC-31 SYS prompt 键名表齐全                        expect=0 actual=0 missing[]
+  [ok ] NC-32 T1 leave-one-out                              expect=过滤+0自命中 actual=srcTrue/flagTrue/self0
+  [ok ] NC-33 成绩单口径字符串                              expect=stratum/无W4d/by_split纯dev actual=exam_def含stratum=True W4d旧串=False by_split混入exam=[] note=True
+  [ok ] NC-34 官方文档不引 eval_runs/ 文件                 expect=empty actual=0 处[]
+  [ok ] NC-35 同条数≠同批题 被拒                             expect=cross拒/same可 actual=拒/可
+  [ok ] NC-37 契约试建闸（含反向）                            expect=real0/mut1 actual=real_rc=0 hit=True mut_rc=1
+  [ok ] NC-36 语义项不静默消失                              expect=msr/S-19,S-20/else actual=msrTrue/2项/elseTrue
+
+负控: 39/39 ok -> reports/negative_controls_39.json
+红线条 R6：负控未全绿，不得跑 LLM 基线。

@@ -248,9 +248,9 @@
     <h1>FEM-Bench-Aero · 项目进展看板</h1>
     <div class="sub">给老王做检查用的那一页 —— 每条结论都能点开看命令和数字，你可以自己跑一遍</div>
     <div class="stamp">
-      更新于 <b>2026-10-24 14:30</b><br>
-      当前里程碑 <b>M9（D32 目标口径）· M10（D33 后掠中间档）全部收口</b><br>
-      数据集规模 <b>53 条 / 树 × 2 树（52 等价类，train 22 / val 17 / test 14）</b>
+      更新于 <b>2026-10-25 21:40</b><br>
+      当前里程碑 <b>W5c 修复轮收口 · C-029（考卷 v6c）：exam TSR 23/25 (92.0%) · SFR 20/22 (90.9%) · MSR 19/22 (86.4%)</b><br>
+      数据集规模 <b>55 条 / 树 × 2 树（54 等价类，train 25 / val 17 / test 13）</b>
     </div>
   </header>
 
@@ -1768,7 +1768,40 @@ const REVIEW = [
     '<b>solver 3 条是算力边界不是模型失败</b>：全是柱壳 143,426 / 158,548 节点，命中已知本机内存阈值（158,548 已失败）；剔除后参考 MSR 25/41 (61.0%)',
     '<b>自检全绿</b>：<code>check_claims.py</code> active 20 条 / artifact 24 个 / <b>语义项 21 条全过</b>（新增 S-17..S-20 咬 C-028 的 TSR·三栏·全链 MSR·exam MSR）；RUBRIC → <b>v4.3</b>（新增 R32 + §1.1.1 实测三栏 + 偏差声明），README 版本引用同步'
    ],
-   files:['feagpt_repro/candidates_l3_v6/','feagpt_repro/reports/baseline_scorecard_L3_v6b.json','feagpt_repro/reports/bootstrap_ci_L3_v6b.json','feagpt_repro/_probe_w5b4_fail_fields.py','feagpt_repro/eval_runs/w5b4_defect_analysis_20261025.md','feagpt_repro/msr_l3.py','feagpt_repro/negative_controls.py','feagpt_repro/check_claims.py','feagpt_repro/reports/INDEX.md','FEM-Bench-Aero/CLAIMS.md','FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/W5B_PLAN.md']}
+   files:['feagpt_repro/candidates_l3_v6/','feagpt_repro/reports/baseline_scorecard_L3_v6b.json','feagpt_repro/reports/bootstrap_ci_L3_v6b.json','feagpt_repro/_probe_w5b4_fail_fields.py','feagpt_repro/eval_runs/w5b4_defect_analysis_20261025.md','feagpt_repro/msr_l3.py','feagpt_repro/negative_controls.py','feagpt_repro/check_claims.py','feagpt_repro/reports/INDEX.md','FEM-Bench-Aero/CLAIMS.md','FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/W5B_PLAN.md']},
+  {id:'r64', g:'W5/扩量', c:'<b>C-029 出炉：v6c 考卷 × 55 条重生成候选 ⇒ exam TSR <b>23/25 (92.0%)</b> CI95 [80.0, 100.0]、SFR 20/22、三栏 6/6 · 11/13 · 6/6</b>；<code>n_unresolved</code> <b>7 → 0</b>。但 <b>不是「模型变强 24 pp」</b>——bridge 四格拆开是「判分修正 +1 / 考卷修复 +0 / 重生成 +5」',
+   q:'第八轮复评把 C-028 降级为「含已知缺陷的下界」（24/30、对外 No-Go）。按要求先把缺陷查清再重跑：审计器一写出来就发现<b>报告点名的缺陷只是冰山一角</b>，而且顺手挖出一类<b>报告完全没提、连自己的审计器第一版也漏掉</b>的卷子缺陷——题面「600 × 800」与 gold 的 <code>length=800/width=600</code> 角色相反，模型按工程惯例读反而被判错。',
+   cmd:'r32_audit.py --tasks reports/papers/tasks_v6c.jsonl --scope exam --out reports/r32_audit_v6c_exam.json    # rc=0\nnode gen_candidates_v2.js --tasks reports/papers/tasks_v6c.jsonl --levels L3 --out candidates_l3_v6c --limit 55\nscore_baseline.py --candidates candidates_l3_v6c --tasks reports/papers/tasks_v6c.jsonl --report reports/baseline_scorecard_L3_v6c.json --trivial reports/trivial_baselines_L3_v6c.json\nbootstrap_ci.py --scorecard reports/baseline_scorecard_L3_v6c.json --out reports/bootstrap_ci_L3_v6c.json\ncompare_scorecards.py --a reports/baseline_scorecard_L3_v6b.json --b reports/baseline_scorecard_L3_v6c.json    # 必须 rc=3\nnegative_controls.py    # 39/39（+ NC-30..37）',
+   ev:[
+    '<b>审计器（W5c-0）</b>：<code>r32_audit.py</code> 逐 (任务, 判分字段) 判 4 类 + <code>exempt:*</code>。v6b 实测 <b>8 处 VIOLATION</b>（不止报告说的 4 处）：<code>str3_T</code> 缺缘条宽、<code>web1</code>/<code>web1_offcentre</code>/<code>web2</code> 题面<b>完全没提中间腹板</b>、加筋板 2 条角色歧义',
+    '<b>★ 自查出的新缺陷（报告没发现）</b>：加筋板模板写 <code>f"{width} × {length}"</code> ⇒ 题面「600 × 800」而 gold 是 <code>length=800</code>。<b>两个数都在题面出现过</b>（<code>num_derivable</code> 判 derivable），但<b>字段角色不可判</b>⇒ 模型按惯例读成 length=600 被判错。立 <b>R41</b> + RUBRIC <b>§7.3</b>，审计器单列 <code>_role_pos()</code> 闸。影响 <b>2 条 dev、0 条 exam</b>',
+    '<b>R33 改两端口径</b>：exam 必须 0 违规；非 exam 允许白名单但<b>只许缩小不许扩大</b>（新违规自动变红）。三份审计：v6b all=8 → v6c all=4（全 dev）→ <b>v6c exam=0（rc=0）</b>',
+    '<b>R34 prompt 补键名实测生效</b>：4 条 exam 开孔板 <b>0/4 → 3/4</b>；唯一仍败 <code>cfrp45s_d40</code> 是 <code>params.layup</code> 写成标量 <code>2</code>（题面给了完整 [45,-45,-45,45]+0.5 mm、prompt 有 schema）⇒ <b>C 类模型侧</b>',
+    '<b>★ bridge 四格：唯一允许相减的场景</b>：A v6b×旧候选×旧口径 <b>17/25</b> → B 新口径 <b>18/25</b>（判分修正 +1，唯一翻转 <code>wingbox_str5</code>）→ C v6c×旧候选 <b>18/25</b>（<b>考卷修复对已定型候选 +0——改题面必须配重生成</b>）→ D v6c×新候选 <b>23/25</b>（重生成 +5）',
+    '<b>★ 剩余 2 条 exam 失败全是 C 类</b>：<code>layup</code> 标量 + <code>extra.end_torque</code>/<code>torque_axis_dof</code> 自创键（prompt 明令禁止）。<b>卷子已无可解性缺陷 ⇒ 92.0% 是「缺陷已清」的成绩，不是又一个下界</b>',
+    '<b>判分无放水复核</b>：<code>spec_fidelity</code> 所有循环按 <b>gold 键集</b>遍历，单边缺=FAIL、自创键=FAIL ⇒ 候选<b>不能靠漏写缩小分母</b>；<code>n_fields</code> 差异来自自创键<b>加</b>进去',
+    '<b>T1 地板（R40）</b>：leave-one-out 后 exam T1 <b>0/25</b>、train 池 13 条<b>无自命中</b>（旧版 train 12/13 全是 <code>T1_nn == task_id</code>，地板是稻草人）',
+    '<b>修掉一处「静默消失」</b>：成绩单没跑 MSR 时 S-19/S-20 直接不出现，语义项从 29 掉到 27 而自检仍报「全过」⇒ 改<b>响亮失败</b> + <b>NC-36</b> 三端守（成绩单有 msr / 报告里 S-19·S-20 在场 / 源码有 else 分支）',
+    '<b>R39 加硬闸</b>：<code>compare_scorecards.py</code> 增「<b>paper sha 不同</b>」理由——v6b vs v6c <b>同 25 条 exam id 但题面已改</b>，只靠 <code>exam_definition</code> 文本差异拒太脆',
+    '<b>自检/负控</b>：<code>check_claims.py</code> active <b>22</b> 条 / artifact <b>34</b> 个 / 语义 <b>29</b> 项全过；负控扩到 <b>39/39</b>（NC-30..37）；RUBRIC → <b>v4.5</b>（R33–R41）、CLAIMS 红线条 <b>R1–R41</b>'
+   ],
+   files:['feagpt_repro/r32_audit.py','feagpt_repro/_verify_tasks_v6c.py','feagpt_repro/reports/papers/tasks_v6c.jsonl','feagpt_repro/candidates_l3_v6c/','feagpt_repro/reports/baseline_scorecard_L3_v6c.json','feagpt_repro/reports/bootstrap_ci_L3_v6c.json','feagpt_repro/reports/r32_audit_v6c_exam.json','feagpt_repro/reports/diagnostics/bridge_w5c_table.md','FEM-Bench-Aero/CLAIMS.md','FEM-Bench-Aero/RUBRIC.md']},
+  {id:'r65', g:'W5/扩量', c:'<b>MSR 全链收口：exam <b>19/22 (86.4%)</b>、剔 solver <b>19/21 (90.5%)</b>；dev 19/29、full 38/51</b>。C-029 证据链闭合（TSR 92.0% + SFR 90.9% + MSR 86.4% + CI95 三指标）。顺手抓出两个<b>口径 bug</b>：①<code>msr_l3.py</code> 注释写「exam MSR 不含 solver」而代码里<b>含</b>；②成绩单顶层 <code>msr</code> 键<b>一直是 null</b>',
+   q:'TSR/SFR 出来之后，<b>「能不能真跑通」这一问还没答</b>——全链 MSR 要真起 ccx 求解 55 条，41 分钟。跑完对账时发现：<b>纳入/剔除 solver 的口径必须同时给</b>，而且 v6b 报的「3 条 solver 全在 dev」到 v6c 变成「1 条在 exam」——不查清就会被读成「算力问题变严重了」。',
+   cmd:'python msr_l3.py --candidates candidates_l3_v6c --tasks reports/papers/tasks_v6c.jsonl --report reports/baseline_scorecard_L3_v6c.json    # 实跑 41m38s，起 ccx\n# 字段扩充后免重解重算（数字须与实跑逐数一致）：\npython msr_l3.py --candidates candidates_l3_v6c --tasks reports/papers/tasks_v6c.jsonl --report reports/baseline_scorecard_L3_v6c.json --reuse reports/baseline_scorecard_L3_v6c.json\npython bootstrap_ci.py --scorecard reports/baseline_scorecard_L3_v6c.json --out reports/bootstrap_ci_L3_v6c.json    # 补 MSR CI\npython negative_controls.py    # 39/39\npython check_claims.py --semantic    # 22 claims / 34 artifacts / 29 语义 全过',
+   ev:[
+    '<b>MSR 实测（R35 四行）</b>：exam <b>19/22 (86.4%)</b> → 剔 solver <b>19/21 (90.5%)</b>；dev <b>19/29 (65.5%)</b> → 剔 solver <b>19/26 (73.1%)</b>；full <b>38/51 (74.5%)</b> → 剔 solver <b>38/47 (80.9%)</b>。exam 分母 22 = 25 − 3 澄清题（R23）',
+    '<b>★ 口径 bug 1（注释与实现相反）</b>：<code>msr_l3.py</code> 注释写「exam MSR <b>不含</b> solver」，但实现里 <code>exam_msr</code> <b>含</b>。数字没错、但复核者按注释会读出反向结论 ⇒ 改为显式输出 <code>exam_msr_excl_solver</code>/<code>dev_msr_excl_solver</code> + <code>solver_in_exam</code>/<code>solver_in_dev</code> 归属字段',
+    '<b>★ 口径 bug 2（NC-36 抓到）</b>：成绩单顶层 <code>msr</code> 键<b>一直是 null</b>——<code>score_baseline.py</code> 从不写它、<code>msr_l3.py</code> 只写 <code>msr_section</code>/<code>exam</code>/<code>dev</code>。任何按 <code>scorecard["msr"]</code> 读的消费者都拿到 None ⇒ 两侧都补同步',
+    '<b>★ 新发现：solver 桶是「候选相关」的，不是题目固有属性</b>：同一题 <code>barrel_d2000_l2000_str12_frm4</code> 在 <b>v6b 旧候选 4.2 s 就被 pipeline 拒（class=model）</b>，v6c 新候选<b>算到 169,606 节点才撞 158,548 阈值（class=solver）</b> ⇒ <b>「剔除 solver 后的分母/得分」同样不可跨版本直减</b>（R30/R39 一并适用）',
+    '<b>4 条 solver 明细</b>：143,426 / 158,548×2 / 169,606 节点，全是柱壳，超本机内存阈值 158,548；<b>1 条在 exam、3 条在 dev</b>。单列不入模型失败，但也不静默删除',
+    '<b>bootstrap 补 MSR CI</b>：MSR 86.4% <b>[72.7, 100.0]</b>（此前该字段是 null，因为跑 bootstrap 时成绩单还没 MSR）；TSR [80.0, 100.0]、SFR [77.3, 100.0]',
+    '<b>复用路径可信性验证</b>：<code>--reuse</code> 重算出的 38/51、19/22、19/29 与实跑<b>逐数一致</b>；<code>reuse_source</code> 指向自身时标 <code>self(recompute-only, no re-solve)</code>，不留「自己复现自己」的歧义',
+    '<b>负控 39/39 全绿</b>：总条数此前文档写成 37/38 <b>都是错的</b>（37 + NC-36 + NC-37 = 39）；NC-36 首跑报 <code>msr=False</code> 正是抓到顶层 msr null，修完转绿',
+    '<b>自检收口</b>：<code>check_claims.py --semantic</code> active <b>22</b> / artifact <b>34</b> / 语义 <b>29</b> 项全过；其间被 S-04/S-05/S-16 抓出三处 37/37 旧计数漂移（已同步 CLAIMS/README/RUBRIC/W5B_PLAN/INDEX）',
+    '<b>文档同步</b>：CLAIMS C-029 四行 MSR + solver 候选相关警告；C-019 → 39/39（NC-30..37）；RUBRIC §4 R35 四行口径 + 版本表 v4.4/v4.5；INDEX 六处（headline/负控/MSR/bootstrap/语义 29/solver 4 条）'
+   ],
+   files:['feagpt_repro/msr_l3.py','feagpt_repro/score_baseline.py','feagpt_repro/reports/baseline_scorecard_L3_v6c.json','feagpt_repro/reports/bootstrap_ci_L3_v6c.json','feagpt_repro/reports/negative_controls_39.json','feagpt_repro/reports/diagnostics/msr_v6c_run.log','FEM-Bench-Aero/CLAIMS.md','FEM-Bench-Aero/RUBRIC.md','feagpt_repro/reports/INDEX.md']}
  ];
 
 /* ============ 渲染 ============ */
@@ -1776,7 +1809,7 @@ const $ = s => document.querySelector(s);
 
 function renderStats(){
   const html = [
-    {k:'当前里程碑', v:'M9 – M14（D32–D36 + 阶段审计）', n:'<b>D32 目标口径定案</b>：主 <code>max_disp</code>／副 <code>max_w</code> 只报不判／应力峰值不设为目标 ｜ <b>D33 后掠中间档</b>：<code>sweep30</code> 入 train ｜ <b>D34 换模型形式</b>：<code>sweep</code> 项改二次 ｜ <b>D35 补交互锚点</b>：D15 改二分 + <code>sweep30_taper080</code> 入 train，<code>max_disp</code> test 4.97→<b>3.01 %</b> ｜ <b>D36 补纯后掠中间站</b>：<code>WINGBOX_TRAIN_MAX_SWEEP</code> 30→<b>35</b> + <code>sweep35</code>（锥度中性），<code>max_disp</code> test 3.01→<b>2.63 %</b>、<code>planform_out</code> 3.18→<b>1.09 %</b>、val 6.86→6.30 %；<b>代价</b> <code>max_w</code> 4.26→7.46、vM 外/中 5.29/4.68→6.29/5.56（<b>退化 100 % 集中在 <code>sweep40_taper040</code> 一条</b>）。<b>D36 的方法增量 = 先预注册再测量</b>：三条独立估计全部低于实测 5.4–8.1 %，证明是 30→40 整段低估而非单站错 ｜ <b>M14 阶段审计（Conditional-Go）</b>：路线已通可结题，但 <b>2.63 % 有选择偏置</b>（加 val 训练同考点 1.09→18.35 %）、全体留一 5.35 %（p90 14.09）、<b>vM 峰值未收敛（12→6 mm 仍 +12.9 %）</b>、无 git；移交三前置 = 冻结评估协议 / 可分离交互 / 适用域（详见 STAGE_GATE_M14.md）', c:'g'},
+    {k:'当前里程碑', v:'W5c 收口 · C-029（v6c）', n:'<b>对外 headline = C-029</b>：考卷 v6c × 55 条重生成候选 ⇒ exam <b>TSR 23/25 (92.0%)、SFR 20/22 (90.9%)、全链 MSR 19/22 (86.4%)</b>，CI95 TSR <b>[80.0, 100.0]</b>／SFR [77.3, 100.0]／MSR [72.7, 100.0]；三栏 6/6 · 11/13 · 6/6；负控 <b>39/39</b>、自检 22 claims / 34 artifacts / 29 语义全过。剩余 2 条 exam 失败全为模型侧（自创键 / layup 标量）⇒ <b>卷子已无可解性缺陷</b>。｜<b>代理模型线已冻结</b>（D37 拍板），下列 <b>M9–M14</b> 为历史口径：<b>D32 目标口径定案</b>：主 <code>max_disp</code>／副 <code>max_w</code> 只报不判／应力峰值不设为目标 ｜ <b>D33 后掠中间档</b>：<code>sweep30</code> 入 train ｜ <b>D34 换模型形式</b>：<code>sweep</code> 项改二次 ｜ <b>D35 补交互锚点</b>：D15 改二分 + <code>sweep30_taper080</code> 入 train，<code>max_disp</code> test 4.97→<b>3.01 %</b> ｜ <b>D36 补纯后掠中间站</b>：<code>WINGBOX_TRAIN_MAX_SWEEP</code> 30→<b>35</b> + <code>sweep35</code>（锥度中性），<code>max_disp</code> test 3.01→<b>2.63 %</b>、<code>planform_out</code> 3.18→<b>1.09 %</b>、val 6.86→6.30 %；<b>代价</b> <code>max_w</code> 4.26→7.46、vM 外/中 5.29/4.68→6.29/5.56（<b>退化 100 % 集中在 <code>sweep40_taper040</code> 一条</b>）。<b>D36 的方法增量 = 先预注册再测量</b>：三条独立估计全部低于实测 5.4–8.1 %，证明是 30→40 整段低估而非单站错 ｜ <b>M14 阶段审计（Conditional-Go）</b>：路线已通可结题，但 <b>2.63 % 有选择偏置</b>（加 val 训练同考点 1.09→18.35 %）、全体留一 5.35 %（p90 14.09）、<b>vM 峰值未收敛（12→6 mm 仍 +12.9 %）</b>、无 git；移交三前置 = 冻结评估协议 / 可分离交互 / 适用域（详见 STAGE_GATE_M14.md）', c:'g'},
     {k:'数据集规模', v:'55 × 2', n:'55 模型 · 54 等价类 · 4 个结构族 · train 25 ／ val 17 ／ test 13（翼盒 21-7-6）· modeling + _xval 各 55 条', c:'k'},
     {k:'门禁', v:'6 / 6 全绿', n:'关 1 <b>55/55</b>（最差 minJ 0.4636、tri3 = 0）／ 关 3 翼盒 <b>34/34</b> ／ 关 4 <b>110/110</b> ／ 自洽 <b>110/110</b>（跨树 55/55、配对 55/55、dup 0）／ 退化自检 <b>54/54</b>（按形式计项，不随算例数变）／ 无漂移 全绿；<code>eval_dataset</code> 29/29、<code>regress_groups</code> <b>9/9 组</b>、<code>baseline</code> PASS、<code>check_forms</code> <b>54 PASS / 0 FAIL</b>。<code>sweep35</code> 双码 <code>_xval_d36.json</code>：网格 5687/5687 坐标差 0、平衡残差 2.6e-04 %、<code>max|u|</code> 差 0.15 %、vM 中位差 0.20 %', c:'g'},
     {k:'结构形式', v:'4 族 + 2 截面 + 平面形状 + 多闭室 + 复材材料维 + 尺寸维', n:'T1–T7 七种形式全部落地（T7 = CLT 等效单层）· 长桁截面 blade+T · 柱壳 blade-only（D22）· 开孔板 / 多闭室各有闭式解 · D31 翼盒展长/壁厚进 train 区间', c:'a'}

@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
- "n_active_claims": 20,
- "n_artifacts": 24,
+ "n_active_claims": 22,
+ "n_artifacts": 34,
  "n_fail": 0,
  "n_fail_structural": 0,
  "n_fail_semantic": 0,
@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_31.json）",
-   "expect": "31/31",
-   "actual": "31/31",
+   "desc": "C-019 负控通过数（源 negative_controls_39.json）",
+   "expect": "39/39",
+   "actual": "39/39",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "31",
-   "actual": "31",
+   "expect": "39",
+   "actual": "39",
    "ok": true,
    "skip": false
   },
@@ -133,48 +133,112 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 4.3",
-   "actual": "4.3",
+   "expect": "全部 = 4.5",
+   "actual": "4.5",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "31/31",
-   "actual": "31/31",
+   "expect": "39/39",
+   "actual": "39/39",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-17",
-   "desc": "C-028 exam TSR 与成绩单一致",
-   "expect": "17/25 (68.0%)",
-   "actual": "17/25 (68.0%)",
+   "desc": "C-029 exam TSR 与成绩单一致",
+   "expect": "23/25 (92.0%)",
+   "actual": "23/25 (92.0%)",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-18",
-   "desc": "C-028 三栏条数在 C-028 行内",
+   "desc": "C-029 三栏条数在 claim 行内",
    "expect": "三栏齐",
-   "actual": "boundary=5/6,extrapolation=7/13,interpolation=5/6",
+   "actual": "boundary=6/6,extrapolation=11/13,interpolation=6/6",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-19",
-   "desc": "C-028 全链 MSR 与成绩单一致",
-   "expect": "25/44 (56.8%)",
+   "desc": "C-029 全链 MSR 与成绩单一致",
+   "expect": "38/51 (74.5%)",
    "actual": "命中",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-20",
-   "desc": "C-028 exam MSR 与成绩单一致",
-   "expect": "10/21 (47.6%)",
+   "desc": "C-029 exam MSR 与成绩单一致",
+   "expect": "19/22 (86.4%)",
    "actual": "命中",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-25",
+   "desc": "C-029 exam SFR 与成绩单一致",
+   "expect": "20/22",
+   "actual": "命中",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-26",
+   "desc": "C-029 覆盖记账含产出类型分解",
+   "expect": "行内含 N/N + spec/clarify/unresolved",
+   "actual": "55/55 unres=0 {'clarify_ok': 3, 'spec_pass': 20, 'spec_fail': 2}",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-23",
+   "desc": "C-029 成绩单口径字符串由考卷生成（R38）",
+   "expect": "exam_definition 含 exam_stratum / basis 含三栏 / note 非 W4d",
+   "actual": "ed=True vb=True w4d=False",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-24",
+   "desc": "C-029 by_split 只含非 exam 行（R36）",
+   "expect": "train=13",
+   "actual": "train=13 keys=['train', 'val']",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-28",
+   "desc": "C-029 exam task-id 集与考卷逐 id 相等",
+   "expect": "25 条",
+   "actual": "25 条 差集=[]",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-21",
+   "desc": "C-011 内插族分布",
+   "expect": "wingbox 6",
+   "actual": "命中",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-22",
+   "desc": "C-028 题面消歧计数（从 paper 实算）",
+   "expect": "26/55、25/55、161→206",
+   "actual": "命中",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-27",
+   "desc": "active claim 路径全部被 git 追踪（R37）",
+   "expect": "empty",
+   "actual": "[]",
    "ok": true,
    "skip": false
   }
@@ -284,9 +348,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 222583,
-   "sha256": "4c089c62413b29751889a0b927ffd4d3f1590722318b56157fd067ce11c6ffe8",
-   "mtime": 1792924475
+   "size": 223052,
+   "sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
+   "mtime": 1792930453
   },
   {
    "claim_id": "C-011",
@@ -296,9 +360,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 222583,
-   "sha256": "4c089c62413b29751889a0b927ffd4d3f1590722318b56157fd067ce11c6ffe8",
-   "mtime": 1792924475
+   "size": 223052,
+   "sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
+   "mtime": 1792930453
   },
   {
    "claim_id": "C-012",
@@ -380,9 +444,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 13099,
-   "sha256": "37494ce73e93971400f994e34d40790a44ff5f9edef30edc6fd63200932f18ff",
-   "mtime": 1792928708
+   "size": 19618,
+   "sha256": "03d60bb2481669c711ad2bef38817f04b6fce02cf8117f62cbfc290977be217d",
+   "mtime": 1792934769
   },
   {
    "claim_id": "C-027",
@@ -445,6 +509,78 @@
    "mtime": 1792928646
   },
   {
+   "claim_id": "C-028",
+   "artifact": "feagpt_repro/reports/r32_audit_v6b_before.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 319575,
+   "sha256": "3e3cfe6d05b70980dc8785e2527f0cb158f828c509435e6ed33dbf0c5a34fdbd",
+   "mtime": 1792931626
+  },
+  {
+   "claim_id": "C-029",
+   "artifact": "feagpt_repro/reports/baseline_scorecard_L3_v6c.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 49223,
+   "sha256": "d47988781560d7b1bf04fed99d2242e5664994579cd8d2758b554bdc81f14588",
+   "mtime": 1792934515
+  },
+  {
+   "claim_id": "C-029",
+   "artifact": "feagpt_repro/reports/bootstrap_ci_L3_v6c.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 2105,
+   "sha256": "2db167a7fefb278f4f98e64a13599cdf52a91a59db60d4fa42782c2e5668d319",
+   "mtime": 1792934750
+  },
+  {
+   "claim_id": "C-029",
+   "artifact": "feagpt_repro/reports/trivial_baselines_L3_v6c.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 18190,
+   "sha256": "38d9c8a3aab40a9f1f47dffc9af30fdc08b94e068b88c9a709fe4f038fe074d1",
+   "mtime": 1792930571
+  },
+  {
+   "claim_id": "C-029",
+   "artifact": "feagpt_repro/reports/diagnostics/bridge_w5c_B_v6b_oldcand.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 26563,
+   "sha256": "14cb79eff6ab6126a514b80b37052d77fbd8c3a1a46f85d5ab210201d8f3ceb6",
+   "mtime": 1792931215
+  },
+  {
+   "claim_id": "C-029",
+   "artifact": "feagpt_repro/reports/diagnostics/bridge_w5c_C_v6c_oldcand.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 26641,
+   "sha256": "5565f1a026cd5940b48506e5f2131734471501551256380aa083cda3e3d4f4f1",
+   "mtime": 1792931222
+  },
+  {
    "claim_id": "C-021",
    "artifact": "feagpt_repro/reports/baseline_scorecard_L3_v4.json",
    "exists": true,
@@ -457,16 +593,64 @@
    "mtime": 1792923639
   },
   {
-   "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_31.json",
+   "claim_id": "C-030",
+   "artifact": "feagpt_repro/reports/papers/tasks_v6c.jsonl",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 5336,
-   "sha256": "ff56119ae633daaf3979bd9609dfea1f78f05ee8491864d59cc0184f23d2c6d4",
-   "mtime": 1792928872
+   "size": 223052,
+   "sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
+   "mtime": 1792930466
+  },
+  {
+   "claim_id": "C-030",
+   "artifact": "feagpt_repro/reports/papers/nl_human_v6c.jsonl",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 53659,
+   "sha256": "3a5a54d29fb40405cb1beab19d2a07e790659c12e6558931f1a2784868ae493c",
+   "mtime": 1792930466
+  },
+  {
+   "claim_id": "C-030",
+   "artifact": "feagpt_repro/reports/r32_audit_v6c.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 318299,
+   "sha256": "d3a8f0524f7d82ff0592624eb37eb4d21eb3974c833654919d9dc668a8e070b8",
+   "mtime": 1792932703
+  },
+  {
+   "claim_id": "C-030",
+   "artifact": "feagpt_repro/reports/r32_audit_v6c_exam.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 149107,
+   "sha256": "efe23a5ccc03c1d470d9aa5b1ac8e2fd2f159696a45571d9456850e83ff78779",
+   "mtime": 1792931631
+  },
+  {
+   "claim_id": "C-019",
+   "artifact": "feagpt_repro/reports/negative_controls_39.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 7288,
+   "sha256": "9896f24819fa5943384c1e1f741a8da94686ad04ea5d58413673b4db3bc7a7c3",
+   "mtime": 1792934572
   }
  ]
 }

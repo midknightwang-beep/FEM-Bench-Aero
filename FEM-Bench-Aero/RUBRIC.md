@@ -1,6 +1,6 @@
 # RUBRIC.md — L3 判分口径预注册（W4e/W4f → W5a，专家第四/五轮 R18）
 
-> **版本**：v4.3（2026-10-25，W5b-4 新增红线 **R32**（考卷 gold 字段必须可从 NL 推出）+ 登记 v6b 实测三栏；**判分细则仍未动**；三栏 exam 见 §1.1；变更记录见文末）。
+> **版本**：v4.5（2026-10-25，W5c 新增红线 **R33–R41** + **§7.1 契约登记表** / **§7.2 死字段**（blade 剖面无缘条宽）/ **§7.3 数值角色**（R41）/ **§7.4 契约试建闸边界**（gold 也过闸）+ §1.1.1 改为 A/B/C/D 四类归因；R32 语义收口为「4 类 + 2 处局限」；三栏 exam 见 §1.1；变更记录见文末）。
 > **纪律（R18）**：本文件冻结后，跑基线期间不得再改；每次改动必须新开版本号 + 记录原因。
 > **post-hoc 声明**：W4d 版口径（EXEC_CONFIG_KEYS / METADATA_KEY_NAMES / bc_skip）是看过
 > 30 条候选后调整的，属 **post-hoc**——其成绩（C-020，已 superseded）只能作开发参考；
@@ -55,10 +55,18 @@
   （**26/55 新增「坐标系」约定、25/55 新增显式载荷方向 `[x,y,z]`**，题面均长 161 → 206 字）。
   这是 W5b-3a 为通过语义完备性检查（NC-20/R21）而加的正确改动，但客观上降低了难度
   ⇒ **禁止把 68.0% 与 C-021 的 45.5% 相减表述为「提升」**（R30）。
-- **★ 68.0% 是含已知缺陷的下界**（W5b-4 探针实证）：`open_hole_panel` exam **4/4 全败**，
-  同因生成器 SYS prompt 未约定 `params.hole_d / hole_x / hole_y` 键名；另有 2 条 wingbox
-  败于 `airfoil.stringer_flange_width`——**gold 有值但题面未给**（→ 新红线 **R32**）。
-  详见 `feagpt_repro/eval_runs/w5b4_defect_analysis_20261025.md`。
+- **★ 68.0% 是含已知缺陷的下界**（W5b-4 探针 + W5c-0 `r32_audit.py` 实证），8 条 exam 失败**须按四类分开归因，
+  不能笼统说「没有一条是模型能力不足」**：
+
+  | 类 | 条数 | 失败字段 | 性质 | W5c 处置 |
+  |---|---:|---|---|---|
+  | A 契约/键名 | 4（`open_hole_panel` 全族） | `params.hole_d`（4/4）+ `hole_x/hole_y`（2）+ `layup`（1）+ `material.ply_material` 自创键（1）+ `extra.end_tension` 自创键（2） | **harness 侧**：SYS prompt 从未列开孔板键名 | R34 键名表 + 禁用键（NC-31） |
+  | B 题面缺依据（R32） | 2 exam / 4 全卷 | `airfoil.stringer_flange_width`（`str3_T`）、`airfoil.web_chordwise`（`web1_offcentre`；dev 的 `web1`/`web2` 同因） | **卷子侧**：gold 有值、题面无依据 | v6c 补题面（C-030），`r32_audit` 4 → 0 |
+  | C 模型侧 | 1（`web1_offcentre`） | `extra.end_torque` / `extra.torque_axis_dof` 自创键 | **模型侧**：自创键（键名即契约，R19） | 只靠 R34 明示允许键收窄，不豁免 |
+  | D 收敛性 | 1（`str3`） | 3 轮未收敛 | **生成器侧**（孤例） | 记录 `turns_histogram`/`n_unresolved`，不改判据 |
+
+  A/C 在同一题上**有重叠**（`web1_offcentre` 既有 B 也有 C），所以「8 条里 6 条是系统性缺陷」的说法要精确到字段，
+  不能按题计。诊断明细 `feagpt_repro/reports/diagnostics/w5b4_defect_analysis_v6b.md`（R37：官方文档不再引 `eval_runs/`）。
 
 ## 2. TSR（主 KPI，行为正确性）
 
@@ -100,6 +108,18 @@
   （编造已由 FPR 单独计数，双重计数违反 R23）。v2 文字「编造被拒候选不计」按此执行。
 - 失败分层 `env / contract / model / solver`；env 单独计数，不进 MSR。
 - 汇总：`exam.msr` / `dev.msr` / `by_split` 落盘成绩单（P1-1/P1-2，不再手算；NC-22 检查）。
+- **★ solver 单列（R35，v4.5 修）**：solver/算力失败（OOM、超本机内存阈值）**记 `compute_bound`，
+  不计模型能力失败**，但**只许单列、不许静默删除**。成绩单必须给齐四行 ——
+  `exam_msr` / `exam_msr_excl_solver` / `dev_msr` / `dev_msr_excl_solver`，加全链
+  `msr` / `msr_excl_solver`，并标 `solver_in_exam` / `solver_in_dev` 归属。
+  **原始口径（含 solver）与剔除口径必须并列**：求解失败对模型确实是失败，剔掉是「能力上限口径」，
+  只留一个都会被误读。
+  **★ 且 solver 桶是「候选相关」的，不是题目固有属性**：同一题 `barrel_d2000_l2000_str12_frm4`
+  在 v6b 旧候选 4.2 s 就被 pipeline 拒（`class=model`），换 v6c 新候选后算到 169,606 节点才撞
+  158,548 阈值（`class=solver`）。⇒ **「剔除 solver 后的分母/得分」同样不可跨版本直减**
+  （R30/R39 的不可比判定一并适用于剔除口径）。
+  *（v4.5 之前的实现缺陷：`msr_l3.py` 注释写「exam MSR 不含 solver」而代码里 `exam_msr` **含**
+  solver —— 属于「注释与实现口径相反」，数字本身没错，但会让复核者按注释读出错误结论。）*
 - 解释器：`C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe`（gmsh 在 venv）。
 
 ## 5. value_added
@@ -115,8 +135,8 @@
   （W5a' artifact 入库 / git 追踪 / 官方·诊断分文件 / **NC-26 缺 gold 数据集必须硬报错**）
   + **`NC-27..29`**（W5b-3：**NC-27** 文本计数漂移必须被语义检查抓到、**NC-28** 候选未覆盖全卷必须标记、**NC-29** 跨口径混比必须拒绝）。
 - **计数口径（P1-2/P1-3 修正）**：旧文写「PC-1 + NC-1..22」= 23 是**漏计 NC-15b** 的错账；
-  实际为 24（W5a 时）／28（W5a' 收口）／**31**（W5b-3：再补 NC-27..29）。**报负控必须报总数 + 编号集合**，只报「全绿」不算。
-- 产物：`reports/negative_controls_31.json`（入库，R25）；`negative_controls.py` 读最新成绩单，
+  实际为 24（W5a 时）／28（W5a' 收口）／**31**（W5b-3：再补 NC-27..29）／**39**（W5c：再补 NC-30..37）。**报负控必须报总数 + 编号集合**，只报「全绿」不算。
+- 产物：`reports/negative_controls_39.json`（入库，R25）；`negative_controls.py` 读最新成绩单，
   缺成绩单时相关条目显式记 `skip` 而不是静默消失（W5a 教训：NC-15 曾因澄清题迁移而无声消失）。
 - **NC-19 判据已随 v6b 三栏同步（W5b-4）**：原判据「exam 集的 split_v2 必须 ∈ 留出集」
   在 v6b 下**假红**——内插题按设计就是从 `train` 留出的（`split_v2` 仍 `train`、
@@ -135,7 +155,61 @@
   - 实证来源：`airfoil.stringer_flange_width` 在 gold 有值，题面只写「blade 长桁（高 20 mm、厚 2.5 mm）」，
     模型按系统提示「用户没给的尺寸不得编造」正确省略 ⇒ 被判 `spec_fail`。这不是模型错，是**卷子错**。
   - R21 只覆盖了「载荷方向完备」（NC-20），**未覆盖本类**；R32 是它的补集。
-  - 检查方式（建议脚本化，W5c）：逐 family 遍历 `GRADED_FIELDS`，若 gold 有值而 NL 无对应数字/词元，报警。
+  - **已脚本化（W5c-0）**：`r32_audit.py` 逐 family 遍历 `GRADED_FIELDS` + `mesh/load/bc/analysis/extra`，
+    对每个判分字段给出 `derivable_nl` / `derivable_contract`（题面没写但契约唯一确定：材料卡、词汇表、族默认）/
+    `exempt:{dead|exec_config|default|clarify|bc_skip}` / **VIOLATION**。有 1 条 VIOLATION ⇒ 不得冻结考卷（**R33**）。
+    局限（写在脚本 docstring 里）：数值判据是「题面出现过该数（含单位换算）」，**必要不充分**，是筛查器不是证明器。
+  - **实测（W5b-4 卷）**：v6b 上 4 处 VIOLATION —— `str3_T` 缺缘条宽 + **3 条 web 任务题面完全没提中间腹板**
+    （旧 `make_nl_human` 从 `structure.params` 取 `n_web/web_pos`，而 gold 的腹板在 `airfoil.web_chordwise`，
+    params 是空的 ⇒ 永远取不到）。v6c 修复后 **0 违规**（1812 个判分字段全部分类）。
+
+### 7.1 契约登记表（题面不写也算可推的四种情形，W5c-1）
+
+| 类别 | 内容 | 判据 |
+|---|---|---|
+| 材料卡 | `Aluminium 2024-T3` ⇒ E=73100 MPa / ν=0.33 / ρ=2.78e-9 / 屈服 345 | 题面只写「铝 2024-T3」即可 |
+| 词汇表 | 面内拉伸（端部均布）/ 翼尖集中力 ⇒ `load.kind="tip_force"`；内压/均压 ⇒ `"pressure"`；翼型 `code="4412"`（不是 "NACA4412"）；bc ⇒ `{"root_surface":"root","clamp":true}` | SYS prompt「词汇约定」段 + NC-31 咬键名 |
+| 族默认 | 无锥度 ⇒ `tip_chord_ratio=1.0`；无后掠 ⇒ `sweep_deg=0`；无中间腹板 ⇒ `web_chordwise=[]`；无长桁 ⇒ `n_stringers(_per_skin)=0` | 题面无触发词 |
+| 执行配置 | `EXEC_CONFIG_KEYS`（网格算法/分析步/内部编码轴向） = REPORTED NOT GATED | 只报不判 |
+
+### 7.2 死字段（W5c 新增一条）
+
+- 无长桁（`n_stringers_per_skin=0`）时的 `stringer_*`：模板默认值，不可知 ⇒ 不判（沿用 W4d）。
+- **`blade` 剖面的 `stringer_flange_width`：不判。** 依据不是"模型没写就放过"，而是物理 + 代码：
+  `feagpt/sections.py::tee` 在 `flange_width<=0` 时**直接返回 `blade()`**，`geometry.py` 对 blade 只挤出单条竖板，
+  flange 完全不参与建模；`check_forms` T5 反向证明 `blade ≡ T(flange=0)`；gold 34 条翼盒该值**全部是模板默认 30.0**。
+  判定用 **gold 的 `stringer_kind`**（不用候选的——否则模型写 `kind="blade"` 就能顺手豁免缘条宽）。
+  `T` 剖面缘条宽是**真实几何**，必须在题面给出（v6c 的 `str3_T` 已补「缘条宽 30 mm」）。
+
+### 7.3 数值角色（R41，W5c 重打分轮新增）
+
+- **问题**：`length`/`width` 同时判分且值不等时，题面若只写「800 × 600 mm」，两个数**都出现过**（`num_derivable` 判定为 `derivable_nl`），
+  但「哪个是 length」**不可判**。模型按工程惯例「长 × 宽」读，若模板写的是 `{width} × {length}`，就会被判错——**错在卷子，不在模型**。
+- **实证**：`stiffened_panel_800x600` / `_str3` 旧模板 `f"{width} × {length}"` ⇒ 题面「600 × 800」，gold 是 `length=800, width=600`；
+  v6c 的候选把 `length` 写成 600、`width` 写成 800，被判 `params.length/width` 失败（**2 条 dev，0 条 exam**）。
+  同类任务里 11 条开孔板恰好是 `length` 在前，所以没暴露——**这不是「已修」，是「恰好没踩」**，故必须升为红线。
+- **判据**：审计对 `params.length`/`params.width` 这一对，若两值不等，则要求
+  ①题面显式含「长度/宽度」标记，**或** ②两个数在题面里的先后顺序为 `length → width`。都不满足 ⇒ `VIOLATION`。
+- **修法**：模板一律显式标注角色（`长度 X mm × 宽度 Y mm（length × width）`），不靠顺序隐含。
+- **成本口径**：v6c 已冻结、候选已生成，**不为此重跑**（exam 收益 0，重生成 3 h+）；作为 dev 侧**已知下界**登记在 C-030。
+  下一版卷子（若开 v6d）修模板后重生成即可回收 2 条 dev。
+
+### 7.4 契约试建闸（R19）的边界与「gold 也过同一闸」（W5c）
+
+- **它是干什么的**：`FEASpec.from_dict()` 在进求解器之前构造一遍，抓 **未知键（TypeError）** 与 **族/取值非法（ValueError）**。
+  失败即 `failure_class=contract`，不浪费求解时间。
+- **它不管什么**（实测边界，**别误当 schema required 校验**）：删掉 `material.youngs_modulus` 仍能构造成功。
+  缺字段由 `spec_fidelity`（SFR）抓，不靠试建闸。因此「contract PASS」≠「spec 完整」。
+- **★ gold 也要过同一闸**（专家第八轮 §3.2 点名的疑问）：C-028 有 3 条 exam 任务 **TSR PASS + SFR PASS 但 MSR contract 失败**，
+  只看候选分不清「模型参数错」还是「builder 不支持这个合法组合」。`audit_contract.py` 把 **gold spec** 过同一道闸：
+
+  | 结果 | 判定 |
+  |---|---|
+  | gold 能建、候选不能建 | **模型 spec 质量问题**（判 model，合理） |
+  | gold 也不能建 | **任务/契约缺陷（harness）**，不得计入模型能力，须修 builder 或改卷子 |
+
+- **v6c 实测**：**55/55 gold 全部可建**（`reports/contract_audit_v6c.json`，rc=0）⇒ 那 3 条 contract 失败一律判 model，
+  **不是 harness 背锅**。负控 **NC-37** 做反向验证（给 gold 注入 `material.ply_material` ⇒ 必须 rc=1）。
 
 ## 8. 产物纪律（W5a'，R25/R26/R27/R28）
 
@@ -158,6 +232,8 @@
 | v3 | 2026-10-25 W5a | MSR 分母按任务属性排除（R23）+ R21 任务构建期方向检查 + NC-20..22 + exam.msr/dev.msr 汇总 | 专家第五轮 P0-1/P0-3/P1-1/P1-2；考卷 v5（坐标系写死 + panel 澄清题迁移 str3） |
 | **v3.1** | 2026-10-25 W5a' | **仅文档/计数/产物纪律**：负控计数 23→24→**28**（补 NC-15b、NC-23..26）+ 新增 §8 产物纪律；**判分口径零改动** | 专家第六轮 P1-2（RUBRIC 说 NC-1..22 = 23，实为 24）+ R25–R28。**不触发重跑**（口径未变，C-021 仍有效） |
 | **v4** | 2026-10-25 W5b | **§1.1 三栏 exam 预注册**：headline = 合并 25（boundary 6 + extrap 13 + interp 6）、三栏明细并列、R12 分母 = 25；新增 `exam_stratum` 字段约定；**判分细则未动** | 老王拍板「扩卷路径 A + headline 全 exam 25」；发现「headline=boundary+extrap 恒为 19」与 R12 的 n≥20 互斥，必须显式取舍 |
+| **v4.1** | 2026-10-25 W5b-3 | **仍无判分口径改动**：§1 表拆成 11 / 19 / 25 三行；§6 负控 28→**31**（NC-27..29）；新增 R29 语义计数 / R30 跨口径不可比 / R31 生成前预检。**C-021 与 C-027 均不需重跑** | 专家第七轮 P1-1..P1-6（5 处语义计数漂移 + `check_claims` 只做结构检查抓不到） |
 | **v4.2** | 2026-10-25 W5b-3b | §1.1 内插名额由「按族 2/2/1/1」改为「全翼盒 6」（v6 → v6b）：原名额把 barrel/open_hole/panel 三族 train 抽空 ⇒ T1 地板只有 1/4 族可算。**exam 仍 25、判分口径零改动** | 老王拍板 A；实测 `_probe_interp_w5b3b.py` + `trivial_baselines` v6b（T1 0/25、四族齐全） |
 | **v4.3** | 2026-10-25 W5b-4 | ①新增红线 **R32**（考卷构建期必须断言 gold 的每个判分字段都能从 NL 推出，否则属不可解题、不得进 exam）；②新增 §1.1.1 登记 v6b 实测三栏（boundary 5/6、extrap 7/13、interp 5/6）+ 难度方向性偏差声明；③**判分细则仍零改动** | W5b-4 探针实证：`stringer_flange_width` gold 有值但题面未给 ⇒ 模型无解却被判 fail（2 条 exam）；`open_hole_panel` 4/4 全败于 prompt 未给键名 |
-| **v4.1** | 2026-10-25 W5b-3 | **仍无判分口径改动**：§1 表拆成 11 / 19 / 25 三行；§6 负控 28→**31**（NC-27..29）；新增 R29 语义计数 / R30 跨口径不可比 / R31 生成前预检。**C-021 与 C-027 均不需重跑** | 专家第七轮 P1-1..P1-6（5 处语义计数漂移 + `check_claims` 只做结构检查抓不到） |
+| **v4.4** | 2026-10-25 W5c 修复轮 | R33–R40 八条新红线；§7 契约登记表 + §7.2 死字段（`blade` 无缘条宽）；§1.1.1 归因细化（A/C 混合，web1_offcentre 补列）；负控 31 → **39**（NC-30..37）；语义检查 21 → **29** 项（S-21..S-28 + 复活的 S-19/S-20 由「静默消失」改为响亮失败） | 第八轮复评 24/30；`r32_audit.py` 4→0 违规、T1 leave-one-out（train 12/13 全是自命中）、成绩单文案由考卷生成 |
+| **v4.5** | 2026-10-25 W5c 重打分轮 | 新增 **R41 数值角色**（+ §7.3）+ §7.4 契约试建闸边界（gold 55/55 可建）；R33 改**两端口径**（exam 0 违规 + 非 exam 白名单逐字相等）；R32 局限补第二处「数值出现 ≠ 字段角色可判」；**§4 / R35 补四行口径**（`exam_msr` 与 `exam_msr_excl_solver` 并列，原注释「exam MSR 不含 solver」与实现相反）+ 修顶层 `msr` 一直为 null（NC-36 抓到） | v6c 自查发现 `stiffened_panel_800x600`/`_str3` 旧模板 `{width} × {length}` 使题面「600 × 800」与 gold `length=800` 角色相反 ⇒ 模型正确读法被判错（2 条 dev，0 条 exam） |

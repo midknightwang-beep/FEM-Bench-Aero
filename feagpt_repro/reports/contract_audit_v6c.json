@@ -1,0 +1,506 @@
+{
+ "note": "W5c 契约试建闸（专家第八轮 §3.2）：把 gold spec 过同一道 R19 试建闸，用来区分「模型 spec 质量问题」与「builder 不支持这个合法组合」。gold 建不出来 ⇒ 该任务属 harness 缺陷，不应计入模型失败。不起求解器。",
+ "tasks_path": "reports/papers/tasks_v6c.jsonl",
+ "n_tasks": 55,
+ "n_ok": 55,
+ "n_bad": 0,
+ "n_bad_exam": 0,
+ "all_gold_buildable": true,
+ "per_task": [
+  {
+   "task_id": "L3_naca4412_wingbox",
+   "exam_stratum": "interpolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs3_chord1000",
+   "exam_stratum": "boundary",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs3_chord800",
+   "exam_stratum": "boundary",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs5_chord800",
+   "exam_stratum": "interpolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs7_chord1000",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs7_chord800",
+   "exam_stratum": "extrapolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs9_chord1000",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_recombination_algorithm3",
+   "exam_stratum": "interpolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin1p5",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin2",
+   "exam_stratum": "interpolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin4",
+   "exam_stratum": "boundary",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span1600",
+   "exam_stratum": "boundary",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span2400",
+   "exam_stratum": "interpolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span2400_skin2",
+   "exam_stratum": "extrapolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span3000",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span3000_skin1p5",
+   "exam_stratum": "extrapolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_str3",
+   "exam_stratum": "interpolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_str3_T",
+   "exam_stratum": "extrapolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_str5",
+   "exam_stratum": "boundary",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep10",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep20",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep20_taper060",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep30",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep30_taper080",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep35",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep40",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep40_taper040",
+   "exam_stratum": "extrapolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_taper040",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_taper060",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_taper080",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_taper090",
+   "exam_stratum": "boundary",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_web1",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_web1_offcentre",
+   "exam_stratum": "extrapolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_web2",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp090s",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
+   "exam_stratum": "extrapolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrpqi",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_offcentre",
+   "exam_stratum": "extrapolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d40",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d40_offcentre",
+   "exam_stratum": "extrapolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d50",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_open_hole_panel_600x300_d30",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_open_hole_panel_600x300_d60",
+   "exam_stratum": "extrapolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+   "exam_stratum": "extrapolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d1800_l2000_str8_frm3",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l1600_str8_frm3",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+   "exam_stratum": "extrapolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_stiffened_panel_600x600_str3",
+   "exam_stratum": "extrapolation",
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_stiffened_panel_800x600_str3",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_stiffened_panel_600x600",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  },
+  {
+   "task_id": "L3_stiffened_panel_800x600",
+   "exam_stratum": null,
+   "exists": true,
+   "ok": true,
+   "err": null,
+   "built_via": "raw",
+   "class_": "ok"
+  }
+ ]
+}

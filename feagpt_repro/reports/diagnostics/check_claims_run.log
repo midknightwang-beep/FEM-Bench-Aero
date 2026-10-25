@@ -1,0 +1,68 @@
+== CLAIMS 自检（R25/R26/R27 结构 + R29 语义计数）==
+  [ok  ] C-001   FEM-Bench-Aero/manifest.json
+  [ok  ] C-002   FEM-Bench-Aero/gates_all55_d36.json
+  [ok  ] C-003   FEM-Bench-Aero/gate3_all55_d37.json
+  [ok  ] C-004   FEM-Bench-Aero/gate4_d36.json
+  [ok  ] C-005   FEM-Bench-Aero/verify_dataset_d36.json
+  [ok  ] C-006   FEM-Bench-Aero/baseline_d36_final.json
+  [ok  ] C-007   feagpt_repro/_probe_m14/all_loo.json
+  [ok  ] C-008   feagpt_repro/_probe_m14/h_convergence.json
+  [ok  ] C-010   feagpt_repro/tasks/tasks.jsonl
+  [ok  ] C-011   feagpt_repro/tasks/tasks.jsonl
+  [ok  ] C-012   FEM-Bench-Aero/schema_truth.json
+  [ok  ] C-012   FEM-Bench-Aero/schema_task.json
+  [ok  ] C-013   F:/FEA_Archive_20261024/SHA256SUMS.txt
+  [ok  ] C-017   feagpt_repro/reports/baseline_scorecard_L1_smoke.json
+  [ok  ] C-025   feagpt_repro/reports/baseline_scorecard_L3_v5_rescore.json
+  [ok  ] C-024   feagpt_repro/reports/bridge_v3_v4.json
+  [ok  ] C-026   feagpt_repro/reports/INDEX.md
+  [ok  ] C-027   feagpt_repro/reports/papers/tasks_v6b.jsonl
+  [ok  ] C-027   feagpt_repro/reports/papers/nl_human_v6b.jsonl
+  [ok  ] C-027   feagpt_repro/reports/papers/tasks_v6.jsonl
+  [ok  ] C-028   feagpt_repro/reports/baseline_scorecard_L3_v6b.json
+  [ok  ] C-028   feagpt_repro/reports/bootstrap_ci_L3_v6b.json
+  [ok  ] C-028   feagpt_repro/reports/r32_audit_v6b_before.json
+  [ok  ] C-029   feagpt_repro/reports/baseline_scorecard_L3_v6c.json
+  [ok  ] C-029   feagpt_repro/reports/bootstrap_ci_L3_v6c.json
+  [ok  ] C-029   feagpt_repro/reports/trivial_baselines_L3_v6c.json
+  [ok  ] C-029   feagpt_repro/reports/diagnostics/bridge_w5c_B_v6b_oldcand.json
+  [ok  ] C-029   feagpt_repro/reports/diagnostics/bridge_w5c_C_v6c_oldcand.json
+  [ok  ] C-021   feagpt_repro/reports/baseline_scorecard_L3_v4.json
+  [ok  ] C-030   feagpt_repro/reports/papers/tasks_v6c.jsonl
+  [ok  ] C-030   feagpt_repro/reports/papers/nl_human_v6c.jsonl
+  [ok  ] C-030   feagpt_repro/reports/r32_audit_v6c.json
+  [ok  ] C-030   feagpt_repro/reports/r32_audit_v6c_exam.json
+  [ok  ] C-019   feagpt_repro/reports/negative_controls_39.json
+-- 语义计数（声称值 vs artifact 实读）--
+  [ok  ] S-00  必需 claim 存在性                       声称=无缺失 实测=全部在
+  [ok  ] S-01  C-010 任务层总行数                       声称=165 实测=165
+  [ok  ] S-02  C-010 其中 L3 行数                     声称=55 实测=55
+  [ok  ] S-03  C-011 内插 ID test 条数                声称=6 实测=6
+  [ok  ] S-04  C-019 负控通过数（源 negative_controls_39.json） 声称=39/39 实测=39/39
+  [ok  ] S-05  C-019 coverage 列                   声称=39 实测=39
+  [ok  ] S-06  C-021 exam 条数                      声称=11 实测=11
+  [ok  ] S-07  C-027 三栏 boundary/extrap/interp    声称=(6, 13, 6) 实测=(6, 13, 6)
+  [ok  ] S-08  C-027 exam 合计                      声称=25 实测=25
+  [ok  ] S-09  W5B_PLAN.md 里「C-021 的 N 条」         声称=11 实测=11
+  [ok  ] S-10  RUBRIC.md 里「C-021 的 N 条」           声称=11 实测=11
+  [ok  ] S-11  CLAIMS.md 里「C-021 的 N 条」           声称=11 实测=11
+  [ok  ] S-12  RUBRIC §1 三栏条数行                    声称=存在 实测=存在
+  [ok  ] S-13  RUBRIC §1 三栏条数行                    声称=存在 实测=存在
+  [ok  ] S-14  RUBRIC §1 三栏条数行                    声称=存在 实测=存在
+  [ok  ] S-15  README 引用的 RUBRIC 版本               声称=4.5 实测=全部 = 4.5
+  [ok  ] S-16  README 负控通过数                       声称=39/39 实测=39/39
+  [ok  ] S-17  C-029 exam TSR 与成绩单一致              声称=23/25 (92.0%) 实测=23/25 (92.0%)
+  [ok  ] S-18  C-029 三栏条数在 claim 行内               声称=boundary=6/6,extrapolation=11/13,interpolation=6/6 实测=三栏齐
+  [ok  ] S-19  C-029 全链 MSR 与成绩单一致                声称=命中 实测=38/51 (74.5%)
+  [ok  ] S-20  C-029 exam MSR 与成绩单一致              声称=命中 实测=19/22 (86.4%)
+  [ok  ] S-25  C-029 exam SFR 与成绩单一致              声称=命中 实测=20/22
+  [ok  ] S-26  C-029 覆盖记账含产出类型分解                  声称=55/55 unres=0 {'clarify_ok': 3, 'spec_pass': 20, 'spec_fail': 2} 实测=行内含 N/N + spec/clarify/unresolved
+  [ok  ] S-23  C-029 成绩单口径字符串由考卷生成（R38）           声称=ed=True vb=True w4d=False 实测=exam_definition 含 exam_stratum / basis 含三栏 / note 非 W4d
+  [ok  ] S-24  C-029 by_split 只含非 exam 行（R36）     声称=train=13 keys=['train', 'val'] 实测=train=13
+  [ok  ] S-28  C-029 exam task-id 集与考卷逐 id 相等     声称=25 条 差集=[] 实测=25 条
+  [ok  ] S-21  C-011 内插族分布                        声称=命中 实测=wingbox 6
+  [ok  ] S-22  C-028 题面消歧计数（从 paper 实算）           声称=命中 实测=26/55、25/55、161→206
+  [ok  ] S-27  active claim 路径全部被 git 追踪（R37）     声称=[] 实测=empty
+
+active claims 22 条 / artifact 34 个 / 语义项 29 条 -> 全过
+report -> F:\AI FEA Modeling DataSets\feagpt_repro\reports\check_claims.json

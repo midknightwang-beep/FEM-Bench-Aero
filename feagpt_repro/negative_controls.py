@@ -335,35 +335,44 @@ def main():
     print(f"  [{ 'ok ' if has_guard else 'BAD!' }] NC-18 MSR 依赖预检存在                         "
           f"expect=guard actual={'present' if has_guard else 'missing'}")
 
-    # NC-19：headline 检查——成绩单 exam 定义不得含未留出的 train/val（R15）
+    # NC-19：headline 检查——成绩单 exam 定义不得含未留出的 train/val（R15 / R36）
     # W5b-4 修：v6b 三栏口径下「内插题」按设计就是从 train 里留出的（split_v2 仍是 train，
-    # exam_stratum='interpolation'，见 C-027）。原判据把这类合法行也算 BAD（假红）。
-    # 新不变式：exam 行要么 split 属于留出集，要么 (split=train 且 stratum=interpolation)；
-    # 其余组合（train 未标内插 / val / 其他）一律 BAD —— 核心「不得混入未留出 train」未放宽。
+    # exam_stratum='interpolation'）。原判据把这类合法行也算 BAD（假红）。
+    # W5c 再修（R36）：v6c 起内插题 split_v2 直接是 interpolation_test ⇒ 不再需要豁免。
+    # 新不变式（三端都守）：① exam 行 split 必须与 stratum 一致；② 非 exam 行 split 不得是留出；
+    # ③ 内插题若仍是 split=train（旧卷），只允许此一种组合，且必须显式计入「旧卷豁免」。
     sc_path = latest_scorecard()
     print(f'  [info] 负控读取的成绩单 = {sc_path}')
     if os.path.exists(sc_path):
         sc19 = json.load(open(sc_path, encoding='utf-8'))
         all19 = sc19.get('per_task', [])
         exam_rows = [r for r in all19 if r.get('is_exam')]
-        has_stratum = any(r.get('exam_stratum') in ('boundary', 'extrapolation', 'interpolation')
-                          for r in all19)
-        allowed = {'boundary_holdout', 'extrapolation_test'}
-        bad, interp_exempt = [], 0
+        holdout = {'boundary_holdout', 'extrapolation_test', 'interpolation_test'}
+        bad, legacy_exempt = [], 0
         for r in exam_rows:
             sv, st = r.get('split_v2'), r.get('exam_stratum')
-            if sv in allowed:
+            if st not in ('boundary', 'extrapolation', 'interpolation'):
+                bad.append(f"{r.get('task_id')}(stratum={st})")
                 continue
-            if has_stratum and sv == 'train' and st == 'interpolation':
-                interp_exempt += 1
+            if sv in holdout:
+                if (st == 'boundary') != (sv == 'boundary_holdout') or \
+                   (st == 'extrapolation') != (sv == 'extrapolation_test') or \
+                   (st == 'interpolation') != (sv == 'interpolation_test'):
+                    bad.append(f"{r.get('task_id')}(split={sv}≠stratum={st})")
+                continue
+            if sv == 'train' and st == 'interpolation':
+                legacy_exempt += 1        # 仅旧卷（v6b 及以前）合法
                 continue
             bad.append(f"{r.get('task_id')}(split={sv},stratum={st})")
+        for r in all19:
+            if not r.get('is_exam') and r.get('split_v2') in holdout:
+                bad.append(f"{r.get('task_id')}(非 exam 却是留出 split)")
         ok = not bad
-        extra = f' / 内插豁免 {interp_exempt}' if interp_exempt else ''
-        results.append({'id': 'NC-19', 'desc': 'exam 集不含未留出的 train/val（R15）',
+        extra = f' / 旧卷豁免 {legacy_exempt}' if legacy_exempt else ''
+        results.append({'id': 'NC-19', 'desc': 'exam 集与 split 语义一致（R15/R36）',
                         'expect': 'empty', 'actual': (str(sorted(bad)[:3]) or 'empty') + extra,
                         'ok': ok})
-        print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-19 exam 集不含未留出的 train/val            "
+        print(f"  [{ 'ok ' if ok else 'BAD!' }] NC-19 exam 集与 split 语义一致              "
               f"expect=empty actual={(sorted(bad)[:3]) or 'empty'}{extra}")
     else:
         results.append({'id': 'NC-19', 'desc': 'exam 集不含 train/val（成绩单未生成，跳过）',
@@ -547,6 +556,217 @@ def main():
                     'expect': 'cross=拒 / same=可', 'actual': actual29, 'ok': ok29})
     print(f"  [{'ok ' if ok29 else 'BAD!'}] NC-29 跨口径混比被拒                                "
           f"expect=cross拒/same可 actual={actual29}")
+
+    # ================= W5c 扩展（专家第八轮 §6）：NC-30..35 =================
+    # NC-30（R33）：R32+R41 审计是考卷冻结闸——**两端口径**：
+    #   ① exam 范围必须 0 VIOLATION（对外 headline 的题面必须可解）；
+    #   ② 非 exam 允许存在**已登记**的 VIOLATION，但 task_id 集必须与白名单逐字相等——
+    #      白名单只许缩小不许扩大（任何新增违规都会让本条变 BAD）。
+    #   ＋反向验证：抽掉一条题面的腹板位置 ⇒ 必须被抓（防「闸门空转」）。
+    import subprocess, tempfile
+    paper6 = os.path.join(HERE, 'reports', 'papers', 'tasks_v6c.jsonl')
+    if os.path.exists(paper6):
+        from r32_audit import KNOWN_NONEXAM_VIOL   # 唯一出处，见 r32_audit.py 顶部注释
+        rc_exam = subprocess.run([sys.executable, os.path.join(HERE, 'r32_audit.py'),
+                                  '--tasks', paper6, '--scope', 'exam'],
+                                 capture_output=True, text=True, encoding='utf-8',
+                                 errors='replace').returncode
+        p_all = subprocess.run([sys.executable, os.path.join(HERE, 'r32_audit.py'),
+                                '--tasks', paper6, '--scope', 'all'],
+                               capture_output=True, text=True, encoding='utf-8',
+                               errors='replace')
+        try:
+            non_exam_viol = set(json.load(open(os.path.join(HERE, 'reports', 'r32_audit_v6c.json'),
+                                               encoding='utf-8')).get('violations_by_task') or {})
+        except Exception:
+            non_exam_viol = set()
+        rc_good = rc_exam if (rc_exam == 0 and non_exam_viol == KNOWN_NONEXAM_VIOL) else 1
+        # 反向：把 web1 的「中间腹板」句删掉（模拟 v6b 的缺陷），审计必须报 airfoil.web_chordwise
+        rows30 = [json.loads(l) for l in open(paper6, encoding='utf-8') if l.strip()]
+        hit30 = 0
+        for r in rows30:
+            if r['task_id'] == 'L3_naca4412_wingbox_web1':
+                before = r['input']['nl']
+                r['input']['nl'] = before.replace('加 1 道中间腹板（位于 0.475 弦向），', '')
+                hit30 = int(before != r['input']['nl'])
+        tmp30 = os.path.join(RUNS, '_nc30_paper_mut.jsonl')
+        os.makedirs(RUNS, exist_ok=True)
+        with open(tmp30, 'w', encoding='utf-8') as f:
+            for r in rows30:
+                f.write(json.dumps(r, ensure_ascii=False) + '\n')
+        p30 = subprocess.run([sys.executable, os.path.join(HERE, 'r32_audit.py'),
+                              '--tasks', tmp30, '--scope', 'all'],
+                             capture_output=True, text=True, encoding='utf-8', errors='replace')
+        ok30 = (rc_good == 0) and hit30 == 1 and p30.returncode != 0 and 'web_chordwise' in p30.stdout
+        results.append({'id': 'NC-30', 'desc': 'R32/R41 审计闸：exam 0 违规 + 非 exam 白名单逐字相等 + 反向验证（R33）',
+                        'expect': 'exam_rc=0 / viol==白名单 / mutated=1+web_chordwise',
+                        'actual': f'exam_rc={rc_exam} all_rc={p_all.returncode} '
+                                  f'viol={sorted(non_exam_viol)} hit={hit30} mut_rc={p30.returncode}',
+                        'ok': ok30})
+        print(f"  [{'ok ' if ok30 else 'BAD!'}] NC-30 审计闸（exam 0 + 白名单 + 反向）              "
+              f"expect=exam0/viol=白名单/mut>0 actual=exam{rc_exam}/viol{len(non_exam_viol)}/mut{p30.returncode}")
+    else:
+        results.append({'id': 'NC-30', 'desc': 'R32 审计闸（考卷缺失，跳过）', 'expect': 'skip',
+                        'actual': 'no paper', 'ok': True})
+        print('  [ ok ] NC-30 R32 审计闸（考卷缺失，跳过）')
+
+    # NC-31（R34）：生成器 SYS prompt 必须列全四族 KNOWN_KEYS（键名从 GRADED_FIELDS 实读，不硬编码）
+    from evaluate import GRADED_FIELDS
+    sys_src = open(os.path.join(HERE, 'gen_candidates_v2.js'), encoding='utf-8').read()
+    must = set()
+    for fam, (holder, keys) in GRADED_FIELDS.items():
+        must |= set(keys)
+    must |= {'hole_d', 'hole_x', 'hole_y', 'layup', 'end_shear', 'end_moment'}
+    miss31 = sorted(k for k in must if k not in sys_src)
+    banned_ok = 'ply_material' in sys_src and '绝不要' in sys_src   # 只允许作为「禁止键」出现
+    ok31 = (not miss31) and banned_ok
+    results.append({'id': 'NC-31', 'desc': '生成器 SYS prompt 键名表齐全（R34）',
+                    'expect': 'missing=0 / 禁键有明示', 'actual': f'missing={miss31[:5]} banned_hint={banned_ok}',
+                    'ok': ok31})
+    print(f"  [{'ok ' if ok31 else 'BAD!'}] NC-31 SYS prompt 键名表齐全                        "
+          f"expect=0 actual={len(miss31)} missing{miss31[:3]}")
+
+    # NC-32（R40）：T1 必须 leave-one-out——地板报告不得有自命中；源码必须带排除条件
+    tb_src = open(os.path.join(HERE, 'trivial_baselines.py'), encoding='utf-8').read()
+    src_loo = "tt['task_id'] != t['task_id']" in tb_src
+    tr_path = os.path.join(HERE, 'reports', 'trivial_baselines_L3_v6c.json')
+    self_hits, loo_flag = [], None
+    if os.path.exists(tr_path):
+        tr = json.load(open(tr_path, encoding='utf-8'))
+        loo_flag = tr.get('t1_leave_one_out')
+        self_hits = [r['task_id'] for r in tr.get('per_task', []) if r.get('T1_self_hit')]
+    ok32 = src_loo and (loo_flag is True) and not self_hits
+    results.append({'id': 'NC-32', 'desc': 'T1 leave-one-out（检索库不含目标自身，R40）',
+                    'expect': '源码过滤 + 报告无自命中', 'actual': f'src={src_loo} flag={loo_flag} self={len(self_hits)}',
+                    'ok': ok32})
+    print(f"  [{'ok ' if ok32 else 'BAD!'}] NC-32 T1 leave-one-out                              "
+          f"expect=过滤+0自命中 actual=src{src_loo}/flag{loo_flag}/self{len(self_hits)}")
+
+    # NC-33（R38）：成绩单摘要字符串不得是 W4d 旧文案
+    ok33, a33 = False, 'no scorecard'
+    if os.path.exists(sc_path):
+        sc33 = json.load(open(sc_path, encoding='utf-8'))
+        ed = sc33.get('exam_definition') or ''
+        note = sc33.get('note') or ''
+        split_ok = not any(k in {'boundary_holdout', 'extrapolation_test'}
+                           and False for k in [])
+        by_split33 = sc33.get('by_split') or {}
+        exam_in_split = [k for k in by_split33 if k in ('boundary_holdout', 'extrapolation_test',
+                                                        'interpolation_test')]
+        ok33 = ('exam_stratum' in ed) and ('W4d' not in note) and not exam_in_split \
+            and bool(sc33.get('by_split_note'))
+        a33 = f"exam_def含stratum={'exam_stratum' in ed} W4d旧串={'W4d' in note} " \
+              f"by_split混入exam={exam_in_split} note={bool(sc33.get('by_split_note'))}"
+    results.append({'id': 'NC-33', 'desc': '成绩单口径字符串由考卷生成（R38）',
+                    'expect': 'stratum + 无 W4d + by_split 不含 exam', 'actual': a33, 'ok': ok33})
+    print(f"  [{'ok ' if ok33 else 'BAD!'}] NC-33 成绩单口径字符串                              "
+          f"expect=stratum/无W4d/by_split纯dev actual={a33}")
+
+    # NC-34（R37）：官方文档不得引用 eval_runs/ 下的具体文件（未追踪）
+    import re as _re
+    docs = [os.path.join(ROOT_, 'FEM-Bench-Aero', f) for f in ('CLAIMS.md', 'RUBRIC.md', 'README.md')]
+    docs.append(os.path.join(HERE, 'reports', 'INDEX.md'))
+    pat = _re.compile(r'eval_runs/[A-Za-z0-9_./\-]+\.(?:md|json|jsonl)')
+    hits34 = []
+    for d in docs:
+        if not os.path.exists(d):
+            continue
+        for m in pat.finditer(open(d, encoding='utf-8').read()):
+            hits34.append(f'{os.path.basename(d)}:{m.group(0)}')
+    ok34 = not hits34
+    results.append({'id': 'NC-34', 'desc': '官方文档不引用 eval_runs/ 具体文件（R37）',
+                    'expect': 'empty', 'actual': str(hits34[:3]) or 'empty', 'ok': ok34})
+    print(f"  [{'ok ' if ok34 else 'BAD!'}] NC-34 官方文档不引 eval_runs/ 文件                 "
+          f"expect=empty actual={len(hits34)} 处{hits34[:2]}")
+
+    # NC-35（R39）：同条数但 task-id 集不同 ⇒ 必须拒绝比较；同集 ⇒ 允许
+    from compare_scorecards import comparability
+    fake_a = {'exam': {'n': 25}, 'exam_definition': 'X', 'exam_by_stratum': {'boundary': {'n': 25}},
+              'exam_task_ids_sha256': 'a' * 64, 'exam_by_family': {'wingbox': 25}}
+    fake_b = {'exam': {'n': 25}, 'exam_definition': 'X', 'exam_by_stratum': {'boundary': {'n': 25}},
+              'exam_task_ids_sha256': 'b' * 64, 'exam_by_family': {'wingbox': 25}}
+    rej35, why35 = comparability(fake_a, fake_b)
+    same35, _ = comparability(fake_a, fake_a)
+    ok35 = (not rej35) and bool(why35) and same35
+    results.append({'id': 'NC-35', 'desc': '同条数不同 task-id 集必须拒绝比较（R39）',
+                    'expect': 'cross=拒 / same=可',
+                    'actual': f'cross={"可" if rej35 else "拒"}({len(why35)} 理由) / same={"可" if same35 else "拒"}',
+                    'ok': ok35})
+    print(f"  [{'ok ' if ok35 else 'BAD!'}] NC-35 同条数≠同批题 被拒                             "
+          f"expect=cross拒/same可 actual={'可' if rej35 else '拒'}/{'可' if same35 else '拒'}")
+
+    # NC-37（W5c 契约闸）：`audit_contract.py` 必须**咬得住**——真 gold 全可建（rc=0），
+    # 人为删掉一个必填键后必须 rc=1。这道闸的意义是回答专家第八轮 §3.2 的疑问：
+    # 3 条 TSR/SFR 双 PASS 但 MSR contract 失败的题，是模型错还是 builder 不支持合法组合？
+    # gold 能建 ⇒ 模型错（合理）；gold 不能建 ⇒ 任务缺陷（不算模型能力）。
+    # 没有反向验证的话，脚本「永远返回 0」也看不出来。
+    import shutil, tempfile
+    tmp_cases = os.path.join(RUNS, '_nc37_cases')
+    ok37, det37 = False, 'skip'
+    paper6p = os.path.join(HERE, 'reports', 'papers', 'tasks_v6c.jsonl')
+    if os.path.exists(paper6p):
+        r37 = subprocess.run([sys.executable, os.path.join(HERE, 'audit_contract.py'),
+                              '--tasks', paper6p, '--out', os.path.join(RUNS, '_nc37_real.json')],
+                             capture_output=True, text=True, encoding='utf-8', errors='replace')
+        # 反向：拷一个案例、删掉 material.youngs_modulus，做一个只含该条的临时考卷
+        cid37 = 'naca4412_wingbox'
+        src37 = os.path.join(FEA, 'modeling', cid37)
+        mut_ok = False
+        if os.path.isdir(src37):
+            shutil.rmtree(tmp_cases, ignore_errors=True)
+            shutil.copytree(src37, os.path.join(tmp_cases, cid37))
+            sp37 = os.path.join(tmp_cases, cid37, 'spec.json')
+            d37 = json.load(open(sp37, encoding='utf-8'))
+            # ★ 变异必须选**真实失效模式**：试建闸管的是「未知键 / 非法值」（TypeError/ValueError），
+            #   **不管缺键**——实测删掉 material.youngs_modulus 仍然 55/55 可建（FEASpec 对缺键宽容）。
+            #   这是本闸的已知边界，写进注释免得后人误以为它做了 schema required 校验。
+            before37 = dict(d37.get('material') or {})
+            (d37.setdefault('material') or {})['ply_material'] = {'name': 'NC37'}
+            mut_ok = 'ply_material' not in before37
+            json.dump(d37, open(sp37, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+            one37 = [json.loads(l) for l in open(paper6p, encoding='utf-8')
+                     if l.strip() and json.loads(l)['task_id'] == 'L3_' + cid37]
+            one_path37 = os.path.join(RUNS, '_nc37_one.jsonl')
+            with open(one_path37, 'w', encoding='utf-8') as f:
+                for r in one37:
+                    f.write(json.dumps(r, ensure_ascii=False) + '\n')
+            r37m = subprocess.run([sys.executable, os.path.join(HERE, 'audit_contract.py'),
+                                   '--cases', tmp_cases, '--tasks', one_path37,
+                                   '--out', os.path.join(RUNS, '_nc37_mut.json')],
+                                  capture_output=True, text=True, encoding='utf-8', errors='replace')
+            ok37 = (r37.returncode == 0) and mut_ok and (r37m.returncode == 1)
+            det37 = f'real_rc={r37.returncode} hit={mut_ok} mut_rc={r37m.returncode}'
+        shutil.rmtree(tmp_cases, ignore_errors=True)
+    results.append({'id': 'NC-37', 'desc': '契约试建闸咬得住：gold 全可建 / 删必填键必拒（W5c）',
+                    'expect': 'real=0 / 注入自创键 mutated=1', 'actual': det37, 'ok': ok37})
+    print(f"  [{'ok ' if ok37 else 'BAD!'}] NC-37 契约试建闸（含反向）                            "
+          f"expect=real0/mut1 actual={det37}")
+
+    # NC-36（R29 补）：语义项**不得静默消失**。
+    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，
+    # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
+    # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；
+    #           ③ 源码里必须存在 else 分支（缺 msr ⇒ 加一条 ok=False），防被改回去。
+    sc36_p = latest_scorecard()
+    try:
+        sc36 = json.load(open(sc36_p, encoding='utf-8'))
+    except Exception:
+        sc36 = {}
+    has_msr = bool((sc36.get('exam') or {}).get('msr')) and bool(sc36.get('msr'))
+    try:
+        sem36 = {x.get('id'): x for x in (json.load(open(
+            os.path.join(HERE, 'reports', 'check_claims.json'), encoding='utf-8')).get('semantic') or [])}
+    except Exception:
+        sem36 = {}
+    present = [k for k in ('S-19', 'S-20') if k in sem36]
+    src36 = open(os.path.join(HERE, 'check_claims.py'), encoding='utf-8').read()
+    else36 = src36.count("成绩单缺 msr 节") >= 1 and src36.count("成绩单缺 exam.msr") >= 1
+    ok36 = has_msr and present == ['S-19', 'S-20'] and else36
+    results.append({'id': 'NC-36', 'desc': '语义项不得静默消失：缺 MSR ⇒ S-19/S-20 必须失败而非消失（R29）',
+                    'expect': 'msr 齐 + S-19/S-20 在场 + 源码有 else 分支',
+                    'actual': f'msr={has_msr} present={present} else分支={else36}', 'ok': ok36})
+    print(f"  [{'ok ' if ok36 else 'BAD!'}] NC-36 语义项不静默消失                              "
+          f"expect=msr/S-19,S-20/else actual=msr{has_msr}/{len(present)}项/else{else36}")
 
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
