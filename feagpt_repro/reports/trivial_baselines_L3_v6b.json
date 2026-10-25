@@ -1,19 +1,15 @@
 {
  "note": "平凡基线地板（levels=['L3'], eng_layer=True）。考卷 = exam_stratum 非空（v6 三栏；老考卷无该字段则 boundary_holdout+extrapolation_test）。检索库/众数池已排除考卷任务（W5b-3b：内插题 split_v2 仍是 train，不排除会检索到自己）。value_added = TSR_LLM − TSR_T1 ≥ 10 pp 才算 LLM 真有增量。",
- "tasks_path": "reports/papers/tasks_v6.jsonl",
+ "tasks_path": "reports/papers/tasks_v6b.jsonl",
  "n_tasks": 55,
  "n_exam": 25,
  "n_train_pool": 13,
- "t0_families_missing": [
-  "fuselage_barrel",
-  "open_hole_panel",
-  "stiffened_panel"
- ],
+ "t0_families_missing": [],
  "T0_constant": {
   "exam_tsr": "0/25",
   "exam_pct": 0.0,
-  "train_tsr": "1/13",
-  "all_pct": 1.8,
+  "train_tsr": "4/13",
+  "all_pct": 7.3,
   "by_stratum": {
    "boundary": {
     "tsr": "0/6",
@@ -87,7 +83,7 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_recombination_algorithm3"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_n_ribs3_chord1000",
@@ -97,7 +93,7 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_recombination_algorithm3"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_n_ribs3_chord800",
@@ -107,7 +103,7 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_recombination_algorithm3"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_n_ribs5_chord800",
@@ -117,7 +113,7 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_recombination_algorithm3"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_n_ribs7_chord1000",
@@ -127,7 +123,7 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_recombination_algorithm3"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_n_ribs7_chord800",
@@ -137,7 +133,7 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_recombination_algorithm3"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_n_ribs9_chord1000",
@@ -147,17 +143,17 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_recombination_algorithm3"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_recombination_algorithm3",
    "split_v2": "train",
-   "exam_stratum": null,
-   "is_exam": false,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
    "family": "wingbox",
-   "T0": true,
-   "T1": true,
-   "T1_nn": "L3_naca4412_wingbox_recombination_algorithm3"
+   "T0": false,
+   "T1": false,
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_size_skin1p5",
@@ -167,17 +163,17 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_size_skin2"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_size_skin2",
    "split_v2": "train",
-   "exam_stratum": null,
-   "is_exam": false,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
    "family": "wingbox",
    "T0": false,
-   "T1": true,
-   "T1_nn": "L3_naca4412_wingbox_size_skin2"
+   "T1": false,
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_size_skin4",
@@ -187,7 +183,7 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_recombination_algorithm3"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_size_span1600",
@@ -197,17 +193,17 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_recombination_algorithm3"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_size_span2400",
    "split_v2": "train",
-   "exam_stratum": null,
-   "is_exam": false,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
    "family": "wingbox",
    "T0": false,
-   "T1": true,
-   "T1_nn": "L3_naca4412_wingbox_size_span2400"
+   "T1": false,
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_size_span2400_skin2",
@@ -217,7 +213,7 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_size_skin2"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_size_span3000",
@@ -227,7 +223,7 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_size_span2400"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_size_span3000_skin1p5",
@@ -237,17 +233,17 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_size_skin2"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_str3",
    "split_v2": "train",
-   "exam_stratum": null,
-   "is_exam": false,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
    "family": "wingbox",
    "T0": false,
-   "T1": true,
-   "T1_nn": "L3_naca4412_wingbox_str3"
+   "T1": false,
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_str3_T",
@@ -257,7 +253,7 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_str3"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_str5",
@@ -267,7 +263,7 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_str3"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_sweep10",
@@ -275,7 +271,7 @@
    "exam_stratum": null,
    "is_exam": false,
    "family": "wingbox",
-   "T0": false,
+   "T0": true,
    "T1": true,
    "T1_nn": "L3_naca4412_wingbox_sweep10"
   },
@@ -387,7 +383,7 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_recombination_algorithm3"
+   "T1_nn": "L3_naca4412_wingbox_taper080"
   },
   {
    "task_id": "L3_naca4412_wingbox_web1",
@@ -396,8 +392,8 @@
    "is_exam": false,
    "family": "wingbox",
    "T0": false,
-   "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_recombination_algorithm3"
+   "T1": true,
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_web1_offcentre",
@@ -407,7 +403,7 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_recombination_algorithm3"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_naca4412_wingbox_web2",
@@ -417,27 +413,27 @@
    "family": "wingbox",
    "T0": false,
    "T1": false,
-   "T1_nn": "L3_naca4412_wingbox_recombination_algorithm3"
+   "T1_nn": "L3_naca4412_wingbox_web1"
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d20",
    "split_v2": "train",
-   "exam_stratum": "interpolation",
-   "is_exam": true,
+   "exam_stratum": null,
+   "is_exam": false,
    "family": "open_hole_panel",
-   "T0": false,
-   "T1": false,
-   "T1_nn": null
+   "T0": true,
+   "T1": true,
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d20_cfrp090s",
    "split_v2": "train",
-   "exam_stratum": "interpolation",
-   "is_exam": true,
+   "exam_stratum": null,
+   "is_exam": false,
    "family": "open_hole_panel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s",
@@ -447,7 +443,7 @@
    "family": "open_hole_panel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
@@ -457,7 +453,7 @@
    "family": "open_hole_panel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d20_cfrpqi",
@@ -467,7 +463,7 @@
    "family": "open_hole_panel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d20_offcentre",
@@ -477,7 +473,7 @@
    "family": "open_hole_panel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d40",
@@ -487,7 +483,7 @@
    "family": "open_hole_panel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d40_offcentre",
@@ -497,7 +493,7 @@
    "family": "open_hole_panel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d50",
@@ -507,7 +503,7 @@
    "family": "open_hole_panel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
   },
   {
    "task_id": "L3_open_hole_panel_600x300_d30",
@@ -517,7 +513,7 @@
    "family": "open_hole_panel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
   },
   {
    "task_id": "L3_open_hole_panel_600x300_d60",
@@ -527,7 +523,7 @@
    "family": "open_hole_panel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_open_hole_panel_400x200_d20"
   },
   {
    "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
@@ -537,7 +533,7 @@
    "family": "fuselage_barrel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3"
   },
   {
    "task_id": "L3_fuselage_barrel_d1800_l2000_str8_frm3",
@@ -547,7 +543,7 @@
    "family": "fuselage_barrel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3"
   },
   {
    "task_id": "L3_fuselage_barrel_d2000_l1600_str8_frm3",
@@ -557,7 +553,7 @@
    "family": "fuselage_barrel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3"
   },
   {
    "task_id": "L3_fuselage_barrel_d2000_l2000_str12_frm4",
@@ -567,17 +563,17 @@
    "family": "fuselage_barrel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3"
   },
   {
    "task_id": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
    "split_v2": "train",
-   "exam_stratum": "interpolation",
-   "is_exam": true,
+   "exam_stratum": null,
+   "is_exam": false,
    "family": "fuselage_barrel",
-   "T0": false,
-   "T1": false,
-   "T1_nn": null
+   "T0": true,
+   "T1": true,
+   "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3"
   },
   {
    "task_id": "L3_fuselage_barrel_d2000_l2000_t2_str8_frm3",
@@ -587,7 +583,7 @@
    "family": "fuselage_barrel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3"
   },
   {
    "task_id": "L3_stiffened_panel_600x600_str3",
@@ -597,7 +593,7 @@
    "family": "stiffened_panel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_stiffened_panel_600x600"
   },
   {
    "task_id": "L3_stiffened_panel_800x600_str3",
@@ -607,17 +603,17 @@
    "family": "stiffened_panel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_stiffened_panel_600x600"
   },
   {
    "task_id": "L3_stiffened_panel_600x600",
    "split_v2": "train",
-   "exam_stratum": "interpolation",
-   "is_exam": true,
+   "exam_stratum": null,
+   "is_exam": false,
    "family": "stiffened_panel",
-   "T0": false,
-   "T1": false,
-   "T1_nn": null
+   "T0": true,
+   "T1": true,
+   "T1_nn": "L3_stiffened_panel_600x600"
   },
   {
    "task_id": "L3_stiffened_panel_800x600",
@@ -627,7 +623,7 @@
    "family": "stiffened_panel",
    "T0": false,
    "T1": false,
-   "T1_nn": null
+   "T1_nn": "L3_stiffened_panel_600x600"
   }
  ]
 }

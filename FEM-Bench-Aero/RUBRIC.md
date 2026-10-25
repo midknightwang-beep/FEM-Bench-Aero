@@ -1,6 +1,6 @@
 # RUBRIC.md — L3 判分口径预注册（W4e/W4f → W5a，专家第四/五轮 R18）
 
-> **版本**：v4.1（2026-10-25，W5b-3 只改文档计数与负控/红线，**判分细则沿用 v3** 未动；三栏 exam 见 §1.1；变更记录见文末）。
+> **版本**：v4.2（2026-10-25，W5b-3b 改内插名额 v6→v6b，**判分细则沿用 v3** 未动；三栏 exam 见 §1.1；变更记录见文末）。
 > **纪律（R18）**：本文件冻结后，跑基线期间不得再改；每次改动必须新开版本号 + 记录原因。
 > **post-hoc 声明**：W4d 版口径（EXEC_CONFIG_KEYS / METADATA_KEY_NAMES / bc_skip）是看过
 > 30 条候选后调整的，属 **post-hoc**——其成绩（C-020，已 superseded）只能作开发参考；
@@ -29,9 +29,16 @@
 - `exam_stratum` 字段由 `make_nl_human.py --interp-quota` 写入考卷；`score_baseline.py`
   的 `is_exam` 判据 = `split_v2 ∈ exam_splits 或 exam_stratum 非空`（**向后兼容**：
   v4/v5 考卷没有该字段 ⇒ 行为与旧版完全一致，C-021 仍可复现）。
-- 内插留出名额（族平衡）：wingbox 2 / open_hole_panel 2 / fuselage_barrel 1 / stiffened_panel 1 = 6，
-  从 `train` 分割里按 `task_id` 字典序取前 N 条（**确定性选择，可复现**）。
-  代价：barrel/panel 的 train 条数被抽空（dev 里仍有 val），必须如实标注。
+- 内插留出名额（**v6b 定案：全给翼盒 6 条**，`--interp-quota "wingbox:6"`），从 `train` 按 `task_id`
+  字典序取前 N 条（**确定性选择，可复现**）。
+- **为什么从「按族 2/2/1/1」改成「全翼盒 6」**（v6 → v6b，实测驱动）：
+  ① L3 的 train 分布是 wingbox 15 / open_hole 2 / barrel 1 / panel 1，按 2/2/1/1 抽会把
+     **barrel、open_hole、panel 三族的 train 抽空**（1→0、2→0、1→0）⇒ train 池只剩翼盒 13 条；
+  ② 后果不是「dev 变小」而是**地板算不出来**：`trivial_baselines` 的 T0 众数池缺 3 族、
+     T1 检索库只剩翼盒 ⇒ **T1 地板只有 1/4 族可算**，value_added 的对照项失真（T1 记 0 会让任何成绩都"有增量"）；
+  ③ 而且 train 只有 1 条的族抽出来当「内插」**本身无意义**——1 个点没有包络可内插。
+  ⇒ 改为全翼盒后：train 池 = 9/2/1/1、**4/4 族地板可算**；代价是 exam 族构成更偏翼盒（18/4/2/1）。
+  v6 原始稿留档 `papers/tasks_v6.jsonl`，采用版 `papers/tasks_v6b.jsonl`（D10：改划分必须留档旧基线）。
 
 ## 2. TSR（主 KPI，行为正确性）
 
@@ -118,4 +125,5 @@
 | v3 | 2026-10-25 W5a | MSR 分母按任务属性排除（R23）+ R21 任务构建期方向检查 + NC-20..22 + exam.msr/dev.msr 汇总 | 专家第五轮 P0-1/P0-3/P1-1/P1-2；考卷 v5（坐标系写死 + panel 澄清题迁移 str3） |
 | **v3.1** | 2026-10-25 W5a' | **仅文档/计数/产物纪律**：负控计数 23→24→**28**（补 NC-15b、NC-23..26）+ 新增 §8 产物纪律；**判分口径零改动** | 专家第六轮 P1-2（RUBRIC 说 NC-1..22 = 23，实为 24）+ R25–R28。**不触发重跑**（口径未变，C-021 仍有效） |
 | **v4** | 2026-10-25 W5b | **§1.1 三栏 exam 预注册**：headline = 合并 25（boundary 6 + extrap 13 + interp 6）、三栏明细并列、R12 分母 = 25；新增 `exam_stratum` 字段约定；**判分细则未动** | 老王拍板「扩卷路径 A + headline 全 exam 25」；发现「headline=boundary+extrap 恒为 19」与 R12 的 n≥20 互斥，必须显式取舍 |
+| **v4.2** | 2026-10-25 W5b-3b | §1.1 内插名额由「按族 2/2/1/1」改为「全翼盒 6」（v6 → v6b）：原名额把 barrel/open_hole/panel 三族 train 抽空 ⇒ T1 地板只有 1/4 族可算。**exam 仍 25、判分口径零改动** | 老王拍板 A；实测 `_probe_interp_w5b3b.py` + `trivial_baselines` v6b（T1 0/25、四族齐全） |
 | **v4.1** | 2026-10-25 W5b-3 | **仍无判分口径改动**：§1 表拆成 11 / 19 / 25 三行；§6 负控 28→**31**（NC-27..29）；新增 R29 语义计数 / R30 跨口径不可比 / R31 生成前预检。**C-021 与 C-027 均不需重跑** | 专家第七轮 P1-1..P1-6（5 处语义计数漂移 + `check_claims` 只做结构检查抓不到） |

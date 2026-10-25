@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
  "n_active_claims": 19,
- "n_artifacts": 21,
+ "n_artifacts": 22,
  "n_fail": 0,
  "n_fail_structural": 0,
  "n_fail_semantic": 0,
@@ -133,8 +133,8 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 4.1",
-   "actual": "4.1",
+   "expect": "全部 = 4.2",
+   "actual": "4.2",
    "ok": true,
    "skip": false
   },
@@ -253,8 +253,8 @@
    "ok": true,
    "problems": [],
    "size": 222583,
-   "sha256": "0120299ded524f44b8864b56db6d0ec937b48072bb6d06c5711fb35ce4fc1e22",
-   "mtime": 1792912570
+   "sha256": "4c089c62413b29751889a0b927ffd4d3f1590722318b56157fd067ce11c6ffe8",
+   "mtime": 1792924475
   },
   {
    "claim_id": "C-011",
@@ -265,8 +265,8 @@
    "ok": true,
    "problems": [],
    "size": 222583,
-   "sha256": "0120299ded524f44b8864b56db6d0ec937b48072bb6d06c5711fb35ce4fc1e22",
-   "mtime": 1792912570
+   "sha256": "4c089c62413b29751889a0b927ffd4d3f1590722318b56157fd067ce11c6ffe8",
+   "mtime": 1792924475
   },
   {
    "claim_id": "C-012",
@@ -348,9 +348,33 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 10296,
-   "sha256": "c7078082ea4f19c8b176bfab79e4e212e3e64148f026f9e61179c1d16011c8f1",
-   "mtime": 1792923816
+   "size": 10774,
+   "sha256": "cba588b86ae90618a42ea95b56e9d21acd441fcefbb9b4d463caa20cc5b186e6",
+   "mtime": 1792924578
+  },
+  {
+   "claim_id": "C-027",
+   "artifact": "feagpt_repro/reports/papers/tasks_v6b.jsonl",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 222583,
+   "sha256": "4c089c62413b29751889a0b927ffd4d3f1590722318b56157fd067ce11c6ffe8",
+   "mtime": 1792924493
+  },
+  {
+   "claim_id": "C-027",
+   "artifact": "feagpt_repro/reports/papers/nl_human_v6b.jsonl",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 53190,
+   "sha256": "72b7a923cf05d92621d4b3f171d8af85329f3f0f62fb1ba2a8827f3d14d4b0dd",
+   "mtime": 1792924493
   },
   {
    "claim_id": "C-027",
@@ -363,18 +387,6 @@
    "size": 222583,
    "sha256": "0120299ded524f44b8864b56db6d0ec937b48072bb6d06c5711fb35ce4fc1e22",
    "mtime": 1792912622
-  },
-  {
-   "claim_id": "C-027",
-   "artifact": "feagpt_repro/reports/papers/nl_human_v6.jsonl",
-   "exists": true,
-   "git_tracked": true,
-   "external": false,
-   "ok": true,
-   "problems": [],
-   "size": 53190,
-   "sha256": "497ff9a8b137769c24b96e51f18d41bbcdb025450942a69dca4332ec9285e5e5",
-   "mtime": 1792912623
   },
   {
    "claim_id": "C-021",
@@ -398,7 +410,7 @@
    "problems": [],
    "size": 5304,
    "sha256": "3c6a1f1f912b60305d6b473f6f4195f19ea5564e364e4d9c3bf1d39ad61456a0",
-   "mtime": 1792924018
+   "mtime": 1792924383
   }
  ]
 }

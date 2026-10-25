@@ -1741,7 +1741,19 @@ const REVIEW = [
     '<b>R31 覆盖记账</b>：成绩单新增 <code>n_tasks_in_paper</code> / <code>candidates_missing</code> / <code>partial_candidates</code> —— v6 考卷 55 条、候选只有 30 条时会<b>静默出半张成绩单</b>（exam 看着 n=25 实际只有部分被打分）；NC-28 咬这道闸，v4 实跑显示「覆盖 30/30 条（完整）」',
     '<b>唯一阻塞仍是 key</b>：<code>WORKBUDDY_PUBLISHABLE_KEY</code> 未设、仓库无 <code>.env</code>，<code>gen_candidates_v2.js</code> 故意无 fallback ⇒ W5b-3 生成起全部排队'
    ],
-   files:['feagpt_repro/check_claims.py','feagpt_repro/compare_scorecards.py','feagpt_repro/score_baseline.py','feagpt_repro/negative_controls.py','feagpt_repro/reports/negative_controls_31.json','feagpt_repro/reports/INDEX.md','FEM-Bench-Aero/CLAIMS.md','FEM-Bench-Aero/RUBRIC.md']}
+   files:['feagpt_repro/check_claims.py','feagpt_repro/compare_scorecards.py','feagpt_repro/score_baseline.py','feagpt_repro/negative_controls.py','feagpt_repro/reports/negative_controls_31.json','feagpt_repro/reports/INDEX.md','FEM-Bench-Aero/CLAIMS.md','FEM-Bench-Aero/RUBRIC.md']},
+  {id:'r62', g:'W5/扩量', c:'<b>考卷 v6 → v6b（老王拍板 A）：内插 6 条全给翼盒</b>；同时修掉一个会污染 value_added 的 bug —— <b>T1 检索库「检索到自己」</b>；v4 回归逐项不变，v6b 三栏地板 T1 = 0/25、四族齐全',
+   q:'准备 W5b-4 的地板时跑 <code>trivial_baselines.py</code> 撞出两件事：① 内插考题 <code>split_v2</code> 仍是 <code>train</code>，检索库取 <code>split_v2==train</code> ⇒ <b>T1 找到的就是它自己</b>（gold 逐字段相同、距离 0），interp 栏地板虚高 100%、value_added 会算成负数；② v6 原名额 2/2/1/1 把 <b>barrel(1→0)/open_hole(2→0)/panel(1→0) 三族 train 抽空</b> ⇒ train 池只剩翼盒 13 条，<b>T1 地板只有 1/4 族可算</b>，对照项失真。而 train 只有 1 条的族抽出来当「内插」本身无意义（1 个点没有包络）。',
+   cmd:'_probe_interp_w5b3b.py     # 4 种名额方案的 train 池/族构成对比\ntrivial_baselines.py --levels L3 --tasks reports/papers/tasks_v6b.jsonl --out trivial_baselines_L3_v6b.json --out-dir reports',
+   ev:[
+    '<b>v6b 定案</b>：<code>--interp-quota "wingbox:6"</code> ⇒ train 池 <b>9/2/1/1</b>（原 13/0/0/0）、<b>4/4 族地板可算</b>（原 1/4）；exam 仍 <b>25 = 6+13+6</b>，族构成 18/4/2/1（原 14/6/3/2）',
+    '<b>零改动验收</b>：v6 → v6b 逐条比对，<b>除 <code>exam_stratum</code> 外 0 条差异</b>（NL 文本一字未动 ⇒ 将来复用候选仍有效），仅 8 条 exam_stratum 变动；<code>_verify_tasks_v6.py</code> VERDICT PASS',
+    '<b>T1 泄漏修复</b>：池 = split_v2 为 train <b>且</b> <code>exam_stratum</code> 为空（R7 的正确解读）；<b>v4 回归逐项一致</b>（T0 0/11、T1 0/11、T2 11/11）⇒ 修复没动历史数字',
+    '<b>v6b 三栏地板</b>：T0 0/25、<b>T1 0/25</b>、T2 25/25，三栏（6/13/6）全 0；<code>t0_families_missing</code> 为空（四族齐全，不再 WARN）',
+    '<b>三栏 CI 落地</b>：<code>bootstrap_ci.py</code> 加 <code>by_stratum_tsr</code>；v4 数值一字未变（TSR 45.5% CI95 [18.2, 72.7]）',
+    '<b>版本链</b>：v6 作废但<b>原稿留档</b>（<code>papers/tasks_v6.jsonl</code>，D10）；采用版 <code>papers/tasks_v6b.jsonl</code> + tag <code>v1.0-l3-v6b</code>；C-027 已改写并记录改因'
+   ],
+   files:['feagpt_repro/reports/papers/tasks_v6b.jsonl','feagpt_repro/reports/papers/tasks_v6.jsonl','feagpt_repro/reports/papers/SHA256SUMS','feagpt_repro/reports/trivial_baselines_L3_v6b.json','feagpt_repro/trivial_baselines.py','feagpt_repro/bootstrap_ci.py','feagpt_repro/_probe_interp_w5b3b.py','FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/W5B_PLAN.md']}
  ];
 
 /* ============ 渲染 ============ */

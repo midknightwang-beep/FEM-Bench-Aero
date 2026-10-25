@@ -11,11 +11,11 @@
 |---|---|---|
 | **官方 headline（对外唯一可引用）** | `baseline_scorecard_L3_v4.json` | C-021：考卷 **v4** × 候选 **v4**（`candidates_l3_v3`），exam 11 条 **TSR 5/11 (45.5%) / SFR 5/10 / MSR 4/9**，**n=11 UNDERPOWERED**；CI95 见 `bootstrap_ci_L3_v4.json`（TSR **[18.2, 72.7]**） |
 | **诊断（不是模型成绩）** | `baseline_scorecard_L3_v5_rescore.json` | C-025：**旧候选**（v4 生成）打 **v5** 考卷 ⇒ exam TSR 4/11。旧候选不能评新考卷（R28），只用于验证「修题改了什么」 |
-| **待跑（v6，尚不存在）** | `baseline_scorecard_L3_v6.json`（**未生成**） | C-028（待登记）：考卷 **v6**（55 条 L3 / exam 25 三栏）× `candidates_l3_v6`。**唯一阻塞 = `WORKBUDDY_PUBLISHABLE_KEY`**（R31：先 `--limit 1` 冒烟）。跑出来后与 C-021 的 11 条**不可直接比**（R30，`compare_scorecards.py` 会拒） |
+| **待跑（v6b，尚不存在）** | `baseline_scorecard_L3_v6.json`（**未生成**） | C-028（待登记）：考卷 **v6b**（55 条 L3 / exam 25 三栏，内插全翼盒）× `candidates_l3_v6`。**唯一阻塞 = `WORKBUDDY_PUBLISHABLE_KEY`**（R31：先 `--limit 1` 冒烟）。跑出来后与 C-021 的 11 条**不可直接比**（R30，`compare_scorecards.py` 会拒） |
 | L1 冒烟（非模型基线） | `baseline_scorecard_L1_smoke.json` | C-017：spec-copy 19 条 SFR 0/19，无 schema 约束解码时的指令遵循失败 |
 | 桥接表 | `bridge_v3_v4.json` + `bridge_A/B/C_*.json` | C-024：A 7/11、B 5/11、C 0/11、D 5/11；A→D = −3 wingbox 方向 +1 d2000 |
 | 负控 | `negative_controls_31.json` | C-019：PC-1 + NC-1..22 + NC-15b + **NC-23..26** + **NC-27..29**（语义计数/覆盖/跨口径混比）= **31/31** |
-| T1 检索地板 | `trivial_baselines_L3.json` | `value_added` 的对照项（exam T1 = 0/11） |
+| T1 检索地板 | `trivial_baselines_L3.json`（v4）/ `trivial_baselines_L3_v6b.json`（v6b，三栏） | `value_added` 的对照项：v4 exam T1 = 0/11；v6b exam T1 = 0/25（三栏全 0）。**v6b 已修「检索到自身」泄漏**（内插题 split_v2 仍是 train，原实现会让 T1 地板虚高） |
 | MSR 明细 | `msr_l3_v4.json` / `msr_l3_v5_rescore.json` | 从对应成绩单抽出的 `msr_section`（逐任务门禁 + 失败分层；v4 = 11/21、exam 4/9） |
 | bootstrap CI | `bootstrap_ci_L3_v4.json` / `bootstrap_ci_L3_v5_rescore.json` | exam 任务重采样（B=4000, seed=20261025）：TSR/SFR/MSR 点估计 + CI95 + by_family（**n<20 不得据此判 PASS**） |
 | 考卷快照 | `papers/tasks_v4.jsonl` / `papers/tasks_v5.jsonl`（+ `nl_human_*`、`SHA256SUMS`） | v4 = `git show 28e66bb:` 逐字节；v5 = tag `v1.0-l3-v5`；sha256 见 `papers/SHA256SUMS` |
@@ -69,7 +69,8 @@ PYTHONIOENCODING=utf-8 "$PY" negative_controls.py
 | v3 | 考卷 v3（b2e9b74） | `candidates_l3_v2` | gen_candidates_v2.js | 历史（C-020 superseded） |
 | **v4** | 考卷 v4（28e66bb，`papers/tasks_v4.jsonl`） | `candidates_l3_v3` | gen_candidates_v2.js | **官方（C-021）** |
 | v5 | 考卷 v5（tag `v1.0-l3-v5`，`papers/tasks_v5.jsonl`） | 同 v4（**只重打分**） | — | **诊断（C-025）** |
-| **v6** | 考卷 v6（tag `v1.0-l3-v6`，`papers/tasks_v6.jsonl`，55 条 L3 / exam 25 三栏） | **待生成**（`candidates_l3_v6`） | gen_candidates_v2.js | **冻结待跑（C-027）**：W5b 生成本机缺 key 阻塞中 |
+| v6（作废） | 考卷 v6（tag `v1.0-l3-v6`，`papers/tasks_v6.jsonl`）：内插名额 2/2/1/1 ⇒ 三族 train 被抽空 | — | — | **作废**（T1 地板只有 1/4 族可算）；原稿留档不删（D10） |
+| **v6b** | 考卷 v6b（tag `v1.0-l3-v6b`，`papers/tasks_v6b.jsonl`，55 条 L3 / exam 25 三栏，内插全翼盒） | **待生成**（`candidates_l3_v6`） | gen_candidates_v2.js | **冻结待跑（C-027）**：生成唯一阻塞仍是 key（R31） |
 
 > `papers/tasks_v4.jsonl` 是 `git show 28e66bb:feagpt_repro/tasks/tasks.jsonl` 的逐字节快照。
 > 用它（而不是 `_bridge_v3/tasks/`）才能复现 C-021 的 dev TSR 11/19 与「问错字段 0」；

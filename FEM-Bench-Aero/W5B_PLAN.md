@@ -30,7 +30,7 @@ cd feagpt_repro && python _probe_expand.py     # 2026-10-25 实测输出
 
 | 路径 | 做法 | exam 规模 | 成本 | 结论 |
 |---|---|---|---|---|
-| **A. ID 内插留出 ✅ 已拍板** | 55 条全 L3（19 exam）+ 从 train 挑 **6 条**标 `interpolation_test` | **25** | 0 次建模/求解 | **采用**（C-027 已冻结 v6） |
+| **A. ID 内插留出 ✅ 已拍板** | 55 条全 L3（19 exam）+ 从 train 挑 **6 条**标 `interpolation_test`（**v6b 定案：全给翼盒**，理由见 §7） | **25** | 0 次建模/求解 | **采用**（C-027 已冻结 v6b） |
 | B. 新增几何 | 造 6–10 条新几何建 truth | 25–29 | 2–3 天 | 不做（留给 v1.1） |
 | C. 只报 19 + CI | 不扩 | 19 | 0 | 否决（违反 R12/R24） |
 
@@ -96,10 +96,10 @@ cd /d "F:\AI FEA Modeling DataSets\feagpt_repro"
 set WORKBUDDY_PUBLISHABLE_KEY=<你的 key>
 
 REM ① 冒烟 1 条（R31：不许直接 55 条盲跑）
-node gen_candidates_v2.js --tasks reports/papers/tasks_v6.jsonl --levels L3 --out _smoke_v6 --limit 1
+node gen_candidates_v2.js --tasks reports/papers/tasks_v6b.jsonl --levels L3 --out _smoke_v6 --limit 1
 
 REM ② 全量 55 条（--limit 必须显式给 55）
-node gen_candidates_v2.js --tasks reports/papers/tasks_v6.jsonl --levels L3 --out candidates_l3_v6 --limit 55
+node gen_candidates_v2.js --tasks reports/papers/tasks_v6b.jsonl --levels L3 --out candidates_l3_v6 --limit 55
 
 REM ③ 回读条数（必须是 55）
 dir candidates_l3_v6\*.json | find /c ".json"
@@ -110,11 +110,37 @@ dir candidates_l3_v6\*.json | find /c ".json"
 ```bash
 cd "F:/AI FEA Modeling DataSets/feagpt_repro"
 PY="C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
-"$PY" score_baseline.py --candidates candidates_l3_v6 --tasks reports/papers/tasks_v6.jsonl \
+"$PY" score_baseline.py --candidates candidates_l3_v6 --tasks reports/papers/tasks_v6b.jsonl \
   --report reports/baseline_scorecard_L3_v6.json --trivial reports/trivial_baselines_L3.json \
   --label "C-028 v6 (paper v6, candidates v6)"
-"$PY" msr_l3.py --candidates candidates_l3_v6 --tasks reports/papers/tasks_v6.jsonl \
+"$PY" msr_l3.py --candidates candidates_l3_v6 --tasks reports/papers/tasks_v6b.jsonl \
   --report reports/baseline_scorecard_L3_v6.json
 "$PY" bootstrap_ci.py --scorecard reports/baseline_scorecard_L3_v6.json
 "$PY" compare_scorecards.py --a reports/baseline_scorecard_L3_v4.json \
   --b reports/baseline_scorecard_L3_v6.json     # 必须 rc=3（口径不同）
+
+## 7. v6 → v6b：内插名额修正（2026-10-25 老王拍板 A）
+
+| 项 | v6（作废） | **v6b（采用）** |
+|---|---|---|
+| 内插名额 | wingbox 2 / open_hole 2 / barrel 1 / panel 1 | **wingbox 6**（`--interp-quota "wingbox:6"`） |
+| exam 总数 | 25（6 + 13 + 6） | **25（6 + 13 + 6）** |
+| train 池（族分布） | 13 / **0 / 0 / 0** | **9 / 2 / 1 / 1** |
+| 可算 T1 地板的族 | **1 / 4** | **4 / 4** |
+| exam 族构成 | 14 / 6 / 3 / 2 | 18 / 4 / 2 / 1 |
+
+**为什么改**（实测，不是偏好）：
+1. L3 的 train 分布是 wingbox 15 / open_hole 2 / barrel 1 / panel 1，按 2/2/1/1 抽会把
+   **barrel、open_hole、panel 三族的 train 全抽空** ⇒ train 池只剩翼盒；
+2. 后果不是"dev 变小"，而是**地板算不出来**：`trivial_baselines` 的 T0 众数池缺 3 族、
+   T1 检索库只剩翼盒 ⇒ **T1 地板只有 1/4 族可算**，value_added 的对照项失真
+   （T1 记 0/25 会让任何成绩都"有增量"）；
+3. 更根本：train 只有 1 条的族抽出来当"内插"**本身无意义**——1 个点没有包络可内插。
+
+**同时修掉的 bug（W5b-3b）**：内插考题 `split_v2` 仍是 `train`，原 `trivial_baselines`
+检索库取 `split_v2=='train'` ⇒ **T1 会检索到它自己**（gold 逐字段相同、距离 0），
+interp 栏地板虚高 100%、value_added 被算成负数。现改为「检索库/众数池 = train 且 `exam_stratum` 为空」。
+
+**可复现**：`python _probe_interp_w5b3b.py`（4 种名额方案的 train 池/族构成对比）；
+`python trivial_baselines.py --levels L3 --tasks reports/papers/tasks_v6b.jsonl --out trivial_baselines_L3_v6b.json --out-dir reports`
+（⇒ T0 0/25、T1 0/25、T2 25/25，三栏全 0；四族齐全无 WARN）。
