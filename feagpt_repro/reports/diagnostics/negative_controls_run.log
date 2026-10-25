@@ -38,7 +38,9 @@
   [ok ] NC-34 官方文档不引 eval_runs/ 文件                 expect=empty actual=0 处[]
   [ok ] NC-35 同条数≠同批题 被拒                             expect=cross拒/same可 actual=拒/可
   [ok ] NC-37 契约试建闸（含反向）                            expect=real0/mut1 actual=real_rc=0 hit=True mut_rc=1
+  [ok ] NC-38 第二个 headline 被 S-29 拒绝                      expect=hit+rc!=0+S-29 actual=hit=True rc1
+  [ok ] NC-39 T1+ 地板缺节时 S-32 必红（正反两向）              expect=fwd T/mut F actual=fwd=True 删节=False 删命中率=False
   [ok ] NC-36 语义项不静默消失                              expect=msr/S-19,S-20/else actual=msrTrue/2项/elseTrue
 
-负控: 39/39 ok -> reports/negative_controls_39.json
+负控: 41/41 ok -> reports/negative_controls_41.json
 红线条 R6：负控未全绿，不得跑 LLM 基线。

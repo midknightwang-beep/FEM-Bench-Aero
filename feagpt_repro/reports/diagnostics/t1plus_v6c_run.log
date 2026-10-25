@@ -1,0 +1,29 @@
+== 平凡基线地板（levels=['L3']；exam 25 条 / 检索库 13 条）==
+  T0_constant            考卷 TSR 0/25 (0.0%)   全量 7.3%
+     - boundary       0/6 (0.0%)
+     - extrapolation  0/13 (0.0%)
+     - interpolation  0/6 (0.0%)
+  T1_retrieval           考卷 TSR 0/25 (0.0%)   全量 0.0%
+     - boundary       0/6 (0.0%)
+     - extrapolation  0/13 (0.0%)
+     - interpolation  0/6 (0.0%)
+  T1plus_family          考卷 TSR 0/25 (0.0%)   全量 5.5%
+     - boundary       0/6 (0.0%)
+     - extrapolation  0/13 (0.0%)
+     - interpolation  0/6 (0.0%)
+  T1plus_family_oracle   考卷 TSR 0/25 (0.0%)   全量 0.0%
+     - boundary       0/6 (0.0%)
+     - extrapolation  0/13 (0.0%)
+     - interpolation  0/6 (0.0%)
+  T2_gold                考卷 TSR 25/25 (100.0%)   全量 100.0%
+     - boundary       6/6 (100.0%)
+     - extrapolation  13/13 (100.0%)
+     - interpolation  6/6 (100.0%)
+
+  T1+ 字段级命中率（exam 均值）= 0.8593 （21.5 个受判字段，全或无判分）
+  T1+ 族内 oracle 覆盖力上界 = 0/25（只报不判）
+
+泄漏检查: T0 考卷 0.0% —— 高则说明边界留出任务可被先验猜中
+背诵线:   T1 考卷 0.0% / T1+ 考卷 0.0% ⇒ 对照取高者 T1 = 0.0%
+          LLM value_added 必须 >= 10 pp（即 exam TSR >= 10%）
+report -> reports\trivial_baselines_L3_v6c.json

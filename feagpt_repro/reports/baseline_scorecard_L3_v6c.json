@@ -18,7 +18,7 @@
  "first_pass_valid": 4,
  "n_unresolved": 0,
  "provenance": {
-  "label": "",
+  "label": "C-029 v6c (paper v6c, candidates v6c)",
   "tasks_path": "reports/papers/tasks_v6c.jsonl",
   "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
   "candidates_dir": "candidates_l3_v6c",
@@ -215,6 +215,7 @@
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 0,
+   "n_fields_gated": 15,
    "failed_fields": [],
    "exec_config_mismatch": 1,
    "dead_fields_skipped": 0
@@ -231,6 +232,7 @@
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 0,
+   "n_fields_gated": 15,
    "failed_fields": [],
    "exec_config_mismatch": 1,
    "dead_fields_skipped": 0
@@ -247,6 +249,7 @@
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 0,
+   "n_fields_gated": 15,
    "failed_fields": [],
    "exec_config_mismatch": 1,
    "dead_fields_skipped": 0
@@ -263,6 +266,7 @@
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 0,
+   "n_fields_gated": 15,
    "failed_fields": [],
    "exec_config_mismatch": 1,
    "dead_fields_skipped": 0
@@ -279,6 +283,7 @@
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 0,
+   "n_fields_gated": 15,
    "failed_fields": [],
    "exec_config_mismatch": 1,
    "dead_fields_skipped": 0
@@ -316,6 +321,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -332,6 +338,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -348,6 +355,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -364,6 +372,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -380,6 +389,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -396,6 +406,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -412,6 +423,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -428,6 +440,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -444,6 +457,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -460,6 +474,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -476,6 +491,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -492,6 +508,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -508,6 +525,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -524,6 +542,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -540,6 +559,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -556,6 +576,7 @@
    "turns_used": 2,
    "n_fields": 27,
    "n_fail": 0,
+   "n_fields_gated": 25,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 1
@@ -572,6 +593,7 @@
    "turns_used": 2,
    "n_fields": 28,
    "n_fail": 0,
+   "n_fields_gated": 26,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 0
@@ -588,6 +610,7 @@
    "turns_used": 2,
    "n_fields": 27,
    "n_fail": 0,
+   "n_fields_gated": 25,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 1
@@ -604,6 +627,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -620,6 +644,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -636,6 +661,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -652,6 +678,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -668,6 +695,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -684,6 +712,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -700,6 +729,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -716,6 +746,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -732,6 +763,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -748,6 +780,7 @@
    "turns_used": 3,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -764,6 +797,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -780,6 +814,7 @@
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
+   "n_fields_gated": 22,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 4
@@ -796,6 +831,7 @@
    "turns_used": 2,
    "n_fields": 26,
    "n_fail": 2,
+   "n_fields_gated": 24,
    "failed_fields": [
     "extra.end_torque",
     "extra.torque_axis_dof"
@@ -815,6 +851,7 @@
    "turns_used": 2,
    "n_fields": 26,
    "n_fail": 2,
+   "n_fields_gated": 24,
    "failed_fields": [
     "extra.end_torque",
     "extra.torque_axis_dof"
@@ -834,6 +871,7 @@
    "turns_used": 2,
    "n_fields": 26,
    "n_fail": 2,
+   "n_fields_gated": 24,
    "failed_fields": [
     "extra.end_torque",
     "extra.torque_axis_dof"
@@ -875,6 +913,7 @@
    "turns_used": 3,
    "n_fields": 18,
    "n_fail": 1,
+   "n_fields_gated": 16,
    "failed_fields": [
     "params.layup"
    ],
@@ -893,6 +932,7 @@
    "turns_used": 2,
    "n_fields": 27,
    "n_fail": 13,
+   "n_fields_gated": 25,
    "failed_fields": [
     "params.layup",
     "material.name",
@@ -916,6 +956,7 @@
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 1,
+   "n_fields_gated": 16,
    "failed_fields": [
     "params.layup"
    ],
@@ -934,6 +975,7 @@
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 1,
+   "n_fields_gated": 16,
    "failed_fields": [
     "params.layup"
    ],
@@ -952,6 +994,7 @@
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
+   "n_fields_gated": 16,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 0
@@ -968,6 +1011,7 @@
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
+   "n_fields_gated": 16,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 0
@@ -984,6 +1028,7 @@
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
+   "n_fields_gated": 16,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 0
@@ -1000,6 +1045,7 @@
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
+   "n_fields_gated": 16,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 0
@@ -1016,6 +1062,7 @@
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
+   "n_fields_gated": 16,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 0
@@ -1032,6 +1079,7 @@
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
+   "n_fields_gated": 16,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 0
@@ -1048,6 +1096,7 @@
    "turns_used": 2,
    "n_fields": 14,
    "n_fail": 0,
+   "n_fields_gated": 12,
    "failed_fields": [],
    "exec_config_mismatch": 0,
    "dead_fields_skipped": 0
@@ -1084,6 +1133,7 @@
    "turns_used": 2,
    "n_fields": 14,
    "n_fail": 2,
+   "n_fields_gated": 12,
    "failed_fields": [
     "params.length",
     "params.width"
@@ -1103,6 +1153,7 @@
    "turns_used": 3,
    "n_fields": 14,
    "n_fail": 2,
+   "n_fields_gated": 12,
    "failed_fields": [
     "params.length",
     "params.width"
@@ -1112,10 +1163,25 @@
   }
  ],
  "value_added": {
-  "basis": "exam 三栏 25 条 TSR（T1 同任务集 exam_pct；T1 地板已 leave-one-out，R40）",
+  "basis": "exam 三栏 25 条 TSR（地板取 T1 与 T1+ 的高者；T1/T1+ 均 leave-one-out，R40/R44）。★ TSR 地板恒 0 是全或无判分的必然（族内参数逐条唯一，族内 oracle 0/25）⇒ 另报字段级命中率作为连续尺度对照",
+  "TSR_floor_used": "T1_retrieval",
   "TSR_T1_exam_pct": 0.0,
+  "TSR_T1plus_exam_pct": 0.0,
   "TSR_LLM_exam_pct": 92.0,
   "delta_pp": 92.0,
+  "field_level": {
+   "floor_hit_rate": 0.8593,
+   "llm_hit_rate": 0.9934,
+   "delta_pp": 13.4,
+   "floor_n_fields_gated_avg": 21.5,
+   "floor_n_fail_exam": {
+    "min": 1,
+    "median": 3,
+    "max": 5,
+    "n_with_0_fail(T1+ 通过)": 0
+   },
+   "note": "地板 = 逐字段族级众数（不读输入的最强策略）；n_fail_exam 是地板「差几个受判字段才过」的分布"
+  },
   "criterion": ">= 10 pp 才算 LLM 真有增量（专家 6.3.1）；n_exam<20 ⇒ underpowered 不得判 PASS（R12）",
   "verdict": "PASS"
  },
@@ -1193,7 +1259,10 @@
   "dev_msr_excl_solver_pct": 73.1,
   "msr_excl_solver": "38/47",
   "msr_excl_solver_pct": 80.9,
+  "full_msr_excl_solver": "38/47",
+  "full_msr_excl_solver_pct": 80.9,
   "dev_msr": "19/29",
+  "dev_msr_pct": 65.5,
   "by_split": {
    "boundary_holdout": {
     "msr": "6/6",

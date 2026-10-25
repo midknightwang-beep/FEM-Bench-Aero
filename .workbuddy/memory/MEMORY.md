@@ -52,6 +52,9 @@
   exam **TSR 23/25 (92.0%)**、TSR **CI95 [80.0, 100.0]**、SFR 20/22、三栏 **boundary 6/6 · extrapolation 11/13 · interpolation 6/6**；
   dev 23/30（**下界**）。`n_unresolved` 7→**0**、`underpowered=False`、FPR 编造 0/4。
   **MSR（R35 四行，原始/剔除 solver 并列）**：exam **19/22 (86.4%)** → 剔 solver **19/21 (90.5%)**；dev **19/29** → 剔 **19/26**；full **38/51 (74.5%)** → 剔 **38/47 (80.9%)**；CI95 MSR **[72.7, 100.0]**。exam 分母 22 = 25 − 3 澄清题（R23）。
+  **★★ value_added 双尺度（R44，第九轮 §3.3 收口）**：任务级地板 T0/T1/T1+ **全 0/25**、族内 oracle 也 **0/25** → LLM 92.0%；
+  **字段级 85.93% → 99.34%（Δ+13.4 pp）**，两个尺度都过 10 pp。**「地板恒 0」≠「地板太弱」**：`spec_fidelity` 全或无 ×
+  族内参数逐条唯一 ⇒ 不读输入策略的 TSR 天花板就是 0（T1+ 已命中 86% 字段、最好一条只差 1 个字段，仍 25 条无一全对）。
 - **★ 92.0% 不是「模型变强 24 pp」**——bridge 四格拆开（`reports/diagnostics/bridge_w5c_table.md`，**唯一允许相减的场景**）：
   A v6b×旧候选×旧口径 **17/25** → B 新口径 **18/25**（判分修正 blade 死字段 +1，唯一翻转 `wingbox_str5`）
   → C v6c×旧候选 **18/25**（**考卷修复对已定型候选 +0：改题面必须配重生成才有收益——本表最有价值的一格**）
@@ -63,6 +66,11 @@
   ⇒ **R41 数值角色** + RUBRIC **§7.3** + `r32_audit._role_pos()` 闸。影响 **2 条 dev、0 条 exam**；模板已修，v6c 候选不重生成。
 - **R33 改两端口径**：exam 必须 0 违规；非 exam 允许违规但**白名单逐字相等、只许缩小**（新违规自动变红）。
   审计：v6b all=**8** → v6c all=**4**（全 dev）→ v6c exam=**0**（rc=0）。`r32_audit` JSON 带 `violations_by_task`。
+- **★★ 判据别用自然语言表述**：S-29（headline 唯一）第一版按「正文含某词且不含否定词」判，把 **C-029 自己**过滤掉了
+  （它写了「不是实测」「不是又一个下界」）；改结构化后，C-028 的 status 里塞的**指针**又冒充了第二个 headline。
+  ⇒ **只认结构化字段 + 自指标记**（`（对外 headline）`），并配反向负控（NC-38）。
+- **★ 成本判断也要实测**：「轮换 key ⇒ provenance 重签 ⇒ 代价高」错两处——endpoint 是**硬编码常量**、
+  `provenance` **不记 key/endpoint** ⇒ 换 key 不需要重签任何 artifact。**凭印象估的代价会挡住本来该做的事**（R46）。
 - **★ solver 桶是「候选相关」的，不是题目固有属性**：同题 `barrel_d2000_l2000_str12_frm4` 在 v6b 旧候选 4.2s 就被 pipeline 拒
   （class=model），v6c 新候选算到 169,606 节点才撞 158,548 阈值（class=solver）⇒ **「剔除 solver 后的分母/得分」同样不可跨版本直减**。
 - **★ 观测量也可能一直是空的**：成绩单顶层 `msr` 键在 W5c 之前**恒为 null**（score_baseline 不写、msr_l3 只写 msr_section）；
@@ -74,7 +82,7 @@
 - **C-028（v6b，17/25 = 68.0%）已降级为 `diagnostic lower bound`**（第八轮 D1），**与 C-029 不可相减**：
   同 25 条 exam id 但**题面已改**（paper sha 不同，`compare_scorecards.py` 增了这条硬理由）；与 C-021 的 45.5% 另加 exam 11→25、族构成变化。
   **C-025 v5 重打分 4/11 是诊断不是成绩**（旧候选不能评新考卷，R28）。
-- **红线 R1–R41**；R25 artifact 入 `reports/`；R26 `check_claims.py`（**负控 39/39**，含 NC-23..37；语义 29 项；22 claims / 34 artifacts）；R27 官方/诊断分文件；R28 旧候选不评新考卷；
+- **红线 R1–R46**（R42 headline 唯一 / R43 投影不冒充实测 / R44 value_added 双尺度 / R45 MSR 字段齐 / R46 key 决策留痕）；R25 artifact 入 `reports/`；R26 `check_claims.py`（**负控 41/41**，含 NC-23..39；语义 **33** 项；22 claims / 34 artifacts）；R27 官方/诊断分文件；R28 旧候选不评新考卷；
   **R29 语义计数必须自检**（`check_claims.py --semantic` 默认开，**29 项**，期望值全从 artifact 实读；
   **缺 MSR ⇒ S-19/S-20 必须响亮失败，不得静默消失**，NC-36 三端守）；
   **R30 跨口径不得直接比**；**R31 生成前 key 预检 + 1 条冒烟**；**R33–R41** 见 CLAIMS 正文。

@@ -144,6 +144,9 @@ def judge_l3_candidate(cand, task):
         cat = 'spec_pass' if r['overall_pass'] else 'spec_fail'
         return cat, r['overall_pass'], {
             'n_fields': sf.get('n_fields'), 'n_fail': sf.get('n_fail'),
+            # W5c-5b（R44）：字段级命中率的分母必须剔除恒 pass 的「只报不判」声明项，
+            # 否则与 T1+ 地板的命中率不同口径、不可比。
+            'n_fields_gated': sf.get('n_fields_gated'),
             'failed_fields': failed[:6],
             'exec_config_mismatch': len(sf.get('exec_config_mismatch') or []),
             'dead_fields_skipped': len(sf.get('dead_fields_skipped') or [])}
@@ -283,17 +286,43 @@ def main():
     }
 
     # value_added（exam 口径，R15/P1-10：不再用 all_pct）
+    # ★ W5c-5b（专家第九轮 §3.3 / R44）：TSR 地板在 exam 上恒为 0（T0/T1/T1+ 全 0，族内 oracle 也 0），
+    #   原因是 spec_fidelity **全或无** + 族内几何参数逐条唯一 ⇒ 「0 地板」是判据的必然，不是基线太弱。
+    #   ⇒ 必须与地板**字段级命中率**并列报（连续尺度，才有区分度）；verdict 仍按 ≥10 pp，但两种尺度都写。
     if os.path.exists(trivial_path):
         trivial = json.load(open(trivial_path, encoding='utf-8'))
-        t1_exam = trivial['T1_retrieval']['exam_pct']
+        t1p = trivial.get('T1plus_family') or {}
+        floors = [(nm, rec.get('exam_pct')) for nm, rec in
+                  (('T1_retrieval', trivial['T1_retrieval']), ('T1plus_family', t1p))
+                  if rec.get('exam_pct') is not None]
+        floor_used, floor_pct = max(floors, key=lambda x: x[1]) if floors else ('T1_retrieval', 0.0)
         llm_exam = scorecard['exam']['tsr']['pct']
+        # LLM 字段级命中率（同口径：分母取 n_fields_gated）
+        hits = [(r['n_fields_gated'] - (r.get('n_fail') or 0)) / r['n_fields_gated']
+                for r in exam_rows if r.get('n_fields_gated')]
+        llm_hit = round(sum(hits) / len(hits), 4) if hits else None
+        floor_hit = t1p.get('avg_field_hit_rate_exam')
         scorecard['value_added'] = {
-            'basis': f'exam 三栏 {n_exam} 条 TSR（T1 同任务集 exam_pct；T1 地板已 leave-one-out，R40）',
-            'TSR_T1_exam_pct': t1_exam, 'TSR_LLM_exam_pct': llm_exam,
-            'delta_pp': round(llm_exam - t1_exam, 1),
+            'basis': f'exam 三栏 {n_exam} 条 TSR（地板取 T1 与 T1+ 的高者；T1/T1+ 均 leave-one-out，R40/R44）。'
+                     '★ TSR 地板恒 0 是全或无判分的必然（族内参数逐条唯一，族内 oracle 0/25）'
+                     '⇒ 另报字段级命中率作为连续尺度对照',
+            'TSR_floor_used': floor_used,
+            'TSR_T1_exam_pct': trivial['T1_retrieval']['exam_pct'],
+            'TSR_T1plus_exam_pct': t1p.get('exam_pct'),
+            'TSR_LLM_exam_pct': llm_exam,
+            'delta_pp': round(llm_exam - floor_pct, 1),
+            'field_level': {
+                'floor_hit_rate': floor_hit,
+                'llm_hit_rate': llm_hit,
+                'delta_pp': (round(100 * (llm_hit - floor_hit), 1)
+                             if (llm_hit is not None and floor_hit is not None) else None),
+                'floor_n_fields_gated_avg': t1p.get('n_fields_gated'),
+                'floor_n_fail_exam': t1p.get('n_fail_exam'),
+                'note': '地板 = 逐字段族级众数（不读输入的最强策略）；'
+                        'n_fail_exam 是地板「差几个受判字段才过」的分布'},
             'criterion': '>= 10 pp 才算 LLM 真有增量（专家 6.3.1）；n_exam<20 ⇒ underpowered 不得判 PASS（R12）',
-            'verdict': ('PASS' if (llm_exam - t1_exam >= 10 and n_exam >= 20) else
-                        'BELOW' if llm_exam - t1_exam < 10 else 'UNDERPOWERED')}
+            'verdict': ('PASS' if (llm_exam - floor_pct >= 10 and n_exam >= 20) else
+                        'BELOW' if llm_exam - floor_pct < 10 else 'UNDERPOWERED')}
 
     # W5a：scorecard 重打分时保留既有 msr_section（MSR 由 msr_l3.py 单独产出，
     # 重打分不得抹掉；NC-22 依赖顶层 exam.msr 存在）
@@ -330,8 +359,14 @@ def main():
           f"  未收敛 {scorecard['n_unresolved']} 条")
     if 'value_added' in scorecard:
         v = scorecard['value_added']
-        print(f"  value_added(exam): T1 {v['TSR_T1_exam_pct']}% -> LLM {v['TSR_LLM_exam_pct']}% "
-              f"(Δ{v['delta_pp']}pp, {v['verdict']})")
+        print(f"  value_added(exam): 地板 {v['TSR_floor_used']} "
+              f"(T1 {v['TSR_T1_exam_pct']}% / T1+ {v['TSR_T1plus_exam_pct']}%) "
+              f"-> LLM {v['TSR_LLM_exam_pct']}% (Δ{v['delta_pp']}pp, {v['verdict']})")
+        fl = v.get('field_level') or {}
+        if fl.get('floor_hit_rate') is not None:
+            print(f"  value_added(字段级): 地板 {100*fl['floor_hit_rate']:.2f}% "
+                  f"-> LLM {100*(fl['llm_hit_rate'] or 0):.2f}% (Δ{fl['delta_pp']}pp；"
+                  f"地板缺口中位 {fl['floor_n_fail_exam']['median']} 字段)")
     cov = scorecard_coverage_problems(scorecard)
     if cov:
         print('  [WARN] 候选/考卷覆盖不全（NC-28/R31）：' + '；'.join(cov))

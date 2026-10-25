@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_39.json）",
-   "expect": "39/39",
-   "actual": "39/39",
+   "desc": "C-019 负控通过数（源 negative_controls_41.json）",
+   "expect": "41/41",
+   "actual": "41/41",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "39",
-   "actual": "39",
+   "expect": "41",
+   "actual": "41",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 4.5",
-   "actual": "4.5",
+   "expect": "全部 = 4.6",
+   "actual": "4.6",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "39/39",
-   "actual": "39/39",
+   "expect": "41/41",
+   "actual": "41/41",
    "ok": true,
    "skip": false
   },
@@ -239,6 +239,38 @@
    "desc": "active claim 路径全部被 git 追踪（R37）",
    "expect": "empty",
    "actual": "[]",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-29",
+   "desc": "对外 headline 唯一且为 C-029（R42）",
+   "expect": "[\"C-029\"]",
+   "actual": "[\"C-029\"]",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-30",
+   "desc": "C-029 dev 25/30 必须标为投影（R43）",
+   "expect": "含 23/30 实测 + 25/30 投影 + 5 条模型失败，且不得写「真实可达」",
+   "actual": "ok",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-31",
+   "desc": "MSR 六口径字段非空 + 别名一致（R45）",
+   "expect": "九个字段全非空；full_msr_excl_solver ≡ msr_excl_solver",
+   "actual": "全非空",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-32",
+   "desc": "T1+ 地板非空且与 value_added 字段级一致（R44）",
+   "expect": "T1plus 非空 + avg_field_hit_rate_exam + n_fail_exam + 与 value_added 相等",
+   "actual": "T1+ exam 0/25 / 命中率 0.8593 / 缺口中位 3；与 value_added 逐数一致",
    "ok": true,
    "skip": false
   }
@@ -444,9 +476,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 19618,
-   "sha256": "03d60bb2481669c711ad2bef38817f04b6fce02cf8117f62cbfc290977be217d",
-   "mtime": 1792934769
+   "size": 22879,
+   "sha256": "78ce1023f292385f6be0b0bda3be4012146dc60e8eaabdf1172fae1dceb4e1c9",
+   "mtime": 1792936577
   },
   {
    "claim_id": "C-027",
@@ -528,9 +560,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 49223,
-   "sha256": "d47988781560d7b1bf04fed99d2242e5664994579cd8d2758b554bdc81f14588",
-   "mtime": 1792934515
+   "size": 51318,
+   "sha256": "644b631b94a3ffac0c1f5b993e198a5b8b7520e149d7ac241b033af4b114b1f0",
+   "mtime": 1792935951
   },
   {
    "claim_id": "C-029",
@@ -542,7 +574,7 @@
    "problems": [],
    "size": 2105,
    "sha256": "2db167a7fefb278f4f98e64a13599cdf52a91a59db60d4fa42782c2e5668d319",
-   "mtime": 1792934750
+   "mtime": 1792935959
   },
   {
    "claim_id": "C-029",
@@ -552,9 +584,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 18190,
-   "sha256": "38d9c8a3aab40a9f1f47dffc9af30fdc08b94e068b88c9a709fe4f038fe074d1",
-   "mtime": 1792930571
+   "size": 26744,
+   "sha256": "bffa7c3cb7527d3f3b2e234421884526e114cf3853512d96a41d0f7ee82e65e7",
+   "mtime": 1792935858
   },
   {
    "claim_id": "C-029",
@@ -626,7 +658,7 @@
    "problems": [],
    "size": 318299,
    "sha256": "d3a8f0524f7d82ff0592624eb37eb4d21eb3974c833654919d9dc668a8e070b8",
-   "mtime": 1792932703
+   "mtime": 1792936537
   },
   {
    "claim_id": "C-030",
@@ -642,15 +674,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_39.json",
+   "artifact": "feagpt_repro/reports/negative_controls_41.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 7288,
-   "sha256": "9896f24819fa5943384c1e1f741a8da94686ad04ea5d58413673b4db3bc7a7c3",
-   "mtime": 1792934572
+   "size": 7722,
+   "sha256": "ebb459f43f3c7d258dc40df821e0a5aa88dc8577e2d3eb678c5762ade91d3cb8",
+   "mtime": 1792936534
   }
  ]
 }

@@ -1,5 +1,5 @@
 {
- "note": "平凡基线地板（levels=['L3'], eng_layer=True）。考卷 = exam_stratum 非空（v6 三栏；老考卷无该字段则 boundary_holdout+extrapolation_test）。检索库/众数池已排除考卷任务（W5b-3b：内插题 split_v2 仍是 train，不排除会检索到自己）。★ W5c-5/R40：T1 已 leave-one-out（检索库剔除目标自身）——旧版 train 12/13 全是自命中。value_added = TSR_LLM − TSR_T1 ≥ 10 pp 才算 LLM 真有增量。",
+ "note": "平凡基线地板（levels=['L3'], eng_layer=True）。考卷 = exam_stratum 非空（v6 三栏；老考卷无该字段则 boundary_holdout+extrapolation_test）。检索库/众数池已排除考卷任务（W5b-3b：内插题 split_v2 仍是 train，不排除会检索到自己）。★ W5c-5/R40：T1 已 leave-one-out（检索库剔除目标自身）——旧版 train 12/13 全是自命中。★ W5c-5b/R44：新增 T1plus_family（逐字段族级众数，不读输入，可用于 value_added 判据） 与 T1plus_family_oracle（族内 train 池覆盖力**上界**，不可实现 ⇒ 只报不判）。value_added = TSR_LLM − TSR_T1* ≥ 10 pp 才算 LLM 真有增量（T1* = T1 与 T1+ 取高者，最保守）。",
  "tasks_path": "reports/papers/tasks_v6c.jsonl",
  "n_tasks": 55,
  "n_exam": 25,
@@ -88,6 +88,99 @@
    }
   }
  },
+ "T1plus_family": {
+  "exam_tsr": "0/25",
+  "exam_pct": 0.0,
+  "train_tsr": "3/13",
+  "all_pct": 5.5,
+  "by_stratum": {
+   "boundary": {
+    "tsr": "0/6",
+    "pct": 0.0,
+    "note": "分栏 n 小，只报不判（R12）"
+   },
+   "extrapolation": {
+    "tsr": "0/13",
+    "pct": 0.0,
+    "note": "分栏 n 小，只报不判（R12）"
+   },
+   "interpolation": {
+    "tsr": "0/6",
+    "pct": 0.0,
+    "note": "分栏 n 小，只报不判（R12）"
+   }
+  },
+  "train_by_family": {
+   "fuselage_barrel": {
+    "tsr": "1/1",
+    "pct": 100.0
+   },
+   "open_hole_panel": {
+    "tsr": "1/2",
+    "pct": 50.0
+   },
+   "stiffened_panel": {
+    "tsr": "1/1",
+    "pct": 100.0
+   },
+   "wingbox": {
+    "tsr": "0/9",
+    "pct": 0.0
+   }
+  },
+  "avg_field_hit_rate_exam": 0.8593,
+  "n_fields_gated": 21.5,
+  "families_missing": [],
+  "oracle_witness_exam": "0/25",
+  "n_fail_exam": {
+   "min": 1,
+   "median": 3,
+   "max": 5,
+   "n_with_0_fail(T1+ 通过)": 0
+  }
+ },
+ "T1plus_family_oracle": {
+  "exam_tsr": "0/25",
+  "exam_pct": 0.0,
+  "train_tsr": "0/13",
+  "all_pct": 0.0,
+  "by_stratum": {
+   "boundary": {
+    "tsr": "0/6",
+    "pct": 0.0,
+    "note": "分栏 n 小，只报不判（R12）"
+   },
+   "extrapolation": {
+    "tsr": "0/13",
+    "pct": 0.0,
+    "note": "分栏 n 小，只报不判（R12）"
+   },
+   "interpolation": {
+    "tsr": "0/6",
+    "pct": 0.0,
+    "note": "分栏 n 小，只报不判（R12）"
+   }
+  },
+  "train_by_family": {
+   "fuselage_barrel": {
+    "tsr": "0/1",
+    "pct": 0.0
+   },
+   "open_hole_panel": {
+    "tsr": "0/2",
+    "pct": 0.0
+   },
+   "stiffened_panel": {
+    "tsr": "0/1",
+    "pct": 0.0
+   },
+   "wingbox": {
+    "tsr": "0/9",
+    "pct": 0.0
+   }
+  },
+  "note": "不可实现上界：需知道目标答案才能从族内池里选对 ⇒ 只报不判，仅用于诊断「族内 train 池是否已覆盖该任务」"
+ },
  "T2_gold": {
   "exam_tsr": "25/25",
   "exam_pct": 100.0,
@@ -139,7 +232,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.9167,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_n_ribs3_chord1000",
@@ -150,7 +247,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_n_ribs3_chord800",
@@ -161,7 +262,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.8333,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_n_ribs5_chord800",
@@ -172,7 +277,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_n_ribs7_chord1000",
@@ -183,7 +292,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_n_ribs7_chord800",
@@ -194,7 +307,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.8333,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_n_ribs9_chord1000",
@@ -205,7 +322,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_recombination_algorithm3",
@@ -216,7 +337,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.9167,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_size_skin1p5",
@@ -227,7 +352,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_size_skin2",
@@ -238,7 +367,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_size_skin4",
@@ -249,7 +382,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_size_span1600",
@@ -260,7 +397,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_size_span2400",
@@ -271,7 +412,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_size_span2400_skin2",
@@ -282,7 +427,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.8333,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_size_span3000",
@@ -293,7 +442,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_size_span3000_skin1p5",
@@ -304,7 +457,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.8333,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_str3",
@@ -315,7 +472,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_str3_T",
@@ -326,7 +487,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_str5",
@@ -337,7 +502,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_sweep10",
@@ -348,7 +517,11 @@
    "T0": true,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_sweep20",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_sweep20",
@@ -359,7 +532,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_sweep30",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_sweep20_taper060",
@@ -370,7 +547,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_sweep30_taper080",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.8333,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_sweep30",
@@ -381,7 +562,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_sweep35",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_sweep30_taper080",
@@ -392,7 +577,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_sweep30",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.8333,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_sweep35",
@@ -403,7 +592,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_sweep30",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_sweep40",
@@ -414,7 +607,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_sweep35",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_sweep40_taper040",
@@ -425,7 +622,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_sweep30_taper080",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.8333,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_taper040",
@@ -436,7 +637,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_taper060",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_taper060",
@@ -447,7 +652,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_taper080",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_taper080",
@@ -458,7 +667,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_taper090",
@@ -469,7 +682,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_taper080",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_web1",
@@ -480,7 +697,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_taper080",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.9583,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_web1_offcentre",
@@ -491,7 +712,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.9583,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_naca4412_wingbox_web2",
@@ -502,7 +727,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_naca4412_wingbox_web1",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.9583,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d20",
@@ -513,7 +742,11 @@
    "T0": true,
    "T1": false,
    "T1_nn": "L3_open_hole_panel_400x200_d20_cfrp090s",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.9375,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d20_cfrp090s",
@@ -524,7 +757,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_open_hole_panel_400x200_d20",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": true,
+   "T1plus_field_hit": 1.0,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s",
@@ -535,7 +772,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_open_hole_panel_400x200_d20",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.9375,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
@@ -546,7 +787,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_open_hole_panel_400x200_d20",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d20_cfrpqi",
@@ -557,7 +802,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_open_hole_panel_400x200_d20",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.9375,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d20_offcentre",
@@ -568,7 +817,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_open_hole_panel_400x200_d20",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.8125,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d40",
@@ -579,7 +832,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_open_hole_panel_400x200_d20",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d40_offcentre",
@@ -590,7 +847,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_open_hole_panel_400x200_d20",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.75,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_open_hole_panel_400x200_d50",
@@ -601,7 +862,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_open_hole_panel_400x200_d20",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_open_hole_panel_600x300_d30",
@@ -612,7 +877,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_open_hole_panel_400x200_d20",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.6875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_open_hole_panel_600x300_d60",
@@ -623,7 +892,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_open_hole_panel_400x200_d20",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.6875,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
@@ -634,7 +907,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.8667,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_fuselage_barrel_d1800_l2000_str8_frm3",
@@ -645,7 +922,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.9333,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_fuselage_barrel_d2000_l1600_str8_frm3",
@@ -656,7 +937,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.9333,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_fuselage_barrel_d2000_l2000_str12_frm4",
@@ -667,7 +952,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.8667,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
@@ -678,7 +967,11 @@
    "T0": true,
    "T1": false,
    "T1_nn": null,
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": true,
+   "T1plus_field_hit": 1.0,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_fuselage_barrel_d2000_l2000_t2_str8_frm3",
@@ -689,7 +982,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.9333,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_stiffened_panel_600x600_str3",
@@ -700,7 +997,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_stiffened_panel_600x600",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.9167,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_stiffened_panel_800x600_str3",
@@ -711,7 +1012,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_stiffened_panel_600x600",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.8333,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_stiffened_panel_600x600",
@@ -722,7 +1027,11 @@
    "T0": true,
    "T1": false,
    "T1_nn": null,
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": true,
+   "T1plus_field_hit": 1.0,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   },
   {
    "task_id": "L3_stiffened_panel_800x600",
@@ -733,7 +1042,11 @@
    "T0": false,
    "T1": false,
    "T1_nn": "L3_stiffened_panel_600x600",
-   "T1_self_hit": false
+   "T1_self_hit": false,
+   "T1plus": false,
+   "T1plus_field_hit": 0.9167,
+   "T1plus_oracle": false,
+   "T1plus_oracle_witness": null
   }
  ]
 }

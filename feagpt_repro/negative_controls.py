@@ -742,6 +742,46 @@ def main():
     print(f"  [{'ok ' if ok37 else 'BAD!'}] NC-37 契约试建闸（含反向）                            "
           f"expect=real0/mut1 actual={det37}")
 
+    # NC-38（R42 反向）：把一条**历史** claim（C-021）的状态列改成自指标记「（对外 headline）」，
+    # 语义检查必须立刻报 S-29 ——否则「headline 唯一」就只是一句话，不是闸。
+    # ★ 先断言替换真命中（W5a 教训：替换没命中却记 PASS = 静默空转的负控）。
+    real_md38 = open(os.path.join(ROOT_, 'FEM-Bench-Aero', 'CLAIMS.md'), encoding='utf-8').read()
+    mut_md38 = real_md38.replace('| 30/30 生成 / exam 11 | active |',
+                                 '| 30/30 生成 / exam 11 | active（对外 headline） |')
+    hit38 = (mut_md38 != real_md38)
+    rc38, o38 = run_check_claims(mut_md38, 'nc38')
+    ok38 = hit38 and rc38 != 0 and 'S-29' in o38
+    results.append({'id': 'NC-38', 'desc': '第二个 headline 必须被 R42/S-29 拒绝',
+                    'expect': 'hit + rc!=0 + 报 S-29', 'actual': f'hit={hit38} rc={rc38} S-29={"S-29" in o38}',
+                    'ok': ok38})
+    print(f"  [{'ok ' if ok38 else 'BAD!'}] NC-38 第二个 headline 被 S-29 拒绝                      "
+          f"expect=hit+rc!=0+S-29 actual=hit={hit38} rc{rc38}")
+
+    # NC-39（R44 反向）：T1+ 地板缺节时 S-32 必须红 —— 否则「T1+ 必须非空」也只是口号。
+    # 正向喂真 artifact 必须绿，反向删掉 T1plus_family 必须红（同一份判据，不复制逻辑）。
+    from check_claims import t1plus_consistency
+    tp_path = os.path.join(HERE, 'reports', 'trivial_baselines_L3_v6c.json')
+    sc_path39 = os.path.join(HERE, 'reports', 'baseline_scorecard_L3_v6c.json')
+    ok39, det39 = False, 'no artifact'
+    if os.path.exists(tp_path) and os.path.exists(sc_path39):
+        tp_real = json.load(open(tp_path, encoding='utf-8'))
+        sc_real = json.load(open(sc_path39, encoding='utf-8'))
+        ok_fwd, d_fwd = t1plus_consistency(tp_real, sc_real)
+        tp_mut = json.loads(json.dumps(tp_real))
+        tp_mut.pop('T1plus_family', None)
+        ok_rev, d_rev = t1plus_consistency(tp_mut, sc_real)
+        # 第三种变异：只删字段命中率（数据在但对照尺度没了）也必须红
+        tp_mut2 = json.loads(json.dumps(tp_real))
+        tp_mut2['T1plus_family'].pop('avg_field_hit_rate_exam', None)
+        ok_rev2, _ = t1plus_consistency(tp_mut2, sc_real)
+        ok39 = ok_fwd and (not ok_rev) and (not ok_rev2)
+        det39 = (f'正向={"过" if ok_fwd else "红"} 删节={"红" if not ok_rev else "漏判"} '
+                 f'删命中率={"红" if not ok_rev2 else "漏判"}')
+    results.append({'id': 'NC-39', 'desc': 'T1+ 地板缺节/缺字段命中率必须被 R44/S-32 拒绝',
+                    'expect': 'fwd=True / 两向变异=False', 'actual': det39, 'ok': ok39})
+    print(f"  [{'ok ' if ok39 else 'BAD!'}] NC-39 T1+ 地板缺节时 S-32 必红（正反两向）              "
+          f"expect=fwd T/mut F actual={det39}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。
     # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，
     # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。

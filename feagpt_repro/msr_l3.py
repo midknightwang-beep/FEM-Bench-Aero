@@ -230,6 +230,14 @@ def main():
         pp = sum(1 for tid in keep if next(r for r in den_rows if r['task_id'] == tid)['msr_pass'])
         return f'{pp}/{len(keep)}', (round(100 * pp / len(keep), 1) if keep else None)
 
+    # ★ W5c-6b（专家第九轮 §3.5 / R45）：剔除 solver 的三行**先算一次**再复用，
+    #   并补两个此前缺失的键：dev_msr_pct、full_msr_excl_solver（= msr_excl_solver 的别名）。
+    #   理由：数据一直在、但字段名找不到 ⇒ 复核者只能手算，手算就会与 claim 漂移。
+    #   别名字段必须与主字段逐字相等（S-31 / NC-40 守）。
+    ex_excl = _msr_excl(exam_ids)
+    dv_excl = _msr_excl(dev_ids)
+    full_excl = (f'{p}/{n - n_solver}', round(100 * p / max(1, n - n_solver), 1))
+
     msr = {'note': '全链 MSR（R14/R16/R23，W5a 修正）：契约闸+ccx 求解+关1+关4+fidelity+spec_fidelity 全 PASS；'
                    '分母 = spec-required 且非澄清题（R23：澄清/未收敛候选不计，编造归 FPR）；'
                    '依赖预检不过即环境退出；失败分层 env/contract/model/solver，env 不计模型失败。',
@@ -252,13 +260,16 @@ def main():
            'solver_task_ids': [r['task_id'] for r in solver_fails],
            'solver_in_exam': exam_sol,
            'solver_in_dev': dev_sol,
-           'exam_msr_excl_solver': _msr_excl(exam_ids)[0],
-           'exam_msr_excl_solver_pct': _msr_excl(exam_ids)[1],
-           'dev_msr_excl_solver': _msr_excl(dev_ids)[0],
-           'dev_msr_excl_solver_pct': _msr_excl(dev_ids)[1],
-           'msr_excl_solver': f'{p}/{n - n_solver}',
-           'msr_excl_solver_pct': round(100 * p / max(1, n - n_solver), 1),
+           'exam_msr_excl_solver': ex_excl[0],
+           'exam_msr_excl_solver_pct': ex_excl[1],
+           'dev_msr_excl_solver': dv_excl[0],
+           'dev_msr_excl_solver_pct': dv_excl[1],
+           'msr_excl_solver': full_excl[0],
+           'msr_excl_solver_pct': full_excl[1],
+           'full_msr_excl_solver': full_excl[0],          # 别名（R45，与 msr_excl_solver 逐字相等）
+           'full_msr_excl_solver_pct': full_excl[1],
            'dev_msr': f'{dev_p}/{len(dev_ids)}',
+           'dev_msr_pct': round(100 * dev_p / max(1, len(dev_ids)), 1),
            'by_split': by_split,
            'n_denominator': n, 'n_clarify_excluded': sum(1 for r in rows if not r.get('denominator')),
            'failure_class_counts': dict(collections.Counter(

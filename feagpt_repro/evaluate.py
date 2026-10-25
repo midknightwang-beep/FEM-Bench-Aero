@@ -205,7 +205,11 @@ def spec_fidelity(cand_spec, gold_spec, family, input_mesh_keys=None, input_load
                            'expected': '<absent>', 'actual': cand_spec['material'][k],
                            'pass': False})
     fails = [f for f in fields if not f['pass']]
+    # W5c-5b（R44）：n_fields 含 REPORTED_MATERIAL 这类恒 pass 的「只报不判」声明项，
+    # 直接拿 n_fields 算命中率会被抬高。另给一个只含受判字段的分母。
+    n_reported = sum(1 for f in fields if f.get('reported_not_gated'))
     out = {'pass': not fails, 'n_fields': len(fields), 'n_fail': len(fails),
+           'n_fields_gated': len(fields) - n_reported,
            'failed': fails[:15]}
     if engineering_layer:
         out['engineering_layer'] = True

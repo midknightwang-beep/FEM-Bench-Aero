@@ -1,0 +1,14 @@
+[score_baseline] candidates=candidates_l3_v6c  tasks=reports/papers/tasks_v6c.jsonl
+== L3 主基线成绩单（exam/dev 分栏，W4e）==
+  EXAM  TSR 23/25 (92.0%)  SFR 20/22 (90.9%)   underpowered=False
+  DEV   TSR 23/30 (76.7%)  SFR 22/29 (75.9%)  (不进对外)
+  分类(exam): {'clarify_ok': 3, 'spec_pass': 20, 'spec_fail': 2}
+  └ boundary      TSR 6/6 (100.0%)  SFR 6/6
+  └ extrapolation TSR 11/13 (84.6%)  SFR 9/11
+  └ interpolation TSR 6/6 (100.0%)  SFR 5/5
+  FPR: 编造 0/4、过度澄清 0、问错字段 0
+  turns: {'1': 4, '2': 48, '3': 3}  一次通过 4 条  未收敛 0 条
+  value_added(exam): 地板 T1_retrieval (T1 0.0% / T1+ 0.0%) -> LLM 92.0% (Δ92.0pp, PASS)
+  value_added(字段级): 地板 85.93% -> LLM 99.34% (Δ13.4pp；地板缺口中位 3 字段)
+  覆盖: 候选 55/55 条（完整）
+report -> reports/baseline_scorecard_L3_v6c.json

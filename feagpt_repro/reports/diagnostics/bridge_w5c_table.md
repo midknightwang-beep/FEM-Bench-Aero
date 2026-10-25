@@ -40,5 +40,5 @@
    - `open_hole_panel_400x200_d20_cfrp45s_d40`：`params.layup` 写成标量 `2`（题面给了完整 `[45,-45,-45,45]`、单层 0.5 mm，SYS prompt 也给了 schema）⇒ 模型没构造嵌套 dict。
    - `naca4412_wingbox_web1_offcentre`：`extra.end_torque` / `extra.torque_axis_dof` 自创键（SYS prompt 明令禁止，gold 无此机制）⇒ 编造载荷机制。
    **两条都不再是卷子/prompt 缺陷** ⇒ 92.0% 是「已知缺陷已清」的成绩，而不是又一个下界。
-4. dev 侧仍有 2 条已知缺陷（`stiffened_panel_800x600` / `_str3`，R41 数值角色），**0 条在 exam**；
-   dev TSR 23/30 记为**下界**，真实可达 25/30。修模板已落地，等 v6d 重生成回收。
+4. **dev 23/30 = 实测下界；paper-clean 投影 25/30 = 投影，不是实测（R43）**。dev 7 条 spec_fail 里只有 **2 条是卷子缺陷**（`stiffened_panel_800x600` / `_str3`，R41 数值角色，**0 条在 exam**），**另外 5 条是模型侧失败**（`web1`/`web2` 自创 `extra.end_torque`；`cfrp090s`/`cfrpqi`/`cfrp45s` 的 `layup`；`cfrp45s` 另有 `material.E1/E2`）。
+   ⇒ **修卷子只能回收 2 条，那 5 条不会自动变对**；25/30 只有在「修完 R41 模板并重生成那 2 条 dev 候选」后才成为实测。当前实测仍是 **23/30**。对外引用**一律用 23/30**，dev 不进 headline。

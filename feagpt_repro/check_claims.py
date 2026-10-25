@@ -232,6 +232,33 @@ def _txt(path):
     return open(path, encoding='utf-8').read() if os.path.exists(path) else ''
 
 
+def t1plus_consistency(trivial, scorecard):
+    """R44（专家第九轮 §3.3）：T1+ 地板必须非空，且 value_added 引用的字段级地板必须与它**逐数相等**。
+
+    为什么抽成模块级函数：S-32（正向）与 NC-39（反向注入）必须用**同一份**判据，
+    各写一份就会漂（本项目的 R29 老坑：只打印不参与判定的检查不是检查）。
+    """
+    if not trivial or not isinstance(trivial, dict):
+        return False, '缺 trivial_baselines artifact'
+    t = trivial.get('T1plus_family')
+    if not t:
+        return False, 'T1plus_family 缺节（R44：value_added 只能标「技术 PASS、证据弱」）'
+    if t.get('exam_pct') is None:
+        return False, 'T1plus_family.exam_pct 为空'
+    if t.get('avg_field_hit_rate_exam') is None:
+        return False, '缺 avg_field_hit_rate_exam（字段级是唯一有区分度的对照尺度）'
+    if not t.get('n_fail_exam'):
+        return False, '缺 n_fail_exam（地板「差几个字段才过」无法量化）'
+    va = ((scorecard or {}).get('value_added') or {}).get('field_level') or {}
+    fh = va.get('floor_hit_rate')
+    if fh is None:
+        return False, 'value_added.field_level 缺 floor_hit_rate（成绩单没引用地板）'
+    if abs(float(fh) - float(t['avg_field_hit_rate_exam'])) > 1e-9:
+        return False, f'两份 artifact 漂移：value_added={fh} vs trivial={t["avg_field_hit_rate_exam"]}'
+    return True, (f'T1+ exam {t.get("exam_tsr")} / 命中率 {t["avg_field_hit_rate_exam"]} / '
+                  f'缺口中位 {t["n_fail_exam"].get("median")}；与 value_added 逐数一致')
+
+
 def semantic_checks(root, rows):
     """逐条核对：账本文本里声称的数字 vs artifact 实读的数字（R29）。"""
     out, m = [], _measures(root)
@@ -453,6 +480,56 @@ def semantic_checks(root, rows):
             str(sorted(set(bad27))[:3]) or 'empty', not bad27)
     except Exception as e:
         add('S-27', 'active claim 路径全部被 git 追踪（R37）', 'git 可用', f'err={e}', False)
+
+    # S-29（R42，专家第九轮 §3.1/§3.8）：**当前对外 headline 必须唯一**。
+    # 动机：W5c 收口后 README 与 C-021/C-025/C-026 仍各自自称 headline，
+    #       而 29 项语义检查里**没有一条**检查「headline 是否唯一」⇒ 22 条 active 全过却互相矛盾。
+    # ★ 判据用**结构化 status 列**（`status` 含「对外 headline」），不用 statement 自由文本：
+    #   第一版用「statement 含该词且不含否定词」判，结果 C-029 自己因为写了
+    #   「不是实测 / 不是又一个下界」被自己的否定词过滤掉 ⇒ 判据被行文措辞绑架。这是坑。
+    # 只认**自指标记**「（对外 headline）」——C-028 的 status 里写了
+    # 「对外 headline = C-029（v6c）」这种**指针**，若只判子串就会把指针当成第二个 headline。
+    head_claims = sorted({cid for cid, r in by.items()
+                          if '（对外 headline）' in (r.get('status') or '')
+                          or '(对外 headline)' in (r.get('status') or '')})
+    add('S-29', '对外 headline 唯一且为 C-029（R42）', '["C-029"]',
+        json.dumps(head_claims, ensure_ascii=False), head_claims == ['C-029'])
+
+    # S-30（R43，专家第九轮 §3.2）：dev 的 paper-clean 数字**不得冒充实测**。
+    # C-029 曾写「dev 真实可达 25/30」，但 7 条 dev spec_fail 里只有 2 条是卷子缺陷（R41），
+    # 另外 5 条是模型侧（自创键 / layup）——修卷子只能回收 2 条。⇒ 三段必须同现。
+    _s29 = st_of('C-029')
+    miss30 = [k for k in ('23/30', '25/30', '投影', '5 条') if k not in _s29]
+    bad30 = '真实可达' in _s29
+    add('S-30', 'C-029 dev 25/30 必须标为投影（R43）',
+        '含 23/30 实测 + 25/30 投影 + 5 条模型失败，且不得写「真实可达」',
+        f'缺 {"、".join(miss30)}' if miss30 else ('含「真实可达」' if bad30 else 'ok'),
+        not miss30 and not bad30)
+
+    # S-31（R45，专家第九轮 §3.5）：MSR 六个口径字段必须**全非空**，别名必须逐字相等。
+    # 动机：`msr_excl_solver` 有数、`full_msr_excl_solver`/`dev_msr_pct` 却是缺键 ⇒
+    #       复核者按字段名找不到 full 行，只能手算，手算就会漂。别名一律由同一变量写出。
+    _ms31 = ((m.get('sc_v6c') or {}).get('raw') or {}).get('msr_section') or {}
+    _need31 = ('exam_msr', 'exam_msr_excl_solver', 'dev_msr', 'dev_msr_pct',
+               'dev_msr_excl_solver', 'msr', 'msr_excl_solver',
+               'full_msr_excl_solver', 'full_msr_excl_solver_pct')
+    _miss31 = [k for k in _need31 if _ms31.get(k) in (None, '')]
+    _alias31 = (_ms31.get('full_msr_excl_solver') == _ms31.get('msr_excl_solver')
+                and _ms31.get('full_msr_excl_solver_pct') == _ms31.get('msr_excl_solver_pct'))
+    add('S-31', 'MSR 六口径字段非空 + 别名一致（R45）',
+        '九个字段全非空；full_msr_excl_solver ≡ msr_excl_solver',
+        (f'缺 {"、".join(_miss31)}' if _miss31 else '全非空') +
+        ('' if _alias31 else '；★别名不一致'), not _miss31 and _alias31)
+
+    # S-32（R44）：T1+ 地板非空 + 与 value_added 字段级地板逐数一致（防两份 artifact 漂移）
+    _p32t = os.path.join(root, 'feagpt_repro', 'reports', 'trivial_baselines_L3_v6c.json')
+    _p32s = os.path.join(root, 'feagpt_repro', 'reports', 'baseline_scorecard_L3_v6c.json')
+    _ok32, _det32 = t1plus_consistency(
+        json.load(open(_p32t, encoding='utf-8')) if os.path.exists(_p32t) else None,
+        json.load(open(_p32s, encoding='utf-8')) if os.path.exists(_p32s) else None)
+    add('S-32', 'T1+ 地板非空且与 value_added 字段级一致（R44）',
+        'T1plus 非空 + avg_field_hit_rate_exam + n_fail_exam + 与 value_added 相等',
+        _det32, _ok32)
 
     return out
 
