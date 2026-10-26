@@ -56,7 +56,7 @@ cd feagpt_repro && python _probe_expand.py     # 2026-10-25 实测输出
 | W5b-3 | 生成 55 条候选（v6 全量） | 与 W5b-1 合并执行；**命令见 §6**（`--limit 55` 不可省） | ✅ **已完成**（16 分 13 秒） |
 | W5b-4 | 一次打分 + CI：`score_baseline.py` → `msr_l3.py` → `bootstrap_ci.py` | exam 25；三栏分列 CI；`score_baseline.py` 已支持 `exam_stratum` | ✅ **已完成 = C-028**（后被降级为 diagnostic lower bound）→ **W5c 修复后重跑 = C-029**：exam TSR **23/25 (92.0%)** CI95 **[80.0, 100.0]**；三栏 6/6 · 11/13 · 6/6；R30 闸 rc=3 |
 | **W5c-5b** | **T1+ family-mode 地板 + value_added 双尺度**（第九轮 §3.3 / R44） | `T1plus` 非 null；value_added 不再只对 0 地板 | ✅ **已完成（W5c-6b）**：`T1plus_family`（逐字段族级众数，众数只在 train 池取）exam **0/25**，但**字段命中率 85.93%**、缺口 min **1** / 中位 **3** / max **5** 字段；`T1plus_family_oracle`（族内池覆盖力上界，只报不判）**0/25** ⇒ **「0 地板」是全或无判据 × 族内参数唯一的必然**，已写进 C-029；**字段级尺度 85.93% → LLM 99.34%（Δ+13.4 pp）**，与任务级同判 PASS |
-| W5b-5 | 第二模型（**先用 SDK 实测可用 id，不猜**） | 两模型 TSR 差异 + 各自 CI | ▶ **已就绪待跑**（第八轮 §4.1：v6b 上跑只能做诊断，同一批 A/B 类缺陷会同时压低两个模型）。**v6c 卷与候选均已冻结**（tag `v1.0-l3-v6c`）⇒ 官方对比条件已满足：同 `tasks_v6c` / 同 SYS prompt / 同 `--max-turns 3` / 同 `--limit 55`；产出各自 CI，**不混入 C-029**（新开 C-031） |
+| W5b-5 | 第二模型（**先用 SDK 实测可用 id，不猜**） | 两模型 TSR 差异 + 各自 CI | ✅ **已完成（W5c-6c，C-031）**。模型 id 实测取（`llm.models.list()` 返回 **35 个**，`deepseek-v4-pro` 在其中，R13 不猜）；同 `tasks_v6c`（sha `9c1faa3a…`，与 C-029 **逐字节相同**）/ 同 SYS prompt / 同 `--max-turns 3` / `--limit 55`（9 min）。**结果：exam TSR 20/25 (80.0%)**（C-029 23/25）、SFR 20/25、dev 22/30。**★ 关键：`spec_pass` 两模型都是 20/25，2 条 `spec_fail` 同题同字段** ⇒ 那两处属 prompt 约束不足（A/B 类），不是模型个性；**唯一实质差异 = 缺失信息处理**（glm 澄清 3/3 vs dsv4pro 编造 3/3）。**字段级 87.42% vs 地板 85.93%（Δ+1.5 pp，未达 10 pp）** ⇒ 任务级 PASS / 字段级 BELOW **分裂已由 `verdict_split` 标注**（R49）。**C-031 定位 supporting，headline 仍是 C-029**（R48：不得事后择优） |
 | W5b-6 | 失败归因字段级（env/contract/model/solver + 失败键清单） | 每条失败有原因，落 `reports/` | ✅ **已完成（pre-C-028）**：`_probe_w5b4_fail_fields.py` 逐条给出失败字段；四类缺陷（A 契约/C 模型/B 题面/D 收敛）归因见 `reports/diagnostics/w5b4_defect_analysis_v6b.md`（R37 已入库）。**已修正**：成绩单失败行**已存** `failed_fields`（`score_baseline.py` judge 返回值），旧文「仍不存」是过期信息 |
 
 
@@ -78,7 +78,7 @@ cd feagpt_repro && python _probe_expand.py     # 2026-10-25 实测输出
 |---|---|
 | 文档语义计数 5 处漂移（P1-1..P1-4） | C-010 **165**（L3 55）/ C-011 内插 = **v6 interp 6** / C-019 coverage **31** / C-027·RUBRIC·W5B_PLAN·看板 的「C-021 的 N 条」统一 **11**（19·25 分列）/ README RUBRIC **v4.1** |
 | `check_claims.py --semantic`（P1-5/R29） | 默认开；**32 项**（W5c 新增 S-21..S-28；W5c-6b 新增 **S-29 headline 唯一 / S-30 dev 投影口径 / S-31 MSR 九字段**），期望值全部从 artifact 实读 ⇒ 全过 |
-| 负控（R29/R30/R31/R33–R46） | **41/41**：NC-27 语义计数漂移 / NC-28 覆盖不全 / NC-29 跨口径混比 / **NC-30 审计闸两端守（exam 0 + 非 exam 白名单 + 反向）** / NC-31 SYS prompt 键名齐 / NC-32 T1 leave-one-out / NC-33 成绩单文案由考卷生成 / NC-34 官方文档不引 `eval_runs/` / NC-35 同条数≠同批题 / **NC-36 语义项不得静默消失** |
+| 负控（R29/R30/R31/R33–R49） | **44/44**：NC-27 语义计数漂移 / NC-28 覆盖不全 / NC-29 跨口径混比 / **NC-30 审计闸两端守（exam 0 + 非 exam 白名单 + 反向）** / NC-31 SYS prompt 键名齐 / NC-32 T1 leave-one-out / NC-33 成绩单文案由考卷生成 / NC-34 官方文档不引 `eval_runs/` / NC-35 同条数≠同批题 / **NC-36 语义项不得静默消失** |
 | 跨口径闸（R30） | `compare_scorecards.py`（rc=3 拒绝混比） |
 | 覆盖记账（R31） | 成绩单 `n_tasks_in_paper` / `candidates_missing` / `partial_candidates` |
 

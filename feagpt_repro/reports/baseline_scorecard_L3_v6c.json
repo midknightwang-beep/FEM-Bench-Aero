@@ -22,6 +22,7 @@
   "tasks_path": "reports/papers/tasks_v6c.jsonl",
   "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
   "candidates_dir": "candidates_l3_v6c",
+  "model": "glm-5.3-flash",
   "n_candidates": 55,
   "generated_by": "score_baseline.py"
  },
@@ -1180,10 +1181,15 @@
     "max": 5,
     "n_with_0_fail(T1+ 通过)": 0
    },
-   "note": "地板 = 逐字段族级众数（不读输入的最强策略）；n_fail_exam 是地板「差几个受判字段才过」的分布"
+   "n_exam_counted": 22,
+   "n_excluded_clarify_ok": 3,
+   "n_zero_non_spec": 0,
+   "note": "地板 = 逐字段族级众数（不读输入的最强策略）；n_fail_exam 是地板「差几个受判字段才过」的分布。分母构成：n_exam_counted = 计入题数（含记 0 的编造题），n_excluded_clarify_ok = 合法澄清（无 spec 可判，排除），n_zero_non_spec = 编造/答非所问（**记 0，不排除**）。",
+   "verdict": "PASS"
   },
   "criterion": ">= 10 pp 才算 LLM 真有增量（专家 6.3.1）；n_exam<20 ⇒ underpowered 不得判 PASS（R12）",
-  "verdict": "PASS"
+  "verdict": "PASS",
+  "verdict_split": null
  },
  "msr_section": {
   "note": "全链 MSR（R14/R16/R23，W5a 修正）：契约闸+ccx 求解+关1+关4+fidelity+spec_fidelity 全 PASS；分母 = spec-required 且非澄清题（R23：澄清/未收敛候选不计，编造归 FPR）；依赖预检不过即环境退出；失败分层 env/contract/model/solver，env 不计模型失败。",

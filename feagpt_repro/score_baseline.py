@@ -84,6 +84,32 @@ def sha256_file(p):
     return h.hexdigest()
 
 
+def _candidate_model(cand_dir):
+    """从候选文件里读模型 id（W5c-6c / R48 溯源）。
+
+    为什么不从命令行传：命令行参数是「人声称的」，候选文件里的 `model` 是
+    **生成时实际 pin 的 id**，只有后者可验证。一批里出现多个 id ⇒ 返回
+    `MIXED:<ids>` 显式标明，不猜、不取多数。
+    """
+    ids = set()
+    try:
+        for fn in sorted(os.listdir(cand_dir)):
+            if not fn.endswith('.json'):
+                continue
+            try:
+                with open(os.path.join(cand_dir, fn), encoding='utf-8') as f:
+                    m = json.load(f).get('model')
+            except Exception:
+                continue
+            if m:
+                ids.add(m)
+    except Exception:
+        return None
+    if not ids:
+        return None
+    return sorted(ids)[0] if len(ids) == 1 else 'MIXED:' + ','.join(sorted(ids))
+
+
 def judge_clarify_field_level(text, task):
     """字段级澄清判分（R17）。返回 (ok, detail)。
 
@@ -251,6 +277,10 @@ def main():
             'tasks_path': os.path.relpath(os.path.abspath(tasks_path), HERE).replace('\\', '/'),
             'tasks_sha256': sha256_file(tasks_path),
             'candidates_dir': os.path.relpath(os.path.abspath(cand_dir), HERE).replace('\\', '/'),
+            # ★ W5c-6c（R48）：跨模型对比必须能从成绩单**直接看出是哪个模型**。
+            # 旧版不记 model ⇒ C-031 的「第二模型」要翻候选目录才能验证，等于不可溯源。
+            # 取候选文件里声明的 model；若一批里不一致（混模型）就显式标 MIXED，不猜。
+            'model': _candidate_model(cand_dir),
             'n_candidates': len(rows),
             'generated_by': 'score_baseline.py',
         },
@@ -298,8 +328,32 @@ def main():
         floor_used, floor_pct = max(floors, key=lambda x: x[1]) if floors else ('T1_retrieval', 0.0)
         llm_exam = scorecard['exam']['tsr']['pct']
         # LLM 字段级命中率（同口径：分母取 n_fields_gated）
-        hits = [(r['n_fields_gated'] - (r.get('n_fail') or 0)) / r['n_fields_gated']
-                for r in exam_rows if r.get('n_fields_gated')]
+        # ★★ W5c-6c（跨模型对比暴露的口径 bug）：旧版写
+        #       hits = [... for r in exam_rows if r.get('n_fields_gated')]
+        #   这会**静默排除**一切没走 spec_fidelity 的题 —— 包括 `fabricated`（编造）
+        #   与 `clarify_wrong`（答非所问）。那些题本该记 0，却被当成"不存在"。
+        #   实证：C-029（glm）exam = 20 spec_pass + 2 spec_fail + **3 clarify_ok**；
+        #         C-031（dsv4pro）= 20 spec_pass + 2 spec_fail + **3 fabricated**。
+        #   两边都被排除 3 条 ⇒ 都算出 99.34%，**数字相同、含义相反**
+        #   （C-029 排除的是合法澄清，C-031 排除的是编造）。
+        #   修法：按 category 显式分流 + 落盘分母构成，禁止靠 `if 值存在` 隐式过滤。
+        #   合法澄清（clarify_ok）不计字段（该答就答，无 spec 可判）；
+        #   其余"该判 spec 却没给 spec"的一律记 0（编造/答非所问/空输出）。
+        hits, n_excl_clarify, n_zero_nonspec = [], 0, 0
+        for r in exam_rows:
+            cat = r.get('category')
+            if cat == 'clarify_ok':
+                n_excl_clarify += 1
+                continue
+            g = r.get('n_fields_gated')
+            if g:
+                hits.append((g - (r.get('n_fail') or 0)) / g)
+            elif cat in ('fabricated', 'clarify_wrong', 'llm_error', 'no_output',
+                         'contract_fail', 'solver', 'env'):
+                hits.append(0.0)     # 该判 spec 却没给 spec ⇒ 字段级记 0，不排除
+                n_zero_nonspec += 1
+            else:
+                n_excl_clarify += 1  # 未知类别：排除但计入 n_excluded，便于发现
         llm_hit = round(sum(hits) / len(hits), 4) if hits else None
         floor_hit = t1p.get('avg_field_hit_rate_exam')
         scorecard['value_added'] = {
@@ -318,11 +372,31 @@ def main():
                              if (llm_hit is not None and floor_hit is not None) else None),
                 'floor_n_fields_gated_avg': t1p.get('n_fields_gated'),
                 'floor_n_fail_exam': t1p.get('n_fail_exam'),
+                # R47（W5c-6c）：分母必须显式落盘，禁止隐式过滤
+                'n_exam_counted': len(hits),
+                'n_excluded_clarify_ok': n_excl_clarify,
+                'n_zero_non_spec': n_zero_nonspec,
                 'note': '地板 = 逐字段族级众数（不读输入的最强策略）；'
-                        'n_fail_exam 是地板「差几个受判字段才过」的分布'},
+                        'n_fail_exam 是地板「差几个受判字段才过」的分布。'
+                        '分母构成：n_exam_counted = 计入题数（含记 0 的编造题），'
+                        'n_excluded_clarify_ok = 合法澄清（无 spec 可判，排除），'
+                        'n_zero_non_spec = 编造/答非所问（**记 0，不排除**）。'},
             'criterion': '>= 10 pp 才算 LLM 真有增量（专家 6.3.1）；n_exam<20 ⇒ underpowered 不得判 PASS（R12）',
             'verdict': ('PASS' if (llm_exam - floor_pct >= 10 and n_exam >= 20) else
                         'BELOW' if llm_exam - floor_pct < 10 else 'UNDERPOWERED')}
+
+        # ★ W5c-6c / R49：两个尺度**可能给出相反结论**（实证：C-031 任务级 Δ80 pp PASS，
+        #   字段级仅 Δ1.5 pp BELOW）。这种分裂必须由成绩单自己标出来，
+        #   否则文档可以只引有利的一侧（典型 cherry-pick）。
+        _lv_d = scorecard['value_added']['field_level'].get('delta_pp')
+        _tv = scorecard['value_added']['verdict']
+        _lv = ('PASS' if (_lv_d is not None and _lv_d >= 10) else
+               'BELOW' if _lv_d is not None else 'N/A')
+        scorecard['value_added']['field_level']['verdict'] = _lv
+        scorecard['value_added']['verdict_split'] = (
+            f'任务级 {_tv} / 字段级 {_lv}（Δ{_lv_d} pp）—— 两尺度结论相反，'
+            '文档必须并列报，禁止只引有利的一侧（R49）'
+            if _lv != 'N/A' and ((_tv == 'PASS') != (_lv == 'PASS')) else None)
 
     # W5a：scorecard 重打分时保留既有 msr_section（MSR 由 msr_l3.py 单独产出，
     # 重打分不得抹掉；NC-22 依赖顶层 exam.msr 存在）
@@ -367,6 +441,10 @@ def main():
             print(f"  value_added(字段级): 地板 {100*fl['floor_hit_rate']:.2f}% "
                   f"-> LLM {100*(fl['llm_hit_rate'] or 0):.2f}% (Δ{fl['delta_pp']}pp；"
                   f"地板缺口中位 {fl['floor_n_fail_exam']['median']} 字段)")
+            print(f"    分母构成: 计入 {fl.get('n_exam_counted')} / 合法澄清排除 "
+                  f"{fl.get('n_excluded_clarify_ok')} / 编造记 0 {fl.get('n_zero_non_spec')}")
+        if v.get('verdict_split'):
+            print(f"  ★ 双尺度分裂: {v['verdict_split']}")
     cov = scorecard_coverage_problems(scorecard)
     if cov:
         print('  [WARN] 候选/考卷覆盖不全（NC-28/R31）：' + '；'.join(cov))

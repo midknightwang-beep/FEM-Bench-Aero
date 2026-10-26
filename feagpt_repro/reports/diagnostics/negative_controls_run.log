@@ -19,11 +19,11 @@
   [ok ] NC-16 panel bc.support 自创键                  expect=FAIL actual=FAIL
   [ok ] NC-17 open_hole 自创键（load/material）         expect=FAIL/FAIL actual=FAIL/FAIL
   [ok ] NC-18 MSR 依赖预检存在                         expect=guard actual=present
-  [info] 负控读取的成绩单 = F:\AI FEA Modeling DataSets\feagpt_repro\reports\baseline_scorecard_L3_v6c.json
+  [info] 负控读取的成绩单 = F:\AI FEA Modeling DataSets\feagpt_repro\reports\baseline_scorecard_L3_v6c_dsv4pro.json
   [ok ] NC-19 exam 集与 split 语义一致              expect=empty actual=empty
   [ok ] NC-20 L3 NL 载荷方向完备（R21）               expect=empty actual=empty
   [ok ] NC-21 MSR 分母排除澄清题（R23, 卷=tasks_v6c.jsonl）  expect=empty actual=empty
-  [ok ] NC-22 成绩单含 exam.msr                        expect=present actual=19/22
+  [ok ] NC-22 成绩单含 exam.msr                        expect=present actual=20/22
   [ok ] NC-23 artifact 缺失被检出                          expect=FAIL actual=rc1
   [ok ] NC-24 eval_runs/ 未追踪被拒                         expect=FAIL actual=rc1
   [ok ] NC-25 官方/诊断同路径被拒                         expect=FAIL actual=rc1
@@ -39,8 +39,11 @@
   [ok ] NC-35 同条数≠同批题 被拒                             expect=cross拒/same可 actual=拒/可
   [ok ] NC-37 契约试建闸（含反向）                            expect=real0/mut1 actual=real_rc=0 hit=True mut_rc=1
   [ok ] NC-38 第二个 headline 被 S-29 拒绝                      expect=hit+rc!=0+S-29 actual=hit=True rc1
-  [ok ] NC-39 T1+ 地板缺节时 S-32 必红（正反两向）              expect=fwd T/mut F actual=fwd=True 删节=False 删命中率=False
+  [ok ] NC-39 T1+ 地板缺节时 S-32 必红（正反两向）              expect=fwd T/mut F actual=正向=过 删节=红 删命中率=红
+  [ok ] NC-40 分母不闭合被 S-33 拒绝（正反两向）            expect=fwd T/mut F actual=正向=过 复现旧bug=红 缺分母字段=红
+  [ok ] NC-41 第二模型抢 headline 被 S-34 拒绝               expect=hit+rc!=0+S-34 actual=hit=True rc1
+  [ok ] NC-42 双尺度分裂被隐藏被 S-35 拒绝                 expect=fwd T/mut F actual=正向=过 删split=红
   [ok ] NC-36 语义项不静默消失                              expect=msr/S-19,S-20/else actual=msrTrue/2项/elseTrue
 
-负控: 41/41 ok -> reports/negative_controls_41.json
+负控: 44/44 ok -> reports/negative_controls_44.json
 红线条 R6：负控未全绿，不得跑 LLM 基线。

@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
- "n_active_claims": 22,
- "n_artifacts": 34,
+ "n_active_claims": 23,
+ "n_artifacts": 35,
  "n_fail": 0,
  "n_fail_structural": 0,
  "n_fail_semantic": 0,
@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_41.json）",
-   "expect": "41/41",
-   "actual": "41/41",
+   "desc": "C-019 负控通过数（源 negative_controls_44.json）",
+   "expect": "44/44",
+   "actual": "44/44",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "41",
-   "actual": "41",
+   "expect": "44",
+   "actual": "44",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 4.6",
-   "actual": "4.6",
+   "expect": "全部 = 4.7",
+   "actual": "4.7",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "41/41",
-   "actual": "41/41",
+   "expect": "44/44",
+   "actual": "44/44",
    "ok": true,
    "skip": false
   },
@@ -271,6 +271,30 @@
    "desc": "T1+ 地板非空且与 value_added 字段级一致（R44）",
    "expect": "T1plus 非空 + avg_field_hit_rate_exam + n_fail_exam + 与 value_added 相等",
    "actual": "T1+ exam 0/25 / 命中率 0.8593 / 缺口中位 3；与 value_added 逐数一致",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-33",
+   "desc": "字段级命中率分母构成闭合（R47）",
+   "expect": "n_exam_counted + n_excluded_clarify_ok == exam.n，且编造记 0 不排除",
+   "actual": "C-029 计入 22 + 排除 3 = 25；其中编造记 0 **0** 条；C-031 计入 25 + 排除 0 = 25；其中编造记 0 **3** 条",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-34",
+   "desc": "第二模型不取代 headline（R48）",
+   "expect": "C-029 仍标（对外 headline）；C-031 标 supporting/第二模型且不自称 headline",
+   "actual": "C-029 仍为唯一 headline；C-031 标为 supporting（第二模型）",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-35",
+   "desc": "value_added 双尺度分裂必须落盘（R49）",
+   "expect": "任务级 PASS 而字段级 BELOW ⇒ verdict_split 非空（禁止只引有利的一侧）",
+   "actual": "C-029 两尺度一致（任务级 PASS / 字段级 PASS），无需分裂说明；C-031 双尺度分裂：任务级 PASS / 字段级 BELOW ⇒ verdict_split 已落盘",
    "ok": true,
    "skip": false
   }
@@ -476,9 +500,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 22879,
-   "sha256": "78ce1023f292385f6be0b0bda3be4012146dc60e8eaabdf1172fae1dceb4e1c9",
-   "mtime": 1792936577
+   "size": 28061,
+   "sha256": "ea3ec02de11fb8fbe7d8b19416335bf83c0eabde97bbf6472c95e915d3fde4c6",
+   "mtime": 1793021019
   },
   {
    "claim_id": "C-027",
@@ -560,9 +584,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 51318,
-   "sha256": "644b631b94a3ffac0c1f5b993e198a5b8b7520e149d7ac241b033af4b114b1f0",
-   "mtime": 1792935951
+   "size": 51693,
+   "sha256": "f082cb27d1a7d9a65b109ea1eb18e45fafb349a047964149ce3c2a96dddbc27f",
+   "mtime": 1793020708
   },
   {
    "claim_id": "C-029",
@@ -574,7 +598,7 @@
    "problems": [],
    "size": 2105,
    "sha256": "2db167a7fefb278f4f98e64a13599cdf52a91a59db60d4fa42782c2e5668d319",
-   "mtime": 1792935959
+   "mtime": 1793020725
   },
   {
    "claim_id": "C-029",
@@ -658,7 +682,7 @@
    "problems": [],
    "size": 318299,
    "sha256": "d3a8f0524f7d82ff0592624eb37eb4d21eb3974c833654919d9dc668a8e070b8",
-   "mtime": 1792936537
+   "mtime": 1792936833
   },
   {
    "claim_id": "C-030",
@@ -673,16 +697,28 @@
    "mtime": 1792931631
   },
   {
-   "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_41.json",
+   "claim_id": "C-031",
+   "artifact": "feagpt_repro/reports/baseline_scorecard_L3_v6c_dsv4pro.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 7722,
-   "sha256": "ebb459f43f3c7d258dc40df821e0a5aa88dc8577e2d3eb678c5762ade91d3cb8",
-   "mtime": 1792936534
+   "size": 48582,
+   "sha256": "e7a24ceb733987b1ba08f56b61bafe62e2d4c489ae01a180e197ecaf5c5faa55",
+   "mtime": 1793020710
+  },
+  {
+   "claim_id": "C-019",
+   "artifact": "feagpt_repro/reports/negative_controls_44.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 8376,
+   "sha256": "32b6d2167539786846f74ff3f96cefe23d1fd2c28e05ec0ce3912712d9d7705d",
+   "mtime": 1793020896
   }
  ]
 }

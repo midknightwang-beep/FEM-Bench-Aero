@@ -1,0 +1,60 @@
+{
+ "task_id": "L3_stiffened_panel_600x600_str3",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "clarify": null,
+ "spec": {
+  "name": "stiffened_panel_600x600_pressure",
+  "description": "600×600 mm 铝加筋壁板，四边简支，受 0.0001 MPa 均布面压",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "stiffened_panel",
+   "params": {
+    "length": 600,
+    "width": 600,
+    "thickness": 2,
+    "n_stringers": 0
+   }
+  },
+  "mesh": {
+   "size_chord": 3,
+   "size_span": 3
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.0001,
+   "direction": [
+    0,
+    0,
+    -1
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/mesh must have required property 'size_chord'",
+    "/mesh must have required property 'size_span'",
+    "/mesh 不允许的键 \"size\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le",
+    "/bc 不允许的键 \"four_edges_simply_supported\"，请删除。bc 允许键: root_surface/clamp（如 {\"root_surface\":\"root\",\"clamp\":true}）"
+   ]
+  }
+ ],
+ "raw_len": 676
+}

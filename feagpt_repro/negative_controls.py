@@ -782,6 +782,58 @@ def main():
     print(f"  [{'ok ' if ok39 else 'BAD!'}] NC-39 T1+ 地板缺节时 S-32 必红（正反两向）              "
           f"expect=fwd T/mut F actual={det39}")
 
+    # NC-40（R47 反向）：比率分母**必须闭合**。三向守：
+    #   正向（真 artifact 过）/ 变异①（复现旧 bug：把编造题从分母里排掉，25→22）/ 变异②（分母字段缺失）。
+    # 为什么这条必须有：C-031 的旧成绩单就是变异①的形态，算出与 C-029 一字不差的 99.34%。
+    from check_claims import denominator_accounting, verdict_split_recorded
+    sc31_path = os.path.join(HERE, 'reports', 'baseline_scorecard_L3_v6c_dsv4pro.json')
+    ok40, det40 = False, 'no artifact'
+    sc31_real = None
+    if os.path.exists(sc31_path):
+        sc31_real = json.load(open(sc31_path, encoding='utf-8'))
+        ok_f40, _ = denominator_accounting(sc31_real, 'C-031')
+        m1 = json.loads(json.dumps(sc31_real))
+        m1['value_added']['field_level']['n_exam_counted'] = 22      # 复现旧 bug
+        ok_r40a, _ = denominator_accounting(m1, 'C-031mut')
+        m2 = json.loads(json.dumps(sc31_real))
+        for k in ('n_exam_counted', 'n_excluded_clarify_ok', 'n_zero_non_spec'):
+            m2['value_added']['field_level'].pop(k, None)
+        ok_r40b, _ = denominator_accounting(m2, 'C-031mut2')
+        ok40 = ok_f40 and (not ok_r40a) and (not ok_r40b)
+        det40 = (f'正向={"过" if ok_f40 else "红"} 复现旧bug={"红" if not ok_r40a else "漏判"} '
+                 f'缺分母字段={"红" if not ok_r40b else "漏判"}')
+    results.append({'id': 'NC-40', 'desc': '分母不闭合/缺构成必须被 R47/S-33 拒绝',
+                    'expect': 'fwd=True / 两向变异=False', 'actual': det40, 'ok': ok40})
+    print(f"  [{'ok ' if ok40 else 'BAD!'}] NC-40 分母不闭合被 S-33 拒绝（正反两向）            "
+          f"expect=fwd T/mut F actual={det40}")
+
+    # NC-41（R48 反向）：把 C-031 的状态列改成自指标记「（对外 headline）」⇒ S-34 必须红。
+    # 否则「不得事后择优」只是一句话（S-29 只守"恰好一条"，把标记搬过去它仍会过）。
+    real_md41 = open(os.path.join(ROOT_, 'FEM-Bench-Aero', 'CLAIMS.md'), encoding='utf-8').read()
+    mut_md41 = real_md41.replace('| active（supporting） |', '| active（对外 headline） |')
+    hit41 = (mut_md41 != real_md41)
+    rc41, o41 = run_check_claims(mut_md41, 'nc41')
+    ok41 = hit41 and rc41 != 0 and 'S-34' in o41
+    results.append({'id': 'NC-41', 'desc': '第二模型抢 headline 必须被 R48/S-34 拒绝',
+                    'expect': 'hit + rc!=0 + 报 S-34', 'actual': f'hit={hit41} rc={rc41} S-34={"S-34" in o41}',
+                    'ok': ok41})
+    print(f"  [{'ok ' if ok41 else 'BAD!'}] NC-41 第二模型抢 headline 被 S-34 拒绝               "
+          f"expect=hit+rc!=0+S-34 actual=hit={hit41} rc{rc41}")
+
+    # NC-42（R49 反向）：删掉 verdict_split ⇒ S-35 必须红（双尺度分裂不得被隐藏）
+    ok42, det42 = False, 'no artifact'
+    if sc31_real is not None:
+        ok_f42, _ = verdict_split_recorded(sc31_real, 'C-031')
+        m3 = json.loads(json.dumps(sc31_real))
+        m3['value_added'].pop('verdict_split', None)
+        ok_r42, _ = verdict_split_recorded(m3, 'C-031mut')
+        ok42 = ok_f42 and (not ok_r42)
+        det42 = f'正向={"过" if ok_f42 else "红"} 删split={"红" if not ok_r42 else "漏判"}'
+    results.append({'id': 'NC-42', 'desc': '双尺度分裂被隐藏必须被 R49/S-35 拒绝',
+                    'expect': 'fwd=True / 删 verdict_split=False', 'actual': det42, 'ok': ok42})
+    print(f"  [{'ok ' if ok42 else 'BAD!'}] NC-42 双尺度分裂被隐藏被 S-35 拒绝                 "
+          f"expect=fwd T/mut F actual={det42}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。
     # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，
     # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
@@ -812,13 +864,19 @@ def main():
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],
               'results': results}
+    # ★ W5c-6c 修：这句原先是**无条件**打印的 —— 44/44 全绿时照样印「未全绿，不得跑基线」，
+    # 读的人会以为失败（与 R38 同类：结论字符串必须由数据生成，不能写死）。
+    # 现在：① 结论写进 report['gate_message']（结构化，供下游读，不靠人读 stdout）；
+    #       ② stdout 打印同一句，全绿/不全绿自动切换。
+    report['gate_message'] = ('红线条 R6：负控全绿 ⇒ 允许跑 LLM 基线。' if report['all_ok']
+                              else '红线条 R6：负控未全绿，不得跑 LLM 基线。')
     # W5a'（R25）：负控产物入库 reports/，文件名带条数（官方 artifact 不得在 eval_runs/）
     rep_dir = os.path.join(HERE, 'reports')
     os.makedirs(rep_dir, exist_ok=True)
     out_path = os.path.join(rep_dir, f'negative_controls_{len(results)}.json')
     json.dump(report, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print(f"\n负控: {n_ok}/{len(results)} ok -> reports/negative_controls_{len(results)}.json")
-    print('红线条 R6：负控未全绿，不得跑 LLM 基线。')
+    print(report['gate_message'])
     return 0 if report['all_ok'] else 2
 
 if __name__ == '__main__':

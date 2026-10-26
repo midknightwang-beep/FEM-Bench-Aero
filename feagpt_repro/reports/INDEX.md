@@ -10,12 +10,13 @@
 | 用途 | 文件 | 口径 |
 |---|---|---|
 | **官方 headline（对外唯一可引用）** | `baseline_scorecard_L3_v6c.json` | **C-029**：考卷 **v6c**（55 条 L3 / exam 25 三栏）× 候选 **`candidates_l3_v6c`**（55/55，`n_unresolved=0`）。exam **TSR 23/25 (92.0%) / SFR 20/22 (90.9%)**；**n=25 ⇒ `underpowered=False`**；CI95 见 `bootstrap_ci_L3_v6c.json`（TSR **[80.0, 100.0]**、SFR **[77.3, 100.0]**、MSR **[72.7, 100.0]**）。**全链 MSR（R35 四行）**：exam **19/22 (86.4%)** → 剔 solver **19/21 (90.5%)**；dev **19/29 (65.5%)** → 剔 solver **19/26 (73.1%)**；full **38/51 (74.5%)** → 剔 solver **38/47 (80.9%)**。**4 条 solver 全是柱壳（143k / 158k×2 / 169.6k 节点 > 阈值 158,548），其中 1 条在 exam**；★ solver 桶**候选相关**（同题 `str12_frm4` 在 v6b 是 model、v6c 变 solver）⇒ **剔除口径也不可跨版本直减**。三栏：boundary **6/6**、extrapolation **11/13**、interpolation **6/6**。**与 C-028 的 68.0%、C-021 的 45.5% 一律不可相减**（R30/R39，`compare_scorecards.py` rc=3——与 C-028 同 25 条 exam id 但**题面已改**，paper sha 不同）。**涨幅必须按 bridge 四格拆**：17/25 → 18/25（判分修正）→ 18/25（考卷修复对旧候选 +0）→ 23/25（重生成），见 `diagnostics/bridge_w5c_table.md`。**`value_added` 两种尺度（R44）**：任务级 地板 T1/T1+ 均 **0.0%** → LLM 92.0%（Δ92.0 pp）；字段级 地板 **85.93%** → LLM **99.34%**（**Δ+13.4 pp**，同样过 10 pp）。**★ 「0 地板」是全或无判分的必然**：`spec_fidelity` 逐字段全对才算过 × 族内参数逐条唯一 ⇒ 最强「不读输入」策略命中 86% 字段、最好一条只差 **1** 个字段，但 25 条无一全对，族内 oracle 上界也 **0/25** |
+| **第二模型（supporting，不作 headline）** | `baseline_scorecard_L3_v6c_dsv4pro.json` + `bootstrap_ci_L3_v6c_dsv4pro.json` | **C-031**：**同一份 v6c 考卷**（`tasks_sha256` 与 C-029 逐字节相同）× `candidates_l3_v6c_dsv4pro`（`deepseek-v4-pro`，55/55）。exam **TSR 20/25 (80.0%)**、SFR 20/25、dev 22/30。**用途=可重复性 + 归因**：`spec_pass` 两模型同为 20/25、2 条 `spec_fail` 同题同字段 ⇒ 失分主因是题面/prompt 而非模型；差异全在澄清题。**R48：不得因成绩高低换 headline** |
 | 上一代 headline（降为 diagnostic lower bound） | `baseline_scorecard_L3_v6b.json` + `bootstrap_ci_L3_v6b.json` | **C-028（第八轮 D1 降级）**：考卷 v6b × `candidates_l3_v6`。exam **TSR 17/25 (68.0%) / SFR 14/21 / MSR 10/21**、全链 MSR 25/44；CI95 [48.0, 84.0]。三栏 5/6 · 7/13 · 5/6。**已含 8 处已知缺陷 ⇒ 只是下界，不得对外**；档案保留（D10），**不重算** |
 | 上一代 headline（降为历史口径） | `baseline_scorecard_L3_v4.json` | C-021：考卷 **v4** × 候选 **v4**（`candidates_l3_v3`），exam 11 条 **TSR 5/11 (45.5%) / SFR 5/10 / MSR 4/9**，**n=11 UNDERPOWERED**；CI95 见 `bootstrap_ci_L3_v4.json`（TSR **[18.2, 72.7]**） |
 | **诊断（不是模型成绩）** | `baseline_scorecard_L3_v5_rescore.json` | C-025：**旧候选**（v4 生成）打 **v5** 考卷 ⇒ exam TSR 4/11。旧候选不能评新考卷（R28），只用于验证「修题改了什么」 |
 | L1 冒烟（非模型基线） | `baseline_scorecard_L1_smoke.json` | C-017：spec-copy 19 条 SFR 0/19，无 schema 约束解码时的指令遵循失败 |
 | 桥接表 | `bridge_v3_v4.json` + `bridge_A/B/C_*.json`（历史）／ **`diagnostics/bridge_w5c_table.md` + `diagnostics/bridge_w5c_B/C_*.json`（当前）** | C-024：A 7/11、B 5/11、C 0/11、D 5/11；A→D = −3 wingbox 方向 +1 d2000。**W5c 四格**：17→18（判分）→18（考卷，+0）→23（重生成） |
-| 负控 | **`negative_controls_41.json`（当前）**；`_39` / `_37` / `_31` = **历史快照，不得引用**（R42 同理：数字只认最新那份） | C-019：PC-1 + NC-1..22 + NC-15b + **NC-23..37**（artifact 入库/追踪/官方诊断分文件/缺 gold 硬报错 / 语义漂移 / 覆盖不全 / 跨口径混比 / **W5c 的 NC-30..37**：审计闸两端守 / SYS prompt 键名齐 / T1 LOO / 成绩单文案 / 不引 `eval_runs/` / 同条数≠同批题 / **语义项不静默消失** / **契约试建闸反向**）= **39/39** |
+| 负控 | **`negative_controls_44.json`（当前）**；`_41` / `_39` / `_37` / `_31` = **历史快照，不得引用**（R42 同理：数字只认最新那份） | C-019：PC-1 + NC-1..22 + NC-15b + **NC-23..37**（artifact 入库/追踪/官方诊断分文件/缺 gold 硬报错 / 语义漂移 / 覆盖不全 / 跨口径混比 / **W5c 的 NC-30..37**：审计闸两端守 / SYS prompt 键名齐 / T1 LOO / 成绩单文案 / 不引 `eval_runs/` / 同条数≠同批题 / **语义项不静默消失** / **契约试建闸反向**）= **39/39** |
 | T1 检索地板 | `trivial_baselines_L3.json`（v4）/ `trivial_baselines_L3_v6b.json` / **`trivial_baselines_L3_v6c.json`（当前）** | `value_added` 的对照项：v4 exam T1 = 0/11；v6c exam **T0 0/25 · T1 0/25 · T2 25/25**。**R40：T1 已 leave-one-out**，`t1_leave_one_out=true`、`T1_self_hit` 0 条（旧版 train 12/13 全是 `T1_nn == task_id`，地板是稻草人）。**R44 新增两档**：`T1plus_family`（**逐字段族级众数**，不读输入的最强策略，众数只在 train 池取）exam **0/25**、但**字段命中率 85.93%**、缺口 min **1** / 中位 **3** / max **5** 字段；`T1plus_family_oracle`（族内 train 池覆盖力**上界**，需知道答案才能选 ⇒ 只报不判）exam **0/25** |
 | MSR 明细 | `msr_l3_v4.json` / `msr_l3_v5_rescore.json` ／ 当前版本直接并入成绩单 `msr` + `exam.msr` 节 | 逐任务门禁 + 失败分层（env/contract/model/**solver**，R16/R35）；v4 = 11/21、exam 4/9。**R35：原始口径（含 solver）与剔除口径必须并列** ⇒ `exam_msr` / `exam_msr_excl_solver` / `dev_msr` / `dev_msr_excl_solver` 四行 + 全链 `msr` / `msr_excl_solver`，并标 `solver_in_exam` / `solver_in_dev`。**顶层 `msr` 键 W5c 起才落值**（此前一直是 null，NC-36 抓到）。**R45：九个字段必须全非空** —— `exam_msr` / `exam_msr_excl_solver` / `dev_msr` / `dev_msr_pct` / `dev_msr_excl_solver` / `msr` / `msr_excl_solver` + 别名 `full_msr_excl_solver`(≡`msr_excl_solver`, 38/47) / `full_msr_excl_solver_pct`；别名由同一变量写出（`full_msr_excl_solver` / `dev_msr_pct` 此前是**缺键**，S-31 守） |
 | bootstrap CI | `bootstrap_ci_L3_v4.json` / `_v5_rescore.json` / `_v6b.json` / **`_v6c.json`（当前）** | exam 任务重采样（B=4000, seed=20261025）：TSR/SFR/MSR 点估计 + CI95 + by_family + **by_stratum（三栏，只报不判）**。v6c：TSR 92.0% **[80.0, 100.0]**、SFR 90.9% **[77.3, 100.0]**；分族 open_hole 75.0% **[25.0, 100.0]**、wingbox 94.4% **[83.3, 100.0]** |
@@ -43,7 +44,8 @@ PY="C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"  
 # ⓪ 当前官方 headline（C-029，考卷 v6c × 候选 v6c）——先跑这三条就够
 "$PY" r32_audit.py --tasks reports/papers/tasks_v6c.jsonl --scope exam --out reports/r32_audit_v6c_exam.json   # 必须 rc=0（R33）
 "$PY" audit_contract.py --tasks reports/papers/tasks_v6c.jsonl --out reports/contract_audit_v6c.json            # gold 55/55 可建（§7.4）
-"$PY" trivial_baselines.py --levels L3 --tasks reports/papers/tasks_v6c.jsonl --out reports/trivial_baselines_L3_v6c.json
+# ★ --out 是相对 --out-dir 的：旧写法 `--out reports/xxx.json` 会落到 eval_runs/reports/（R37 踩过）
+"$PY" trivial_baselines.py --levels L3 --tasks reports/papers/tasks_v6c.jsonl --out trivial_baselines_L3_v6c.json --out-dir reports
 "$PY" score_baseline.py --candidates candidates_l3_v6c \
   --tasks reports/papers/tasks_v6c.jsonl \
   --report reports/baseline_scorecard_L3_v6c.json \
@@ -52,6 +54,21 @@ PY="C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"  
   --tasks reports/papers/tasks_v6c.jsonl \
   --report reports/baseline_scorecard_L3_v6c.json      # 全链 ccx，串行，约 25–40 min
 "$PY" bootstrap_ci.py --scorecard reports/baseline_scorecard_L3_v6c.json --out reports/bootstrap_ci_L3_v6c.json
+
+# ⓪b 第二模型（C-031，同考卷 v6c × candidates_l3_v6c_dsv4pro）——可重复性证据，supporting 非 headline（R48）
+node _probe_models.js --out reports/diagnostics/models_available.json    # 实测可用模型 id（35 个，R13 不猜）
+node gen_candidates_v2.js --tasks reports/papers/tasks_v6c.jsonl --levels L3 \
+  --out candidates_l3_v6c_dsv4pro --limit 55 --model deepseek-v4-pro --max-turns 3      # 9 min
+"$PY" score_baseline.py --candidates candidates_l3_v6c_dsv4pro \
+  --tasks reports/papers/tasks_v6c.jsonl \
+  --report reports/baseline_scorecard_L3_v6c_dsv4pro.json \
+  --trivial reports/trivial_baselines_L3_v6c.json --label "C-031 v6c x dsv4pro (paper v6c, candidates dsv4pro)"
+"$PY" msr_l3.py --candidates candidates_l3_v6c_dsv4pro --tasks reports/papers/tasks_v6c.jsonl \
+  --report reports/baseline_scorecard_L3_v6c_dsv4pro.json      # 全链 ccx，串行
+"$PY" bootstrap_ci.py --scorecard reports/baseline_scorecard_L3_v6c_dsv4pro.json --out reports/bootstrap_ci_L3_v6c_dsv4pro.json
+"$PY" _diag_model_diff.py --a reports/baseline_scorecard_L3_v6c.json \
+  --b reports/baseline_scorecard_L3_v6c_dsv4pro.json \
+  --out reports/diagnostics/model_diff_v6c_dsv4pro.json --md reports/diagnostics/model_diff_v6c_dsv4pro.md   # 先过 R30 闸，不可比 rc=3
 
 # ① 上一代官方 headline（C-021，考卷 v4 × 候选 v4）
 "$PY" score_baseline.py --candidates candidates_l3_v3 \
@@ -86,6 +103,7 @@ PYTHONIOENCODING=utf-8 "$PY" negative_controls.py
 | v6（作废） | 考卷 v6（tag `v1.0-l3-v6`，`papers/tasks_v6.jsonl`）：内插名额 2/2/1/1 ⇒ 三族 train 被抽空 | — | — | **作废**（T1 地板只有 1/4 族可算）；原稿留档不删（D10） |
 | **v6b** | 考卷 v6b（tag `v1.0-l3-v6b`，`papers/tasks_v6b.jsonl`，55 条 L3 / exam 25 三栏，内插全翼盒） | `candidates_l3_v6` | gen_candidates_v2.js | **已跑出成绩但降级为 diagnostic lower bound（C-027 + C-028）**；含 8 处已知缺陷，不得对外 |
 | **v6c** | 考卷 v6c（`papers/tasks_v6c.jsonl`，sha `9c1faa3a…`）：v6b → v6c **只改 10 行**（4 条 NL 补 R32 缺项 + 6 条 `split_v2` 改 `interpolation_test`），L1/L2 110 条与其余 45 条 L3 **逐字节不变** | `candidates_l3_v6c` | gen_candidates_v2.js（SYS prompt 补键名表，R34） | **官方考卷（C-030）**；R32 审计 4→**0 违规**，`_verify_tasks_v6c.py` 20/20 PASS |
+| **v6c × dsv4pro** | **同一份** `papers/tasks_v6c.jsonl`（sha `9c1faa3a…` 与 v6c **逐字节相同**） | `candidates_l3_v6c_dsv4pro` | gen_candidates_v2.js `--model deepseek-v4-pro --max-turns 3 --limit 55`（9 min） | **supporting 第二模型（C-031）**：exam TSR **20/25 (80.0%)**、SFR 20/25、dev 22/30；**`spec_pass` 与 C-029 同为 20/25，2 条 `spec_fail` 同题同字段**；唯一差异是 3 条澄清题（glm 澄清 3/3 vs 本模型编造 3/3）。**不作 headline（R48：不得事后择优）** |
 
 > `papers/tasks_v4.jsonl` 是 `git show 28e66bb:feagpt_repro/tasks/tasks.jsonl` 的逐字节快照。
 > 用它（而不是 `_bridge_v3/tasks/`）才能复现 C-021 的 dev TSR 11/19 与「问错字段 0」；
@@ -108,7 +126,7 @@ PYTHONIOENCODING=utf-8 "$PY" negative_controls.py
 | C-021 全链 MSR 可复现 | `msr_l3.py --tasks papers/tasks_v4.jsonl` ⇒ **MSR 11/21 (52.4%)、exam 4/9、dev 7/12**（失败分层 model 7 + contract 3，env 0），与 C-021 的 4/9 一致；实耗 18 min（两个 barrel 案各 362/468 s） |
 | CI 落地 | `bootstrap_ci.py` ⇒ exam TSR 45.5% **CI95 [18.2, 72.7]**；SFR 50% [20.0, 80.0]；MSR 44.4% [11.1, 77.8] —— n=11 的区间宽度就是「为何不得对外承诺」的量化证明 |
 | CLAIMS 自检 | `check_claims.py`：**22 条 active claim / 34 个 artifact / 32 项语义检查**，逐条查存在 + 追踪 + 路径一致 + sha256 + **语义计数（R29）** |
-| 负控 | **41/41**（NC-23/24/25 注入临时 CLAIMS 打结构检查；NC-26 缺 gold 硬报错；NC-27 文本计数漂移被语义检查抓到；NC-28 候选未覆盖全卷被标记；NC-29 跨口径混比被拒） |
+| 负控 | **44/44**（NC-23/24/25 注入临时 CLAIMS 打结构检查；NC-26 缺 gold 硬报错；NC-27 文本计数漂移被语义检查抓到；NC-28 候选未覆盖全卷被标记；NC-29 跨口径混比被拒） |
 
 ### ★ 两个新踩到的坑（已修，写进这里防复发）
 
@@ -126,7 +144,7 @@ PYTHONIOENCODING=utf-8 "$PY" negative_controls.py
 |---|---|
 | 文档语义计数（P1-1..P1-4） | C-010 **165**（L1 55 + L2 55 + L3 55）、C-011 内插 = **v6 interp 6**、C-019 coverage **31**、C-027/RUBRIC/W5B_PLAN 的「C-021 的 N 条」统一为 **11**（另两数 19 / 25 分列）；README 的 RUBRIC 版本统一 **v4** |
 | 语义自检（P1-5/R29） | `check_claims.py --semantic`（**默认开**）：**29 项**逐条核对文本数字 vs artifact 实读 ⇒ 全过（W5c 收口实测 22 claims / 34 artifacts / 29 语义）。S-01..S-20 覆盖 行数/内插/负控/exam 条数/三栏/跨文档「C-021 的 N 条」/RUBRIC §1 三行/README 版本与负控数/**S-17..S-20 与 S-23..S-26·S-28 现指向 C-029**（TSR/三栏/SFR/全链 MSR·exam MSR/R38 文案/R36 by_split/覆盖分解/id 集）、S-22 仍校 C-028；**W5c 新增 S-21..S-28**（内插族=wingbox 6 / 消歧计数 26·25 / R38 文案由考卷生成 / by_split 纯 dev / SFR 14/21 / 覆盖与产出分解 / R37 git 追踪 / exam id 集逐 id 相等） |
-| 负控（R29/R30/R31/R33–R46） | **41/41**（W5c 起）：NC-27 注入 C-010「140 行」⇒ 语义检查 FAIL（先断言替换命中，防静默空转）；NC-28 候选 30/55 ⇒ `scorecard_coverage_problems` 报 3 条；NC-29 v6(25) vs C-021(11) 混比 ⇒ `comparability` 拒（4 条理由），同文件自比仍可；**W5c 新增 NC-30（R33 考卷冻结闸：抽掉考卷里 web1 的腹板句 ⇒ R32 必须报 VIOLATION，含 `web_chordwise`）/ NC-31（R34 从 `GRADED_FIELDS` 实读键名比对 SYS prompt + 禁键明示）/ NC-32（R40 源码过滤 + `t1_leave_one_out` + 无 `T1_self_hit`）/ NC-33（R38 成绩单文案由考卷生成）/ NC-34（R37 官方文档不引 `eval_runs/` 具体文件）/ NC-35（R39 同条数不同 task-id 集必须拒）** |
+| 负控（R29/R30/R31/R33–R49） | **44/44**（W5c 起）：NC-27 注入 C-010「140 行」⇒ 语义检查 FAIL（先断言替换命中，防静默空转）；NC-28 候选 30/55 ⇒ `scorecard_coverage_problems` 报 3 条；NC-29 v6(25) vs C-021(11) 混比 ⇒ `comparability` 拒（4 条理由），同文件自比仍可；**W5c 新增 NC-30（R33 考卷冻结闸：抽掉考卷里 web1 的腹板句 ⇒ R32 必须报 VIOLATION，含 `web_chordwise`）/ NC-31（R34 从 `GRADED_FIELDS` 实读键名比对 SYS prompt + 禁键明示）/ NC-32（R40 源码过滤 + `t1_leave_one_out` + 无 `T1_self_hit`）/ NC-33（R38 成绩单文案由考卷生成）/ NC-34（R37 官方文档不引 `eval_runs/` 具体文件）/ NC-35（R39 同条数不同 task-id 集必须拒）** |
 | 成绩单覆盖记账（R31） | 成绩单新增 `n_tasks_in_paper` / `candidates_missing` / `partial_candidates`；v6b 显示「覆盖 **55/55** 条（完整）」，`partial_candidates=false` |
 | 跨口径闸（R30） | `compare_scorecards.py`：口径不同 ⇒ **rc=3 拒绝**且只打印三栏、不给任何「提升/下降」（v4 vs v6b 实测 rc=3，4 条理由：exam 11 vs 25、分层构成、boundary 4 vs 6、extrap 7 vs 13） |
 | 考卷 v6b 状态 | **冻结并已跑出成绩**（C-027 + C-028）；`candidates_l3_v6` 55/55 已入库 |
@@ -161,9 +179,9 @@ PYTHONIOENCODING=utf-8 "$PY" negative_controls.py
 | 考卷 v6c 冻结 | `_verify_tasks_v6c.py` **PASS**：改动行数 == 10、L1/L2 110 条逐字节、题面只做 insert（difflib opcodes ⊆ {insert}）、exam 25 = 6/13/6、纯 train 13、R33 两端守 |
 | T1 地板（R40） | leave-one-out 后 v6c exam **T1 0/25**、train 池 13 条**无自命中**（旧 v6b train 12/13 全部 `T1_nn == task_id`）；T0 0/25、T2 25/25 |
 | 成绩单口径（R36/R38/R39） | `exam_definition` 由考卷生成（含 'exam_stratum'）、`note` 无 W4d 旧串、`by_split` 纯 dev（train 13 + val 17 = 30）、`exam_task_ids_sha256` + `exam_by_family` 落盘；`by_stratum` 键名与考卷一致 |
-| 负控 | **41/41**（NC-30 改两端守：exam 0 + 非 exam 白名单逐字相等 + 反向抽依据必被抓；NC-33 自动读最新成绩单；NC-34 `eval_runs/` 清零） |
+| 负控 | **44/44**（NC-30 改两端守：exam 0 + 非 exam 白名单逐字相等 + 反向抽依据必被抓；NC-33 自动读最新成绩单；NC-34 `eval_runs/` 清零） |
 | bridge 四格 | `reports/diagnostics/bridge_w5c_table.md`：A 17/25 → B 18/25（判分修正 +1）→ C 18/25（**考卷修复对定型候选 +0**）→ D 23/25（重生成 +5）。`bridge_w5c_B/C_*.json` 为诊断产物，**不得当成绩**（R28） |
-| 文档同步 | RUBRIC **v4.6**（R33–R46 + §7.3/§7.4/§7.5）、CLAIMS **R1–R46**（C-019 41/41、C-030 两端口径）、README/INDEX/W5B_PLAN 同步 |
+| 文档同步 | RUBRIC **v4.7**（R33–R49 + §7.3/§7.4/§7.5/§7.6）、CLAIMS **R1–R49**（C-019 41/41、C-030 两端口径）、README/INDEX/W5B_PLAN 同步 |
 
 ### 7.1 W5c-6b 收口轮验收（2026-10-25，专家第九轮 4 个 P1）
 
@@ -175,5 +193,30 @@ PYTHONIOENCODING=utf-8 "$PY" negative_controls.py
 | **P1-4 key 只止血未轮换** | 复核「轮换 ⇒ endpoint 变 ⇒ provenance 重签」这一成本判断，写 `W5B_PLAN §6.0b` | **判定为错两处**：endpoint 是 `gen_candidates.js:10` 硬编码常量、`provenance` 不含 key/endpoint ⇒ 轮换本身**不需要重签**。同应用轮换是否可行**未验证**（未做轮换操作） |
 | P2-1 MSR 别名 null | 补 `dev_msr_pct` / `full_msr_excl_solver`（由同一变量写出）；**新增 S-31** | 九字段全非空、别名 38/47 逐字相等 |
 | P2-5 旧负控并存 | INDEX 标 `_39/_37/_31` 为**历史快照，不得引用** | 现状 41 为当前 |
-| 门禁 | `check_claims` **22 条 active / 34 artifact / 33 语义项全过**；负控 **41/41**；`_verify_tasks_v6c` PASS | 新增 NC-38（headline 反向）/ NC-39（T1+ 反向两向） |
+| 门禁 | `check_claims` **23 条 active / 35 artifact / 36 语义项全过**；负控 **44/44**；`_verify_tasks_v6c` PASS | 新增 NC-38（headline 反向）/ NC-39（T1+ 反向两向） |
+
+### 7.2 W5c-6c 跨模型轮验收（2026-10-25，W5b-5 第二模型）
+
+| 项 | 处置 | 实证 |
+|---|---|---|
+| **模型 id 实测** | `_probe_models.js` 打 `llm.models.list()` | 服务端 **35 个** id；`deepseek-v4-pro` 在其中（R13 不猜） |
+| **同卷约束** | 同一份 `tasks_v6c.jsonl` | `tasks_sha256` = `9c1faa3a…` 与 C-029 **逐字节相同** |
+| **生成** | `--limit 55 --model deepseek-v4-pro --max-turns 3` | 55/55（9 min），`turns {2:52, 3:3}`，`clarify` **0 条**、`n_unresolved=1` |
+| **打分** | `score_baseline.py --candidates candidates_l3_v6c_dsv4pro` | exam **TSR 20/25 (80.0%)**、SFR 20/25、dev 22/30；三栏 6/6 · 9/13 · 5/6 |
+| **MSR** | `msr_l3.py`（不 `--reuse`，真起 ccx） | exam **20/22**、dev 22/28、full **42/50**；**`n_solver_excluded=0`**（C-029 是 4） |
+| **CI** | `bootstrap_ci.py` 两份 | C-031 TSR **[64.0, 96.0]**、SFR [64.0, 96.0]、MSR **[77.3, 100.0]** |
+| **跨模型诊断** | `_diag_model_diff.py`（先过 R30 闸） | exam 2×2 = both **20** / only_a **3** / only_b **0** / neither **2**；共同失败 2 条**字段集全同** |
+| **口径 bug（新发现）** | 字段级命中率静默排除编造题 | 修前两份都是 **99.34%**（假象）；修后 C-029 不变、C-031 → **87.42%**（Δ+1.5 pp，BELOW） |
+| **新红线** | R47 分母显式 / R48 不得择优 / R49 分裂标出 | S-33/S-34/S-35 + NC-40/41/42 |
+| **门禁** | `check_claims` **23 claims / 35 artifacts / 36 语义项全过**；负控 **44/44** | 新增 NC-40/41/42 各一条反向 |
+
+**★ 本轮的真正产出不是 80.0% 这个数，而是三条归因结论**（详见 CLAIMS C-031）：
+
+1. **`spec_pass` 两模型都是 20/25** ⇒ 「92.0% vs 80.0%」不来自建模能力；
+2. **两条 `spec_fail` 同题同字段**（`extra.end_torque`+`torque_axis_dof`、`layup` 标量），dev 侧 `stiffened_panel_800x600`/`_str3` 的 `length`/`width` 也是**两模型同错**（R41 题面缺陷）⇒ **失分主因是题面/prompt，不是模型差异**；
+3. **唯一实质差异 = 缺失信息处理**（glm 澄清 3/3 vs dsv4pro 编造 3/3），其中 `n_stringers=0` **由 SYS prompt「未提长桁→长桁数=0」直接授权** ⇒ **我方 prompt 与题面冲突，下一轮必修**。
+
+**★ 反直觉点（必须一并读）**：C-031 的 **exam MSR 90.9% > C-029 的 86.4%**，而 TSR 低 12 pp。
+原因是 MSR 分母 22 **排除了 4 条 clarify 题**，而 C-031 编造的 3 条**恰好全在这 4 条里** ⇒ 它最差的 3 条被排除在 MSR 之外。
+**TSR 与 MSR 分母不同（25 vs 22），排名可以相反，不得互相替代。**
 

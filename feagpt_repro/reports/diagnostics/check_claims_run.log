@@ -32,14 +32,15 @@
   [ok  ] C-030   feagpt_repro/reports/papers/nl_human_v6c.jsonl
   [ok  ] C-030   feagpt_repro/reports/r32_audit_v6c.json
   [ok  ] C-030   feagpt_repro/reports/r32_audit_v6c_exam.json
-  [ok  ] C-019   feagpt_repro/reports/negative_controls_41.json
+  [ok  ] C-031   feagpt_repro/reports/baseline_scorecard_L3_v6c_dsv4pro.json
+  [ok  ] C-019   feagpt_repro/reports/negative_controls_44.json
 -- 语义计数（声称值 vs artifact 实读）--
   [ok  ] S-00  必需 claim 存在性                       声称=无缺失 实测=全部在
   [ok  ] S-01  C-010 任务层总行数                       声称=165 实测=165
   [ok  ] S-02  C-010 其中 L3 行数                     声称=55 实测=55
   [ok  ] S-03  C-011 内插 ID test 条数                声称=6 实测=6
-  [ok  ] S-04  C-019 负控通过数（源 negative_controls_41.json） 声称=41/41 实测=41/41
-  [ok  ] S-05  C-019 coverage 列                   声称=41 实测=41
+  [ok  ] S-04  C-019 负控通过数（源 negative_controls_44.json） 声称=44/44 实测=44/44
+  [ok  ] S-05  C-019 coverage 列                   声称=44 实测=44
   [ok  ] S-06  C-021 exam 条数                      声称=11 实测=11
   [ok  ] S-07  C-027 三栏 boundary/extrap/interp    声称=(6, 13, 6) 实测=(6, 13, 6)
   [ok  ] S-08  C-027 exam 合计                      声称=25 实测=25
@@ -49,8 +50,8 @@
   [ok  ] S-12  RUBRIC §1 三栏条数行                    声称=存在 实测=存在
   [ok  ] S-13  RUBRIC §1 三栏条数行                    声称=存在 实测=存在
   [ok  ] S-14  RUBRIC §1 三栏条数行                    声称=存在 实测=存在
-  [ok  ] S-15  README 引用的 RUBRIC 版本               声称=4.6 实测=全部 = 4.6
-  [ok  ] S-16  README 负控通过数                       声称=41/41 实测=41/41
+  [ok  ] S-15  README 引用的 RUBRIC 版本               声称=4.7 实测=全部 = 4.7
+  [ok  ] S-16  README 负控通过数                       声称=44/44 实测=44/44
   [ok  ] S-17  C-029 exam TSR 与成绩单一致              声称=23/25 (92.0%) 实测=23/25 (92.0%)
   [ok  ] S-18  C-029 三栏条数在 claim 行内               声称=boundary=6/6,extrapolation=11/13,interpolation=6/6 实测=三栏齐
   [ok  ] S-19  C-029 全链 MSR 与成绩单一致                声称=命中 实测=38/51 (74.5%)
@@ -67,6 +68,9 @@
   [ok  ] S-30  C-029 dev 25/30 必须标为投影（R43）        声称=ok 实测=含 23/30 实测 + 25/30 投影 + 5 条模型失败，且不得写「真实可达」
   [ok  ] S-31  MSR 六口径字段非空 + 别名一致（R45）            声称=全非空 实测=九个字段全非空；full_msr_excl_solver ≡ msr_excl_solver
   [ok  ] S-32  T1+ 地板非空且与 value_added 字段级一致（R44）  声称=T1+ exam 0/25 / 命中率 0.8593 / 缺口中位 3；与 value_added 逐数一致 实测=T1plus 非空 + avg_field_hit_rate_exam + n_fail_exam + 与 value_added 相等
+  [ok  ] S-33  字段级命中率分母构成闭合（R47）                  声称=C-029 计入 22 + 排除 3 = 25；其中编造记 0 **0** 条；C-031 计入 25 + 排除 0 = 25；其中编造记 0 **3** 条 实测=n_exam_counted + n_excluded_clarify_ok == exam.n，且编造记 0 不排除
+  [ok  ] S-34  第二模型不取代 headline（R48）              声称=C-029 仍为唯一 headline；C-031 标为 supporting（第二模型） 实测=C-029 仍标（对外 headline）；C-031 标 supporting/第二模型且不自称 headline
+  [ok  ] S-35  value_added 双尺度分裂必须落盘（R49）         声称=C-029 两尺度一致（任务级 PASS / 字段级 PASS），无需分裂说明；C-031 双尺度分裂：任务级 PASS / 字段级 BELOW ⇒ verdict_split 已落盘 实测=任务级 PASS 而字段级 BELOW ⇒ verdict_split 非空（禁止只引有利的一侧）
 
-active claims 22 条 / artifact 34 个 / 语义项 33 条 -> 全过
+active claims 23 条 / artifact 35 个 / 语义项 36 条 -> 全过
 report -> F:\AI FEA Modeling DataSets\feagpt_repro\reports\check_claims.json

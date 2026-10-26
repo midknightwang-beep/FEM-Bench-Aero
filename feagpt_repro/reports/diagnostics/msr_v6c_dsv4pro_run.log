@@ -1,0 +1,60 @@
+[msr_l3] candidates=candidates_l3_v6c_dsv4pro  tasks=reports/papers/tasks_v6c.jsonl
+[msr_l3] report=reports/baseline_scorecard_L3_v6c_dsv4pro.json
+  [--] L3_fuselage_barrel_d1600_l1600_str8_frm3: clarify task -> 不进分母
+  [ok] L3_fuselage_barrel_d1800_l2000_str8_frm3: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=273.4s
+  [ok] L3_fuselage_barrel_d2000_l1600_str8_frm3: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=239.1s
+  [ok] L3_fuselage_barrel_d2000_l2000_str12_frm4: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=323.6s
+  [ok] L3_fuselage_barrel_d2000_l2000_str8_frm3: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=327.7s
+  [ok] L3_fuselage_barrel_d2000_l2000_t2_str8_frm3: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=269.3s
+  [--] L3_naca4412_wingbox: clarify task -> 不进分母
+  [ok] L3_naca4412_wingbox_n_ribs3_chord1000: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=9.9s
+  [ok] L3_naca4412_wingbox_n_ribs3_chord800: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=6.0s
+  [ok] L3_naca4412_wingbox_n_ribs5_chord800: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=7.2s
+  [ok] L3_naca4412_wingbox_n_ribs7_chord1000: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=8.8s
+  [ok] L3_naca4412_wingbox_n_ribs7_chord800: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=7.3s
+  [ok] L3_naca4412_wingbox_n_ribs9_chord1000: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=9.2s
+  [ok] L3_naca4412_wingbox_recombination_algorithm3: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0242% wall=7.8s
+  [ok] L3_naca4412_wingbox_size_skin1p5: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=7.9s
+  [ok] L3_naca4412_wingbox_size_skin2: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=8.8s
+  [ok] L3_naca4412_wingbox_size_skin4: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=9.1s
+  [ok] L3_naca4412_wingbox_size_span1600: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=8.0s
+  [ok] L3_naca4412_wingbox_size_span2400: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=16.2s
+  [ok] L3_naca4412_wingbox_size_span2400_skin2: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=18.6s
+  [ok] L3_naca4412_wingbox_size_span3000: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=15.0s
+  [ok] L3_naca4412_wingbox_size_span3000_skin1p5: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=14.2s
+  [ok] L3_naca4412_wingbox_str3: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=16.2s
+  [ok] L3_naca4412_wingbox_str3_T: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=58.6s
+  [ok] L3_naca4412_wingbox_str5: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=19.0s
+  [ok] L3_naca4412_wingbox_sweep10: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=13.3s
+  [ok] L3_naca4412_wingbox_sweep20: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=13.7s
+  [ok] L3_naca4412_wingbox_sweep20_taper060: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=16.4s
+  [ok] L3_naca4412_wingbox_sweep30: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=11.0s
+  [ok] L3_naca4412_wingbox_sweep30_taper080: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=8.9s
+  [ok] L3_naca4412_wingbox_sweep35: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=11.4s
+  [ok] L3_naca4412_wingbox_sweep40: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=8.5s
+  [ok] L3_naca4412_wingbox_sweep40_taper040: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=27.7s
+  [ok] L3_naca4412_wingbox_taper040: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=19.8s
+  [ok] L3_naca4412_wingbox_taper060: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=11.1s
+  [ok] L3_naca4412_wingbox_taper080: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=7.7s
+  [ok] L3_naca4412_wingbox_taper090: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=8.9s
+  [FAIL] L3_naca4412_wingbox_web1: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': False, 'spec_fidelity': False} fidelity=25.896% wall=8.8s bad=['fidelity_disp', 'spec_fidelity'] class=model
+  [FAIL] L3_naca4412_wingbox_web1_offcentre: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': False, 'spec_fidelity': False} fidelity=28.197% wall=9.9s bad=['fidelity_disp', 'spec_fidelity'] class=model
+  [FAIL] L3_naca4412_wingbox_web2: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': False, 'spec_fidelity': False} fidelity=26.4441% wall=14.4s bad=['fidelity_disp', 'spec_fidelity'] class=model
+  [--] L3_open_hole_panel_400x200_d20: clarify task -> 不进分母
+  [--] L3_open_hole_panel_400x200_d20_cfrp090s: no spec -> 不进分母
+  [FAIL] L3_open_hole_panel_400x200_d20_cfrp45s: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': False, 'spec_fidelity': False} fidelity=74.542% wall=16.7s bad=['fidelity_disp', 'spec_fidelity'] class=model
+  [FAIL] L3_open_hole_panel_400x200_d20_cfrp45s_d40: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': False, 'spec_fidelity': False} fidelity=74.473% wall=13.0s bad=['fidelity_disp', 'spec_fidelity'] class=model
+  [FAIL] L3_open_hole_panel_400x200_d20_cfrpqi: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': False, 'spec_fidelity': False} fidelity=26.0622% wall=13.6s bad=['fidelity_disp', 'spec_fidelity'] class=model
+  [ok] L3_open_hole_panel_400x200_d20_offcentre: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=10.6s
+  [ok] L3_open_hole_panel_400x200_d40: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=11.7s
+  [ok] L3_open_hole_panel_400x200_d40_offcentre: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=9.5s
+  [ok] L3_open_hole_panel_400x200_d50: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=11.0s
+  [ok] L3_open_hole_panel_600x300_d30: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=21.2s
+  [ok] L3_open_hole_panel_600x300_d60: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=24.0s
+  [ok] L3_stiffened_panel_600x600: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': True} fidelity=0.0% wall=241.1s
+  [--] L3_stiffened_panel_600x600_str3: clarify task -> 不进分母
+  [FAIL] L3_stiffened_panel_800x600: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': True, 'spec_fidelity': False} fidelity=0.0269% wall=121.5s bad=['spec_fidelity'] class=model
+  [FAIL] L3_stiffened_panel_800x600_str3: gates={'mesh_quality': True, 'semantics': True, 'fidelity_disp': False, 'spec_fidelity': False} fidelity=47.5179% wall=87.0s bad=['fidelity_disp', 'spec_fidelity'] class=model
+
+MSR = 42/50 (84.0%)  exam=20/22 dev=22/28  失败分层={'model': 8}
+merged -> reports/baseline_scorecard_L3_v6c_dsv4pro.json

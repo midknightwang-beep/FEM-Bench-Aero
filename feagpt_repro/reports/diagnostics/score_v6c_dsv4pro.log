@@ -1,0 +1,16 @@
+[score_baseline] candidates=candidates_l3_v6c_dsv4pro  tasks=reports/papers/tasks_v6c.jsonl
+== L3 主基线成绩单（exam/dev 分栏，W4e）==
+  EXAM  TSR 20/25 (80.0%)  SFR 20/25 (80.0%)   underpowered=False
+  DEV   TSR 22/30 (73.3%)  SFR 22/29 (75.9%)  (不进对外)
+  分类(exam): {'fabricated': 3, 'spec_pass': 20, 'spec_fail': 2}
+  └ boundary      TSR 6/6 (100.0%)  SFR 6/6
+  └ extrapolation TSR 9/13 (69.2%)  SFR 9/13
+  └ interpolation TSR 5/6 (83.3%)  SFR 5/6
+  FPR: 编造 4/4、过度澄清 0、问错字段 0
+  turns: {'2': 52, '3': 3}  一次通过 0 条  未收敛 1 条
+  value_added(exam): 地板 T1_retrieval (T1 0.0% / T1+ 0.0%) -> LLM 80.0% (Δ80.0pp, PASS)
+  value_added(字段级): 地板 85.93% -> LLM 87.42% (Δ1.5pp；地板缺口中位 3 字段)
+    分母构成: 计入 25 / 合法澄清排除 0 / 编造记 0 3
+  ★ 双尺度分裂: 任务级 PASS / 字段级 BELOW（Δ1.5 pp）—— 两尺度结论相反，文档必须并列报，禁止只引有利的一侧（R49）
+  覆盖: 候选 55/55 条（完整）
+report -> reports/baseline_scorecard_L3_v6c_dsv4pro.json

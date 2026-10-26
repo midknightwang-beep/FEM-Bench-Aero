@@ -1,0 +1,13 @@
+== exam bootstrap CI ==
+  n_exam=25  underpowered=False  B=4000 seed=20261025
+  TSR: 20/25 = 80.0%  CI95 [64.0, 96.0]
+  SFR: 20/25 = 80.0%  CI95 [64.0, 96.0]
+  MSR: 20/22 = 90.9%  CI95 [77.3, 100.0]
+  [fuselage_barrel] n=2 TSR 50.0% CI95 [0.0, 100.0]
+  [open_hole_panel] n=4 TSR 75.0% CI95 [25.0, 100.0]
+  [stiffened_panel] n=1 TSR 0.0% CI95 [0.0, 0.0]
+  [wingbox] n=18 TSR 88.9% CI95 [72.2, 100.0]
+  <boundary> n=6 TSR 100.0% CI95 [100.0, 100.0]  (分栏只报不判)
+  <extrapolation> n=13 TSR 69.2% CI95 [46.2, 92.3]  (分栏只报不判)
+  <interpolation> n=6 TSR 83.3% CI95 [50.0, 100.0]  (分栏只报不判)
+report -> reports/bootstrap_ci_L3_v6c_dsv4pro.json

@@ -259,6 +259,76 @@ def t1plus_consistency(trivial, scorecard):
                   f'缺口中位 {t["n_fail_exam"].get("median")}；与 value_added 逐数一致')
 
 
+def denominator_accounting(sc, label=''):
+    """R47（W5c-6c）：比率指标的**分母构成必须加和**，禁止隐式过滤。
+
+    实证（跨模型对比才暴露）：旧版字段级命中率写
+        hits = [... for r in exam_rows if r.get('n_fields_gated')]
+    于是 `fabricated`（编造）与 `clarify_wrong` 被**静默排除**。C-029（glm）排除的
+    3 条是合法澄清（该排除），C-031（dsv4pro）排除的 3 条是编造（该记 0）⇒
+    两份成绩单都算出 **99.34%**，数字相同、含义相反。
+    ⇒ 判据：n_exam_counted + n_excluded_clarify_ok 必须 == exam.n（分母闭合），
+       且 n_zero_non_spec（记 0 的题）必须 ≤ 计入条数。
+    """
+    if not sc:
+        return False, f'{label} 缺成绩单'
+    fl = ((sc.get('value_added') or {}).get('field_level') or {})
+    n_exam = (sc.get('exam') or {}).get('n')
+    miss = [k for k in ('n_exam_counted', 'n_excluded_clarify_ok', 'n_zero_non_spec')
+            if fl.get(k) is None]
+    if miss:
+        return False, f'{label} 缺分母构成字段 {"、".join(miss)}（R47）'
+    tot = fl['n_exam_counted'] + fl['n_excluded_clarify_ok']
+    if n_exam is not None and tot != n_exam:
+        return False, (f'{label} 分母不闭合：计入 {fl["n_exam_counted"]} + 排除 '
+                       f'{fl["n_excluded_clarify_ok"]} = {tot} ≠ exam.n {n_exam}')
+    if fl['n_zero_non_spec'] > fl['n_exam_counted']:
+        return False, (f'{label} 记 0 的条数 {fl["n_zero_non_spec"]} 超过计入条数 '
+                       f'{fl["n_exam_counted"]}')
+    return True, (f'{label} 计入 {fl["n_exam_counted"]} + 排除 {fl["n_excluded_clarify_ok"]} '
+                  f'= {n_exam}；其中编造记 0 **{fl["n_zero_non_spec"]}** 条')
+
+
+def verdict_split_recorded(sc, label=''):
+    """R49（W5c-6c）：value_added 两个尺度的结论**可能相反**，分裂必须由成绩单自己标出。
+
+    实证：C-031 任务级 Δ80 pp（PASS）、字段级 Δ1.5 pp（BELOW）。若不标，
+    文档可以只引任务级那侧 ⇒ 变成 cherry-pick。
+    """
+    va = (sc or {}).get('value_added') or {}
+    tv = va.get('verdict')
+    lv = (va.get('field_level') or {}).get('verdict')
+    if tv is None or lv is None:
+        return False, f'{label} 缺 verdict（{tv}）或 field_level.verdict（{lv}）'
+    if (tv == 'PASS') != (lv == 'PASS'):
+        ok = bool(va.get('verdict_split'))
+        return ok, (f'{label} 双尺度分裂：任务级 {tv} / 字段级 {lv} ⇒ '
+                    f'verdict_split {"已落盘" if ok else "★缺失（R49）"}')
+    return True, f'{label} 两尺度一致（任务级 {tv} / 字段级 {lv}），无需分裂说明'
+
+
+def second_model_not_headline(rows):
+    """R48（W5c-6c）：第二模型结果**只作可重复性证据**，不得因成绩高低决定 headline。
+
+    跨模型对比最容易出的错是「哪个模型分高就把 headline 换成哪个」——同一张卷上
+    试 N 个模型取最好，等于事后挑样本。headline 必须在跑之前就定（主基线模型），
+    第二模型无论高低都只能并列报。
+    """
+    by = {r.get('claim_id'): r for r in rows if r.get('claim_id')}
+    c29, c31 = by.get('C-029'), by.get('C-031')
+    if not c31:
+        return False, '缺 C-031（第二模型结果必须登记，否则等于没做可重复性验证）'
+    s31 = c31.get('status') or ''
+    s29 = (c29 or {}).get('status') or ''
+    if '（对外 headline）' in s31 or '(对外 headline)' in s31:
+        return False, f'C-031 自称 headline —— 跨模型不得事后择优（R48）；status={s31[:60]}'
+    if '（对外 headline）' not in s29 and '(对外 headline)' not in s29:
+        return False, 'C-029 不再是 headline（主基线地位被动摇，R48/R42）'
+    if not any(k in s31 for k in ('supporting', '不作 headline', '可重复性', '第二模型')):
+        return False, f'C-031 status 未标明「supporting / 第二模型」定位（R48）：{s31[:80]}'
+    return True, 'C-029 仍为唯一 headline；C-031 标为 supporting（第二模型）'
+
+
 def semantic_checks(root, rows):
     """逐条核对：账本文本里声称的数字 vs artifact 实读的数字（R29）。"""
     out, m = [], _measures(root)
@@ -530,6 +600,39 @@ def semantic_checks(root, rows):
     add('S-32', 'T1+ 地板非空且与 value_added 字段级一致（R44）',
         'T1plus 非空 + avg_field_hit_rate_exam + n_fail_exam + 与 value_added 相等',
         _det32, _ok32)
+
+    # S-33（R47）：字段级命中率的分母构成必须闭合（计入 + 合法澄清排除 == exam.n）。
+    # 两份成绩单都要查 —— C-029 与 C-031 的「同一个 99.34%」就是被这条抓出来的。
+    _sc_paths = [('C-029', os.path.join(root, 'feagpt_repro', 'reports',
+                                        'baseline_scorecard_L3_v6c.json')),
+                 ('C-031', os.path.join(root, 'feagpt_repro', 'reports',
+                                        'baseline_scorecard_L3_v6c_dsv4pro.json'))]
+    _det33, _ok33 = [], True
+    for _lab, _p in _sc_paths:
+        if not os.path.exists(_p):
+            _det33.append(f'{_lab} 缺成绩单'); _ok33 = False; continue
+        _o, _d = denominator_accounting(json.load(open(_p, encoding='utf-8')), _lab)
+        _det33.append(_d); _ok33 = _ok33 and _o
+    add('S-33', '字段级命中率分母构成闭合（R47）',
+        'n_exam_counted + n_excluded_clarify_ok == exam.n，且编造记 0 不排除',
+        '；'.join(_det33), _ok33)
+
+    # S-34（R48）：第二模型不得事后择优抢走 headline
+    _ok34, _det34 = second_model_not_headline(rows)
+    add('S-34', '第二模型不取代 headline（R48）',
+        'C-029 仍标（对外 headline）；C-031 标 supporting/第二模型且不自称 headline',
+        _det34, _ok34)
+
+    # S-35（R49）：value_added 双尺度结论分裂时必须由成绩单自己标出
+    _det35, _ok35 = [], True
+    for _lab, _p in _sc_paths:
+        if not os.path.exists(_p):
+            _det35.append(f'{_lab} 缺成绩单'); _ok35 = False; continue
+        _o, _d = verdict_split_recorded(json.load(open(_p, encoding='utf-8')), _lab)
+        _det35.append(_d); _ok35 = _ok35 and _o
+    add('S-35', 'value_added 双尺度分裂必须落盘（R49）',
+        '任务级 PASS 而字段级 BELOW ⇒ verdict_split 非空（禁止只引有利的一侧）',
+        '；'.join(_det35), _ok35)
 
     return out
 

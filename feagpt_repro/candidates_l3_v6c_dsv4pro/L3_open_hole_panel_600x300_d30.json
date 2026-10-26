@@ -1,0 +1,59 @@
+{
+ "task_id": "L3_open_hole_panel_600x300_d30",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "clarify": null,
+ "spec": {
+  "name": "open_hole_tensile_plate",
+  "description": "600×300×2 mm aluminum plate with 30 mm central hole under 6000 N in-plane tension",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 600,
+    "width": 300,
+    "thickness": 2,
+    "hole_d": 30
+   }
+  },
+  "mesh": {
+   "size_chord": 4,
+   "size_span": 4
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 6000,
+   "direction": [
+    1,
+    0,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/mesh must have required property 'size_chord'",
+    "/mesh must have required property 'size_span'",
+    "/mesh 不允许的键 \"size\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le"
+   ]
+  }
+ ],
+ "raw_len": 703
+}
