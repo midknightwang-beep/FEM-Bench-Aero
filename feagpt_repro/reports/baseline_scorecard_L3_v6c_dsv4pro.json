@@ -1,6 +1,7 @@
 {
  "note": "W5c L3 主基线（考卷 v6c × 候选 candidates_l3_v6c_dsv4pro，文案由考卷自动生成）：headline = exam 25 条（exam_stratum 三栏 boundary 6 / extrapolation 13 / interpolation 6）；dev（非 exam）30 条只作开发诊断。TSR=行为正确性（完备题答对+澄清题字段级问对 R17）；SFR=字段保真（R20：编造一律不计 PASS）；FPR 双向；MSR 全链见 msr 节（R14/R16/R35：solver 失败单列，不进 exam MSR）。",
- "model": "glm-5.3-flash",
+ "model": "deepseek-v4-pro",
+ "model_source": "candidate files (per-task field `model`), 单一值；非默认、非命令行声称",
  "decode": "json_object + schema_task.json 校验 + 错误反馈修复循环（<=3 轮；SDK 无 logits 级 json_schema）",
  "exam_definition": "exam = exam_stratum 非空 = boundary 6 + extrapolation 13 + interpolation 6 = 25（RUBRIC §1.1；dev = 非 exam 30 条 = train 13 + val 17）（R15/R36）",
  "exam_task_ids_sha256": "53210d8db63991cfdc6a7f62553b55bcbcc53007c17faab6dfd7687551e85ca9",
@@ -1160,7 +1161,7 @@
    "tasks_path": "reports/papers/tasks_v6c.jsonl",
    "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
    "candidates_dir": "candidates_l3_v6c_dsv4pro",
-   "reuse_source": null
+   "reuse_source": "self(recompute-only, no re-solve — 统计段由同一成绩单的 per_task 重算，须与实跑逐数一致)"
   },
   "n_not_run": 0,
   "msr": "42/50",
@@ -1248,8 +1249,61 @@
     "n": 17
    }
   },
+  "denominator_audit": {
+   "n_tasks_total": 55,
+   "n_counted": 50,
+   "n_clarify_excluded": 4,
+   "n_unresolved_excluded": 1,
+   "n_notrun_excluded": 0,
+   "n_env_excluded": 0,
+   "n_unknown_excluded": 0,
+   "n_solver_excluded": 0,
+   "n_counted_excl_solver": 50,
+   "unresolved_task_ids": [
+    "L3_open_hole_panel_400x200_d20_cfrp090s"
+   ],
+   "clarify_task_ids": [
+    "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+    "L3_naca4412_wingbox",
+    "L3_open_hole_panel_400x200_d20",
+    "L3_stiffened_panel_600x600_str3"
+   ],
+   "closure_ok": true,
+   "closure_solver_ok": true,
+   "closure": "55 = counted 50 + clarify 4 + unresolved 1 + notrun 0 + env 0 + unknown 0；且 counted 50 = solver 0 + counted_excl_solver 50"
+  },
+  "exam_denominator_audit": {
+   "n_tasks_total": 25,
+   "n_counted": 22,
+   "n_clarify_excluded": 3,
+   "n_unresolved_excluded": 0,
+   "n_notrun_excluded": 0,
+   "n_env_excluded": 0,
+   "n_unknown_excluded": 0,
+   "n_solver_excluded": 0,
+   "n_counted_excl_solver": 22,
+   "unresolved_task_ids": [],
+   "clarify_task_ids": [
+    "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+    "L3_naca4412_wingbox",
+    "L3_stiffened_panel_600x600_str3"
+   ],
+   "closure_ok": true,
+   "closure_solver_ok": true,
+   "closure": "25 = counted 22 + clarify 3 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 22 = solver 0 + counted_excl_solver 22"
+  },
   "n_denominator": 50,
-  "n_clarify_excluded": 5,
+  "n_clarify_excluded": 4,
+  "n_unresolved": 1,
+  "n_unresolved_excluded": 1,
+  "n_notrun_excluded": 0,
+  "n_env_excluded": 0,
+  "n_tasks_total": 55,
+  "denominator_note": "R52：n_counted + clarify + unresolved + notrun + env + unknown = n_tasks_total（层A）；n_counted = n_solver_excluded + n_counted_excl_solver（层B，solver 仍在原始分母内）。n_clarify_excluded 只含 expected_clarifications 题，**不得**混入未收敛/no_output。",
+  "msr_definition": "conditional：分母 = 产出了 spec 且非 expected_clarifications 的题；模型侧无输出记 TSR fail / FPR，不计入 MSR（W5a 原设计，避免双记）。⇒ **跨成绩单比 MSR 前必须先对齐分母与 SFR（R54）**，分母不同时 pct 不得直减、不得据此排名。",
+  "n_no_spec_excluded_ids": [
+   "L3_open_hole_panel_400x200_d20_cfrp090s"
+  ],
   "failure_class_counts": {
    "model": 8
   },

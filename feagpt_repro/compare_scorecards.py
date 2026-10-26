@@ -33,6 +33,10 @@ def signature(sc):
 
 def comparability(a, b):
     """返回 (ok, reasons)。ok=False 表示只能三栏并列，不得出差值（R30）。"""
+    # ★ W5c-6h：**自比必须放行**。R53 约束的是「两个不同批次相减」，不是同一份产物自比；
+    #   旧批次 prompt_sha256 = UNKNOWN 时，自比会被 R53 规则误拒（实测 NC-29/NC-35 转红）。
+    if a is b or a == b:
+        return True, []
     sa, sb = signature(a), signature(b)
     reasons = []
     if sa['n'] is None or sb['n'] is None:
@@ -62,6 +66,20 @@ def comparability(a, b):
     pb = (b.get('provenance') or {}).get('tasks_sha256')
     if pa and pb and pa != pb:
         reasons.append(f'考卷内容不同（paper sha {pa[:12]}… vs {pb[:12]}…）——同 id 集但题面已改，属不同条件')
+    # ★ R53（W5c-6d）：**同卷 sha 相同 ≠ 可比** —— prompt 变了就是另一个 harness。
+    #   实证：C-029/C-031 是在旧 SYS prompt（含「未提长桁→长桁数=0」授权）下生成的，
+    #   C-032/C-033 是删掉该授权之后重生成的。卷子一个字没变，但「该不该澄清」的规则变了
+    #   ⇒ 两者的 TSR 差值同时混了「模型变化」和「规则变化」，不能相减。
+    #   旧批次没记录 prompt sha ⇒ UNKNOWN，与任何批次都不可比（UNKNOWN ≠ UNKNOWN 也拒）。
+    qa = (a.get('provenance') or {}).get('prompt_sha256')
+    qb = (b.get('provenance') or {}).get('prompt_sha256')
+    if qa in (None, '') or qb in (None, ''):
+        reasons.append('prompt 未记录（旧批次无 prompt_sha256）⇒ 无法证明 harness 相同（R53）')
+    elif qa == 'UNKNOWN' or qb == 'UNKNOWN':
+        reasons.append('prompt_sha256 = UNKNOWN（该批候选生成时未记录）⇒ 不可比（R53）')
+    elif qa != qb:
+        reasons.append(f'prompt 不同（SYS sha {str(qa)[:12]}… vs {str(qb)[:12]}…）——'
+                       '同卷但 harness 已改，差值混了规则变化（R53）')
     return (not reasons), reasons
 
 

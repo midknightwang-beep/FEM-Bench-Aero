@@ -38,7 +38,7 @@ ROOT = os.path.dirname(HERE)                      # 仓库根 = F:/AI FEA Modeli
 CLAIMS_DEFAULT = os.path.join(ROOT, 'FEM-Bench-Aero', 'CLAIMS.md')
 
 PATH_RE = re.compile(r'[A-Za-z0-9_./\\:\-]+\.(?:jsonl|json|md|csv|tar\.gz|txt)')
-FLAG_RE = re.compile(r'--(?:report|json|out|report-dir)\s+([^\s`;+]+)')
+FLAG_RE = re.compile(r'--(?:report|json|out|report-dir|md)\s+([^\s`;+]+)')
 # W5c：产出方式不止 --out/--report。考卷快照是 `cp tasks/tasks.jsonl reports/papers/xxx.jsonl`，
 # sha 清单是 `sha256sum … >> reports/papers/SHA256SUMS`。这两种也是**真实产出**，不纳入的话
 # 结构检查会误判「artifact 与 command 不一致」（R26）。只补这两种，不引入通配。
@@ -259,6 +259,139 @@ def t1plus_consistency(trivial, scorecard):
                   f'缺口中位 {t["n_fail_exam"].get("median")}；与 value_added 逐数一致')
 
 
+def model_label_consistent(sc, label=''):
+    """R51（专家第十轮 §3.2）：成绩单**顶层 `model` 必须等于 `provenance.model`**。
+
+    实证：C-031（deepseek-v4-pro）的成绩单顶层 `model` 写着 `glm-5.3-flash`
+    （score_baseline 里硬编码的默认值），而 provenance.model 才是 deepseek。
+    只读顶层的人会以为「第二模型还是 glm」。跨模型 artifact 的模型标签不能靠默认值。
+    """
+    if not sc:
+        return False, f'{label} 缺成绩单'
+    top = sc.get('model')
+    prov = (sc.get('provenance') or {}).get('model')
+    if not top:
+        return False, f'{label} 顶层 model 为空'
+    if not prov:
+        return False, f'{label} provenance.model 为空（无法交叉核对）'
+    if top != prov:
+        return False, f'{label} ★顶层 model={top} ≠ provenance.model={prov}（R51）'
+    if top.startswith('MIXED:'):
+        return False, f'{label} 一批候选混了多个模型：{top}'
+    return True, f'{label} model={top}（顶层 == provenance）'
+
+
+def msr_denominator_closure(sc, label=''):
+    """R52（专家第十轮 §3.3）：MSR 分母必须**四类拆开**且加和闭合。
+
+    实证：C-031 `n_clarify_excluded=5` 其实是「4 条澄清题 + 1 条 3 轮无输出」，
+    而 C-029 的 4 是「4 条纯澄清」——两个数被并排放进对比表就会被读成同口径。
+    判据两层（R52 原文把两层混写了，这里按实现分两层，见 msr_l3.py 注释）：
+      层A：n_counted + clarify + unresolved + notrun + env + unknown == n_tasks_total
+      层B：n_counted == n_solver_excluded + n_counted_excl_solver（solver 仍在原始分母内）
+    """
+    ms = (sc or {}).get('msr_section') or {}
+    if not ms:
+        return False, f'{label} 缺 msr_section'
+    for key in ('denominator_audit', 'exam_denominator_audit'):
+        a = ms.get(key)
+        if not a:
+            return False, f'{label} 缺 {key}（R52：分母构成未落盘）'
+        if not a.get('closure_ok'):
+            return False, f'{label} {key} 层A 不闭合：{a.get("closure")}'
+        if not a.get('closure_solver_ok'):
+            return False, f'{label} {key} 层B 不闭合：{a.get("closure")}'
+    a = ms['denominator_audit']
+    # 反向守：n_clarify_excluded 必须是**纯澄清**，若它等于「全部排除项」说明又混类了
+    if ms.get('n_clarify_excluded') != a['n_clarify_excluded']:
+        return False, (f'{label} n_clarify_excluded={ms.get("n_clarify_excluded")} 与拆分出的'
+                       f'纯澄清 {a["n_clarify_excluded"]} 不等（混入未收敛？R52）')
+    if ms.get('n_unresolved') != a['n_unresolved_excluded']:
+        return False, (f'{label} n_unresolved={ms.get("n_unresolved")} ≠ '
+                       f'n_unresolved_excluded={a["n_unresolved_excluded"]}')
+    ea = ms['exam_denominator_audit']
+    return True, (f'{label} 全卷 {a["closure"]}｜exam counted {ea["n_counted"]} + clarify '
+                  f'{ea["n_clarify_excluded"]} + unresolved {ea["n_unresolved_excluded"]}')
+
+
+def msr_conditional_declared(sc, label=''):
+    """R54（W5c-6h）：MSR 是**条件通过率**，分母只含「产出 spec 的非澄清题」。
+
+    后果：不同成绩单的分母可以不同（实测 C-032 exam 22 vs C-033 exam 21），
+    而裸报 pct 会被读成同口径。实证反直觉：C-033 exam MSR 20/21 = 95.2%
+    会「高于」C-032 的 20/22 = 90.9%，差的正是被排除的那条**失败题**
+    （`cfrp45s_d40` 模型侧无输出）——分母小的那个 pct 反而更好看。
+    ⇒ 闸的两端：①口径必须写进成绩单；②排除了谁必须点名，不得只把分母改小。
+    """
+    ms = (sc or {}).get('msr_section') or {}
+    if not ms:
+        return False, f'{label} 缺 msr_section'
+    if not (ms.get('msr_definition') or '').strip():
+        return False, f'{label} 缺 msr_definition（R54：条件口径必须写进成绩单）'
+    ids = ms.get('n_no_spec_excluded_ids')
+    if ids is None:
+        return False, f'{label} 缺 n_no_spec_excluded_ids（排除项未点名，R54）'
+    a = ms.get('denominator_audit') or {}
+    n_un = a.get('n_unresolved_excluded')
+    if n_un is not None and len(ids) != n_un:
+        return False, (f'{label} 点名的无输出 {len(ids)} 条 ≠ 审计里 unresolved '
+                       f'{n_un} 条（排除项与审计不一致，R54）')
+    if ids:
+        return True, f'{label} 口径已声明；条件分母排除 {len(ids)} 条（{ids[0].replace("L3_", "")}…）'
+    return True, f'{label} 口径已声明；无模型侧无输出被排除'
+
+
+def prompt_no_blind_default(path, label='gen_candidates_v2.js'):
+    """R50（专家第十轮 §3.1）：SYS prompt **不得**对题面已提及的特征授权默认值，
+    同时**不得**把 `expected_clarifications` 注入 prompt（那等于泄漏答案）。
+
+    反面实证：旧 prompt 写「未提长桁→长桁数=0」，而 `stiffened_panel_600x600_str3`
+    的题面是「若干根长桁」且登记了 `expected_clarifications=['n_stringers']`
+    ⇒ prompt 直接授权填 0，与题面判据**自相矛盾**。deepseek 被诱导，glm 没有 ⇒
+    这条缺陷污染了跨模型对比（不能记成模型错）。
+    """
+    if not os.path.exists(path):
+        return False, f'{label} 不存在'
+    src = _txt(path)
+    bad = []
+    if '未提长桁→长桁数=0' in src:
+        bad.append('仍含「未提长桁→长桁数=0」授权（R50 禁止）')
+    if '数量类字段铁律' not in src:
+        bad.append('缺「数量类字段铁律」段（题面提了特征却没给数量 ⇒ 必须澄清）')
+    if 'expected_clarifications' in src:
+        bad.append('prompt 里出现 expected_clarifications ⇒ 泄漏答案的风险（R50）')
+    if bad:
+        return False, f'{label}: ' + '；'.join(bad)
+    return True, f'{label}: 无盲填授权、含数量铁律、未注入 expected_clarifications'
+
+
+def prompt_sha_matches_source(gen_path, expected_sha, label=''):
+    """R53（W5c-6d）：成绩单记录的 `prompt_sha256` 必须等于**当前源码**里 SYS 的 sha。
+
+    为什么：改了 prompt 却没重生成 ⇒ 成绩单会挂着一个「已经不存在的 harness」的分数。
+    这条闸把「prompt 漂移」从人工纪律变成机器检查（`node gen_candidates_v2.js --print-prompt-sha`）。
+    """
+    import subprocess
+    if not expected_sha or expected_sha == 'UNKNOWN':
+        return False, f'{label} provenance.prompt_sha256 = {expected_sha}（旧批次未记录 ⇒ R53 不可比）'
+    if str(expected_sha).startswith('MIXED:'):
+        return False, f'{label} 一批候选混了多个 prompt sha：{expected_sha}'
+    if not gen_path or not os.path.exists(gen_path):
+        return False, f'{label} 找不到生成器（{gen_path}）'
+    try:
+        out = subprocess.run(['node', gen_path, '--print-prompt-sha'],
+                             capture_output=True, text=True, timeout=60)
+        cur = (out.stdout or '').strip()
+    except Exception as e:
+        return False, f'{label} 取当前 prompt sha 失败：{e}'
+    if not cur:
+        return False, f'{label} node --print-prompt-sha 无输出（rc={out.returncode}）'
+    if cur != expected_sha:
+        return False, (f'{label} ★prompt 已改但成绩单未重生成：artifact={str(expected_sha)[:12]}… '
+                       f'vs 源码={cur[:12]}…（R53）')
+    return True, f'{label} prompt sha {cur[:12]}… == 源码（未漂移）'
+
+
 def denominator_accounting(sc, label=''):
     """R47（W5c-6c）：比率指标的**分母构成必须加和**，禁止隐式过滤。
 
@@ -313,20 +446,25 @@ def second_model_not_headline(rows):
     跨模型对比最容易出的错是「哪个模型分高就把 headline 换成哪个」——同一张卷上
     试 N 个模型取最好，等于事后挑样本。headline 必须在跑之前就定（主基线模型），
     第二模型无论高低都只能并列报。
+
+    ★ W5c-6d 改为**数据驱动**（原版硬编码 C-029/C-031，换轮次就得改代码，
+      S-29 已经因为硬编码错过一次）：headline = 带自指标记的那条；supporting =
+      状态列声明 supporting/第二模型 的那些；断言两者交集为空。
     """
     by = {r.get('claim_id'): r for r in rows if r.get('claim_id')}
-    c29, c31 = by.get('C-029'), by.get('C-031')
-    if not c31:
-        return False, '缺 C-031（第二模型结果必须登记，否则等于没做可重复性验证）'
-    s31 = c31.get('status') or ''
-    s29 = (c29 or {}).get('status') or ''
-    if '（对外 headline）' in s31 or '(对外 headline)' in s31:
-        return False, f'C-031 自称 headline —— 跨模型不得事后择优（R48）；status={s31[:60]}'
-    if '（对外 headline）' not in s29 and '(对外 headline)' not in s29:
-        return False, 'C-029 不再是 headline（主基线地位被动摇，R48/R42）'
-    if not any(k in s31 for k in ('supporting', '不作 headline', '可重复性', '第二模型')):
-        return False, f'C-031 status 未标明「supporting / 第二模型」定位（R48）：{s31[:80]}'
-    return True, 'C-029 仍为唯一 headline；C-031 标为 supporting（第二模型）'
+    marker = lambda s: ('（对外 headline）' in (s or '')) or ('(对外 headline)' in (s or ''))
+    heads = [cid for cid, r in by.items() if marker(r.get('status') or '')]
+    supp = [cid for cid, r in by.items()
+            if any(k in (r.get('status') or '') for k in ('supporting', '不作 headline', '第二模型'))
+            and not marker(r.get('status') or '')]
+    if not supp:
+        return False, '缺第二模型 claim（status 未标 supporting/第二模型）⇒ 可重复性验证没有登记'
+    bad = [c for c in supp if marker(by[c].get('status') or '')]
+    if bad:
+        return False, f'{bad} 自称 headline —— 跨模型不得事后择优（R48）'
+    if not heads:
+        return False, '没有任何 claim 标（对外 headline）—— 主基线定位丢失（R42/R48）'
+    return True, f'唯一 headline = {heads}；supporting = {sorted(supp)}（均未自称 headline）'
 
 
 def semantic_checks(root, rows):
@@ -562,8 +700,11 @@ def semantic_checks(root, rows):
     head_claims = sorted({cid for cid, r in by.items()
                           if '（对外 headline）' in (r.get('status') or '')
                           or '(对外 headline)' in (r.get('status') or '')})
-    add('S-29', '对外 headline 唯一且为 C-029（R42）', '["C-029"]',
-        json.dumps(head_claims, ensure_ascii=False), head_claims == ['C-029'])
+    # ★ W5c-6d：headline 指针随 harness 换代前移（旧 prompt 代 → prompt-v2 代）。
+    #   注意 C-032 与 C-029 的 exam TSR **数字相同（23/25）**，所以这里守的是
+    #   「哪一条是当前 harness 的成绩」，不是「哪个分数更高」。
+    add('S-29', '对外 headline 唯一且为 C-032（R42/R53）', '["C-032"]',
+        json.dumps(head_claims, ensure_ascii=False), head_claims == ['C-032'])
 
     # S-30（R43，专家第九轮 §3.2）：dev 的 paper-clean 数字**不得冒充实测**。
     # C-029 曾写「dev 真实可达 25/30」，但 7 条 dev spec_fail 里只有 2 条是卷子缺陷（R41），
@@ -603,10 +744,16 @@ def semantic_checks(root, rows):
 
     # S-33（R47）：字段级命中率的分母构成必须闭合（计入 + 合法澄清排除 == exam.n）。
     # 两份成绩单都要查 —— C-029 与 C-031 的「同一个 99.34%」就是被这条抓出来的。
+    # ★ W5c-6d：四份成绩单全查（旧 prompt 代 C-029/C-031 + prompt-v2 代 C-032/C-033）。
+    #   少一份就 FAIL —— R29 的老坑：检查对象必须显式列出，缺了不得静默跳过。
     _sc_paths = [('C-029', os.path.join(root, 'feagpt_repro', 'reports',
                                         'baseline_scorecard_L3_v6c.json')),
                  ('C-031', os.path.join(root, 'feagpt_repro', 'reports',
-                                        'baseline_scorecard_L3_v6c_dsv4pro.json'))]
+                                        'baseline_scorecard_L3_v6c_dsv4pro.json')),
+                 ('C-032', os.path.join(root, 'feagpt_repro', 'reports',
+                                        'baseline_scorecard_L3_v6c_p2.json')),
+                 ('C-033', os.path.join(root, 'feagpt_repro', 'reports',
+                                        'baseline_scorecard_L3_v6c_ds_p2.json'))]
     _det33, _ok33 = [], True
     for _lab, _p in _sc_paths:
         if not os.path.exists(_p):
@@ -620,7 +767,7 @@ def semantic_checks(root, rows):
     # S-34（R48）：第二模型不得事后择优抢走 headline
     _ok34, _det34 = second_model_not_headline(rows)
     add('S-34', '第二模型不取代 headline（R48）',
-        'C-029 仍标（对外 headline）；C-031 标 supporting/第二模型且不自称 headline',
+        '恰有一条 claim 标（对外 headline）（当前 = C-032）；C-031/C-033 等第二模型标 supporting 且不自称 headline',
         _det34, _ok34)
 
     # S-35（R49）：value_added 双尺度结论分裂时必须由成绩单自己标出
@@ -633,6 +780,64 @@ def semantic_checks(root, rows):
     add('S-35', 'value_added 双尺度分裂必须落盘（R49）',
         '任务级 PASS 而字段级 BELOW ⇒ verdict_split 非空（禁止只引有利的一侧）',
         '；'.join(_det35), _ok35)
+
+    # S-36（R51，专家第十轮 §3.2）：顶层 model 必须 == provenance.model
+    # 动机：C-031（deepseek）的成绩单顶层写着 glm-5.3-flash —— 36 项语义检查没有一条核对它。
+    _det36, _ok36 = [], True
+    for _lab, _p in _sc_paths:
+        _o, _d = model_label_consistent(
+            json.load(open(_p, encoding='utf-8')) if os.path.exists(_p) else None, _lab)
+        _det36.append(_d); _ok36 = _ok36 and _o
+    add('S-36', '成绩单顶层 model == provenance.model（R51）',
+        '两份成绩单顶层 model 与 provenance 逐字相等，且不是默认值',
+        '；'.join(_det36), _ok36)
+
+    # S-37（R52，专家第十轮 §3.3）：MSR 分母四类拆开且加和闭合
+    _det37, _ok37 = [], True
+    for _lab, _p in _sc_paths:
+        _o, _d = msr_denominator_closure(
+            json.load(open(_p, encoding='utf-8')) if os.path.exists(_p) else None, _lab)
+        _det37.append(_d); _ok37 = _ok37 and _o
+    add('S-37', 'MSR 分母四类拆分且加和闭合（R52）',
+        'counted + clarify + unresolved + notrun + env + unknown == n_tasks_total；'
+        'counted == solver + counted_excl_solver；n_clarify_excluded 不得混入未收敛',
+        '；'.join(_det37), _ok37)
+
+    # S-38（R50，专家第十轮 §3.1）：prompt 不得对已提及特征授权默认值，也不得注入答案
+    _p38 = os.path.join(root, 'feagpt_repro', 'gen_candidates_v2.js')
+    _ok38, _det38 = prompt_no_blind_default(_p38)
+    add('S-38', 'prompt 无盲填授权且未注入 expected_clarifications（R50）',
+        '不含「未提长桁→长桁数=0」；含数量铁律；不含 expected_clarifications',
+        _det38, _ok38)
+
+    # S-39（R53，专家第十轮 §5.2）：prompt-v2 代成绩单的 prompt sha 必须与源码一致
+    # ——改了 prompt 没重生成，成绩单就挂着一个已经不存在的 harness 的分数。
+    _det39, _ok39 = [], True
+    _gen39 = os.path.join(root, 'feagpt_repro', 'gen_candidates_v2.js')
+    for _lab, _p in [('C-032', _sc_paths[2][1]), ('C-033', _sc_paths[3][1])]:
+        _sha = None
+        if os.path.exists(_p):
+            _sha = (json.load(open(_p, encoding='utf-8')).get('provenance') or {}).get('prompt_sha256')
+        _o, _d = prompt_sha_matches_source(_gen39, _sha, _lab)
+        _det39.append(_d); _ok39 = _ok39 and _o
+    add('S-39', 'prompt-v2 代成绩单的 prompt sha == 当前源码（R53）',
+        'C-032/C-033 的 provenance.prompt_sha256 非 UNKNOWN 且等于生成器当前 SYS 的 sha256',
+        '；'.join(_det39), _ok39)
+
+    # S-40（R54，W5c-6h）：MSR 是**条件通过率**——分母只含「产出 spec 的非澄清题」，
+    # 所以不同成绩单的分母可以不同，裸报 pct 会被读成同口径。
+    # 实证：C-033 exam MSR 20/21 = 95.2% 会「高于」C-032 的 20/22 = 90.9%，
+    # 差的正是被排除的那条模型侧无输出（cfrp45s_d40）——与那条 MSR 反直觉同源。
+    # 闸的两端：①口径必须写进成绩单（msr_definition 非空）；②排除了谁必须点名（不得只降分母）。
+    _det40, _ok40 = [], True
+    for _lab, _p in _sc_paths:
+        if not os.path.exists(_p):
+            _det40.append(f'{_lab} 缺成绩单'); _ok40 = False; continue
+        _o, _d = msr_conditional_declared(json.load(open(_p, encoding='utf-8')), _lab)
+        _det40.append(_d); _ok40 = _ok40 and _o
+    add('S-40', 'MSR 条件口径必须写进成绩单且排除项点名（R54）',
+        'msr_section.msr_definition 非空；n_no_spec_excluded_ids 与实际排除数一致',
+        '；'.join(_det40), _ok40)
 
     return out
 

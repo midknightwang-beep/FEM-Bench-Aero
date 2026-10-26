@@ -1,0 +1,25 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+ "clarify": "[\"hole_d（孔直径）未给出，开孔拉伸板必须有孔径才能建模，请提供孔直径（mm）\",\"hole_x/hole_y（孔心坐标）未给出，请确认孔心位置（若为中心孔请说明，hole_x/hole_y 可省略）\"]",
+ "spec": null,
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'yield_strength'",
+    "/mesh must have required property 'size_chord'",
+    "/mesh must have required property 'size_span'",
+    "/mesh 不允许的键 \"size\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le",
+    "/analysis 不允许的键 \"type\"，请删除。analysis 允许键: solver/step_type/incremental/initial_increment/total_time/outputs（建议直接写 {}）",
+    "/extra 不允许的键 \"clarify\"，请删除。extra 允许键: end_shear/end_moment/end_tension（柱壳专用，其余族写 {}）"
+   ]
+  }
+ ],
+ "raw_len": 117
+}

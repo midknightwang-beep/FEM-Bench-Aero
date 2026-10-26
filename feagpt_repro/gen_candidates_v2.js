@@ -9,6 +9,7 @@
 // 用法：node gen_candidates_v2.js --tasks tasks/tasks.jsonl --levels L3 --out candidates_l3_v2 --limit 2
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const Ajv = require('ajv');
 const { createWorkBuddyCloud } = require('@tencent-ai/workbuddy-cloud-sdk');
 
@@ -21,7 +22,9 @@ const publicConfig = {
 const SYS = `你是飞机结构有限元建模专家。根据用户给出的结构描述，输出一个 FEM-Bench-Aero 规范的 spec JSON（mm-t-s 单位制）：
 {"name":"<case名>","description":"<一句话>","material":{...},"structure":{"family":"<wingbox|open_hole_panel|fuselage_barrel|stiffened_panel>","params":{...}},"airfoil":{仅wingbox},"mesh":{},"load":{},"bc":{},"analysis":{},"extra":{}}
 ★ 铁律：用户给出的每个数值必须【逐字段采用】（键名数值都不许改、不许省略）。
-★ 缺失信息处理：用户没给的尺寸参数【不得编造】，输出 {"clarify": ["问题1", ...]} 列出需要澄清的字段（json_object 模式下澄清也必须是这个 JSON 形式）。仅当缺失字段使模型无法定义时才澄清；以下工程惯例视为"无该特征"而非缺失：未提锥度→tip_chord_ratio=1.0；未提后掠→sweep_deg=0；未提长桁→长桁数=0；未提中间腹板→web_chordwise=[]（不要把前后梁位置复制到 web_chordwise）；铺层板基材按用户描述（铝板则 material 用铝）。
+★ 缺失信息处理：用户没给的尺寸参数【不得编造】，输出 {"clarify": ["问题1", ...]} 列出需要澄清的字段（json_object 模式下澄清也必须是这个 JSON 形式）。仅当缺失字段使模型无法定义时才澄清——**但数量字段不受此限，见下条**。
+★ 数量类字段铁律（W5c-6d / R50）：题面**提到**某个特征（长桁/加筋、框、肋）却**没给具体数量** ⇒ 该数量就是缺失参数，**必须澄清**（n_stringers / n_stringers_per_skin / n_frames / n_ribs 等），**不得填 0、不得取"惯例值"、不得自行假设根数**。只有题面**明说素板 / 无加筋 / 无长桁**时，长桁数才可以直接写 0。
+★ 其余几何惯例（**仅当题面完全没提该特征时**才适用，用来区分"没提"与"提了没给数"）：完全未提长桁/加筋→该族长桁数为 0（等于无此特征，**不要**为此澄清）；未提锥度→tip_chord_ratio=1.0；未提后掠→sweep_deg=0；未提中间腹板→web_chordwise=[]（不要把前后梁位置复制到 web_chordwise）；铺层板基材按用户描述（铝板则 material 用铝）。
 ★ 长桁键名按族（键名即契约）：翼盒用 n_stringers_per_skin；柱壳与加筋壁板用 n_stringers。长桁细节键（stringer_height/stringer_thickness/stringer_kind/stringer_flange_width）只有当该族确有长桁且用户给出了具体尺寸时才填写；用户没给尺寸时【直接省略这些键】（求解器按族默认取值），绝不要填 0。
 ★ 四族键名总表（**只能写表里的键**，表外的键一律不写；W5c-1/R34）：
   · wingbox ⇒ 细节写 airfoil 块：code/chord/span/skin_thickness/n_ribs/rib_thickness/spar_chordwise/n_stringers_per_skin/stringer_height/stringer_thickness/stringer_kind/stringer_flange_width/tip_chord_ratio/sweep_deg/web_chordwise；structure.params 写 {}。
@@ -31,13 +34,18 @@ const SYS = `你是飞机结构有限元建模专家。根据用户给出的结�
     铺层板：params.layup = {"plies":[{"angle":<度>,"thickness":<单层厚 mm>}, …], "material":{"name","E1","E2","E3","nu12","nu13","nu23","G12","G13","G23","density"}}；
     ★ 铺层板的 material 块仍写**基材**（如铝 2024-T3），CFRP 单层材料卡放进 params.layup.material——**绝不要**写 material.ply_material 这种自创键。
   · fuselage_barrel ⇒ 写 structure.params：diameter/length/thickness/n_stringers/n_frames。
-  · stiffened_panel ⇒ 写 structure.params：length/width/thickness/n_stringers（素板写 0）。
+  · stiffened_panel ⇒ 写 structure.params：length/width/thickness/n_stringers（**题面明说素板才写 0**；题面提到长桁/加筋但没给根数 ⇒ 澄清 n_stringers，见数量铁律）。
 ★ extra 块：**只有** fuselage_barrel 用 end_shear / end_moment（单位 N、N·mm）；其余三族一律 {}。不得写 end_torque / torque_axis_dof / end_tension 之类自创键（键名即契约，自创键按编造判 FAIL）。
 ★ 载荷词汇（kind 的取值只有两个）：面内拉伸（端部均布拉力）或翼尖集中力 ⇒ kind="tip_force"（magnitude 用 N）；内压/均布面压 ⇒ kind="pressure"（magnitude 用 MPa）。
 ★ 词汇约定（必须用这些词）：材料名 "Aluminium 2024-T3" 或 "CFRP-LAYUP"；翼型 code "4412"（不是 NACA4412）；载荷 kind "tip_force"（集中力）或 "pressure"（分布压力）；加筋长桁 kind "blade" 或 "T"；边界条件用 {"root_surface":"root","clamp":true}；载荷方向 direction 用 [x,y,z] 数组（法向即 [0,1,0]）；开孔板/加筋板载荷 kind="pressure" 用 magnitude（面压 MPa）或面内拉伸按用户描述；网格键 size_chord/size_span（翼盒）、size（板壳类）。
 ★ fuselage_barrel 的载荷组合（端剪/端弯）写进 extra.end_shear / extra.end_moment（数值用 N 和 N·mm）。
 材料按名称给出 E/ν/密度/屈服（铝 2024-T3: E=73100 MPa, ν=0.33, ρ=2.78e-9 t/mm^3, 屈服=345 MPa；T300/环氧参考用户给定）。
 只输出一个 JSON 对象（spec 或 clarify），不要输出其他文字。`;
+
+// R53（W5c-6d）：把 SYS prompt 的 sha256 写进每条候选 —— 同一张卷换 prompt 后，
+// 「同卷 sha 相同」并不代表可比；只有 prompt sha 也相同才可比。旧候选没有这个字段，
+// 下游一律当 UNKNOWN（不得当「相同」处理）。
+const PROMPT_SHA = crypto.createHash('sha256').update(SYS, 'utf8').digest('hex');
 
 // ---- 放宽版 schema：死字段不进 required（n_stringers_per_skin=0/缺 时 stringer 细节）----
 function relaxedSchema(schemaPath) {
@@ -83,6 +91,9 @@ function extractJSON(text) {
 async function main() {
   const argv = process.argv.slice(2);
   const get = (k, d) => { const i = argv.indexOf(k); return i >= 0 ? argv[i + 1] : d; };
+  // R53：只打印当前 SYS prompt 的 sha256（给 check_claims.py 的 S-39 做漂移闸用，
+  // 不联网、不调模型）。改了 prompt 却没重生成 ⇒ 成绩单里的 sha 会与这里不等。
+  if (argv.includes('--print-prompt-sha')) { console.log(PROMPT_SHA); return; }
   const tasksPath = get('--tasks', 'tasks/tasks.jsonl');
   const levels = (get('--levels', 'L3')).split(',');
   const splits = (get('--split', '')).split(',').filter(Boolean);
@@ -91,6 +102,8 @@ async function main() {
   const modelPin = get('--model', 'glm-5.3-flash');   // R13：可引用 id，不用 auto
   const schemaPath = get('--schema', '../FEM-Bench-Aero/schema_task.json');
   const maxTurns = parseInt(get('--max-turns', '3'), 10);
+  // R31/冒烟：按 task_id 精确挑选（逗号分隔），用于改 prompt 后的 1 条/族冒烟，不必跑全卷
+  const only = (get('--only', '') || '').split(',').filter(Boolean);
   fs.mkdirSync(outDir, { recursive: true });
 
   const ajv = new Ajv({ allErrors: true, strict: false });
@@ -109,6 +122,11 @@ async function main() {
   const tasks = fs.readFileSync(tasksPath, 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l));
   let sel = tasks.filter(t => levels.includes(t.input_level) &&
                               (!splits.length || splits.includes(t.split_v2)));
+  if (only.length) {
+    const miss = only.filter(id => !tasks.some(t => t.task_id === id));
+    if (miss.length) { console.error(`--only 里这些 task_id 不在任务文件中：${miss.join(',')}`); process.exit(2); }
+    sel = tasks.filter(t => only.includes(t.task_id));
+  }
   sel = sel.slice(0, limit);
   console.log(`生成 ${sel.length} 条候选（levels=${levels} splits=${splits.length ? splits : '全部'}, max_turns=${maxTurns}）`);
 
@@ -175,6 +193,7 @@ async function main() {
     }
     if (spec === undefined) continue;   // LLM 错误已写盘
     const row = { task_id: t.task_id, input_level: t.input_level, model: model.id,
+                  prompt_sha256: PROMPT_SHA,
                   clarify, spec, turns_used: turnsUsed,
                   validation_history: valHistory, raw_len: answer.length };
     fs.writeFileSync(outFile, JSON.stringify(row, null, 1));

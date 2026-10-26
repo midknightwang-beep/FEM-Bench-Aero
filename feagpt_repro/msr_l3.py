@@ -169,6 +169,72 @@ def main():
     if env_fails:
         print(f'环境失败 {len(env_fails)} 条——不进 MSR 分母（R16），请检查解释器后重跑。')
 
+    # ★★ W5c-6g（专家第十轮 §3.3 / R52）：分母构成**四类显式拆开**并加和闭合。
+    #   旧版 `n_clarify_excluded = sum(1 for r in rows if not r.get('denominator'))`
+    #   把「合法澄清」和「未收敛/无输出」混成同一个数：
+    #     C-029 = 4（4 条纯澄清，0 未收敛）
+    #     C-031 = 5（4 条澄清 + 1 条 `cfrp090s` 3 轮无输出）
+    #   两个数字**不是同一类**，被并排列进对比表就会被读成「同口径」。
+    #   ⇒ 按 reason / failure_class 显式分流，并把闭合关系落盘 + 断言（不闭合直接报错退出）。
+    #   注意口径层次（R52 原文把两层混写了，这里按两层实现）：
+    #     层A（准入）：n_tasks_total = n_counted + clarify + unresolved + notrun + env
+    #     层B（原始分母内部）：n_counted = n_solver_excluded + n_counted_excl_solver
+    #   即 solver 失败**仍在**原始分母里（对模型是失败），只是「剔除 solver 口径」把它们拿掉；
+    #   所以 n_solver_excluded 不是层A 的排除项，不能和层A 的项相加。
+    def _excl_class(r):
+        if r.get('denominator'):
+            return None
+        if r.get('failure_class') == 'env':
+            return 'env'
+        rs = (r.get('reason') or '')
+        if rs.startswith('clarify'):
+            return 'clarify'
+        if 'no spec' in rs:
+            return 'unresolved'
+        if 'not-run' in rs:
+            return 'notrun'
+        return 'unknown'
+    _excl = collections.defaultdict(list)
+    for r in rows:
+        k = _excl_class(r)
+        if k:
+            _excl[k].append(r['task_id'])
+    unresolved_ids = _excl['unresolved']
+    n_unresolved = len(unresolved_ids)
+
+    def _denom_audit(ids=None):
+        """给定任务集（None = 全部 55/165 条）的分母构成 + 闭合断言。"""
+        pool = rows if ids is None else [r for r in rows if r['task_id'] in set(ids)]
+        cnt = [r for r in pool if r.get('denominator')]
+        ex = collections.Counter(_excl_class(r) for r in pool if not r.get('denominator'))
+        sol = [r for r in cnt if not r['msr_pass'] and r.get('failure_class') == 'solver']
+        rec = {'n_tasks_total': len(pool),
+               'n_counted': len(cnt),
+               'n_clarify_excluded': ex.get('clarify', 0),
+               'n_unresolved_excluded': ex.get('unresolved', 0),
+               'n_notrun_excluded': ex.get('notrun', 0),
+               'n_env_excluded': ex.get('env', 0),
+               'n_unknown_excluded': ex.get('unknown', 0),
+               'n_solver_excluded': len(sol),
+               'n_counted_excl_solver': len(cnt) - len(sol),
+               'unresolved_task_ids': [r['task_id'] for r in pool
+                                       if _excl_class(r) == 'unresolved'],
+               'clarify_task_ids': [r['task_id'] for r in pool
+                                    if _excl_class(r) == 'clarify']}
+        rec['closure_ok'] = (rec['n_tasks_total'] ==
+                             rec['n_counted'] + rec['n_clarify_excluded'] +
+                             rec['n_unresolved_excluded'] + rec['n_notrun_excluded'] +
+                             rec['n_env_excluded'] + rec['n_unknown_excluded'])
+        rec['closure_solver_ok'] = (rec['n_counted'] ==
+                                    rec['n_solver_excluded'] + rec['n_counted_excl_solver'])
+        rec['closure'] = (f"{rec['n_tasks_total']} = counted {rec['n_counted']} + clarify "
+                          f"{rec['n_clarify_excluded']} + unresolved {rec['n_unresolved_excluded']} + "
+                          f"notrun {rec['n_notrun_excluded']} + env {rec['n_env_excluded']} + "
+                          f"unknown {rec['n_unknown_excluded']}；且 counted {rec['n_counted']} = solver "
+                          f"{rec['n_solver_excluded']} + counted_excl_solver "
+                          f"{rec['n_counted_excl_solver']}")
+        return rec
+
     # W5a（专家第五轮 P1-1/P1-2）：exam/dev MSR 汇总落盘——不再手算；by_split 全指标
     # W5c（R36）：split 取值由数据推（v6c 新增 interpolation_test），不再硬编码 4 个键
     by_split = {}
@@ -238,6 +304,17 @@ def main():
     dv_excl = _msr_excl(dev_ids)
     full_excl = (f'{p}/{n - n_solver}', round(100 * p / max(1, n - n_solver), 1))
 
+    # ★ W5c-6g（R52）：分母构成审计——全卷 + exam 各一份，闭合不成立直接退出（不静默出单）
+    _DAUDIT = _denom_audit()
+    _EAUDIT = _denom_audit([r['task_id'] for r in rows if _is_exam(tasks[r['task_id']])])
+    if not (_DAUDIT['closure_ok'] and _DAUDIT['closure_solver_ok'] and _EAUDIT['closure_ok']):
+        print('[FATAL] 分母不闭合（R52）——拒绝出 MSR：')
+        print('  全卷:', _DAUDIT['closure'])
+        print('  exam:', _EAUDIT['closure'])
+        return 4
+    print(f"[msr_l3] 分母闭合 全卷: {_DAUDIT['closure']}")
+    print(f"[msr_l3] 分母闭合 exam: {_EAUDIT['closure']}")
+
     msr = {'note': '全链 MSR（R14/R16/R23，W5a 修正）：契约闸+ccx 求解+关1+关4+fidelity+spec_fidelity 全 PASS；'
                    '分母 = spec-required 且非澄清题（R23：澄清/未收敛候选不计，编造归 FPR）；'
                    '依赖预检不过即环境退出；失败分层 env/contract/model/solver，env 不计模型失败。',
@@ -271,7 +348,30 @@ def main():
            'dev_msr': f'{dev_p}/{len(dev_ids)}',
            'dev_msr_pct': round(100 * dev_p / max(1, len(dev_ids)), 1),
            'by_split': by_split,
-           'n_denominator': n, 'n_clarify_excluded': sum(1 for r in rows if not r.get('denominator')),
+           'denominator_audit': _DAUDIT,   # W5c-6g（R52）：分母四类拆分 + 闭合
+           'exam_denominator_audit': _EAUDIT,
+           'n_denominator': n, 'n_clarify_excluded': _DAUDIT['n_clarify_excluded'],
+           'n_unresolved': n_unresolved,
+           'n_unresolved_excluded': _DAUDIT['n_unresolved_excluded'],
+           'n_notrun_excluded': _DAUDIT['n_notrun_excluded'],
+           'n_env_excluded': _DAUDIT['n_env_excluded'],
+           'n_tasks_total': _DAUDIT['n_tasks_total'],
+           'denominator_note': ('R52：n_counted + clarify + unresolved + notrun + env + unknown = '
+                                'n_tasks_total（层A）；n_counted = n_solver_excluded + '
+                                'n_counted_excl_solver（层B，solver 仍在原始分母内）。'
+                                'n_clarify_excluded 只含 expected_clarifications 题，'
+                                '**不得**混入未收敛/no_output。'),
+           # W5c-6h（R54）：MSR 是**条件通过率**——分母只含「产出了 spec 的非澄清题」。
+           # 模型侧无输出不进分母（已由 TSR fail / FPR 记过一次，避免双记，W5a 原设计），
+           # 后果是**不同成绩单的 MSR 分母可能不同**（C-032 exam 22 vs C-033 exam 21），
+           # 裸报 pct 会被读成「同期同口径」，实测 C-033 的 95.2% 就是这样冒出来的。
+           # ⇒ 口径写进成绩单，且必须并列 SFR；跨成绩单比 MSR 前先对齐分母与 SFR。
+           'msr_definition': ('conditional：分母 = 产出了 spec 且非 expected_clarifications 的题；'
+                              '模型侧无输出记 TSR fail / FPR，不计入 MSR（W5a 原设计，避免双记）。'
+                              '⇒ **跨成绩单比 MSR 前必须先对齐分母与 SFR（R54）**，'
+                              '分母不同时 pct 不得直减、不得据此排名。'),
+           'n_no_spec_excluded_ids': [r['task_id'] for r in rows
+                                      if (not r.get('denominator')) and 'no spec' in (r.get('reason') or '')],
            'failure_class_counts': dict(collections.Counter(
                r.get('failure_class') for r in den_rows if not r['msr_pass'])),
            'gate_fail_counts': dict(collections.Counter(
@@ -290,6 +390,10 @@ def main():
     json.dump(sc, open(report_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print(f"\nMSR = {p}/{n} ({msr['msr_pct']}%)  exam={msr['exam_msr']} dev={msr['dev_msr']}"
           f"  失败分层={msr['failure_class_counts']}")
+    _ns = msr.get('n_no_spec_excluded_ids') or []
+    if _ns:
+        print(f"★ MSR 是条件通过率（R54）：分母已排除模型侧无输出的 {len(_ns)} 条 {_ns}")
+        print("  ⇒ 与别的成绩单比 MSR 前先对齐分母与 SFR；分母不同不得直减、不得排名。")
     print('merged ->', report_path)
     return 0
 

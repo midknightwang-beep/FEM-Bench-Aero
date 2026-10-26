@@ -1,6 +1,7 @@
 # RUBRIC.md — L3 判分口径预注册（W4e/W4f → W5a，专家第四/五轮 R18）
 
-> **版本**：v4.7（2026-10-25 W5c-6c 跨模型对比轮，新增红线 **R47–R49**（分母显式 / 不得事后择优 / 双尺度分裂必须标出）+ **§7.6**（含「跨模型对比作为归因工具」的判读表）；S-33/S-34/S-35 三条语义检查守住；`score_baseline.py` 修字段级命中率**静默排除编造题**的 bug（分母改显式分流 + `verdict_split` 自动落盘）。v4.6 见下：
+> **版本**：v4.9（2026-10-26 W5c-6h「MSR 条件口径」轮，新增红线 **R54**：MSR 是**条件通过率**，跨成绩单比之前必须先对齐分母与 SFR。起因是 C-033 与 C-032 的同一批题上出现**第二次 MSR 反直觉**：C-033 exam MSR **20/21 (95.2%)** 高于 C-032 的 **20/22 (90.9%)**，而 TSR 低 4 pp——差的是被排除的那条**失败题**（`cfrp45s_d40` 无输出）⇒ 分母小的 pct 反而更好看。S-40 守住（口径必须写进成绩单 + 排除项必须点名），负控 **48/48**。同时修掉 `compare_scorecards.comparability` 的误伤：R53 把**自比**（`comparability(x,x)`）也拒了，NC-29/NC-35 因此转红。v4.8 见下：
+> v4.7（2026-10-25 W5c-6c 跨模型对比轮，新增红线 **R47–R49**（分母显式 / 不得事后择优 / 双尺度分裂必须标出）+ **§7.6**（含「跨模型对比作为归因工具」的判读表）；S-33/S-34/S-35 三条语义检查守住；`score_baseline.py` 修字段级命中率**静默排除编造题**的 bug（分母改显式分流 + `verdict_split` 自动落盘）。v4.6 见下：
 > v4.6（2026-10-25 W5c-6b，新增红线 **R42–R46** 治理闸（headline 唯一 / 投影不冒充实测 / value_added 双尺度 / MSR 字段齐全 / key 决策留痕）+ **§7.5**；S-29/S-30/S-31 三条语义检查守住前三项；`value_added` 增字段级尺度与 T1+ 地板。v4.5 见下：v4.5（2026-10-25，W5c 新增红线 **R33–R41** + **§7.1 契约登记表** / **§7.2 死字段**（blade 剖面无缘条宽）/ **§7.3 数值角色**（R41）/ **§7.4 契约试建闸边界**（gold 也过闸）+ §1.1.1 改为 A/B/C/D 四类归因；R32 语义收口为「4 类 + 2 处局限」；三栏 exam 见 §1.1；变更记录见文末）。
 > **纪律（R18）**：本文件冻结后，跑基线期间不得再改；每次改动必须新开版本号 + 记录原因。
 > **post-hoc 声明**：W4d 版口径（EXEC_CONFIG_KEYS / METADATA_KEY_NAMES / bc_skip）是看过
@@ -255,6 +256,33 @@
 **直接由 SYS prompt 的「未提长桁→长桁数=0」授权** ⇒ 与题面的 `expected_clarifications` 打架，
 属**我方 prompt 内部矛盾**，下一轮必修。
 
+### 7.7 生成端 + 产物端：四条闸（R50–R53，W5c-6d/6f/6g 新增）
+
+> §7.5/§7.6 守的是**账本**（文档是否自相矛盾、分母是否闭环）；本节守的是**输入端**——
+> prompt 有没有偷偷给答案，以及「改了 harness 之后有没有把被比较的对象全部重跑」。
+> 起因：第十轮复评把 C-031 的三个缺口定性为「prompt 授权 + 模型标签 + 分母混类」，
+> 三条都不是模型能力问题，而是**我方产物与 harness 的问题**。
+
+| 红线 | 一句话 | 机器闸 | 反面实证 |
+|---|---|---|---|
+| **R50** prompt 不得盲填、不得泄题 | ① 题面**提到**某特征却没给数量 ⇒ 必须澄清，prompt 不得授权默认值；② prompt **不得**注入 `expected_clarifications`（等于把判据给模型） | **S-38** / **NC-45** | 旧 prompt「未提长桁→长桁数=0」× 题面「若干根长桁」+ 登记 `expected_clarifications=['n_stringers']` ⇒ 自相矛盾。deepseek 被诱导、glm 没被诱导 ⇒ **不能记成模型错** |
+| **R51** 模型标签必须是实测值 | 成绩单顶层 `model` == `provenance.model`，两者都读自**候选文件里生成时 pin 的 id**；禁止默认值、禁止命令行声称覆盖 | **S-36** / **NC-43** | C-031（deepseek-v4-pro）顶层 `model` 写着 `glm-5.3-flash` —— 36 项语义检查里**没有一条**核对它 |
+| **R52** 分母四类拆开 + 两层闭合 | 层A（准入）：`n_counted + clarify + unresolved + notrun + env + unknown = n_tasks_total`；层B（原始分母内部）：`n_counted = n_solver_excluded + n_counted_excl_solver`。`n_clarify_excluded` **只含** `expected_clarifications` 题 | **S-37** / **NC-44** | C-031 `n_clarify_excluded=5` = 4 条澄清 + 1 条 `cfrp090s` 无输出；C-029 的 4 是 4 条纯澄清 ⇒ **两个数不同类**，并排放就被读成同口径 |
+| **R53** harness 变了必须全量重跑 | 改 prompt / 改 decode / 改预算后，**所有被比较的模型都要重新生成**；禁止用「A 模型旧 prompt × B 模型新 prompt」的成绩做对比 | 人工 + `provenance.model` / `tasks_sha256` / `prompt_sha256` 三件对齐 | C-029（旧 prompt）与 C-032（新 prompt）**不可并列**；同理 C-031 不能再与 C-032 拼成「模型对比」 |
+| **R54** MSR 是条件通过率，比之前先对齐分母与 SFR | MSR 分母只含「产出 spec 且非 `expected_clarifications` 的题」；`msr_definition` 与 `n_no_spec_excluded_ids` 必须写进成绩单（**不得只把分母改小**）；跨成绩单比 MSR 前先对齐分母，**分母不同时 pct 不得直减、不得据此排名** | **S-40** / **NC-46** | C-033 exam MSR 95.2% > C-032 的 90.9%，但 TSR 低 4 pp——C-033 分母 **21**（排除 `cfrp45s_d40` 无输出），C-032 是 **22**，**被排除的恰好是失败题 ⇒ 分母小的 pct 更好看**（与 C-031「MSR 反直觉」同源，这次发生在 MSR 内部） |
+
+**★ R52 的层次修正（本轮实测后改写，专家原稿把两层混写）**：
+专家第十轮原文写 `n_counted + n_clarify_excluded + n_unresolved_excluded + n_solver_excluded = n_exam`，
+这会把 solver 失败**加两次**——solver 失败在**原始口径下是计入分母的**（对模型确实是失败），
+只是在「剔除 solver 口径」里被拿掉。若照原式实现，C-029 会算出 `51 + 4 + 0 + 4 = 59 ≠ 55`。
+⇒ 拆成层A（准入排除）与层B（原始分母内部剔除）两条闭合，各自独立断言，实现见 `msr_l3.py::_denom_audit`。
+
+**★ R50 的边界（**没有**采纳「把 `expected_clarifications` 传给生成器」这条建议）**：
+第十轮建议里给了「或把 expected_clarifications 直接传给生成器，让模型知道这些字段该问」这个选项。
+**否决**：`expected_clarifications` 就是该维度的判据本身，传给生成器等于在 holdout 上泄题，
+会把这个维度变成「照着答案念」。改法是**在 prompt 里写通用规则**（题面提了特征却没给数量 ⇒ 必须澄清），
+让模型自己判断哪条题触发，规则对全部任务一视同仁。
+
 ## 8. 产物纪律（W5a'，R25/R26/R27/R28）
 
 - **官方 artifact 唯一出处 = `feagpt_repro/reports/`**（入库）；`eval_runs/` 是被 gitignore 的
@@ -280,6 +308,8 @@
 | **v4.2** | 2026-10-25 W5b-3b | §1.1 内插名额由「按族 2/2/1/1」改为「全翼盒 6」（v6 → v6b）：原名额把 barrel/open_hole/panel 三族 train 抽空 ⇒ T1 地板只有 1/4 族可算。**exam 仍 25、判分口径零改动** | 老王拍板 A；实测 `_probe_interp_w5b3b.py` + `trivial_baselines` v6b（T1 0/25、四族齐全） |
 | **v4.3** | 2026-10-25 W5b-4 | ①新增红线 **R32**（考卷构建期必须断言 gold 的每个判分字段都能从 NL 推出，否则属不可解题、不得进 exam）；②新增 §1.1.1 登记 v6b 实测三栏（boundary 5/6、extrap 7/13、interp 5/6）+ 难度方向性偏差声明；③**判分细则仍零改动** | W5b-4 探针实证：`stringer_flange_width` gold 有值但题面未给 ⇒ 模型无解却被判 fail（2 条 exam）；`open_hole_panel` 4/4 全败于 prompt 未给键名 |
 | **v4.4** | 2026-10-25 W5c 修复轮 | R33–R40 八条新红线；§7 契约登记表 + §7.2 死字段（`blade` 无缘条宽）；§1.1.1 归因细化（A/C 混合，web1_offcentre 补列）；负控 31 → **39**（NC-30..37）；语义检查 21 → **29** 项（S-21..S-28 + 复活的 S-19/S-20 由「静默消失」改为响亮失败） | 第八轮复评 24/30；`r32_audit.py` 4→0 违规、T1 leave-one-out（train 12/13 全是自命中）、成绩单文案由考卷生成 |
+| **v4.9** | 2026-10-26 W5c-6h | 新增 **R54**（MSR 条件通过率：口径落盘 + 排除项点名 + 分母不同禁止直减/排名）；**S-40** / **NC-46**（三向变异：删口径 / 只改小分母不点名 / 点名清空）；负控 47→**48**；`msr_l3.py` 增 `msr_definition` 与 `n_no_spec_excluded_ids` 并在打印时提示条件分母；`_diag_model_diff.py` 增「§0 MSR 口径对齐」段，分母不等时明确写「不出 Δ」；`compare_scorecards.comparability` 放行**自比**（R53 误伤，NC-29/NC-35 曾因此转红） |
+| **v4.8** | 2026-10-26 W5c-6d/6f/6g | 新增 **R50**（prompt 不得盲填、不得注入 `expected_clarifications`）/ **R51**（顶层 `model` == `provenance.model`，读实测值）/ **R52**（MSR 分母四类拆开 + 两层闭合，**修正专家原稿把 solver 加两次的写法**）/ **R53**（改 harness 后所有被比较的模型必须重跑，不得混两代 prompt）+ **§7.7**；S-36/S-37/S-38；负控 44→**47**；`gen_candidates_v2.js` 删「未提长桁→长桁数=0」授权、增「数量类字段铁律」与 `--only` 冒烟口；`score_baseline.py` 顶层 `model` 改读候选文件；`msr_l3.py` 增 `denominator_audit` / `exam_denominator_audit` 且不闭合即退出 |
 | **v4.7** | 2026-10-25 W5c-6c 跨模型轮 | 新增 **R47**（比率分母必须显式落盘、加和闭合）/ **R48**（第二模型只作可重复性证据，不得事后择优）/ **R49**（value_added 双尺度结论相反必须标 `verdict_split`）+ **§7.6**；S-33/S-34/S-35；`score_baseline.py` 修口径 bug：字段级命中率旧版用 `if r.get('n_fields_gated')` 隐式过滤，把 `fabricated`/`clarify_wrong` 当成「不存在」⇒ C-029 与 C-031 算出同一个 99.34%（C-031 实为 87.42%）|
 | **v4.6** | 2026-10-25 W5c-6b 收口轮 | 新增 **R42–R46** 五条治理红线 + **§7.5 治理闸表**；S-29（headline 唯一，**只认状态列自指标记**——按正文判会被 C-029 自己的否定词过滤）/ S-30（dev 投影不冒充实测）/ S-31（MSR 九字段齐 + 别名一致）；`value_added` 增**字段级**尺度（地板 85.93% → LLM 99.34%，Δ+13.4 pp）与 **T1+ family-mode** 地板（含 `n_fail_exam` 缺口分布）；§6 负控 37→**41** 条计数（含新增 NC-38/NC-39）；`evaluate.py` 增 `n_fields_gated`（剔除恒 pass 的只报不判项，否则命中率口径不可比） |
 | **v4.5** | 2026-10-25 W5c 重打分轮 | 新增 **R41 数值角色**（+ §7.3）+ §7.4 契约试建闸边界（gold 55/55 可建）；R33 改**两端口径**（exam 0 违规 + 非 exam 白名单逐字相等）；R32 局限补第二处「数值出现 ≠ 字段角色可判」；**§4 / R35 补四行口径**（`exam_msr` 与 `exam_msr_excl_solver` 并列，原注释「exam MSR 不含 solver」与实现相反）+ 修顶层 `msr` 一直为 null（NC-36 抓到） | v6c 自查发现 `stiffened_panel_800x600`/`_str3` 旧模板 `{width} × {length}` 使题面「600 × 800」与 gold `length=800` 角色相反 ⇒ 模型正确读法被判错（2 条 dev，0 条 exam） |

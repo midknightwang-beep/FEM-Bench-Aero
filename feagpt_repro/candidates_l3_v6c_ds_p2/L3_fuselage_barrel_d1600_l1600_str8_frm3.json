@@ -1,0 +1,11 @@
+{
+ "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+ "clarify": "[\"n_frames\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 808
+}

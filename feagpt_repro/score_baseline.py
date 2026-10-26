@@ -110,6 +110,34 @@ def _candidate_model(cand_dir):
     return sorted(ids)[0] if len(ids) == 1 else 'MIXED:' + ','.join(sorted(ids))
 
 
+def _candidate_prompt_sha(cand_dir):
+    """读候选文件里的 `prompt_sha256`（R53，W5c-6d）。
+
+    ★ 为什么必须有：同一张考卷（`tasks_sha256` 相同）**不代表可比** —— 改 prompt 后
+      重生成，卷子一个字没变，但 harness 变了。旧的 `compare_scorecards.py` 只比卷 sha，
+      于是「C-029 旧 prompt × C-032 新 prompt」会被判成「可比」，进而允许相减（R53 禁止）。
+    旧批次没有这个字段 ⇒ 返回 `UNKNOWN`（**不得当"相同"处理**，UNKNOWN vs 任何值都不可比）。
+    """
+    ids = set()
+    try:
+        for fn in sorted(os.listdir(cand_dir)):
+            if not fn.endswith('.json'):
+                continue
+            try:
+                with open(os.path.join(cand_dir, fn), encoding='utf-8') as f:
+                    ids.add(json.load(f).get('prompt_sha256'))
+            except Exception:
+                continue
+    except Exception:
+        return 'UNKNOWN'
+    ids.discard(None)
+    if not ids:
+        return 'UNKNOWN'          # 旧批次：生成时未记录
+    if len(ids) > 1:
+        return 'MIXED:' + ','.join(sorted(ids))
+    return ids.pop()
+
+
 def judge_clarify_field_level(text, task):
     """字段级澄清判分（R17）。返回 (ok, detail)。
 
@@ -209,7 +237,24 @@ def main():
     n_tasks_exam_arg = int(get('--n-tasks-exam', '0'))
     label = get('--label', '')
     os.makedirs(os.path.dirname(os.path.abspath(report_path)) or '.', exist_ok=True)
+    # ★ W5c-6f（专家第十轮 §3.2 / R51）：顶层 `model` **不得硬编码**。
+    #   此前 `'model': 'glm-5.3-flash'` 写死 ⇒ C-031（deepseek-v4-pro）的成绩单顶层也写 glm，
+    #   只读模型标签的读者会以为「第二模型还是 glm」，而 provenance.model 才是 deepseek。
+    #   跨模型 artifact 的模型标签只能来自**候选文件里生成时实际 pin 的 id**；
+    #   命令行 --model 属于「人声称的」，只用来交叉核对，不得覆盖实测值。
+    model_measured = _candidate_model(cand_dir)
+    model_claim_cli = get('--model', '')
+    if model_measured is None:
+        print('[FATAL] 候选文件里没有 model 字段 ⇒ 无法溯源是哪个模型生成的；拒绝出成绩单（R51）')
+        return 3
+    if model_measured.startswith('MIXED:'):
+        print(f'[FATAL] 候选目录里混了多个 model（{model_measured}）；一批候选只能是同一次生成（R51）')
+        return 3
+    if model_claim_cli and model_claim_cli != model_measured:
+        print(f'[FATAL] --model={model_claim_cli} 与候选实测 model={model_measured} 不符（R51）')
+        return 3
     print(f'[score_baseline] candidates={os.path.basename(cand_dir)}  tasks={tasks_path}')
+    print(f'[score_baseline] model={model_measured}（读自候选文件，不是默认值）')
 
     tasks = {t['task_id']: t for t in load_tasks(tasks_path)
              if t['input_level'] == 'L3'}
@@ -258,7 +303,8 @@ def main():
                  f'{stratum_counts.get("interpolation", 0)}）；dev（非 exam）{len(dev_rows)} 条只作开发诊断。'
                  f'TSR=行为正确性（完备题答对+澄清题字段级问对 R17）；SFR=字段保真（R20：编造一律不计 PASS）；'
                  f'FPR 双向；MSR 全链见 msr 节（R14/R16/R35：solver 失败单列，不进 exam MSR）。'),
-        'model': 'glm-5.3-flash',
+        'model': model_measured,   # R51：实测自候选文件，不再是硬编码默认值
+        'model_source': 'candidate files (per-task field `model`), 单一值；非默认、非命令行声称',
         'decode': 'json_object + schema_task.json 校验 + 错误反馈修复循环（<=3 轮；SDK 无 logits 级 json_schema）',
         'exam_definition': (f'exam = exam_stratum 非空 = boundary {stratum_counts.get("boundary", 0)} '
                             f'+ extrapolation {stratum_counts.get("extrapolation", 0)} '
@@ -280,7 +326,11 @@ def main():
             # ★ W5c-6c（R48）：跨模型对比必须能从成绩单**直接看出是哪个模型**。
             # 旧版不记 model ⇒ C-031 的「第二模型」要翻候选目录才能验证，等于不可溯源。
             # 取候选文件里声明的 model；若一批里不一致（混模型）就显式标 MIXED，不猜。
-            'model': _candidate_model(cand_dir),
+            'model': model_measured,
+            # ★ R53：同卷 sha 相同 **不等于** 可比；prompt 也要同源。旧批次无此字段 ⇒ UNKNOWN。
+            'prompt_sha256': _candidate_prompt_sha(cand_dir),
+            'prompt_sha256_note': ('读自候选文件（生成时对 SYS prompt 取的 sha256）。'
+                                   'UNKNOWN = 该批候选生成时未记录 ⇒ 与任何批次都不可比（R53）'),
             'n_candidates': len(rows),
             'generated_by': 'score_baseline.py',
         },

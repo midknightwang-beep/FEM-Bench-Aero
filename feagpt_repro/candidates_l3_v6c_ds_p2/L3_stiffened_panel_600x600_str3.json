@@ -1,0 +1,11 @@
+{
+ "task_id": "L3_stiffened_panel_600x600_str3",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+ "clarify": "[\"题面提到“若干根长桁”但未给 n_stringers 数量，须澄清长桁根数\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 53
+}

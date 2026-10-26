@@ -1,0 +1,154 @@
+{
+ "note": "A vs B 逐题诊断：按 A/B 的 provenance.model 判定是「同模型 prompt 消融」还是「跨模型诊断」；两代 prompt_sha256 不同时按 R53 只作消融证据、不得并列作成绩。本文件属诊断（R37），不进 headline。",
+ "a": {
+  "path": "reports/baseline_scorecard_L3_v6c_p2.json",
+  "label": "C-032 v6c x glm prompt-v2 (paper v6c, candidates glm_p2)",
+  "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
+  "candidates_dir": "candidates_l3_v6c_glm_p2",
+  "exam_tsr": {
+   "pass": 23,
+   "total": 25,
+   "pct": 92.0
+  }
+ },
+ "b": {
+  "path": "reports/baseline_scorecard_L3_v6c_ds_p2.json",
+  "label": "C-033 v6c x dsv4pro prompt-v2 (paper v6c, candidates ds_p2)",
+  "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
+  "candidates_dir": "candidates_l3_v6c_ds_p2",
+  "exam_tsr": {
+   "pass": 22,
+   "total": 25,
+   "pct": 88.0
+  }
+ },
+ "comparability": {
+  "ok": true,
+  "reasons": []
+ },
+ "diagnostic_only": false,
+ "diagnostic_note": null,
+ "exam_confusion": {
+  "both_pass": 22,
+  "only_a": 1,
+  "neither": 2
+ },
+ "exam_confusion_tasks": {
+  "both_pass": [
+   "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+   "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+   "L3_naca4412_wingbox_n_ribs3_chord1000",
+   "L3_naca4412_wingbox_n_ribs3_chord800",
+   "L3_naca4412_wingbox_n_ribs5_chord800",
+   "L3_naca4412_wingbox_n_ribs7_chord800",
+   "L3_naca4412_wingbox_recombination_algorithm3",
+   "L3_naca4412_wingbox_size_skin2",
+   "L3_naca4412_wingbox_size_skin4",
+   "L3_naca4412_wingbox_size_span1600",
+   "L3_naca4412_wingbox_size_span2400",
+   "L3_naca4412_wingbox_size_span2400_skin2",
+   "L3_naca4412_wingbox_size_span3000_skin1p5",
+   "L3_naca4412_wingbox_str3",
+   "L3_naca4412_wingbox_str3_T",
+   "L3_naca4412_wingbox_str5",
+   "L3_naca4412_wingbox_sweep40_taper040",
+   "L3_naca4412_wingbox_taper090",
+   "L3_open_hole_panel_400x200_d20_offcentre",
+   "L3_open_hole_panel_400x200_d40_offcentre",
+   "L3_open_hole_panel_600x300_d60",
+   "L3_stiffened_panel_600x600_str3"
+  ],
+  "only_a": [
+   "L3_naca4412_wingbox"
+  ],
+  "neither": [
+   "L3_naca4412_wingbox_web1_offcentre",
+   "L3_open_hole_panel_400x200_d20_cfrp45s_d40"
+  ]
+ },
+ "dev_confusion": {
+  "both_pass": 20,
+  "only_b": 2,
+  "neither": 6,
+  "only_a": 2
+ },
+ "dev_confusion_tasks": {
+  "both_pass": [
+   "L3_fuselage_barrel_d1800_l2000_str8_frm3",
+   "L3_fuselage_barrel_d2000_l2000_str8_frm3",
+   "L3_naca4412_wingbox_n_ribs7_chord1000",
+   "L3_naca4412_wingbox_n_ribs9_chord1000",
+   "L3_naca4412_wingbox_size_skin1p5",
+   "L3_naca4412_wingbox_size_span3000",
+   "L3_naca4412_wingbox_sweep10",
+   "L3_naca4412_wingbox_sweep20",
+   "L3_naca4412_wingbox_sweep20_taper060",
+   "L3_naca4412_wingbox_sweep30",
+   "L3_naca4412_wingbox_sweep30_taper080",
+   "L3_naca4412_wingbox_sweep35",
+   "L3_naca4412_wingbox_sweep40",
+   "L3_naca4412_wingbox_taper040",
+   "L3_naca4412_wingbox_taper060",
+   "L3_naca4412_wingbox_taper080",
+   "L3_open_hole_panel_400x200_d40",
+   "L3_open_hole_panel_400x200_d50",
+   "L3_open_hole_panel_600x300_d30",
+   "L3_stiffened_panel_600x600"
+  ],
+  "only_b": [
+   "L3_fuselage_barrel_d2000_l1600_str8_frm3",
+   "L3_fuselage_barrel_d2000_l2000_t2_str8_frm3"
+  ],
+  "neither": [
+   "L3_naca4412_wingbox_web1",
+   "L3_naca4412_wingbox_web2",
+   "L3_open_hole_panel_400x200_d20_cfrp090s",
+   "L3_open_hole_panel_400x200_d20_cfrp45s",
+   "L3_open_hole_panel_400x200_d20_cfrpqi",
+   "L3_stiffened_panel_800x600"
+  ],
+  "only_a": [
+   "L3_open_hole_panel_400x200_d20",
+   "L3_stiffened_panel_800x600_str3"
+  ]
+ },
+ "exam_fail_field_overlap": {
+  "n_both_fail": 2,
+  "identical_field_set": [
+   {
+    "task_id": "L3_naca4412_wingbox_web1_offcentre",
+    "A_only": [],
+    "B_only": [],
+    "common": [
+     "extra.end_torque",
+     "extra.torque_axis_dof"
+    ]
+   }
+  ],
+  "differing": [
+   {
+    "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
+    "A_only": [
+     "params.layup"
+    ],
+    "B_only": [],
+    "common": []
+   }
+  ],
+  "no_field_detail": []
+ },
+ "exam_category_dist": {
+  "A": {
+   "clarify_ok": 3,
+   "spec_pass": 20,
+   "spec_fail": 2
+  },
+  "B": {
+   "clarify_ok": 2,
+   "spec_pass": 20,
+   "clarify_wrong": 1,
+   "spec_fail": 1,
+   "no_output": 1
+  }
+ }
+}

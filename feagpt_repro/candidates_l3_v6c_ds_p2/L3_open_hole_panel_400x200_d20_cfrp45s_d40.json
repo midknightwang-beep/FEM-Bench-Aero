@@ -1,0 +1,39 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+ "clarify": null,
+ "spec": null,
+ "turns_used": 3,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/structure/params/layup must be number",
+    "/ must match \"then\" schema",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'yield_strength'",
+    "/mesh must have required property 'size_chord'",
+    "/mesh must have required property 'size_span'",
+    "/mesh 不允许的键 \"size\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le"
+   ]
+  },
+  {
+   "turn": 2,
+   "errors": [
+    "/structure/params/layup must be number",
+    "/ must match \"then\" schema"
+   ]
+  },
+  {
+   "turn": 3,
+   "errors": [
+    "/structure/params/layup must be number",
+    "/ must match \"then\" schema"
+   ]
+  }
+ ],
+ "raw_len": 1205
+}

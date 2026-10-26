@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
- "n_active_claims": 23,
- "n_artifacts": 35,
+ "n_active_claims": 25,
+ "n_artifacts": 43,
  "n_fail": 0,
  "n_fail_structural": 0,
  "n_fail_semantic": 0,
@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_44.json）",
-   "expect": "44/44",
-   "actual": "44/44",
+   "desc": "C-019 负控通过数（源 negative_controls_48.json）",
+   "expect": "48/48",
+   "actual": "48/48",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "44",
-   "actual": "44",
+   "expect": "48",
+   "actual": "48",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 4.7",
-   "actual": "4.7",
+   "expect": "全部 = 4.9",
+   "actual": "4.9",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "44/44",
-   "actual": "44/44",
+   "expect": "48/48",
+   "actual": "48/48",
    "ok": true,
    "skip": false
   },
@@ -244,9 +244,9 @@
   },
   {
    "id": "S-29",
-   "desc": "对外 headline 唯一且为 C-029（R42）",
-   "expect": "[\"C-029\"]",
-   "actual": "[\"C-029\"]",
+   "desc": "对外 headline 唯一且为 C-032（R42/R53）",
+   "expect": "[\"C-032\"]",
+   "actual": "[\"C-032\"]",
    "ok": true,
    "skip": false
   },
@@ -278,15 +278,15 @@
    "id": "S-33",
    "desc": "字段级命中率分母构成闭合（R47）",
    "expect": "n_exam_counted + n_excluded_clarify_ok == exam.n，且编造记 0 不排除",
-   "actual": "C-029 计入 22 + 排除 3 = 25；其中编造记 0 **0** 条；C-031 计入 25 + 排除 0 = 25；其中编造记 0 **3** 条",
+   "actual": "C-029 计入 22 + 排除 3 = 25；其中编造记 0 **0** 条；C-031 计入 25 + 排除 0 = 25；其中编造记 0 **3** 条；C-032 计入 22 + 排除 3 = 25；其中编造记 0 **0** 条；C-033 计入 23 + 排除 2 = 25；其中编造记 0 **2** 条",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-34",
    "desc": "第二模型不取代 headline（R48）",
-   "expect": "C-029 仍标（对外 headline）；C-031 标 supporting/第二模型且不自称 headline",
-   "actual": "C-029 仍为唯一 headline；C-031 标为 supporting（第二模型）",
+   "expect": "恰有一条 claim 标（对外 headline）（当前 = C-032）；C-031/C-033 等第二模型标 supporting 且不自称 headline",
+   "actual": "唯一 headline = ['C-032']；supporting = ['C-031', 'C-033']（均未自称 headline）",
    "ok": true,
    "skip": false
   },
@@ -294,7 +294,47 @@
    "id": "S-35",
    "desc": "value_added 双尺度分裂必须落盘（R49）",
    "expect": "任务级 PASS 而字段级 BELOW ⇒ verdict_split 非空（禁止只引有利的一侧）",
-   "actual": "C-029 两尺度一致（任务级 PASS / 字段级 PASS），无需分裂说明；C-031 双尺度分裂：任务级 PASS / 字段级 BELOW ⇒ verdict_split 已落盘",
+   "actual": "C-029 两尺度一致（任务级 PASS / 字段级 PASS），无需分裂说明；C-031 双尺度分裂：任务级 PASS / 字段级 BELOW ⇒ verdict_split 已落盘；C-032 两尺度一致（任务级 PASS / 字段级 PASS），无需分裂说明；C-033 双尺度分裂：任务级 PASS / 字段级 BELOW ⇒ verdict_split 已落盘",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-36",
+   "desc": "成绩单顶层 model == provenance.model（R51）",
+   "expect": "两份成绩单顶层 model 与 provenance 逐字相等，且不是默认值",
+   "actual": "C-029 model=glm-5.3-flash（顶层 == provenance）；C-031 model=deepseek-v4-pro（顶层 == provenance）；C-032 model=glm-5.3-flash（顶层 == provenance）；C-033 model=deepseek-v4-pro（顶层 == provenance）",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-37",
+   "desc": "MSR 分母四类拆分且加和闭合（R52）",
+   "expect": "counted + clarify + unresolved + notrun + env + unknown == n_tasks_total；counted == solver + counted_excl_solver；n_clarify_excluded 不得混入未收敛",
+   "actual": "C-029 全卷 55 = counted 51 + clarify 4 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 51 = solver 4 + counted_excl_solver 47｜exam counted 22 + clarify 3 + unresolved 0；C-031 全卷 55 = counted 50 + clarify 4 + unresolved 1 + notrun 0 + env 0 + unknown 0；且 counted 50 = solver 0 + counted_excl_solver 50｜exam counted 22 + clarify 3 + unresolved 0；C-032 全卷 55 = counted 51 + clarify 4 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 51 = solver 0 + counted_excl_solver 51｜exam counted 22 + clarify 3 + unresolved 0；C-033 全卷 55 = counted 50 + clarify 4 + unresolved 1 + notrun 0 + env 0 + unknown 0；且 counted 50 = solver 0 + counted_excl_solver 50｜exam counted 21 + clarify 3 + unresolved 1",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-38",
+   "desc": "prompt 无盲填授权且未注入 expected_clarifications（R50）",
+   "expect": "不含「未提长桁→长桁数=0」；含数量铁律；不含 expected_clarifications",
+   "actual": "gen_candidates_v2.js: 无盲填授权、含数量铁律、未注入 expected_clarifications",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-39",
+   "desc": "prompt-v2 代成绩单的 prompt sha == 当前源码（R53）",
+   "expect": "C-032/C-033 的 provenance.prompt_sha256 非 UNKNOWN 且等于生成器当前 SYS 的 sha256",
+   "actual": "C-032 prompt sha ce225186cafa… == 源码（未漂移）；C-033 prompt sha ce225186cafa… == 源码（未漂移）",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-40",
+   "desc": "MSR 条件口径必须写进成绩单且排除项点名（R54）",
+   "expect": "msr_section.msr_definition 非空；n_no_spec_excluded_ids 与实际排除数一致",
+   "actual": "C-029 口径已声明；无模型侧无输出被排除；C-031 口径已声明；条件分母排除 1 条（open_hole_panel_400x200_d20_cfrp090s…）；C-032 口径已声明；无模型侧无输出被排除；C-033 口径已声明；条件分母排除 1 条（open_hole_panel_400x200_d20_cfrp45s_d40…）",
    "ok": true,
    "skip": false
   }
@@ -500,9 +540,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 28061,
-   "sha256": "ea3ec02de11fb8fbe7d8b19416335bf83c0eabde97bbf6472c95e915d3fde4c6",
-   "mtime": 1793021019
+   "size": 33847,
+   "sha256": "d438e6809246efd7a46950bb5fdc8bf22d170cb78591d655484f49976f141b6d",
+   "mtime": 1793031096
   },
   {
    "claim_id": "C-027",
@@ -584,9 +624,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 51693,
-   "sha256": "f082cb27d1a7d9a65b109ea1eb18e45fafb349a047964149ce3c2a96dddbc27f",
-   "mtime": 1793020708
+   "size": 53955,
+   "sha256": "bed94dc0fa8f4e8eefbf0fe9c3e43391952aca302eca31499e561bd13f92b12e",
+   "mtime": 1793030555
   },
   {
    "claim_id": "C-029",
@@ -682,7 +722,7 @@
    "problems": [],
    "size": 318299,
    "sha256": "d3a8f0524f7d82ff0592624eb37eb4d21eb3974c833654919d9dc668a8e070b8",
-   "mtime": 1792936833
+   "mtime": 1793021233
   },
   {
    "claim_id": "C-030",
@@ -704,21 +744,117 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 48582,
-   "sha256": "e7a24ceb733987b1ba08f56b61bafe62e2d4c489ae01a180e197ecaf5c5faa55",
-   "mtime": 1793020710
+   "size": 51057,
+   "sha256": "00777de9c902d4d74beca7ce480329ff773a04a1a94134179af7311deed2cc09",
+   "mtime": 1793030557
   },
   {
-   "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_44.json",
+   "claim_id": "C-033",
+   "artifact": "feagpt_repro/reports/baseline_scorecard_L3_v6c_ds_p2.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 8376,
-   "sha256": "32b6d2167539786846f74ff3f96cefe23d1fd2c28e05ec0ce3912712d9d7705d",
-   "mtime": 1793020896
+   "size": 51828,
+   "sha256": "13638cac10cbfc6fa61d5a1f343ac1433b3bb92c6c9b28f2777570ac90cad9f4",
+   "mtime": 1793030562
+  },
+  {
+   "claim_id": "C-033",
+   "artifact": "feagpt_repro/reports/bootstrap_ci_L3_v6c_ds_p2.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 2109,
+   "sha256": "a1490c20b1a6570f8053d34d1d3cd0913c810d8a5d47d0c6b7c724d1c2d57cf1",
+   "mtime": 1793030425
+  },
+  {
+   "claim_id": "C-033",
+   "artifact": "feagpt_repro/reports/diagnostics/model_diff_v6c_p2_glm_vs_ds.md",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 3126,
+   "sha256": "c57a17108dcb5eb13a25bd922a27c5668391db965c7ae8c273afe972db7a2303",
+   "mtime": 1793030570
+  },
+  {
+   "claim_id": "C-033",
+   "artifact": "feagpt_repro/reports/diagnostics/model_diff_v6c_p2_glm_vs_ds.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 4424,
+   "sha256": "5d6601f35b8beda949e13e928acfd254b5370276ba5bfaddd47b0d954e7b2909",
+   "mtime": 1793030570
+  },
+  {
+   "claim_id": "C-033",
+   "artifact": "feagpt_repro/reports/diagnostics/clarify_meta_audit_v6c.md",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 997,
+   "sha256": "d320084004e43ce2bccfdc868930e4a7c18e889cd4579ea37f6df262a47f7cdc",
+   "mtime": 1793031393
+  },
+  {
+   "claim_id": "C-032",
+   "artifact": "feagpt_repro/reports/baseline_scorecard_L3_v6c_p2.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 52908,
+   "sha256": "9e4eb126f2565eb2321bbe4bc41b8319944c821ee1cdb4fbf6b932ce28080454",
+   "mtime": 1793030560
+  },
+  {
+   "claim_id": "C-032",
+   "artifact": "feagpt_repro/reports/bootstrap_ci_L3_v6c_p2.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 2108,
+   "sha256": "bbec602f9098e599f07cb3b7b775243e8dfee810113512a484f2e20b59a0b95d",
+   "mtime": 1793028464
+  },
+  {
+   "claim_id": "C-032",
+   "artifact": "feagpt_repro/reports/diagnostics/prompt_v2_effect_glm.md",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 2378,
+   "sha256": "d3fd0928267a6cd20208849a7d43b974455fd14bfc0dcdae2ee0a66260123539",
+   "mtime": 1793029073
+  },
+  {
+   "claim_id": "C-019",
+   "artifact": "feagpt_repro/reports/negative_controls_48.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 9434,
+   "sha256": "700f79871dc2bdd6b6e871325944e97fdfccf831665e04c1c1224db5ebed8d48",
+   "mtime": 1793031354
   }
  ]
 }

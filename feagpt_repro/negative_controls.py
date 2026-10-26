@@ -834,6 +834,97 @@ def main():
     print(f"  [{'ok ' if ok42 else 'BAD!'}] NC-42 双尺度分裂被隐藏被 S-35 拒绝                 "
           f"expect=fwd T/mut F actual={det42}")
 
+    # NC-43（R51 反向）：把 C-031 的顶层 model 改回 glm-5.3-flash（复现旧 bug）⇒ S-36 必须红；
+    # 删掉 provenance.model ⇒ 也必须红（缺交叉核对依据）。
+    from check_claims import model_label_consistent, msr_denominator_closure, prompt_no_blind_default
+    ok43, det43 = False, 'no artifact'
+    if sc31_real is not None:
+        ok_f43, _ = model_label_consistent(sc31_real, 'C-031')
+        m43a = json.loads(json.dumps(sc31_real))
+        m43a['model'] = 'glm-5.3-flash'          # 复现旧 bug：顶层硬编码默认值
+        ok_r43a, _ = model_label_consistent(m43a, 'C-031mut')
+        m43b = json.loads(json.dumps(sc31_real))
+        (m43b.get('provenance') or {}).pop('model', None)
+        ok_r43b, _ = model_label_consistent(m43b, 'C-031mut2')
+        ok43 = ok_f43 and (not ok_r43a) and (not ok_r43b)
+        det43 = (f'正向={"过" if ok_f43 else "红"} 顶层改glm={"红" if not ok_r43a else "漏判"} '
+                 f'删prov.model={"红" if not ok_r43b else "漏判"}')
+    results.append({'id': 'NC-43', 'desc': '顶层 model 与 provenance 不一致必须被 R51/S-36 拒绝',
+                    'expect': 'fwd=True / 两向变异=False', 'actual': det43, 'ok': ok43})
+    print(f"  [{'ok ' if ok43 else 'BAD!'}] NC-43 顶层 model 写错被 S-36 拒绝                     "
+          f"expect=fwd T/mut F actual={det43}")
+
+    # NC-44（R52 反向）：把「未收敛」混回 n_clarify_excluded（复现旧 bug 5=4+1）⇒ S-37 必须红；
+    # 删掉 denominator_audit ⇒ 也必须红（分母构成未落盘）。
+    ok44, det44 = False, 'no artifact'
+    if sc31_real is not None:
+        ok_f44, _ = msr_denominator_closure(sc31_real, 'C-031')
+        m44a = json.loads(json.dumps(sc31_real))
+        m44a['msr_section']['n_clarify_excluded'] = 5        # 复现旧 bug：4 澄清 + 1 未收敛
+        ok_r44a, _ = msr_denominator_closure(m44a, 'C-031mut')
+        m44b = json.loads(json.dumps(sc31_real))
+        m44b['msr_section'].pop('denominator_audit', None)
+        ok_r44b, _ = msr_denominator_closure(m44b, 'C-031mut2')
+        ok44 = ok_f44 and (not ok_r44a) and (not ok_r44b)
+        det44 = (f'正向={"过" if ok_f44 else "红"} 混入unresolved={"红" if not ok_r44a else "漏判"} '
+                 f'删audit={"红" if not ok_r44b else "漏判"}')
+    results.append({'id': 'NC-44', 'desc': '分母混类/未落盘必须被 R52/S-37 拒绝',
+                    'expect': 'fwd=True / 两向变异=False', 'actual': det44, 'ok': ok44})
+    print(f"  [{'ok ' if ok44 else 'BAD!'}] NC-44 分母混类被 S-37 拒绝                          "
+          f"expect=fwd T/mut F actual={det44}")
+
+    # NC-45（R50 反向）：把「未提长桁→长桁数=0」写回 prompt ⇒ S-38 必须红；
+    # 把 expected_clarifications 注入 prompt（等于泄漏答案）⇒ 也必须红。
+    import tempfile
+    ok45, det45 = False, 'no source'
+    _p45 = os.path.join(HERE, 'gen_candidates_v2.js')
+    if os.path.exists(_p45):
+        ok_f45, _ = prompt_no_blind_default(_p45)
+        _src45 = open(_p45, encoding='utf-8').read()
+        _td = tempfile.mkdtemp()
+        _f1 = os.path.join(_td, 'mut_a.js')
+        open(_f1, 'w', encoding='utf-8').write(
+            _src45.replace('数量类字段铁律', '数量类字段铁律（未提长桁→长桁数=0）'))
+        ok_r45a, _ = prompt_no_blind_default(_f1, 'mutA')
+        _f2 = os.path.join(_td, 'mut_b.js')
+        open(_f2, 'w', encoding='utf-8').write(_src45 + '\n// 注入答案键 expected_clarifications\n')
+        ok_r45b, _ = prompt_no_blind_default(_f2, 'mutB')
+        ok45 = ok_f45 and (not ok_r45a) and (not ok_r45b)
+        det45 = (f'正向={"过" if ok_f45 else "红"} 写回盲填={"红" if not ok_r45a else "漏判"} '
+                 f'注入答案键={"红" if not ok_r45b else "漏判"}')
+    results.append({'id': 'NC-45', 'desc': 'prompt 盲填授权/注入答案键必须被 R50/S-38 拒绝',
+                    'expect': 'fwd=True / 两向变异=False', 'actual': det45, 'ok': ok45})
+    print(f"  [{'ok ' if ok45 else 'BAD!'}] NC-45 prompt 盲填授权被 S-38 拒绝                    "
+          f"expect=fwd T/mut F actual={det45}")
+
+    # NC-46（R54 反向）：MSR 是条件通过率 ⇒ ①删掉 msr_definition（口径未写进成绩单）
+    # ②只把分母改小但不点名被排除的题（复现 C-033 的 20/21 口径）⇒ S-40 必须红。
+    # 动机与那条 MSR 反直觉同源：被排除的恰好是失败题 ⇒ 分母小的 pct 反而「更高」。
+    ok46, det46 = False, 'no artifact'
+    from check_claims import msr_conditional_declared
+    sc33_real = None
+    _p46 = os.path.join(HERE, 'reports', 'baseline_scorecard_L3_v6c_ds_p2.json')
+    if os.path.exists(_p46):
+        sc33_real = json.load(open(_p46, encoding='utf-8'))
+    if sc33_real is not None:
+        ok_f46, _ = msr_conditional_declared(sc33_real, 'C-033')
+        m46a = json.loads(json.dumps(sc33_real))
+        m46a['msr_section'].pop('msr_definition', None)
+        ok_r46a, _ = msr_conditional_declared(m46a, 'C-033mut')
+        m46b = json.loads(json.dumps(sc33_real))
+        m46b['msr_section'].pop('n_no_spec_excluded_ids', None)   # 只降分母不点名
+        ok_r46b, _ = msr_conditional_declared(m46b, 'C-033mut2')
+        m46c = json.loads(json.dumps(sc33_real))
+        m46c['msr_section']['n_no_spec_excluded_ids'] = []        # 点名清空但审计仍 1 条
+        ok_r46c, _ = msr_conditional_declared(m46c, 'C-033mut3')
+        ok46 = ok_f46 and (not ok_r46a) and (not ok_r46b) and (not ok_r46c)
+        det46 = (f'正向={"过" if ok_f46 else "红"} 删口径={"红" if not ok_r46a else "漏判"} '
+                 f'不点名={"红" if not ok_r46b else "漏判"} 点名清空={"红" if not ok_r46c else "漏判"}')
+    results.append({'id': 'NC-46', 'desc': 'MSR 条件口径未声明/排除项未点名必须被 R54/S-40 拒绝',
+                    'expect': 'fwd=True / 三向变异=False', 'actual': det46, 'ok': ok46})
+    print(f"  [{'ok ' if ok46 else 'BAD!'}] NC-46 MSR 条件口径缺声明被 S-40 拒绝                "
+          f"expect=fwd T/mut F actual={det46}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。
     # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，
     # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
