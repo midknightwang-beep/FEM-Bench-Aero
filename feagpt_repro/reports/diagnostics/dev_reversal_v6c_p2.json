@@ -1,0 +1,119 @@
+{
+ "a": {
+  "path": "reports\\baseline_scorecard_L3_v6c.json",
+  "label": "C-029 v6c (paper v6c, candidates v6c)",
+  "prompt_sha256": null,
+  "model": "glm-5.3-flash"
+ },
+ "b": {
+  "path": "reports\\baseline_scorecard_L3_v6c_p2.json",
+  "label": "C-032 v6c x glm prompt-v2 (paper v6c, candidates glm_p2)",
+  "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+  "model": "glm-5.3-flash"
+ },
+ "dev_n": 30,
+ "dev_pass": {
+  "old": 23,
+  "new": 22,
+  "delta": -1
+ },
+ "flips": [
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l1600_str8_frm3",
+   "old_category": "spec_pass",
+   "new_category": "spec_fail",
+   "direction": "pass->fail",
+   "fields": [
+    {
+     "field": "extra.end_moment",
+     "root": "<spec>",
+     "gold": 50000000.0,
+     "old_candidate": 50000000,
+     "new_candidate": 50000,
+     "class": "magnitude_unit_error",
+     "note": "×10^-3（50000.0 vs gold 50000000）",
+     "old_failed": false,
+     "new_failed": true
+    }
+   ]
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+   "old_category": "spec_pass",
+   "new_category": "spec_fail",
+   "direction": "pass->fail",
+   "fields": [
+    {
+     "field": "extra.end_moment",
+     "root": "<spec>",
+     "gold": 50000000.0,
+     "old_candidate": 50000000,
+     "new_candidate": 5000000,
+     "class": "magnitude_unit_error",
+     "note": "×10^-1（5000000 vs gold 50000000）",
+     "old_failed": false,
+     "new_failed": true
+    }
+   ]
+  },
+  {
+   "task_id": "L3_stiffened_panel_800x600_str3",
+   "old_category": "spec_fail",
+   "new_category": "spec_pass",
+   "direction": "fail->pass",
+   "fields": [
+    {
+     "field": "params.length",
+     "root": "structure.",
+     "gold": 800.0,
+     "old_candidate": 600,
+     "new_candidate": 800,
+     "class": "matched",
+     "note": "",
+     "old_failed": true,
+     "new_failed": false
+    },
+    {
+     "field": "params.width",
+     "root": "structure.",
+     "gold": 600.0,
+     "old_candidate": 800,
+     "new_candidate": 600,
+     "class": "matched",
+     "note": "",
+     "old_failed": true,
+     "new_failed": false
+    }
+   ]
+  }
+ ],
+ "flip_counts": {
+  "pass->fail": 2,
+  "fail->pass": 1,
+  "other": 0
+ },
+ "new_fail_field_classes": {
+  "magnitude_unit_error": 2
+ },
+ "tsr_cross_check": {
+  "scorecard_dev_tsr": {
+   "a": 23,
+   "b": 22
+  },
+  "recomputed": {
+   "a": 23,
+   "b": 22
+  },
+  "agree": true
+ },
+ "closure": {
+  "ok": true,
+  "formula": "old 23 + fail->pass 1 - pass->fail 2 = new 22"
+ },
+ "prompt_sha": {
+  "a": null,
+  "b": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22"
+ },
+ "same_prompt": false,
+ "note": "W5d-0：区分「模型退步 / 题面修正被兑现 / 量级偏差」三种解释。本文件属诊断（R37），不进 headline；数字由 S-41 复核。"
+}

@@ -1,0 +1,666 @@
+{
+ "schema": "w5d_leaderboard/v1",
+ "generated_at": "2026-10-27T20:28:07",
+ "paper": {
+  "path": "reports/papers/tasks_v6c.jsonl",
+  "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5"
+ },
+ "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+ "models": {
+  "C-032": {
+   "claim": "C-032",
+   "model": "glm-5.3-flash",
+   "scorecard": "reports\\baseline_scorecard_L3_v6c_p2.json",
+   "candidates_dir": "candidates_l3_v6c_glm_p2",
+   "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+   "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
+   "exam": {
+    "tsr": {
+     "pass": 23,
+     "total": 25,
+     "pct": 92.0,
+     "ci95": [
+      80.0,
+      100.0
+     ]
+    },
+    "sfr": {
+     "pass": 20,
+     "of_spec_candidates": 22,
+     "pct": 90.9,
+     "ci95": [
+      77.3,
+      100.0
+     ]
+    },
+    "msr": {
+     "pass": 20,
+     "den": 22,
+     "pct": 90.9,
+     "ci95": [
+      77.3,
+      100.0
+     ],
+     "conditional": true,
+     "excluded_ids": [],
+     "definition": "conditional：分母 = 产出了 spec 且非 expected_clarifications 的题；模型侧无输出记 TSR fail / FPR，不计入 MSR（W5a 原设计，避免双记）。⇒ **跨成绩单比 MSR 前必须先对齐分母与 SFR（R54）**，分母不同时 pct 不得直减、不得据此排名。"
+    },
+    "categories": {
+     "clarify_ok": 3,
+     "spec_pass": 20,
+     "spec_fail": 2
+    },
+    "three_columns": {
+     "boundary": {
+      "n": 6,
+      "tsr": {
+       "pass": 6,
+       "total": 6,
+       "pct": 100.0
+      }
+     },
+     "extrapolation": {
+      "n": 13,
+      "tsr": {
+       "pass": 11,
+       "total": 13,
+       "pct": 84.6
+      }
+     },
+     "interpolation": {
+      "n": 6,
+      "tsr": {
+       "pass": 6,
+       "total": 6,
+       "pct": 100.0
+      }
+     }
+    },
+    "denominator_audit": {
+     "n_tasks_total": 25,
+     "n_counted": 22,
+     "n_clarify_excluded": 3,
+     "n_unresolved_excluded": 0,
+     "n_solver_excluded": 0,
+     "closure_ok": true
+    }
+   },
+   "dev": {
+    "tsr": {
+     "pass": 22,
+     "total": 30,
+     "pct": 73.3
+    },
+    "msr": "21/29"
+   },
+   "full": {
+    "msr": "41/51",
+    "pct": 80.4,
+    "den": 51,
+    "failure_class_counts": {
+     "model": 10
+    },
+    "gate_fail_counts": {
+     "fidelity_disp": 5,
+     "spec_fidelity": 7,
+     "pipeline": 3
+    },
+    "solver_ids": [],
+    "unresolved_ids": []
+   },
+   "value_added": {
+    "task_level_pct": 92.0,
+    "task_level_delta_pp": 92.0,
+    "task_verdict": "PASS",
+    "field_floor_hit_rate": 0.8593,
+    "field_llm_hit_rate": 0.9934,
+    "field_delta_pp": 13.4,
+    "field_verdict": "PASS",
+    "verdict_split": null
+   },
+   "fpr": {
+    "fabricated_on_clarify_tasks": 0,
+    "n_clarify_tasks": 4,
+    "fabrication_rate_pct": 0.0,
+    "overclarify": 0,
+    "clarify_wrong_field": 0
+   },
+   "turns": {
+    "1": 3,
+    "2": 50,
+    "3": 2
+   },
+   "first_pass": 3,
+   "underpowered": false
+  },
+  "C-033": {
+   "claim": "C-033",
+   "model": "deepseek-v4-pro",
+   "scorecard": "reports\\baseline_scorecard_L3_v6c_ds_p2.json",
+   "candidates_dir": "candidates_l3_v6c_ds_p2",
+   "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+   "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
+   "exam": {
+    "tsr": {
+     "pass": 22,
+     "total": 25,
+     "pct": 88.0,
+     "ci95": [
+      76.0,
+      100.0
+     ]
+    },
+    "sfr": {
+     "pass": 20,
+     "of_spec_candidates": 21,
+     "pct": 95.2,
+     "ci95": [
+      85.7,
+      100.0
+     ]
+    },
+    "msr": {
+     "pass": 20,
+     "den": 21,
+     "pct": 95.2,
+     "ci95": [
+      85.7,
+      100.0
+     ],
+     "conditional": true,
+     "excluded_ids": [
+      "L3_open_hole_panel_400x200_d20_cfrp45s_d40"
+     ],
+     "definition": "conditional：分母 = 产出了 spec 且非 expected_clarifications 的题；模型侧无输出记 TSR fail / FPR，不计入 MSR（W5a 原设计，避免双记）。⇒ **跨成绩单比 MSR 前必须先对齐分母与 SFR（R54）**，分母不同时 pct 不得直减、不得据此排名。"
+    },
+    "categories": {
+     "clarify_ok": 2,
+     "spec_pass": 20,
+     "clarify_wrong": 1,
+     "spec_fail": 1,
+     "no_output": 1
+    },
+    "three_columns": {
+     "boundary": {
+      "n": 6,
+      "tsr": {
+       "pass": 6,
+       "total": 6,
+       "pct": 100.0
+      }
+     },
+     "extrapolation": {
+      "n": 13,
+      "tsr": {
+       "pass": 11,
+       "total": 13,
+       "pct": 84.6
+      }
+     },
+     "interpolation": {
+      "n": 6,
+      "tsr": {
+       "pass": 5,
+       "total": 6,
+       "pct": 83.3
+      }
+     }
+    },
+    "denominator_audit": {
+     "n_tasks_total": 25,
+     "n_counted": 21,
+     "n_clarify_excluded": 3,
+     "n_unresolved_excluded": 1,
+     "n_solver_excluded": 0,
+     "closure_ok": true
+    }
+   },
+   "dev": {
+    "tsr": {
+     "pass": 22,
+     "total": 30,
+     "pct": 73.3
+    },
+    "msr": "22/29"
+   },
+   "full": {
+    "msr": "42/50",
+    "pct": 84.0,
+    "den": 50,
+    "failure_class_counts": {
+     "model": 8
+    },
+    "gate_fail_counts": {
+     "fidelity_disp": 6,
+     "spec_fidelity": 8
+    },
+    "solver_ids": [],
+    "unresolved_ids": [
+     "L3_open_hole_panel_400x200_d20_cfrp45s_d40"
+    ]
+   },
+   "value_added": {
+    "task_level_pct": 88.0,
+    "task_level_delta_pp": 88.0,
+    "task_verdict": "PASS",
+    "field_floor_hit_rate": 0.8593,
+    "field_llm_hit_rate": 0.9094,
+    "field_delta_pp": 5.0,
+    "field_verdict": "BELOW",
+    "verdict_split": "任务级 PASS / 字段级 BELOW（Δ5.0 pp）—— 两尺度结论相反，文档必须并列报，禁止只引有利的一侧（R49）"
+   },
+   "fpr": {
+    "fabricated_on_clarify_tasks": 1,
+    "n_clarify_tasks": 4,
+    "fabrication_rate_pct": 25.0,
+    "overclarify": 0,
+    "clarify_wrong_field": 1
+   },
+   "turns": {
+    "1": 2,
+    "2": 48,
+    "3": 5
+   },
+   "first_pass": 2,
+   "underpowered": false
+  }
+ },
+ "history_prompt_v1": {
+  "C-029": {
+   "claim": "C-029",
+   "model": "glm-5.3-flash",
+   "scorecard": "reports\\baseline_scorecard_L3_v6c.json",
+   "candidates_dir": "candidates_l3_v6c",
+   "prompt_sha256": null,
+   "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
+   "exam": {
+    "tsr": {
+     "pass": 23,
+     "total": 25,
+     "pct": 92.0,
+     "ci95": [
+      80.0,
+      100.0
+     ]
+    },
+    "sfr": {
+     "pass": 20,
+     "of_spec_candidates": 22,
+     "pct": 90.9,
+     "ci95": [
+      77.3,
+      100.0
+     ]
+    },
+    "msr": {
+     "pass": 19,
+     "den": 22,
+     "pct": 86.4,
+     "ci95": [
+      72.7,
+      100.0
+     ],
+     "conditional": true,
+     "excluded_ids": [],
+     "definition": "conditional：分母 = 产出了 spec 且非 expected_clarifications 的题；模型侧无输出记 TSR fail / FPR，不计入 MSR（W5a 原设计，避免双记）。⇒ **跨成绩单比 MSR 前必须先对齐分母与 SFR（R54）**，分母不同时 pct 不得直减、不得据此排名。"
+    },
+    "categories": {
+     "clarify_ok": 3,
+     "spec_pass": 20,
+     "spec_fail": 2
+    },
+    "three_columns": {
+     "boundary": {
+      "n": 6,
+      "tsr": {
+       "pass": 6,
+       "total": 6,
+       "pct": 100.0
+      }
+     },
+     "extrapolation": {
+      "n": 13,
+      "tsr": {
+       "pass": 11,
+       "total": 13,
+       "pct": 84.6
+      }
+     },
+     "interpolation": {
+      "n": 6,
+      "tsr": {
+       "pass": 6,
+       "total": 6,
+       "pct": 100.0
+      }
+     }
+    },
+    "denominator_audit": {
+     "n_tasks_total": 25,
+     "n_counted": 22,
+     "n_clarify_excluded": 3,
+     "n_unresolved_excluded": 0,
+     "n_solver_excluded": 1,
+     "closure_ok": true
+    }
+   },
+   "dev": {
+    "tsr": {
+     "pass": 23,
+     "total": 30,
+     "pct": 76.7
+    },
+    "msr": "19/29"
+   },
+   "full": {
+    "msr": "38/51",
+    "pct": 74.5,
+    "den": 51,
+    "failure_class_counts": {
+     "solver": 4,
+     "model": 8,
+     "contract": 1
+    },
+    "gate_fail_counts": {
+     "pipeline": 7,
+     "fidelity_disp": 4,
+     "spec_fidelity": 6
+    },
+    "solver_ids": [
+     "L3_fuselage_barrel_d1800_l2000_str8_frm3",
+     "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+     "L3_fuselage_barrel_d2000_l2000_str8_frm3",
+     "L3_fuselage_barrel_d2000_l2000_t2_str8_frm3"
+    ],
+    "unresolved_ids": []
+   },
+   "value_added": {
+    "task_level_pct": 92.0,
+    "task_level_delta_pp": 92.0,
+    "task_verdict": "PASS",
+    "field_floor_hit_rate": 0.8593,
+    "field_llm_hit_rate": 0.9934,
+    "field_delta_pp": 13.4,
+    "field_verdict": "PASS",
+    "verdict_split": null
+   },
+   "fpr": {
+    "fabricated_on_clarify_tasks": 0,
+    "n_clarify_tasks": 4,
+    "fabrication_rate_pct": 0.0,
+    "overclarify": 0,
+    "clarify_wrong_field": 0
+   },
+   "turns": {
+    "1": 4,
+    "2": 48,
+    "3": 3
+   },
+   "first_pass": 4,
+   "underpowered": false
+  },
+  "C-031": {
+   "claim": "C-031",
+   "model": "deepseek-v4-pro",
+   "scorecard": "reports\\baseline_scorecard_L3_v6c_dsv4pro.json",
+   "candidates_dir": "candidates_l3_v6c_dsv4pro",
+   "prompt_sha256": null,
+   "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
+   "exam": {
+    "tsr": {
+     "pass": 20,
+     "total": 25,
+     "pct": 80.0,
+     "ci95": [
+      64.0,
+      96.0
+     ]
+    },
+    "sfr": {
+     "pass": 20,
+     "of_spec_candidates": 25,
+     "pct": 80.0,
+     "ci95": [
+      64.0,
+      96.0
+     ]
+    },
+    "msr": {
+     "pass": 20,
+     "den": 22,
+     "pct": 90.9,
+     "ci95": [
+      77.3,
+      100.0
+     ],
+     "conditional": true,
+     "excluded_ids": [
+      "L3_open_hole_panel_400x200_d20_cfrp090s"
+     ],
+     "definition": "conditional：分母 = 产出了 spec 且非 expected_clarifications 的题；模型侧无输出记 TSR fail / FPR，不计入 MSR（W5a 原设计，避免双记）。⇒ **跨成绩单比 MSR 前必须先对齐分母与 SFR（R54）**，分母不同时 pct 不得直减、不得据此排名。"
+    },
+    "categories": {
+     "fabricated": 3,
+     "spec_pass": 20,
+     "spec_fail": 2
+    },
+    "three_columns": {
+     "boundary": {
+      "n": 6,
+      "tsr": {
+       "pass": 6,
+       "total": 6,
+       "pct": 100.0
+      }
+     },
+     "extrapolation": {
+      "n": 13,
+      "tsr": {
+       "pass": 9,
+       "total": 13,
+       "pct": 69.2
+      }
+     },
+     "interpolation": {
+      "n": 6,
+      "tsr": {
+       "pass": 5,
+       "total": 6,
+       "pct": 83.3
+      }
+     }
+    },
+    "denominator_audit": {
+     "n_tasks_total": 25,
+     "n_counted": 22,
+     "n_clarify_excluded": 3,
+     "n_unresolved_excluded": 0,
+     "n_solver_excluded": 0,
+     "closure_ok": true
+    }
+   },
+   "dev": {
+    "tsr": {
+     "pass": 22,
+     "total": 30,
+     "pct": 73.3
+    },
+    "msr": "22/28"
+   },
+   "full": {
+    "msr": "42/50",
+    "pct": 84.0,
+    "den": 50,
+    "failure_class_counts": {
+     "model": 8
+    },
+    "gate_fail_counts": {
+     "fidelity_disp": 7,
+     "spec_fidelity": 8
+    },
+    "solver_ids": [],
+    "unresolved_ids": [
+     "L3_open_hole_panel_400x200_d20_cfrp090s"
+    ]
+   },
+   "value_added": {
+    "task_level_pct": 80.0,
+    "task_level_delta_pp": 80.0,
+    "task_verdict": "PASS",
+    "field_floor_hit_rate": 0.8593,
+    "field_llm_hit_rate": 0.8742,
+    "field_delta_pp": 1.5,
+    "field_verdict": "BELOW",
+    "verdict_split": "任务级 PASS / 字段级 BELOW（Δ1.5 pp）—— 两尺度结论相反，文档必须并列报，禁止只引有利的一侧（R49）"
+   },
+   "fpr": {
+    "fabricated_on_clarify_tasks": 4,
+    "n_clarify_tasks": 4,
+    "fabrication_rate_pct": 100.0,
+    "overclarify": 0,
+    "clarify_wrong_field": 0
+   },
+   "turns": {
+    "2": 52,
+    "3": 3
+   },
+   "first_pass": 0,
+   "underpowered": false
+  }
+ },
+ "history_comparability_vs_current": {
+  "C-029": {
+   "comparable": false,
+   "reasons": [
+    "prompt 未记录（旧批次无 prompt_sha256）⇒ 无法证明 harness 相同（R53）"
+   ]
+  },
+  "C-031": {
+   "comparable": false,
+   "reasons": [
+    "prompt 未记录（旧批次无 prompt_sha256）⇒ 无法证明 harness 相同（R53）"
+   ]
+  }
+ },
+ "pair": {
+  "a": "C-032",
+  "b": "C-033",
+  "both_prompt_sha256_equal": true,
+  "both_tasks_sha256_equal": true,
+  "tsr_delta_pp": -4.0,
+  "tsr_leader": "C-032",
+  "msr_delta_allowed": false,
+  "msr_delta_pp": null,
+  "msr_note": "**分母不同（22 vs 21）⇒ 不出 Δ、不得据此排名**（R54）；A 排除 []，B 排除 ['L3_open_hole_panel_400x200_d20_cfrp45s_d40']",
+  "msr_leader_by_pct": "C-033",
+  "confusion": {
+   "both_pass": 22,
+   "only_a": 1,
+   "only_b": 0,
+   "neither": 2
+  },
+  "confusion_tasks": {
+   "both_pass": [
+    "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+    "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+    "L3_naca4412_wingbox_n_ribs3_chord1000",
+    "L3_naca4412_wingbox_n_ribs3_chord800",
+    "L3_naca4412_wingbox_n_ribs5_chord800",
+    "L3_naca4412_wingbox_n_ribs7_chord800",
+    "L3_naca4412_wingbox_recombination_algorithm3",
+    "L3_naca4412_wingbox_size_skin2",
+    "L3_naca4412_wingbox_size_skin4",
+    "L3_naca4412_wingbox_size_span1600",
+    "L3_naca4412_wingbox_size_span2400",
+    "L3_naca4412_wingbox_size_span2400_skin2",
+    "L3_naca4412_wingbox_size_span3000_skin1p5",
+    "L3_naca4412_wingbox_str3",
+    "L3_naca4412_wingbox_str3_T",
+    "L3_naca4412_wingbox_str5",
+    "L3_naca4412_wingbox_sweep40_taper040",
+    "L3_naca4412_wingbox_taper090",
+    "L3_open_hole_panel_400x200_d20_offcentre",
+    "L3_open_hole_panel_400x200_d40_offcentre",
+    "L3_open_hole_panel_600x300_d60",
+    "L3_stiffened_panel_600x600_str3"
+   ],
+   "only_a": [
+    "L3_naca4412_wingbox"
+   ],
+   "only_b": [],
+   "neither": [
+    "L3_naca4412_wingbox_web1_offcentre",
+    "L3_open_hole_panel_400x200_d20_cfrp45s_d40"
+   ]
+  },
+  "shared_failures": {
+   "identical_field_set": [
+    {
+     "task_id": "L3_naca4412_wingbox_web1_offcentre",
+     "common": [
+      "extra.end_torque",
+      "extra.torque_axis_dof"
+     ],
+     "A_only": [],
+     "B_only": [],
+     "A_category": "spec_fail",
+     "B_category": "spec_fail"
+    }
+   ],
+   "differing": [
+    {
+     "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
+     "common": [],
+     "A_only": [
+      "params.layup"
+     ],
+     "B_only": [],
+     "A_category": "spec_fail",
+     "B_category": "no_output"
+    }
+   ]
+  },
+  "spec_pass": {
+   "a": 20,
+   "b": 20
+  },
+  "spec_pass_equal": true
+ },
+ "comparability": {
+  "ok": true,
+  "reasons": []
+ },
+ "statements": {
+  "allowed": [
+   "C-032（glm-5.3-flash）exam TSR **23/25 = 92.0%**、C-033（deepseek-v4-pro）**22/25 = 88.0%**——**同卷（`tasks_sha256` 相同）+ 同 prompt（`prompt_sha256` 相同）**",
+   "逐题 2×2：both 22 / only_a 1 / only_b 0 / neither 2",
+   "两模型 `spec_pass` = 20 vs 20（相同）",
+   "字段级命中率：C-032 99.34%（Δ13.4 pp，PASS） vs C-033 90.94%（Δ5.0 pp，BELOW）"
+  ],
+  "forbidden": [
+   "「C-033 的 88.0% 是能力上限」——2×2 里 only_b = 0，没有任何一条 A 错 B 对",
+   "「两模型一样强」——TSR 差 4.0 pp，且失败模式不同（见共享失败字段集）",
+   "「差距全部来自建模能力」——`spec_pass` 20 vs 20，差异不在建模能力这一层",
+   "「用 MSR 单独排名」——**分母不同（22 vs 21）⇒ 不出 Δ、不得据此排名**（R54）；A 排除 []，B 排除 ['L3_open_hole_panel_400x200_d20_cfrp45s_d40']",
+   "「C-033 有显著增量」——字段级 Δ5.0 pp < 10 pp 判据（BELOW）",
+   "「dev 也一致」——dev 是开发集，不进对外结论（R15）；只作参考"
+  ]
+ },
+ "limits": [
+  "exam n=25 ⇒ CI 宽（C-032 TSR CI95 [80.0, 100.0]）；族 n<10 不单列结论",
+  "MSR 是条件通过率（分母 22 vs 21）⇒ 不可直减（R54）",
+  "C-033 字段级 BELOW（Δ5.0 pp）⇒ 任务级单列会夸大",
+  "C-033 仍有 FPR 25.0%（1/4）与 1 条问错字段 ⇒ prompt v3 待修",
+  "C-029/C-031 是 prompt v1 历史，`prompt_sha256` 未记录 ⇒ 与本榜**不可相减**（R53）"
+ ],
+ "repro": [
+  "node gen_candidates_v2.js --tasks reports/papers/tasks_v6c.jsonl --levels L3 --out candidates_l3_v6c_glm_p2 --limit 55 --model glm-5.3-flash --max-turns 3",
+  "node gen_candidates_v2.js --tasks reports/papers/tasks_v6c.jsonl --levels L3 --out candidates_l3_v6c_ds_p2 --limit 55 --model deepseek-v4-pro --max-turns 3",
+  "python score_baseline.py --candidates candidates_l3_v6c_<m> --tasks reports/papers/tasks_v6c.jsonl --report reports/baseline_scorecard_L3_v6c_<m>.json --trivial reports/trivial_baselines_L3_v6c.json",
+  "python msr_l3.py --candidates candidates_l3_v6c_<m> --tasks reports/papers/tasks_v6c.jsonl --report reports/baseline_scorecard_L3_v6c_<m>.json",
+  "python bootstrap_ci.py --scorecard reports/baseline_scorecard_L3_v6c_<m>.json --out reports/bootstrap_ci_L3_v6c_<m>.json",
+  "python _diag_model_diff.py --a reports/baseline_scorecard_L3_v6c_p2.json --b reports/baseline_scorecard_L3_v6c_ds_p2.json --out reports/diagnostics/model_diff_v6c_p2_glm_vs_ds.json --md reports/diagnostics/model_diff_v6c_p2_glm_vs_ds.md",
+  "python _diag_dev_reversal.py   # W5d-0：dev 反向定位",
+  "python make_w5d_leaderboard.py  # 本文件"
+ ]
+}

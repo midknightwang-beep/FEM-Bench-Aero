@@ -44,6 +44,8 @@
 - **★「修了缺陷」必须证明没顺带动难度**：C-032 与 C-029 逐题类别完全相同，才能说「修的是隐患、不是补分」；只报分数变化区分不了这两种。
 - **★ 分母小的那个 pct 更好看**：MSR 是条件通过率（分母 = 产出 spec 的非澄清题），被排除的往往是**失败题** ⇒ 95.2% 能「高于」90.9% 而 TSR 低 4 pp（R54）。
 - **★ 往结构化数组末尾追加项要补尾逗号**：最后一项无逗号，直接插其后 ⇒ 语法错（看板 r68 踩过一次）。插完必须跑该文件的语法/自检。
+- **★ `failed_fields` 的路径根不统一**：`extra.*` 挂在 spec 顶层，`params.*` 实际在 `spec.structure` 下。按字面路径取 ⇒ 全 None 且被误分类。下游工具必须两种根都试并记录命中根。
+- **★ 比率/计数必须与成绩单自报值交叉核对**：dev 通过数用「spec_pass 计数」得 22→21，成绩单是 23→22 —— **TSR 把 `clarify_ok` 也算通过**。口径不同要 rc≠0，不能各说各话。
 
 ## 协作约定
 - 决策环节**先可视化梳理** → 更新看板（DATA 区），必跑 `node _dash_check.js`。
@@ -52,7 +54,9 @@
 
 ## 当前状态（2026-10-25）
 - **代理模型线（M7/M14/D01–D37）完全冻结**（D37 拍板）；对外 KPI = TSR/FPR/修复/拒答/澄清。计划看 `FEM-Bench-Aero/ROADMAP.md`。
-- **W1–W5c-6h 全部收口**；**对外 headline = C-032（v6c × `candidates_l3_v6c_glm_p2`，prompt v2 代）**：考卷 v6c（C-030，sha `9c1faa3a…`）。
+- **W1–W5d 全部收口**；**对外 headline = C-032（v6c × `candidates_l3_v6c_glm_p2`，prompt v2 代）**：考卷 v6c（C-030，sha `9c1faa3a…`）。
+- **★★ 跨模型榜单 = C-034（`reports/w5d_leaderboard.{json,md}`）：三列并排是硬要求（R56）**——同一对模型**三个口径排名相反**：任务级 TSR 92.0% vs 88.0%、字段级 99.34%(PASS) vs 90.94%(BELOW)、**条件 MSR 90.9% vs 95.2%（deepseek 反而更高，因分母少 1 条且那条是失败题）**。⇒ **只引任一列都能得出「某模型更强」**，必须并排 + 归因。
+- **★ dev 反向变化必须机器定位（R55）**：C-032 dev 23→22 实为 **+1/−2**——`stiffened_800x600_str3` 由 600/800 纠正为 800/600（题面 R41 修正被兑现，不重生成恒为 0）；两条柱壳 `extra.end_moment` 写 5e4/5e6 而 gold 5e7（×10⁻³/×10⁻¹ 量级偏差，与 prompt 无关）。产物 `diagnostics/dev_reversal_v6c_p2.md`，S-41/NC-47 守。
 - **★★ 双模型同 harness（R53 合规，`prompt_sha256 = ce225186…` 两者逐字相同）**：C-032（glm）exam **23/25 (92.0%)** / MSR 20/22；C-033（`deepseek-v4-pro`）exam **22/25 (88.0%)** / MSR 20/21（**条件分母 21**）。**2×2 = both 22 / only_a 1 / only_b 0 / neither 2** ⇒ 纯损失非互补；**两模型 `spec_pass` 同 20/25** ⇒ 差距不来自建模能力。**C-031（prompt v1，20/25）与 C-032/C-033 不可相减**（R53）。
 - **★ R50 修复的净效果可精确断言**：删「未提长桁→0」授权后，**glm 的 exam 逐题类别与 C-029 完全相同**（⇒ 修的是对别家的隐患，92.0% 不依赖坏 prompt）；**deepseek 回收 +2**（`n_frames`/`n_stringers`，正是 C-031 编造的两条）⇒ **C-031 的 80.0% 有 2 条是 prompt 下界**，`n_ribs` 那条才是模型侧。
   exam **TSR 23/25 (92.0%)**、TSR **CI95 [80.0, 100.0]**、SFR 20/22、三栏 **boundary 6/6 · extrapolation 11/13 · interpolation 6/6**；
@@ -98,7 +102,7 @@
 - **C-028（v6b，17/25 = 68.0%）已降级为 `diagnostic lower bound`**（第八轮 D1），**与 C-029 不可相减**：
   同 25 条 exam id 但**题面已改**（paper sha 不同，`compare_scorecards.py` 增了这条硬理由）；与 C-021 的 45.5% 另加 exam 11→25、族构成变化。
   **C-025 v5 重打分 4/11 是诊断不是成绩**（旧候选不能评新考卷，R28）。
-- **红线 R1–R54**（R42 headline 唯一 / R43 投影不冒充实测 / R44 value_added 双尺度 / R45 MSR 字段齐 / R46 key 决策留痕 / **R47 比率分母显式落盘且加和闭合** / **R48 第二模型只作可重复性证据、不得事后择优** / **R49 双尺度结论相反必须标 `verdict_split`** / **R50 prompt 不得盲填、不得注入 `expected_clarifications`** / **R51 模型标签读实测** / **R52 分母四类拆开 + 两层闭合** / **R53 改 harness 必须全量重跑（`prompt_sha256` 三件对齐才可比）** / **R54 MSR 是条件通过率：口径落盘 + 排除项点名 + 分母不同不得直减/排名**）；R25 artifact 入 `reports/`；R26 `check_claims.py`（**负控 48/48**，含 NC-23..46；语义 **41** 项；25 claims / 38 artifacts）；R27 官方/诊断分文件；R28 旧候选不评新考卷；
+- **红线 R1–R57**（R42 headline 唯一 / R43 投影不冒充实测 / R44 value_added 双尺度 / R45 MSR 字段齐 / R46 key 决策留痕 / **R47 比率分母显式落盘且加和闭合** / **R48 第二模型只作可重复性证据、不得事后择优** / **R49 双尺度结论相反必须标 `verdict_split`** / **R50 prompt 不得盲填、不得注入 `expected_clarifications`** / **R51 模型标签读实测** / **R52 分母四类拆开 + 两层闭合** / **R53 改 harness 必须全量重跑（`prompt_sha256` 三件对齐才可比）** / **R54 MSR 是条件通过率：口径落盘 + 排除项点名 + 分母不同不得直减/排名** / **R55 prompt 修复逐题回归、dev 反向必须定位并闭合** / **R56 跨模型榜单三列并排、分母不等不出 Δ** / **R57 prompt v3 不得注入 `expected_clarifications`**）；R25 artifact 入 `reports/`；R26 `check_claims.py`（**负控 49/49**，含 NC-23..47；语义 **43** 项；26 claims / 47 artifacts）；R27 官方/诊断分文件；R28 旧候选不评新考卷；
   **R29 语义计数必须自检**（`check_claims.py --semantic` 默认开，**29 项**，期望值全从 artifact 实读；
   **缺 MSR ⇒ S-19/S-20 必须响亮失败，不得静默消失**，NC-36 三端守）；
   **R30 跨口径不得直接比**；**R31 生成前 key 预检 + 1 条冒烟**；**R33–R41** 见 CLAIMS 正文。

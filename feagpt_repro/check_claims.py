@@ -341,6 +341,111 @@ def msr_conditional_declared(sc, label=''):
     return True, f'{label} 口径已声明；无模型侧无输出被排除'
 
 
+def dev_reversal_closed(path):
+    """R55（第十一轮 §3.1）：dev 反向变化必须逐题定位且闭环。
+
+    只报「dev 少 1 条」没法判读——净额 −1 可能是「2 条退化 + 1 条修好」，
+    而这三条的原因完全不同（采样波动 / 题面修正被兑现 / 真的变差）。
+    """
+    if not os.path.exists(path):
+        return False, '缺 dev_reversal 产物（R55：必须先定位再写榜单）'
+    try:
+        d = json.load(open(path, encoding='utf-8'))
+    except Exception as e:
+        return False, f'dev_reversal 读不动：{e}'
+    c = d.get('closure') or {}
+    cc = d.get('tsr_cross_check') or {}
+    n = len(d.get('flips') or [])
+    delta = ((d.get('dev_pass') or {}).get('delta'))
+    bad = []
+    if not c.get('ok'):
+        bad.append(f"闭合失败：{c.get('formula')}")
+    if cc.get('agree') is False:
+        bad.append(f"与成绩单 dev TSR 不一致：{cc.get('scorecard_dev_tsr')} vs {cc.get('recomputed')}")
+    if (delta or 0) != 0 and n == 0:
+        bad.append(f'dev 变了 {delta} 但翻转列表为空（未定位）')
+    for f in (d.get('flips') or []):
+        if not f.get('fields'):
+            bad.append(f"{f.get('task_id')} 无字段级证据")
+        for x in (f.get('fields') or []):
+            if x.get('gold') is None and x.get('new_candidate') is None:
+                bad.append(f"{f.get('task_id')}:{x.get('field')} 三个值全空")
+    if bad:
+        return False, '；'.join(bad)
+    return True, (f"闭合 {c.get('formula')}；翻转 {n} 条（pass→fail "
+                  f"{(d.get('flip_counts') or {}).get('pass->fail')} / fail→pass "
+                  f"{(d.get('flip_counts') or {}).get('fail->pass')}），每条带 gold/候选证据")
+
+
+def w5d_leaderboard_ok(path):
+    """R56（第十一轮 §5.1）：跨模型榜单必须三列并排，且分母不等时不出 MSR Δ。
+
+    实证（本基准最难防的坑）：同一对模型，
+      - 任务级 TSR：92.0% > 88.0%（glm 领先）
+      - 字段级命中率：99.34% > 90.94%（glm 领先）
+      - 条件 MSR：90.9% < 95.2%（**deepseek 反而更高**，因为它的分母少 1 条失败题）
+    ⇒ 只引任何一列都能得出「某个模型更强」；三列并排才暴露口径冲突。
+    """
+    if not os.path.exists(path):
+        return False, '缺 w5d_leaderboard 产物（R56）'
+    try:
+        d = json.load(open(path, encoding='utf-8'))
+    except Exception as e:
+        return False, f'w5d_leaderboard 读不动：{e}'
+    bad = []
+    if not str(d.get('schema') or '').startswith('w5d_leaderboard'):
+        bad.append(f"schema={d.get('schema')}")
+    models = d.get('models') or {}
+    if len(models) < 2:
+        bad.append(f'榜单只有 {len(models)} 个模型')
+    for k, m in models.items():
+        ex = m.get('exam') or {}
+        va = m.get('value_added') or {}
+        fu = m.get('full') or {}
+        if (ex.get('tsr') or {}).get('pct') is None:
+            bad.append(f'{k} 缺任务级 TSR')
+        if (va.get('field_llm_hit_rate') is None) or (va.get('field_verdict') is None):
+            bad.append(f'{k} 缺字段级命中率/判决')
+        if fu.get('failure_class_counts') is None:
+            bad.append(f'{k} 缺失败分层')
+    pair = d.get('pair') or {}
+    if pair:
+        da = ((models.get(pair.get('a')) or {}).get('exam') or {}).get('msr') or {}
+        db = ((models.get(pair.get('b')) or {}).get('exam') or {}).get('msr') or {}
+        same = (da.get('den') is not None and da.get('den') == db.get('den'))
+        if bool(pair.get('msr_delta_allowed')) != same:
+            bad.append(f"msr_delta_allowed={pair.get('msr_delta_allowed')} 与分母是否相等（{da.get('den')} vs "
+                       f"{db.get('den')}）不一致 —— 该字段必须由分母算，不得手填（R54）")
+        if not same and pair.get('msr_delta_pp') is not None:
+            bad.append(f"分母不等却给出了 MSR Δ={pair.get('msr_delta_pp')}")
+    st = d.get('statements') or {}
+    if not (st.get('allowed') and st.get('forbidden')):
+        bad.append('缺「能说 / 不能说」清单')
+    # md 端：分母不等时必须写明不可相减，且 MSR 行不得出现 Δ
+    mdp = path[:-5] + '.md'
+    if not os.path.exists(mdp):
+        bad.append('缺 md')
+    else:
+        mt = _txt(mdp)
+        if pair and not pair.get('msr_delta_allowed') and '不可相减' not in mt:
+            bad.append('md 未写明「不可相减」')
+        for line in mt.split('\n'):
+            if '条件 MSR' in line and 'Δ' in line and '不可相减' not in line:
+                bad.append('md 的 MSR 行出现了 Δ（分母不等时禁止）')
+                break
+        # 有失败就有 FPR，限制段必须提到它（防止只报好看的指标）
+        if any(((m.get('fpr') or {}).get('fabrication_rate_pct') or 0) > 0 for m in models.values()):
+            if 'FPR' not in mt.split('## 7.')[-1]:
+                bad.append('有限制项 FPR>0 但「限制」段未提 FPR')
+    if bad:
+        return False, '；'.join(bad)
+    return True, (f"三列齐（任务级/字段级/失败分层）×{len(models)} 模型；"
+                  f"MSR 可减={pair.get('msr_delta_allowed')}（分母 "
+                  f"{(models.get(pair.get('a')) or {}).get('exam', {}).get('msr', {}).get('den')} vs "
+                  f"{(models.get(pair.get('b')) or {}).get('exam', {}).get('msr', {}).get('den')}）；"
+                  f"能说 {len(st.get('allowed') or [])} 条 / 不能说 {len(st.get('forbidden') or [])} 条")
+
+
 def prompt_no_blind_default(path, label='gen_candidates_v2.js'):
     """R50（专家第十轮 §3.1）：SYS prompt **不得**对题面已提及的特征授权默认值，
     同时**不得**把 `expected_clarifications` 注入 prompt（那等于泄漏答案）。
@@ -838,6 +943,29 @@ def semantic_checks(root, rows):
     add('S-40', 'MSR 条件口径必须写进成绩单且排除项点名（R54）',
         'msr_section.msr_definition 非空；n_no_spec_excluded_ids 与实际排除数一致',
         '；'.join(_det40), _ok40)
+
+    # S-41（R55，第十一轮 §3.1/D4）：prompt 版本变更后，「exam 不变但 dev 变」的**反向变化
+    # 必须逐题定位**，且必须闭环。只报净额是不够的——C-032 的 dev −1 实际是 +1/−2，
+    # 三种解释（模型退步 / 题面修正被兑现 / 量级采样波动）对应三种处置，混在一起就没法判。
+    # 闸分三端：①产物存在且闭合；②每条翻转都带字段级 gold/候选证据；③CLAIMS 里点名了它。
+    _p41 = os.path.join(root, 'feagpt_repro', 'reports', 'diagnostics', 'dev_reversal_v6c_p2.json')
+    _ok41, _det41 = dev_reversal_closed(_p41)
+    _claims_txt = _txt(os.path.join(root, 'FEM-Bench-Aero', 'CLAIMS.md'))
+    if 'dev_reversal' not in _claims_txt:
+        _ok41 = False
+        _det41 += '；★ CLAIMS 未引用该产物（R55：定位结果必须写进 claim）'
+    add('S-41', 'prompt 变更后的 dev 反向变化必须逐题定位并联署（R55）',
+        'dev_reversal 产物闭合（旧通过 + fail→pass − pass→fail == 新通过）、每条翻转带字段级证据、CLAIMS 引用',
+        _det41, _ok41)
+
+    # S-42（R56，第十一轮 §5.1/W5d）：跨模型榜单必须**三列并排**（任务级 / 字段级 / 失败分层），
+    # 且 MSR 分母不等时不得出现 Δ。动机：本基准里三个口径会给出**相反排名**
+    # （TSR 92>88、字段级 PASS>BELOW、条件 MSR 90.9<95.2），只引一列就能得出任意结论。
+    _p42 = os.path.join(root, 'feagpt_repro', 'reports', 'w5d_leaderboard.json')
+    _ok42, _det42 = w5d_leaderboard_ok(_p42)
+    add('S-42', '跨模型榜单三列并排且分母不等不出 MSR Δ（R56）',
+        '榜单含任务级/字段级/失败分层三组；msr_delta_allowed 由分母算；分母不等时 msr_delta_pp 为空且 md 写明不可相减',
+        _det42, _ok42)
 
     return out
 

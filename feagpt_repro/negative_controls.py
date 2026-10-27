@@ -925,6 +925,66 @@ def main():
     print(f"  [{'ok ' if ok46 else 'BAD!'}] NC-46 MSR 条件口径缺声明被 S-40 拒绝                "
           f"expect=fwd T/mut F actual={det46}")
 
+    # NC-47（R55/R56 反向，第十一轮 §6）：
+    #   ①榜单缺字段级一列 ⇒ S-42 必须红（三列并排是硬要求）；
+    #   ②分母不等却把 msr_delta_allowed 填 True ⇒ S-42 必须红（该字段不得手填）；
+    #   ③dev 翻转未闭合（closure.ok=False）⇒ S-41 必须红；
+    #   ④dev 净额变了但翻转列表清空 ⇒ S-41 必须红（「没定位」不能被当成「没变化」）。
+    from check_claims import dev_reversal_closed, w5d_leaderboard_ok
+    ok47, det47 = False, 'no artifact'
+    _lb = os.path.join(HERE, 'reports', 'w5d_leaderboard.json')
+    _dr = os.path.join(HERE, 'reports', 'diagnostics', 'dev_reversal_v6c_p2.json')
+    if os.path.exists(_lb) and os.path.exists(_dr):
+        lb_real = json.load(open(_lb, encoding='utf-8'))
+        dr_real = json.load(open(_dr, encoding='utf-8'))
+        ok_f47a, _ = w5d_leaderboard_ok(_lb)
+        ok_f47c, _ = dev_reversal_closed(_dr)
+
+        m1 = json.loads(json.dumps(lb_real))
+        for _k in list((m1.get('models') or {})):
+            m1['models'][_k].pop('value_added', None)      # 砍掉字段级一列
+        ok_r47a, _ = w5d_leaderboard_ok(_lb) if False else (None, None)
+        # w5d_leaderboard_ok 读的是文件，变异体要落到临时文件
+        import tempfile
+        _td47 = tempfile.mkdtemp()
+        _p1 = os.path.join(_td47, 'lb_mut1.json')
+        json.dump(m1, open(_p1, 'w', encoding='utf-8'), ensure_ascii=False)
+        open(_p1[:-5] + '.md', 'w', encoding='utf-8').write('（变异体：无 md 正文）')
+        ok_r47a, _ = w5d_leaderboard_ok(_p1)
+
+        m2 = json.loads(json.dumps(lb_real))
+        if m2.get('pair'):
+            m2['pair']['msr_delta_allowed'] = True          # 分母不等却硬填可减
+            m2['pair']['msr_delta_pp'] = 4.3
+        _p2 = os.path.join(_td47, 'lb_mut2.json')
+        json.dump(m2, open(_p2, 'w', encoding='utf-8'), ensure_ascii=False)
+        open(_p2[:-5] + '.md', 'w', encoding='utf-8').write('（变异体）')
+        ok_r47b, _ = w5d_leaderboard_ok(_p2)
+
+        m3 = json.loads(json.dumps(dr_real))
+        m3['closure'] = dict(m3.get('closure') or {}, ok=False)
+        _p3 = os.path.join(_td47, 'dr_mut1.json')
+        json.dump(m3, open(_p3, 'w', encoding='utf-8'), ensure_ascii=False)
+        ok_r47c, _ = dev_reversal_closed(_p3)
+
+        m4 = json.loads(json.dumps(dr_real))
+        m4['flips'] = []
+        m4['dev_pass'] = dict(m4.get('dev_pass') or {}, delta=-1)
+        _p4 = os.path.join(_td47, 'dr_mut2.json')
+        json.dump(m4, open(_p4, 'w', encoding='utf-8'), ensure_ascii=False)
+        ok_r47d, _ = dev_reversal_closed(_p4)
+
+        ok47 = ok_f47a and ok_f47c and (not ok_r47a) and (not ok_r47b) and (not ok_r47c) and (not ok_r47d)
+        det47 = (f'正向={"过" if (ok_f47a and ok_f47c) else "红"} '
+                 f'缺字段级列={"红" if not ok_r47a else "漏判"} '
+                 f'MSR硬填可减={"红" if not ok_r47b else "漏判"} '
+                 f'dev不闭合={"红" if not ok_r47c else "漏判"} '
+                 f'翻转清空={"红" if not ok_r47d else "漏判"}')
+    results.append({'id': 'NC-47', 'desc': '榜单缺三列/分母不等却出Δ/dev未定位 必须被 R55/R56 拒绝',
+                    'expect': 'fwd=True / 四向变异=False', 'actual': det47, 'ok': ok47})
+    print(f"  [{'ok ' if ok47 else 'BAD!'}] NC-47 榜单三列/分母对齐/dev定位被 S-41/S-42 拒绝        "
+          f"expect=fwd T/mut F actual={det47}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。
     # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，
     # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
