@@ -41,7 +41,7 @@
 - **补覆盖点 ≫ 补同质样本**；**标准化系数不是幂指数**（指数 = `w / sd(log x_f)`）；**交互项必须用实测单轴响应相乘**。
 - **厚度维退化取决于载荷口径不是轴的属性**：载荷随 t 缩放则与膜刚度精确抵消；载荷固定则 `u∝1/t`。
 - **只打印不参与判定的检查不是检查**（`verify_dataset` pairing MISMATCH 而 `all_ok` 不含它 ⇒ 仍 PASS）。
-- **★ 没有任何工具读的文件 = 没有闸**：`check_claims.py` 从不读 `INDEX.md`（grep "INDEX" = 0 命中），所以 INDEX 里两个「当前 headline」逃过了 44 项语义检查。**新增/重要文档必须先被某个 gate 读，否则等于没校验。**
+- **★★ 没有任何工具读的文件 = 没有闸（已升级为红线 R58 + 闸 S-44）**：`check_claims` 新增 `index_consistency`，校验 `reports/INDEX.md` 的 headline 指向唯一（行内出现 headline 必须指向唯一 headline 或标 historical）与负控编号/总数同最新 `negative_controls_<N>.json` 对齐；反向 NC-49 四向。**R58 的边界**：只管**数据类** SOT（CLAIMS / RUBRIC / INDEX / 成绩单）；`AGENTS.md`/`CLAUDE.md` 是协议文本、由「§7 不要相信这张表」声明兜底——**不要用一个闸去校验它自己所属的规约**。：`check_claims.py` 从不读 `INDEX.md`（grep "INDEX" = 0 命中），所以 INDEX 里两个「当前 headline」逃过了 44 项语义检查。**新增/重要文档必须先被某个 gate 读，否则等于没校验。**
 - **★★ 「当前」二字只能写在一个地方**：同一文件里两处标「当前」必漂移（INDEX §1 = C-032、§2 ⓪ 段 = C-029）。规则：官方状态只写一处，其余一律写指针（「见 §1」）。
 - **★ 判据别用自然语言表述**：S-29 第一版按「正文含某词且不含否定词」判，把 C-029 自己过滤掉了；改结构化后 C-028 的 status 指针又冒充第二个 headline。⇒ 只认结构化字段 + 自指标记（`（对外 headline）`），并配反向负控。同坑第三次以「协议措辞」形式出现（R-A7 写「标注」⇒ 字面 grep 命中 6 条）。
 - **★ 新闸上线必须同时测「自比/A==B」用例**：R53 的可比性闸把 `comparability(x,x)` 也拒了（旧批次 `prompt_sha256` 未记录）⇒ NC-29/NC-35 当场转红。约束「A 与 B 不同」之前先想 A==B 该不该放行。
@@ -58,6 +58,8 @@
 - **★ 观测量也可能一直是空的**：成绩单顶层 `msr` 键曾恒为 null；「先 bootstrap 后 msr」会静默产出 null CI ⇒ **正确顺序 score → msr → bootstrap**，注释与实现不符要当 bug 记。
 - **★ solver 桶是「候选相关」的**，不是题目固有属性 ⇒ 「剔除 solver 后的分母/得分」同样不可跨版本直减。
 - **★ 成本判断也要实测**：「轮换 key ⇒ 重签 artifact ⇒ 代价高」错两处 —— endpoint 是硬编码常量、`provenance` 不记 key。**凭印象估的代价会挡住本来该做的事**（R46）。
+- **★ 负控里的变异锚点不得写死会变的常量**：NC-49 第一版把 `NC-23..48` 写进变异输入，本轮恰好把主区间改成 `..49` ⇒ 锚点缺失 ⇒ 当场报「漏判」。**变异输入必须从被测产物现取**（正则取主区间再减 1），且**锚点缺失要判红、不得 skip**（R29 同源）。
+- **★ 收口顺序：先负控、后 check_claims**；反序会让官方 JSON 记到过期 `mtime`（负控每次重写自己的 json，内容不变也重写）⇒ 官方 artifact 元数据抖动。pre-flight 一律 `--json "$TEMP/..."`（N-5 的 C+）。
 - **★ 门禁会弄脏工作区**：`check_claims.json` 记录 artifact 的 `mtime` ⇒ 每次 pre-flight 都产生一个 diff（sha256 不变）。按 C5 审 diff 时要认得这是预期噪声。
 - 其余：铺层平衡必须按有符号配对（`a>90°` 折回 `180−a`）；翼盒坐标 x 弦向 / y 法向（载荷 DOF 2）/ z 展向；`max_disp` 本身已是弯曲挠度；峰值是「离散选择」不是光滑泛函（31 条翼盒 `max_disp_node` 21 个不同节点）；报 MAPE 必须同报中位 + 最大 + bootstrap CI；共线模型要报条件数；`_wingbox_planar_shape` 返回 `(tip_chord_ratio, sweep_deg)`，解包反了全案判成锥度 0。
 
