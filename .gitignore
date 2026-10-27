@@ -60,3 +60,8 @@ feagpt_repro/package-lock.json
 .env
 .env.*
 !.env.example
+
+# v1.1 内插留出的流水线中间产物（可由 run_pipeline 复现，数据集本体在 modeling/，也不入库）
+feagpt_repro/_v11/runs/
+feagpt_repro/_v11/runs_abaqus/
+feagpt_repro/_v11/recheck/
