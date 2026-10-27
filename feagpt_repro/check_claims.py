@@ -485,6 +485,116 @@ def prompt_ablation_consistent(ablation_path, gen_path, baseline_sha, label=''):
     return True, f'{label} 否决态：当前 sha == 基线 {str(cur)[:12]}…（未采用未采纳的变体）'
 
 
+_HIST_MARKERS = ('historical', '历史', '上一代', 'superseded', '不是当前', '非当前')
+
+
+def _latest_nc_json(root):
+    """最新的 `negative_controls_<N>.json`（取数字最大者；`reports/archive/` 不参与）。"""
+    d = os.path.join(root, 'feagpt_repro', 'reports')
+    best, best_n = None, -1
+    for p in glob.glob(os.path.join(d, 'negative_controls_*.json')):
+        m = re.search(r'negative_controls_(\d+)\.json$', p)
+        if m and int(m.group(1)) > best_n:
+            best, best_n = p, int(m.group(1))
+    return best
+
+
+def index_consistency(index_path, nc_json_path, headline_claim):
+    """R58（T-A3，来自 N-1/N-2）：**`reports/INDEX.md` 必须被 gate 读**。
+
+    动机（根因）：S-00..S-43 共 44 项语义检查**没有一条**读 INDEX.md
+    （`grep -n INDEX check_claims.py` = 0 命中），于是 §2 的「⓪ 当前官方 headline（C-029）」
+    能与 §1 的（C-032）长期并存——而 INDEX 正是 `AGENTS.md` §0 第 3 行要求 agent 去查
+    「当前成绩单路径」的文件。后果不是报错，而是**静默重跑错代基线**（两代 exam 同为 23/25）。
+    ⇒ **没有任何工具读的官方文档 = 没有闸**。
+
+    两条判据都**只认结构化记号**，不按自然语言判读（S-29 第一版就栽在自然语言判据上）：
+      (a) headline 指向唯一：含「官方/当前 headline」且含 claim id 的行，其 id 必须 ⊆
+          `{headline_claim}`；**除非**该行带显式历史标记（historical/历史/上一代/superseded/不是当前）。
+          不含 claim id 的行不判（如「当前 headline 见 §1」这类纯指针）。
+      (b) 负控编号与 artifact 对齐：负控行的 `NC-x..y` 必须与最新 `negative_controls_<N>.json`
+          实读一致——上界 == 最大 NC 号、区间内无缺号、`= N/N` 的分母 == 实读条数、分子 == 分母。
+    """
+    if not headline_claim:
+        return False, 'headline claim 不是恰好 1 条（S-29 会先报），S-44 无从比对'
+    if not os.path.exists(index_path):
+        return False, f'INDEX 不存在（{index_path}）——R58：官方导航文件缺失比写错更危险'
+    lines = open(index_path, encoding='utf-8').read().split('\n')
+    det, ok = [], True
+
+    # ---- (a) headline 指向 ----
+    # ★ 判据要点：**行内出现 headline id ⇒ 放行**（headline 行正文引用别家 claim 是正常的，
+    #   例如 §1 那行写「与 C-029 逐字节相同」）。危险的是**出现「当前/官方 headline」却指向
+    #   非 headline 的那条**（N-1 的原始形态），此时必须有显式历史标记。
+    n_head, n_hist, bad = 0, 0, []
+    for i, ln in enumerate(lines, 1):
+        if '官方 headline' not in ln and '当前 headline' not in ln:
+            continue
+        ids = set(re.findall(r'C-\d{3}', ln))
+        if not ids:
+            continue                      # 纯指针行不参与判定
+        if headline_claim in ids:
+            n_head += 1
+            continue
+        if any(mk in ln for mk in _HIST_MARKERS):
+            n_hist += 1
+            continue
+        n_head += 1
+        bad.append(f'L{i} 出现「当前/官方 headline」但只指向 {",".join(sorted(ids))}，且未标历史')
+    if n_head == 0:
+        ok = False
+        det.append('(a) ★ 一条「headline + claim id」的行都没有 ⇒ 无法验证指向（不得静默放行）')
+    else:
+        ok = ok and not bad
+        det.append(f'(a) headline 命中 {n_head} 条、显式历史 {n_hist} 条、越权 {len(bad)} 条'
+                   + ('' if not bad else '：' + '；'.join(bad)))
+
+    # ---- (b) 负控编号 ----
+    if not nc_json_path or not os.path.exists(nc_json_path):
+        ok = False
+        det.append('(b) 找不到最新 negative_controls_*.json')
+    else:
+        nc = json.load(open(nc_json_path, encoding='utf-8'))
+        ids = [str(r.get('id') or '') for r in (nc.get('results') or [])]
+        nums = sorted(int(m.group(1)) for m in
+                      (re.match(r'^NC-(\d+)$', s) for s in ids) if m)
+        total, mx = len(ids), (max(nums) if nums else None)
+        hit = None
+        for i, ln in enumerate(lines, 1):
+            if 'negative_controls_' in ln and re.search(r'NC-\d+\.\.\d+', ln):
+                hit = (i, ln)
+                break
+        if not hit:
+            ok = False
+            det.append('(b) 找不到负控行（需同时含 `negative_controls_` 与 `NC-x..y`）')
+        else:
+            i, ln = hit
+            # ★ 该行会列出多个区间（NC-1..22 / NC-23..48 / NC-43..46…）⇒ 取**上界最大的那个**
+            #   才是「主区间」。取第一个（NC-1..22）或最后一个（NC-43..46）都会误判。
+            rs = [(int(a), int(b)) for a, b in re.findall(r'NC-(\d+)\.\.(\d+)', ln)]
+            lo, hi = max(rs, key=lambda t: t[1]) if rs else (None, None)
+            tms = re.findall(r'=\s*\**\s*(\d+)/(\d+)', ln)
+            probs = []
+            if not tms:
+                probs.append('行内没有 `= N/N`')
+            else:
+                a, b = int(tms[-1][0]), int(tms[-1][1])
+                if a != b:
+                    probs.append(f'分子 {a} ≠ 分母 {b}')
+                if b != total:
+                    probs.append(f'总数 {b} ≠ artifact {total} 条')
+            if mx is not None and hi != mx:
+                probs.append(f'主区间上界 NC-{hi} ≠ artifact 最大 NC-{mx}')
+            miss = [n for n in range(lo or 0, (hi or 0) + 1) if n not in set(nums)]
+            if miss:
+                probs.append('主区间内缺号 ' + ','.join('NC-%d' % n for n in miss))
+            ok = ok and not probs
+            det.append(f'(b) L{i} 主区间 NC-{lo}..{hi} / 总数 {tms[-1][1] if tms else "?"}；'
+                       f'artifact 最大 NC-{mx}、共 {total} 条'
+                       + ('' if not probs else ' ⇒ ' + '；'.join(probs)))
+    return ok, '；'.join(det)
+
+
 def prompt_no_blind_default(path, label='gen_candidates_v2.js'):
     """R50（专家第十轮 §3.1）：SYS prompt **不得**对题面已提及的特征授权默认值，
     同时**不得**把 `expected_clarifications` 注入 prompt（那等于泄漏答案）。
@@ -1017,6 +1127,21 @@ def semantic_checks(root, rows):
     add('S-43', 'prompt 消融结论必须与当前 prompt sha 一致（R57）',
         '消融产物有 decision.adopt 与变体清单；否决 ⇒ 当前 sha == C-032 基线；采纳 ⇒ 当前 sha ≠ 基线',
         _det43, _ok43)
+
+    # S-44（R58，T-A3；来自复核 N-1/N-2）：**官方导航文件必须被 gate 读**。
+    # 根因：44 项语义检查没有一条读 `reports/INDEX.md`，于是「⓪ 当前官方 headline（C-029）」
+    # 与 §1 的（C-032）长期并存，而 INDEX 正是 AGENTS §0 要求 agent 查「当前成绩单路径」的文件。
+    _head44 = sorted({cid for cid, r in by.items()
+                      if '（对外 headline）' in (r.get('status') or '')
+                      or '(对外 headline)' in (r.get('status') or '')})
+    _ok44, _det44 = index_consistency(
+        os.path.join(root, 'feagpt_repro', 'reports', 'INDEX.md'),
+        _latest_nc_json(root),
+        _head44[0] if len(_head44) == 1 else None)
+    add('S-44', '官方导航文件 INDEX 的 headline 指向与负控编号必须与 artifact 一致（R58）',
+        '含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；'
+        '负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致',
+        _det44, _ok44)
 
     return out
 

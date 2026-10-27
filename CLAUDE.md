@@ -4,7 +4,7 @@
 
 最小要求：
 
-1. 先跑 `python check_claims.py --json "$TEMP/check_claims_preflight.json"` + `python negative_controls.py`；非全绿（当前 check_claims 27/49/44、负控 50/50）不开始。**官方 `reports/check_claims.json` 只在收口时写一次，且先负控后 check_claims**——否则 pre-flight 自身就会把工作区弄脏（记录的是 artifact `mtime`）。
+1. 先跑 `python check_claims.py --json "$TEMP/check_claims_preflight.json"` + `python negative_controls.py`；非全绿（当前 check_claims 27/49/45、负控 51/51）不开始。**官方 `reports/check_claims.json` 只在收口时写一次，且先负控后 check_claims**——否则 pre-flight 自身就会把工作区弄脏（记录的是 artifact `mtime`）。
 2. 先填 `AGENTS.md` §3 的 `TASK_CONTRACT`；一个任务只改一个变量。
 3. 官方数字必须有 `feagpt_repro/reports/` 的 artifact + 命令；禁止引用 `eval_runs/`。
 4. 分母必须显式闭合；不同 paper/prompt/model/分母不得直接相减。

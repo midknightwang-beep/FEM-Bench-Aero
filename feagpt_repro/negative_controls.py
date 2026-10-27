@@ -1017,6 +1017,58 @@ def main():
     print(f"  [{'ok ' if ok48 else 'BAD!'}] NC-48 消融结论与 prompt 不一致被 S-43 拒绝              "
           f"expect=fwd T/mut F actual={det48}")
 
+    # NC-49（R58，T-A3；来自复核 N-1/N-2）：**「官方导航文件没被任何闸读」这件事必须被守住**。
+    #   根因：S-00..S-43 共 44 项语义检查没有一条读 `reports/INDEX.md`（grep = 0 命中），
+    #   于是 §2 的「⓪ 当前官方 headline（C-029）」与 §1 的（C-032）长期并存；agent 照 INDEX
+    #   重跑 v1 代基线不会报错（两代 exam 同为 23/25，数字看着完全正常）。
+    #   四向：①⓪ 段改回「当前官方 headline（C-029）」⇒ 红；②`NC-23..48` 改回 `..47` ⇒ 红；
+    #         ③去掉 ⓪-hist 的历史标记（只留 C-029）⇒ 红；正向（真 INDEX）⇒ 绿。
+    from check_claims import index_consistency, _latest_nc_json
+    ok49, det49 = False, 'no artifact'
+    _idx49 = os.path.join(HERE, 'reports', 'INDEX.md')
+    _nc49 = _latest_nc_json(os.path.dirname(HERE))
+    if os.path.exists(_idx49) and _nc49:
+        _src49 = open(_idx49, encoding='utf-8').read()
+        import tempfile as _tf49
+        _td49 = _tf49.mkdtemp()
+
+        def _mut49(tag, a, b):
+            # 锚点缺失 ⇒ 返回 None ⇒ ok49 判红（**不得静默 skip**：R29 的教训）
+            if a not in _src49:
+                return None
+            p = os.path.join(_td49, 'idx_%s.md' % tag)
+            open(p, 'w', encoding='utf-8').write(_src49.replace(a, b, 1))
+            return p
+
+        ok_f49, _ = index_consistency(_idx49, _nc49, 'C-032')
+        p_a = _mut49('n1', '# ⓪ 前置闸（考卷 v6c 通用，**与 headline 无关**）——先跑这三条就够',
+                     '# ⓪ 当前官方 headline（C-029，考卷 v6c × 候选 v6c）——先跑这三条就够')
+        # ★ 变异 2 **不能写死数字**：负控每加一条，主区间上界就变（NC-23..48 → ..49），
+        #   写死会立刻变成「锚点缺失 ⇒ 漏判」（本轮就是这样翻过一次车）。
+        #   改为从当前 INDEX 现取主区间（上界最大者）再减 1。
+        import re as _re49
+        _ln49 = next((l for l in _src49.split('\n')
+                      if 'negative_controls_' in l and _re49.search(r'NC-\d+\.\.\d+', l)), '')
+        _rs49 = [(m.group(0), int(m.group(1)), int(m.group(2)))
+                 for m in _re49.finditer(r'NC-(\d+)\.\.(\d+)', _ln49)]
+        _main49 = max(_rs49, key=lambda t: t[2]) if _rs49 else None
+        p_b = (_mut49('n2', _main49[0], 'NC-%d..%d' % (_main49[1], _main49[2] - 1))
+               if _main49 else None)
+        p_c = _mut49('n3', '# ⓪-hist（**historical，不是当前 headline**）：C-029',
+                     '# ⓪-hist（当前 headline）：C-029')
+        ok_a = index_consistency(p_a, _nc49, 'C-032')[0] if p_a else None
+        ok_b = index_consistency(p_b, _nc49, 'C-032')[0] if p_b else None
+        ok_c = index_consistency(p_c, _nc49, 'C-032')[0] if p_c else None
+        ok49 = bool(ok_f49) and (ok_a is False) and (ok_b is False) and (ok_c is False)
+        det49 = (f'正向={"过" if ok_f49 else "红"} N-1回退={"红" if ok_a is False else "漏判"} '
+                 f'N-2回退={"红" if ok_b is False else "漏判"} '
+                 f'去历史标记={"红" if ok_c is False else "漏判"}')
+    results.append({'id': 'NC-49', 'desc': 'INDEX 的 headline 指向/负控编号漂移必须被 R58/S-44 拒绝',
+                    'expect': 'fwd=True / 三向变异=False',
+                    'actual': det49, 'ok': ok49})
+    print(f"  [{'ok ' if ok49 else 'BAD!'}] NC-49 INDEX 漂移必须被 S-44 拒绝                        "
+          f"expect=fwd T/mut F actual={det49}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。
     # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，
     # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。

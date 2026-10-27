@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_50.json）",
-   "expect": "50/50",
-   "actual": "50/50",
+   "desc": "C-019 负控通过数（源 negative_controls_51.json）",
+   "expect": "51/51",
+   "actual": "51/51",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "50",
-   "actual": "50",
+   "expect": "51",
+   "actual": "51",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 5.1",
-   "actual": "5.1",
+   "expect": "全部 = 5.2",
+   "actual": "5.2",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "50/50",
-   "actual": "50/50",
+   "expect": "51/51",
+   "actual": "51/51",
    "ok": true,
    "skip": false
   },
@@ -361,6 +361,14 @@
    "actual": "C-035 否决态：当前 sha == 基线 ce225186cafa…（未采用未采纳的变体）",
    "ok": true,
    "skip": false
+  },
+  {
+   "id": "S-44",
+   "desc": "官方导航文件 INDEX 的 headline 指向与负控编号必须与 artifact 一致（R58）",
+   "expect": "含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致",
+   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L24 主区间 NC-23..49 / 总数 51；artifact 最大 NC-49、共 51 条",
+   "ok": true,
+   "skip": false
   }
  ],
  "results": [
@@ -564,9 +572,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 36225,
-   "sha256": "2f52bc9f32e9b2d9dbe82fc02b427058d4132ac137512dc3a5d87e25ba432321",
-   "mtime": 1793109826
+   "size": 36350,
+   "sha256": "6f94b777a143aa356f5fb35add2903433e3cd17d42c088ce3f83219849b9508a",
+   "mtime": 1793110254
   },
   {
    "claim_id": "C-027",
@@ -942,15 +950,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_50.json",
+   "artifact": "feagpt_repro/reports/negative_controls_51.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 10027,
-   "sha256": "7ffdf07cc728ae65f25bec2c97027e102d68c1d2dd5a20d5d20b7a0f730c53f9",
-   "mtime": 1793109930
+   "size": 10292,
+   "sha256": "5c74829bdf87cc1ce9642b86b9da2858af683fb90ca777a7d212a412177a9d45",
+   "mtime": 1793110682
   }
  ]
 }

@@ -11,15 +11,15 @@
 | # | 文件 | 你要从中确认什么 |
 |---|---|---|
 | 1 | `FEM-Bench-Aero/CLAIMS.md` | 当前唯一 **headline** 是哪条 claim；哪些是 supporting / historical / diagnostic |
-| 2 | `FEM-Bench-Aero/RUBRIC.md` | 当前 rubric 版本；**R42–R57 红线判定表** + 分母/判分口径（**R1–R41 不在此文件**，见 `CLAIMS.md` 的「红线条（R1–R57，挂账常设）」） |
+| 2 | `FEM-Bench-Aero/RUBRIC.md` | 当前 rubric 版本；**R42–R58 红线判定表** + 分母/判分口径（**R1–R41 不在此文件**，见 `CLAIMS.md` 的「红线条（R1–R58，挂账常设）」） |
 | 3 | `feagpt_repro/reports/INDEX.md` | 官方 artifact vs 诊断；当前成绩单路径；当前考卷 sha |
 | 4 | 当前成绩单（INDEX 指向的那份 `reports/baseline_scorecard_*.json`） | `model` / `prompt_sha` / `tasks_sha256` / 分母构成 / headline 数字 |
 | 5 | 当前考卷 + prompt | `reports/papers/tasks_v6c.jsonl` 的 sha；`gen_candidates_v2.js` 的 prompt sha |
 
 ```bash
 cd "F:/AI FEA Modeling DataSets/feagpt_repro"
-python check_claims.py --json "$TEMP/check_claims_preflight.json"   # 必须 all_ok=True；当前 27 claims / 49 artifacts / 44 semantic
-python negative_controls.py     # 必须全绿；当前 50/50
+python check_claims.py --json "$TEMP/check_claims_preflight.json"   # 必须 all_ok=True；当前 27 claims / 49 artifacts / 45 semantic
+python negative_controls.py     # 必须全绿；当前 51/51
 git status --short              # 先看清工作区；有别人未提交的改动时不要覆盖
 ```
 
@@ -91,9 +91,9 @@ git status --short              # 先看清工作区；有别人未提交的改�
 
 ### R-A9　负控先绿，且要报总数 + 编号
 - 任何基线/重打分前：`check_claims.py` + `negative_controls.py` 必须全绿。
-- 报告必须写“总数 + 编号集合”（当前 50/50，NC-1..22 + NC-15b + NC-23..48），只写“全绿”不算。
+- 报告必须写“总数 + 编号集合”（当前 51/51，NC-1..22 + NC-15b + NC-23..49），只写“全绿”不算。
 - 缺一条负控 = 失败，不是 skip；不得为了跑通而弱化/跳过负控。
-- 负控文件版本化（`negative_controls_50.json`）；旧版本归档 `reports/archive/`，不得混用。
+- 负控文件版本化（`negative_controls_51.json`）；旧版本归档 `reports/archive/`，不得混用。
 
 ### R-A10　范围锁
 - 只改 `TASK_CONTRACT` 的 allowlist 内文件；**默认不改** paper / rubric / prompt / headline / 其他模型 / 其他报告。
@@ -251,8 +251,8 @@ git status --short              # 先看清工作区；有别人未提交的改�
 | W5d 产物 | C-034 `reports/w5d_leaderboard.{json,md}`；C-035 prompt v3/v3b 消融否决、回退 v2 |
 | 当前 paper | `reports/papers/tasks_v6c.jsonl`，sha `9c1faa3a…` |
 | 当前 prompt | `gen_candidates_v2.js`，sha `ce225186…` |
-| 当前 rubric | v5.1（**R42–R57 判定表在 RUBRIC**；**R1–R41 在 `CLAIMS.md` 红线条**） |
-| 门禁 | 负控 **50/50**；`check_claims` **27/49/44** |
+| 当前 rubric | v5.2（**R42–R58 判定表在 RUBRIC**；**R1–R41 在 `CLAIMS.md` 红线条**） |
+| 门禁 | 负控 **51/51**；`check_claims` **27/49/45** |
 | 已知 P2 | C-032 dev 22/30 已由 W5d-0 定位（`reports/diagnostics/dev_reversal_v6c_p2.md`，+1/−2）；C-033 1 编造 + 1 问错（W5d-1 prompt v3/v3b 消融否决，回退 v2，C-035）；C-033 字段级 +5.0pp BELOW |
 | 下一步 | ① 9 条 v1.1 案例的 Abaqus 双码：deck 已备，在 WorkBuddy 外跑 `_v11/run_v11_abaqus.bat`；② 考卷 v7（数据集 64 条 ≠ 考卷 55 条任务） |
 
