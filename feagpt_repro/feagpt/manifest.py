@@ -1294,6 +1294,13 @@ def split_of(spec) -> tuple[str, str]:
     ``unassigned`` means the family has no declared regions -- a failure the
     checker reports, never a silent default.
     """
+    # v1.1（W5d：「真内插留出」）：用**显式声明**认领，先于族谓词。
+    # 为什么不让族谓词去猜参数组合：内插点的特征就是「每个轴都落在包络内」，
+    # 任何按数值写的谓词都会同时命中一堆既有 train 条（实测会把 D12 锁定的 11 条重新划分）。
+    # 声明式的好处是**只认领点了名的案例**：新增 spec 打 tag 才进 exam，删 tag 就回 train。
+    _tag = getattr(spec, 'extra', None) or {}
+    if isinstance(_tag, dict) and str(_tag.get('split_tag') or '') == 'v11_interior_holdout':
+        return "test", "v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）"
     regions = HOLDOUT_REGIONS.get(family_of(spec))
     if regions is None:
         return "unassigned", f"族 {family_of(spec)!r} 未声明留出区域 —— 需补声明"

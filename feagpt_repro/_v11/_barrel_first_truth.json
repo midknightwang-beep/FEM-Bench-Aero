@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "case_id": "fuselage_barrel_d2000_l1800_str8_frm3",
+  "structure_family": "fuselage_barrel",
+  "spec_sha256": "d9a60fd730d9ebeca4bdda19cada01bd26812080a658deccc16dc883144efbd9",
+  "topology": {
+    "design": {
+      "family": "fuselage_barrel",
+      "diameter": 2000.0,
+      "length": 1800.0,
+      "thickness": 3.0,
+      "n_stringers": 8,
+      "n_faces_per_stringer_section": 1,
+      "stringer_section": "blade",
+      "stringer_flange_width": 30.0,
+      "stringer_angles": [
+        0.0,
+        0.785398163,
+        1.570796327,
+        2.35619449,
+        3.141592654,
+        3.926990817,
+        4.71238898,
+        5.497787144
+      ],
+      "n_frames": 3,
+      "frame_z": [
+        0.0,
+        900.0,
+        1800.0
+      ]
+    },
+    "geometry": {
+      "n_surfaces": 56,
+      "n_skin_faces": 16,
+      "n_stringer_faces": 16,
+      "n_frame_faces": 24,
+      "n_frame_z_planes": 3,
+      "frame_z_planes": [
+        -0.0,
+        900.0,
+        1800.0
+      ],
+      "stringer_angles": [
+        0.0,
+        0.785398163,
+        1.570796327,
+        2.35619449,
+        3.141592654,
+        3.926990817,
+        4.71238898,
+        5.497787144
+      ]
+    },
+    "expected_geometry": {
+      "n_skin_faces": 16,
+      "n_stringer_faces": 16,
+      "n_frame_faces": 24,
+      "n_frame_z_planes": 3,
+      "stringer_angles": [
+        0.0,
+        0.785398163,
+        1.570796327,
+        2.35619449,
+        3.141592654,
+        3.926990817,
+        4.71238898,
+        5.497787144
+      ],
+      "n_surfaces": 56
+    }
+  },
+  "scalars": {
+    "n_nodes": 143702,
+    "results": [
+      "DISP",
+      "ERROR",
+      "FORC",
+      "STRESS",
+      "STRESS_PEAK",
+      "TOSTRAIN"
+    ],
+    "max_disp": 2.609165973783577,
+    "max_disp_node": 6399,
+    "max_disp_coord": [
+      -941.814,
+      232.136,
+      1800.0
+    ],
+    "max_w": 2.184005,
+    "max_von_mises_midsurface": 115.38070875608051,
+    "max_vm_midsurface_location": 10703,
+    "max_von_mises": 248.16165094419168,
+    "max_vm_location": 63,
+    "max_vm_element": 63,
+    "max_von_mises_peak": 248.16165094419168,
+    "max_vm_peak_location": 63,
+    "max_von_mises_definition": "outer fibre",
+    "solver_meta": {}
+  },
+  "solver": "ccx",
+  "semantic_gate": {
+    "pass": true,
+    "checks": [
+      {
+        "key": "n_skin_faces",
+        "expected": 16,
+        "actual": 16,
+        "pass": true
+      },
+      {
+        "key": "n_stringer_faces",
+        "expected": 16,
+        "actual": 16,
+        "pass": true
+      },
+      {
+        "key": "n_frame_faces",
+        "expected": 24,
+        "actual": 24,
+        "pass": true
+      },
+      {
+        "key": "n_frame_z_planes",
+        "expected": 3,
+        "actual": 3,
+        "pass": true
+      },
+      {
+        "key": "stringer_angles",
+        "expected": [
+          0.0,
+          0.785398163,
+          1.570796327,
+          2.35619449,
+          3.141592654,
+          3.926990817,
+          4.71238898,
+          5.497787144
+        ],
+        "actual": [
+          0.0,
+          0.785398163,
+          1.570796327,
+          2.35619449,
+          3.141592654,
+          3.926990817,
+          4.71238898,
+          5.497787144
+        ],
+        "pass": true
+      },
+      {
+        "key": "n_surfaces",
+        "expected": 56,
+        "actual": 56,
+        "pass": true
+      }
+    ]
+  }
+}

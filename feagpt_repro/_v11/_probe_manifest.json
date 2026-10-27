@@ -1,0 +1,2834 @@
+{
+  "schema_version": 1,
+  "generator": "make_manifest.py (feagpt_repro)",
+  "release_tree": "modeling",
+  "regenerate": "cd feagpt_repro && python make_manifest.py --root ../FEM-Bench-Aero --json ../FEM-Bench-Aero/manifest.json --md ../FEM-Bench-Aero/MANIFEST.md",
+  "split_rule": {
+    "unit": "geometry equivalence class (feagpt.manifest.geometry_class)",
+    "assignment": "declared holdout regions -- feagpt/manifest.py :: HOLDOUT_REGIONS (first match wins; no match => train; undeclared family => unassigned)",
+    "target_ratios": {
+      "train": 0.6,
+      "val": 0.2,
+      "test": 0.2
+    },
+    "constraints": [
+      "same equivalence class => same split (no leakage)",
+      "every family must have at least one test case",
+      "every case must have an explicit split (unassigned fails the check)",
+      "the rule must keep reproducing the D12-locked 口径 A on the eleven cases (manifest.py :: D12_LOCKED_SPLIT)"
+    ]
+  },
+  "summary": {
+    "n_cases": 64,
+    "n_geometry_classes": 63,
+    "splits": {
+      "train": 25,
+      "val": 17,
+      "test": 22
+    },
+    "by_family": {
+      "fuselage_barrel": {
+        "train": 1,
+        "val": 3,
+        "test": 3
+      },
+      "wingbox": {
+        "train": 21,
+        "val": 7,
+        "test": 11
+      },
+      "open_hole_panel": {
+        "train": 2,
+        "val": 5,
+        "test": 6
+      },
+      "stiffened_panel": {
+        "train": 1,
+        "val": 2,
+        "test": 2
+      }
+    },
+    "roles": {
+      "ablation": 1,
+      "baseline": 3,
+      "degenerate": 2,
+      "feature": 10,
+      "sweep": 48
+    },
+    "n_duplicate_models": 0,
+    "n_leaky_classes": 0,
+    "xval_cases_available": 55
+  },
+  "classes": {
+    "001950844b2c": [
+      "naca4412_wingbox_sweep40"
+    ],
+    "006310d062fa": [
+      "naca4412_wingbox_n_ribs7_chord800"
+    ],
+    "0218d6b27388": [
+      "naca4412_wingbox_taper090"
+    ],
+    "02769a56df7c": [
+      "naca4412_wingbox_web1_offcentre"
+    ],
+    "08adca20a4a7": [
+      "naca4412_wingbox_size_span2400_skin2"
+    ],
+    "104c69f98102": [
+      "open_hole_panel_400x200_d40_offcentre"
+    ],
+    "1927d89dcb96": [
+      "naca4412_wingbox_n_ribs3_chord800"
+    ],
+    "19ca7eaff9ca": [
+      "naca4412_wingbox_sweep30"
+    ],
+    "1a539873e505": [
+      "open_hole_panel_400x200_d20_cfrpqi"
+    ],
+    "226322eab812": [
+      "naca4412_wingbox_size_skin4"
+    ],
+    "2db453f8909f": [
+      "open_hole_panel_600x300_d30"
+    ],
+    "32e9f572f8f8": [
+      "open_hole_panel_400x200_d50"
+    ],
+    "37f4725e4b48": [
+      "naca4412_wingbox_str3_T"
+    ],
+    "411d36dac99c": [
+      "naca4412_wingbox_taper080"
+    ],
+    "4227a5994f3e": [
+      "naca4412_wingbox_size_skin1p5"
+    ],
+    "46a6d2f85680": [
+      "fuselage_barrel_d1800_l1800_str8_frm3"
+    ],
+    "47f64aa48908": [
+      "naca4412_wingbox_sweep20"
+    ],
+    "4aae9b75897e": [
+      "naca4412_wingbox_web1"
+    ],
+    "4afd1ea3fd9f": [
+      "naca4412_wingbox",
+      "naca4412_wingbox_recombination_algorithm3"
+    ],
+    "4cf4571c551d": [
+      "naca4412_wingbox_n_ribs3_chord1000"
+    ],
+    "5237ded5b370": [
+      "naca4412_wingbox_str4"
+    ],
+    "589369d32c00": [
+      "fuselage_barrel_d2000_l2000_str8_frm3"
+    ],
+    "58fefd5842da": [
+      "naca4412_wingbox_size_span3000_skin1p5"
+    ],
+    "6085570a4247": [
+      "naca4412_wingbox_n_ribs9_chord1000"
+    ],
+    "60981a5c499f": [
+      "naca4412_wingbox_web2"
+    ],
+    "621898f41a1d": [
+      "naca4412_wingbox_size_skin2"
+    ],
+    "634a9fb4d54d": [
+      "open_hole_panel_600x300_d60"
+    ],
+    "652d537e3d91": [
+      "stiffened_panel_800x600"
+    ],
+    "68f73f8a4e9f": [
+      "open_hole_panel_400x200_d40"
+    ],
+    "791f1043b549": [
+      "naca4412_wingbox_n_ribs5_chord800"
+    ],
+    "7af923795681": [
+      "naca4412_wingbox_str3"
+    ],
+    "7ba2e12216c0": [
+      "stiffened_panel_600x600"
+    ],
+    "808b798ff918": [
+      "naca4412_wingbox_sweep40_taper040"
+    ],
+    "838838dd03a6": [
+      "naca4412_wingbox_sweep20_taper060"
+    ],
+    "86cf8d83cb48": [
+      "naca4412_wingbox_taper060"
+    ],
+    "870130300769": [
+      "naca4412_wingbox_str5"
+    ],
+    "8d80c9bb926f": [
+      "open_hole_panel_400x200_d20"
+    ],
+    "950289bb0db0": [
+      "naca4412_wingbox_size_span1600"
+    ],
+    "9c77e2678013": [
+      "fuselage_barrel_d2000_l2000_t2_str8_frm3"
+    ],
+    "a22486acc1da": [
+      "open_hole_panel_400x200_d20_cfrp45s_d40"
+    ],
+    "a29aa8f4ac6e": [
+      "naca4412_wingbox_size_span2400"
+    ],
+    "a4a89bc00841": [
+      "open_hole_panel_400x200_d20_offcentre"
+    ],
+    "a912e177e794": [
+      "fuselage_barrel_d2000_l1600_str8_frm3"
+    ],
+    "a9604f56b898": [
+      "fuselage_barrel_d2000_l2000_str12_frm4"
+    ],
+    "aba008bb7986": [
+      "naca4412_wingbox_size_span3000"
+    ],
+    "aec9b4e5b6d7": [
+      "naca4412_wingbox_size_skin2p5"
+    ],
+    "b3016d214bb4": [
+      "naca4412_wingbox_n_ribs6_chord1000"
+    ],
+    "b8239f1030bc": [
+      "stiffened_panel_800x600_str3"
+    ],
+    "bb04f7124374": [
+      "open_hole_panel_400x200_d30"
+    ],
+    "bc4990b00bae": [
+      "stiffened_panel_600x600_str3"
+    ],
+    "ca16d7911ae7": [
+      "open_hole_panel_400x200_d20_cfrp090s"
+    ],
+    "cd44c1908a70": [
+      "naca4412_wingbox_size_chord900"
+    ],
+    "ce92e32b3897": [
+      "naca4412_wingbox_sweep35"
+    ],
+    "d3d62cf41985": [
+      "naca4412_wingbox_taper040"
+    ],
+    "d8e081a5f259": [
+      "naca4412_wingbox_sweep10"
+    ],
+    "db9dab06eff6": [
+      "naca4412_wingbox_n_ribs7_chord1000"
+    ],
+    "e16d67d69ad4": [
+      "open_hole_panel_500x250_d45"
+    ],
+    "e30e5c5db44d": [
+      "stiffened_panel_700x600_str4"
+    ],
+    "e38d85ccf6c1": [
+      "naca4412_wingbox_sweep30_taper080"
+    ],
+    "e8219d418f30": [
+      "open_hole_panel_400x200_d20_cfrp45s"
+    ],
+    "ec5bfe48af57": [
+      "naca4412_wingbox_taper070"
+    ],
+    "f8b43cc6abbb": [
+      "fuselage_barrel_d1600_l1600_str8_frm3"
+    ],
+    "f91e55e05c66": [
+      "fuselage_barrel_d1800_l2000_str8_frm3"
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "fuselage_barrel_d1600_l1600_str8_frm3",
+      "tree": "modeling",
+      "family": "fuselage_barrel",
+      "role": "sweep",
+      "geometry_class": "f8b43cc6abbb",
+      "split": "test",
+      "split_reason": "尺寸双维外推（直径 1600 ≠ 2000 且 长度 1600 ≠ 2000）",
+      "solver": "ccx",
+      "spec_sha256": "7e33c8127666c50e146c053fdcc9b2409267dce57a8755f11e39710b93aa951d",
+      "mesh_sha256": "5a7556360a57ad08410c80aef49b6e2d0512d138b865c96dad96ae49f575133c",
+      "model_sha256": "634493dc7ee2d437639b065831caac19889c0ee5cc7a4b81f00ee34f377f729a",
+      "files": {
+        "spec.json": "9f470f26c4943618544b6667e0e9c43ebee0b19733666c77d100ae9694f63a46",
+        "model.inp": "db2b2d734e2a63e5c17a9c3deed88ffcea23423802233cdaeba1b01233d9b9b9",
+        "model.step": "d59e2165e5008850d4c8463b9bffaf6e4de70cca581b0b005946d8d5c366875c",
+        "model.msh": "5a7556360a57ad08410c80aef49b6e2d0512d138b865c96dad96ae49f575133c",
+        "model.results.json": "9c6631f1aa931f2152755bfd56316539ea084ee12f5fa0f353f88cdae2679f95",
+        "truth.json": "a4f57d69884f296f72d6693d0c44081a1c8b0d97a5cfd8d8b58bcd89432459cc"
+      },
+      "readings": {
+        "n_nodes": 103715,
+        "max_disp": 3.006971613849265,
+        "max_von_mises": 343.6254904474861,
+        "max_von_mises_midsurface": 160.18084092281185,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.4636,
+        "n_elements": 103291,
+        "element_types": {
+          "quad4": 103291
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "fuselage_barrel_d1800_l1800_str8_frm3",
+      "tree": "modeling",
+      "family": "fuselage_barrel",
+      "role": "sweep",
+      "geometry_class": "46a6d2f85680",
+      "split": "test",
+      "split_reason": "v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）",
+      "solver": "ccx",
+      "spec_sha256": "03ed1a3c976de71cc569d00ca60f2e68c1ba23645055d985ecc1eb1967b10b13",
+      "mesh_sha256": "c169d732427a5f63d2cb4d73ad41feccb05225536e6c1b9c4262a664143a1c75",
+      "model_sha256": "447a3f281ef30ce2e5aeca542d56dae5483031b193214f72433dfac37df2a700",
+      "files": {
+        "spec.json": "595422eb57b06d128a94b7044c17f6627aedc84a3f7dee957773f29fdfd3070a",
+        "model.inp": "995b04ac2886c69951f0c70a7baeeb0eab94517fa12305fa946006299ca23d9f",
+        "model.step": "2fd93c6aa5114643334c23ab54f7c3490eaa0c1c4ef4f69c9ad1fe78046f4846",
+        "model.msh": "c169d732427a5f63d2cb4d73ad41feccb05225536e6c1b9c4262a664143a1c75",
+        "model.results.json": "232f5c8e669f31cdd1d157d8b02c7f784d4644f7f49f4e6613ac2fbf112f249b",
+        "truth.json": "b88be49d9a79786db0576ee53703abde91037a445a0310257a6057ee4468a2a8"
+      },
+      "readings": {
+        "n_nodes": 129785,
+        "max_disp": 2.800129800005216,
+        "max_von_mises": 285.9450315268965,
+        "max_von_mises_midsurface": 129.03477269007024,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5159,
+        "n_elements": 129297,
+        "element_types": {
+          "quad4": 129297
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "fuselage_barrel_d1800_l2000_str8_frm3",
+      "tree": "modeling",
+      "family": "fuselage_barrel",
+      "role": "sweep",
+      "geometry_class": "f91e55e05c66",
+      "split": "val",
+      "split_reason": "尺寸单维外推（直径 1800 ≠ 2000）",
+      "solver": "ccx",
+      "spec_sha256": "bb48a4b1e6b1e32c3d632e5575bf47f9ebe50034d0a8a092d5f584391289fee1",
+      "mesh_sha256": "3356658e2730ec5cc44954a763f69dbada6fa4af63ea4c8d284d92be17d88b3a",
+      "model_sha256": "4b0dff727673e2aff28b2a57f539c91e780e10d1c8ef9a2e7ee2e8e2c391c183",
+      "files": {
+        "spec.json": "160a5314cd3fccd850e8349e5f6e03336862be5cc832fcd1057aa1fb017c37af",
+        "model.inp": "2b23d7a378dd9ebd0156979ba9c2e99de11a1c494b6d0450f6107905c5d39566",
+        "model.step": "dca3cc6a45b971fff6a95444523b59098be53cdfd3b5313a548be2c392f8f652",
+        "model.msh": "3356658e2730ec5cc44954a763f69dbada6fa4af63ea4c8d284d92be17d88b3a",
+        "model.results.json": "cd4654d53e9960285615cf9b03af194d3b3bb06ef467716aed86a77aba1cd6f1",
+        "truth.json": "162fb3c79f2f8082b7f20312c9b8d8ded4d8d440b74f521aba40f38cfc1ef474"
+      },
+      "readings": {
+        "n_nodes": 143402,
+        "max_disp": 2.8015884244749887,
+        "max_von_mises": 286.7959532842231,
+        "max_von_mises_midsurface": 128.46466375416696,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5159,
+        "n_elements": 142914,
+        "element_types": {
+          "quad4": 142914
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "fuselage_barrel_d2000_l1600_str8_frm3",
+      "tree": "modeling",
+      "family": "fuselage_barrel",
+      "role": "sweep",
+      "geometry_class": "a912e177e794",
+      "split": "val",
+      "split_reason": "尺寸单维外推（长度 1600 ≠ 2000）",
+      "solver": "ccx",
+      "spec_sha256": "c3132397399185adbc0a64efcb291867715ef6e568e7f5325ea9adee58ed5f12",
+      "mesh_sha256": "eecd5573ff8585bf951990e93747c6ef1255774267afa7b191af46a8e32e0837",
+      "model_sha256": "d21ccbeabfbba77ff7b4b153977c64eeb5b9f67673b45fd97ab4255320ca1a34",
+      "files": {
+        "spec.json": "7712390f5c4d7a6e6f780f693c755bc741ed8d35710b1ecd0bb773ae027476d2",
+        "model.inp": "eca104228d14bbb99f359a1bb8be2fad288cbc438e33755b1652e9866034061b",
+        "model.step": "cb46913a2f62444f3868e61602f6a95f70bd88ce2f598168c84fd897359bde76",
+        "model.msh": "eecd5573ff8585bf951990e93747c6ef1255774267afa7b191af46a8e32e0837",
+        "model.results.json": "2ff3e6ff8698a7c7f4369f46048a0069f326614235fe506653c04cdfde00ce15",
+        "truth.json": "57efeea73928716422c67f09bdc713d56472444f4eee24ceb676056ea122dcb2"
+      },
+      "readings": {
+        "n_nodes": 129632,
+        "max_disp": 2.5511204284128275,
+        "max_von_mises": 249.3505562957935,
+        "max_von_mises_midsurface": 115.77167555403804,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5159,
+        "n_elements": 129080,
+        "element_types": {
+          "quad4": 129080
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "fuselage_barrel_d2000_l2000_str12_frm4",
+      "tree": "modeling",
+      "family": "fuselage_barrel",
+      "role": "sweep",
+      "geometry_class": "a9604f56b898",
+      "split": "test",
+      "split_reason": "双维外推（长桁 12 与框 4 同时超出 train 包络）",
+      "solver": "ccx",
+      "spec_sha256": "a57be252be2170d8f810b3e9f4cdc4f9e9dcff39986e7cdab8a15ec6b440aea0",
+      "mesh_sha256": "28aa2aa21184a0fa0a454e8b2f41cb8cd5a7b4b36568bbde2938f7a12db00ce0",
+      "model_sha256": "28d63f0a52dea452eefb9e05604a9ca72b9743bad0e4466ed7e759d1fa18f27f",
+      "files": {
+        "spec.json": "cf30c07cfd3362192993416bcfa8f17333f992f7a966092e141bd1d7cedfb201",
+        "model.inp": "9a3e3a5d5dd61c1e13dc627c4109dcca22aae78cbf2afa007166cc8385510047",
+        "model.step": "2c5368046c0250d3dd2c7a1b6069a2b4c652423a9a007227944258c6f86bee80",
+        "model.msh": "28aa2aa21184a0fa0a454e8b2f41cb8cd5a7b4b36568bbde2938f7a12db00ce0",
+        "model.results.json": "62585a5f9a74c6608f0cff73f0f8011488e1aa40643ab305a468a5a222b203d2",
+        "truth.json": "549d491f9de0336fba1d9c5673f58436c07c6b0f2bb33b7bb2567eb105fc3198"
+      },
+      "readings": {
+        "n_nodes": 169606,
+        "max_disp": 2.5692317380921965,
+        "max_von_mises": 258.4794260500205,
+        "max_von_mises_midsurface": 106.06328293341386,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5211,
+        "n_elements": 169150,
+        "element_types": {
+          "quad4": 169150
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "fuselage_barrel_d2000_l2000_str8_frm3",
+      "tree": "modeling",
+      "family": "fuselage_barrel",
+      "role": "baseline",
+      "geometry_class": "589369d32c00",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "5c363b6c84a141321b21d2d0ec6f792ce07a31cc400ab17f50a44819720f307e",
+      "mesh_sha256": "cd2beb6ddb4a238094118402feba3a0b1cac9d59bf3a27c79df51dd55e66b1e4",
+      "model_sha256": "82ce89bba35dccf322cf9f62f3d7b080a7d738b70ac6efad35d49bdd3db47131",
+      "files": {
+        "spec.json": "6da331b12a84731c92b2dc44fc83e0b9a6fa72cafa081d875bbbb2ec945430b4",
+        "model.inp": "330a8e4c88d767eee6c55888fa8ccc156187f9930748b7bed6ad219de676acdb",
+        "model.step": "f351fa12528d99b424ba625178eb9371b2a99e7278a1828acbb27240fb543dc1",
+        "model.msh": "cd2beb6ddb4a238094118402feba3a0b1cac9d59bf3a27c79df51dd55e66b1e4",
+        "model.results.json": "8d0dfdc4773fa8cd4788d5336c8062d402a27c94988079d37eff8a74646e4716",
+        "truth.json": "4e562de5fd1302bc0a2f957732e474838adfc4e23baa543d5edb03b350660804"
+      },
+      "readings": {
+        "n_nodes": 158524,
+        "max_disp": 2.631030661252164,
+        "max_von_mises": 249.39830401249134,
+        "max_von_mises_midsurface": 116.08617036847801,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5159,
+        "n_elements": 157972,
+        "element_types": {
+          "quad4": 157972
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "fuselage_barrel_d2000_l2000_t2_str8_frm3",
+      "tree": "modeling",
+      "family": "fuselage_barrel",
+      "role": "sweep",
+      "geometry_class": "9c77e2678013",
+      "split": "val",
+      "split_reason": "尺寸单维外推（壁厚 2 ≠ 3）",
+      "solver": "ccx",
+      "spec_sha256": "71869a7bab41d92f2611df57b717259446da42a076472fd0b20b56c2c74f7e0d",
+      "mesh_sha256": "cd2beb6ddb4a238094118402feba3a0b1cac9d59bf3a27c79df51dd55e66b1e4",
+      "model_sha256": "26eb5e381fa49d38ea083f7eab6e52b69baf641c540dd9a333ddf77fe34882c9",
+      "files": {
+        "spec.json": "089780aee125a1f79395303ba066bf8e3e3e1e7148afddd377cdbd81cd8e84d2",
+        "model.inp": "3aebf309a17b52c4eb82fd5ba0375595c6e6915ee167579c67980151c7a85a9a",
+        "model.step": "9d3d3451dc3259589d0a8c838ab861bc39e0a5cb564fa6f0adad2b8bd6235e5e",
+        "model.msh": "cd2beb6ddb4a238094118402feba3a0b1cac9d59bf3a27c79df51dd55e66b1e4",
+        "model.results.json": "fffe7db787aae5aa7cec47c0d7455618a0010b8aac033550096fe73ee94288e8",
+        "truth.json": "70761d951ce4e5bea3257e91bdd1b812a0c531d6fff389b7f269d6a44c674c98"
+      },
+      "readings": {
+        "n_nodes": 158524,
+        "max_disp": 4.678703089358844,
+        "max_von_mises": 372.5256004684946,
+        "max_von_mises_midsurface": 157.65500332761437,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5159,
+        "n_elements": 157972,
+        "element_types": {
+          "quad4": 157972
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "baseline",
+      "geometry_class": "4afd1ea3fd9f",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "9d680d491882ec13120b8d1a08466ece81d2380ae407cc0538e04dc4597f9cb0",
+      "mesh_sha256": "29faefe3f88855e9cd50e3872787c6cf291750f610a41f990d200f86a50680fe",
+      "model_sha256": "da07c47e3a26aa291e4204bd69ac547f36aa6b4f074e7942f678bfe9fb3d4533",
+      "files": {
+        "spec.json": "1ad04f01e8f33551bb628d2024b5a1db49aabccddfb63f2bee08454c2c6b1dcd",
+        "model.inp": "b675d38be2d85f19a830ae4a7e6ee7eaad3f25149408fa67e91becaa48c4798a",
+        "model.step": "66f515b41bf0366b032bc8798833439d199bf1352f0808d7ce5a2738f87594e0",
+        "model.msh": "29faefe3f88855e9cd50e3872787c6cf291750f610a41f990d200f86a50680fe",
+        "model.results.json": "4ef1fc333312b5a007f305d669e6d89deae3132f4dd7698c88e07b34440d3640",
+        "truth.json": "07e6017f2db7b9a9b34ae95a660cf61454841dafef01c7e1a86d3c7377bfb088"
+      },
+      "readings": {
+        "n_nodes": 5074,
+        "max_disp": 2.3654390542892276,
+        "max_von_mises": 10.60478594684109,
+        "max_von_mises_midsurface": 10.28238898829173,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6249,
+        "n_elements": 5144,
+        "element_types": {
+          "quad4": 5144
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 2
+    },
+    {
+      "case_id": "naca4412_wingbox_n_ribs3_chord1000",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "4cf4571c551d",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "064c51de26393969b79561c89675125ee4587b043d3fbbcacc5e919fe69130a9",
+      "mesh_sha256": "12d7c68bbe1220ba739dd764cf40c7b1987187c4cb3ffa1199ddad30710362c3",
+      "model_sha256": "b62e11e9949d1b2cdfa518df0fe75167936c4f1e12486b9188269f2ca2daff9c",
+      "files": {
+        "spec.json": "c767c36be33fd18e690ab6d88222140661581c3da4d767181ba751871533fb5b",
+        "model.inp": "8d14b93185975b2e9f3ad752cc8865f61c3c5c3ed9ab815b67a79e38ec87e1ee",
+        "model.step": "49c5d1b89190027a6e4e5461614194eb592c6f84efb2550a2ae00298c9570779",
+        "model.msh": "12d7c68bbe1220ba739dd764cf40c7b1987187c4cb3ffa1199ddad30710362c3",
+        "model.results.json": "47f217d7dca604900806835c92593640956de5d28a93dda9791c1cb258efd084",
+        "truth.json": "6c1a9d9154b14ebf1b8a82bca3fdcd603b4d5b71a652b60a12d00ecb1d780ee4"
+      },
+      "readings": {
+        "n_nodes": 4668,
+        "max_disp": 2.372344338375239,
+        "max_von_mises": 10.4392708580544,
+        "max_von_mises_midsurface": 10.161539080738757,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5965,
+        "n_elements": 4690,
+        "element_types": {
+          "quad4": 4690
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_n_ribs3_chord800",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "1927d89dcb96",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "9e5a6f7d0613e4f11dfc4e6860e44db977259e02de694e26e03d7264dc44455d",
+      "mesh_sha256": "417e11323e27e28a57229a4b4a089974efb2e1b4b40e423e896828b7efeb77f9",
+      "model_sha256": "e0d8720806cd26160fe6f2a06080bfee49c97efa5f9fb459dfab87e18b71e981",
+      "files": {
+        "spec.json": "8404cdaa8d20fa691dc5eed16a7acee48015877ab1058d51835e2870bcb4b41f",
+        "model.inp": "b7895c28c275fb0fe608ee1d46d338f490961dea029d6415111a0a409787ca58",
+        "model.step": "a97d4ca9185ca6fa5325321835d15c8a33406da3e83cce932e57fc3e68eb141c",
+        "model.msh": "417e11323e27e28a57229a4b4a089974efb2e1b4b40e423e896828b7efeb77f9",
+        "model.results.json": "abbe9a679853e248af84703147699c566b21738ef8167c9b3b66df04af62223a",
+        "truth.json": "1e57d9a3d8670cdfb3931a244ea4a419379506f1d62b324759c39f93d0b73c1c"
+      },
+      "readings": {
+        "n_nodes": 3679,
+        "max_disp": 4.54015407249073,
+        "max_von_mises": 15.95839120937423,
+        "max_von_mises_midsurface": 15.39443045897294,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.595,
+        "n_elements": 3696,
+        "element_types": {
+          "quad4": 3696
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_n_ribs5_chord800",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "791f1043b549",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "e345756dc8e2bbfd79905d2fb94081dafcc6488d1c6c7bd830d0a07350def3fb",
+      "mesh_sha256": "5b6349df3f8242fcb3bd0c20c9f2597ba425fa4e9156d7982dff0d9e17cd3c0e",
+      "model_sha256": "a45ecff7455c8d3ed1ea8e73c0bbd94b9de36fc4ee23474c9c3b0e3b11750620",
+      "files": {
+        "spec.json": "e64d7d1e7cbd0b92b61730b178a02b9334055cd029890085245b4cb92a748b66",
+        "model.inp": "379aedf5687fae45391fe1482a95f234b7f5570ca82212b44b22479155e7108f",
+        "model.step": "ab087fa08201e8366ff8af8b28d20eb9798250197312f98222b08a3862e2a633",
+        "model.msh": "5b6349df3f8242fcb3bd0c20c9f2597ba425fa4e9156d7982dff0d9e17cd3c0e",
+        "model.results.json": "2d68fe5d5ab4423fc84098957e67ac9f85b0d47baffd9b927ebed75fa33c376c",
+        "truth.json": "edcff9ec070e6a814f9bfd6f5dadfb0edea78b71d2db0114bd5e0cbeb4bbe05f"
+      },
+      "readings": {
+        "n_nodes": 4057,
+        "max_disp": 4.526727690746489,
+        "max_von_mises": 15.761825692876124,
+        "max_von_mises_midsurface": 15.272589981817703,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.595,
+        "n_elements": 4112,
+        "element_types": {
+          "quad4": 4112
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_n_ribs6_chord1000",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "b3016d214bb4",
+      "split": "test",
+      "split_reason": "v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）",
+      "solver": "ccx",
+      "spec_sha256": "e3cb65cf05e39c8e9839277fcbda2a0dde41381501c55f48475b5bf42cf2fd18",
+      "mesh_sha256": "23de57746e401f0088e23697d55459648fd48b247133942ac0a9bd649f656656",
+      "model_sha256": "f83463ee517b9739e3172742f367886d657ee6b579739bbcb3ae9e17898e74d5",
+      "files": {
+        "spec.json": "00f8d5855d03835e3fd28983947ee13aa9758127591eef932278806354a1f249",
+        "model.inp": "d3ec9fa975ac22088a4501932ed865bbd19ff11b542195ea96dfb3bb04eb0517",
+        "model.step": "0a6910a2c68f2a430d8eb3c3d64408fc1ca4fa7734021c037c158dfcc9a376b5",
+        "model.msh": "23de57746e401f0088e23697d55459648fd48b247133942ac0a9bd649f656656",
+        "model.results.json": "a8f58cc13dd699a86189733d5312f5695cd8a3e9df23283b70beda3d1576eef8",
+        "truth.json": "54f0222b9260a87a4988f97b85d28c552d9e7b631709928d51a07e900e5e3735"
+      },
+      "readings": {
+        "n_nodes": 5300,
+        "max_disp": 2.3621330590264806,
+        "max_von_mises": 10.611387980202851,
+        "max_von_mises_midsurface": 10.320028094595163,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6204,
+        "n_elements": 5394,
+        "element_types": {
+          "quad4": 5394
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_n_ribs7_chord1000",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "db9dab06eff6",
+      "split": "val",
+      "split_reason": "单维外推（肋 7 > 5，弦保持默认）",
+      "solver": "ccx",
+      "spec_sha256": "c53e4d4cac493a62d71dd339ad0021843c00731b13149f325623ecf1b74324cd",
+      "mesh_sha256": "b903560384575c7163f49eb1cddeb7ad89707c8a59a56ce745cb6cfa5d2d7cb0",
+      "model_sha256": "e06741bc2f3627e1b9b4efca96ceeeea937d6f56c6ad0ed96b7e980b6770ba54",
+      "files": {
+        "spec.json": "f30ed4b3974ba30b250a0747692acaa9890b6867a5358939be1d2fb5ad2b6d02",
+        "model.inp": "4ea58461e6c2184126d67373229b0919f33b54d4c00d38395ef2a75accf0c33d",
+        "model.step": "a1251f38e5628417c5c2f8ad84e4cdc1b9336eb81175abea12d5a888521ed369",
+        "model.msh": "b903560384575c7163f49eb1cddeb7ad89707c8a59a56ce745cb6cfa5d2d7cb0",
+        "model.results.json": "0f0731f3d4b6e4f9d6704e6899205b9082082d66d9a58b423c7817437cdb5552",
+        "truth.json": "ca6524cef71085ff989bab70ffec6029585d9ec2f5ad92950bb193824fe14d89"
+      },
+      "readings": {
+        "n_nodes": 5593,
+        "max_disp": 2.3580540580706995,
+        "max_von_mises": 10.743173201647076,
+        "max_von_mises_midsurface": 10.427805786050106,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6083,
+        "n_elements": 5711,
+        "element_types": {
+          "quad4": 5711
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_n_ribs7_chord800",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "006310d062fa",
+      "split": "test",
+      "split_reason": "双维外推（肋 7 > 5 且 弦 800 ≠ 1000）",
+      "solver": "ccx",
+      "spec_sha256": "60d43df8adbf4c14135d577be43519e77e0c8014a1a6539ac415281b115ac619",
+      "mesh_sha256": "7f8394d42b586079083327df49d1c058b31b30115338d11147be14a506246c07",
+      "model_sha256": "7efb0fbb4ba2eb254f7336da34bc071068803e9f449c12b4fea660a856c330d8",
+      "files": {
+        "spec.json": "c657a7d41c29d407ba1d852d9bbf7a4ffd1281e2d999d70ea556264d507e2c68",
+        "model.inp": "c154392d8353f0818d493a000bf57438fe61650dc095e5c01caf1981acbeb50f",
+        "model.step": "efacef991ae078fd9b6a4a7b57a832a5aff1d5396895c49b44681df6e5558b45",
+        "model.msh": "7f8394d42b586079083327df49d1c058b31b30115338d11147be14a506246c07",
+        "model.results.json": "94a05ea49a7106ac9cef07965e3f97c52e4b190e00cefd4fc121822fc2104e16",
+        "truth.json": "b305b938dbada69844602bda227d92966681161a32299d0b340baac6d6924ec5"
+      },
+      "readings": {
+        "n_nodes": 4352,
+        "max_disp": 4.5123206310669195,
+        "max_von_mises": 15.85067216837446,
+        "max_von_mises_midsurface": 15.391905349427423,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5099,
+        "n_elements": 4445,
+        "element_types": {
+          "quad4": 4445
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_n_ribs9_chord1000",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "6085570a4247",
+      "split": "val",
+      "split_reason": "单维外推（肋 9 > 5，弦保持默认）",
+      "solver": "ccx",
+      "spec_sha256": "d0c6cc3df1475515a3f2756e3190777858fbd78e7a19402d8d345600d0380413",
+      "mesh_sha256": "e6163e4dc0ee750f8e4c620d23f056c444fee86de9f49ab49da11aae270a15ae",
+      "model_sha256": "ca0514b0f630d44400a3589586bd1fd42da2c614c44ab5e46ed94ce7de17c96a",
+      "files": {
+        "spec.json": "c4821c96b7924d78de92da1cd1ac58e5c5f09837e1203280280a7439342551cf",
+        "model.inp": "9d3539f21bf9de1bd580376d198ff8e780417d2a51229e3254ba676fda6172de",
+        "model.step": "3ceef32e9d860d75cfc9dff3ea6795636660d3755fcab0cb8a123e607eaa111f",
+        "model.msh": "e6163e4dc0ee750f8e4c620d23f056c444fee86de9f49ab49da11aae270a15ae",
+        "model.results.json": "530171dd063970ee09336a0912b2ea219636a4837641e6d6e357be9edf59d2c2",
+        "truth.json": "bf90c8aa21d52e1fd551ab63bb90b8b23e2dd65f7b9be5417602696887372d50"
+      },
+      "readings": {
+        "n_nodes": 5706,
+        "max_disp": 2.3503343566447765,
+        "max_von_mises": 10.69336585047379,
+        "max_von_mises_midsurface": 10.380297805396822,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6337,
+        "n_elements": 5872,
+        "element_types": {
+          "quad4": 5872
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_recombination_algorithm3",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "ablation",
+      "geometry_class": "4afd1ea3fd9f",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "8b06f05beb50f595825b1113017d6cfebf53cf91a2702d13489702e3438c4a18",
+      "mesh_sha256": "11a3667bc61430c6855af139fc30fd63cdeefb05105e3e751eb31cf8b45411f5",
+      "model_sha256": "0542a9f9a3104b25f52d4622653eb5378ef1987dfb11df37678181a08bd7b331",
+      "files": {
+        "spec.json": "b223da870440b70dfeaa0f8a0ebc542c3b6f143059554f1e034210a8519c73da",
+        "model.inp": "b11fa6e853578889c2d8ac5a5e85def864f3a79898876debffcfa78c890d76c1",
+        "model.step": "10f8eae71f4bdf11b676dd1693cb043d74f1a7f33ebb20f0fde60f0dbb01ff0b",
+        "model.msh": "11a3667bc61430c6855af139fc30fd63cdeefb05105e3e751eb31cf8b45411f5",
+        "model.results.json": "9d4df83b57966c2cc411d3041c87e0c07f89e10c9f3176e1313994b2e142f10e",
+        "truth.json": "3e5499db4df124de559e14939875ed59402a9ff2750fb020409f36e3250e1592"
+      },
+      "readings": {
+        "n_nodes": 5281,
+        "max_disp": 2.3648673060530063,
+        "max_von_mises": 10.609667615451286,
+        "max_von_mises_midsurface": 10.315606597923914,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5725,
+        "n_elements": 5351,
+        "element_types": {
+          "quad4": 5351
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 2
+    },
+    {
+      "case_id": "naca4412_wingbox_size_chord900",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "cd44c1908a70",
+      "split": "test",
+      "split_reason": "v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）",
+      "solver": "ccx",
+      "spec_sha256": "fcd1a5d869cefdf03c6548fa2b6569cc6c6dbf8259f25f60a3d48d435eafaaf0",
+      "mesh_sha256": "676de090c580166e3439d8a0570b94a5101040d8c97e519b98d98a9bb10ad27b",
+      "model_sha256": "02b0ea0e34d9694b1321fafe2c394caee6433b1cb141b93458760883274c2b0a",
+      "files": {
+        "spec.json": "ccb4ab44440f242b7e8d1ad4060e276e285bdc2a5ce3e399a91a621a289d27ce",
+        "model.inp": "9fde4b6b2fb0f3b882134f91651b9d4ea711402f8f6784d989498f94993c3f70",
+        "model.step": "d00c1e6fdce8a086f096369571702a1c928bc9b49db78f3b6b37754e37c09e23",
+        "model.msh": "676de090c580166e3439d8a0570b94a5101040d8c97e519b98d98a9bb10ad27b",
+        "model.results.json": "30a0654548610a604f4fb1699b519d75d676c5ce196345b783e6213f732c174a",
+        "truth.json": "fa0c451fd74bd11d3547ea946b5f82ae1fbf50d936d93499c8e9708d25bc6d2e"
+      },
+      "readings": {
+        "n_nodes": 4446,
+        "max_disp": 3.2078413329559337,
+        "max_von_mises": 12.75059836722998,
+        "max_von_mises_midsurface": 12.296355329624596,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6372,
+        "n_elements": 4510,
+        "element_types": {
+          "quad4": 4510
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_size_skin1p5",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "4227a5994f3e",
+      "split": "val",
+      "split_reason": "尺寸单维外推（壁厚 1.5 出 train 区间 [2, 4]）",
+      "solver": "ccx",
+      "spec_sha256": "ba227e220576c9fe2c292d4abb958c16bc5cb83fbe94ba626a0640a6520af176",
+      "mesh_sha256": "29faefe3f88855e9cd50e3872787c6cf291750f610a41f990d200f86a50680fe",
+      "model_sha256": "b81160ce6ebb52ff8998e3d72e5c604a6c1a728ca1edc4fc4f1c5ffc62a1efa0",
+      "files": {
+        "spec.json": "282e91860d28fb61e7bd78a39fc779ae1f7221d6812b85955614841c8aac6990",
+        "model.inp": "e5cc25feff6ea8bb0777b9df15aca7c935be9d11149742e8d89bf36ff31427b6",
+        "model.step": "edc500659c8d5ba8b08a45d06134bf92c02ca153a758be5141817932ac3c08c0",
+        "model.msh": "29faefe3f88855e9cd50e3872787c6cf291750f610a41f990d200f86a50680fe",
+        "model.results.json": "920714221d1b38050bdc5f6452aeb04d134f28da4acea6c5bf130ae1876ebde1",
+        "truth.json": "dd1704e486ca7fdd2e59cc2c8569b93f3d4a4477a2026712b313e84176578ae6"
+      },
+      "readings": {
+        "n_nodes": 5074,
+        "max_disp": 4.71648044981905,
+        "max_von_mises": 21.22633996196808,
+        "max_von_mises_midsurface": 20.822101222545694,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6249,
+        "n_elements": 5144,
+        "element_types": {
+          "quad4": 5144
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_size_skin2",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "621898f41a1d",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "9b23136c3b99ea224c1d79c1d3bb475c4c2ba9ebebc11ddfddacde327d16873a",
+      "mesh_sha256": "29faefe3f88855e9cd50e3872787c6cf291750f610a41f990d200f86a50680fe",
+      "model_sha256": "a2d41cfcdd5573c83566316273f2172b31aa18ff7563c528a52a75d40a4ed5ff",
+      "files": {
+        "spec.json": "9cdce967e226c09b88eedb1d072ac3ba0884e69c02524e07d44ddebd908d4f30",
+        "model.inp": "d3fadab54977c84ff7f93708b103c41747352b5639bcbc748941c5950bc8f464",
+        "model.step": "8dec36010565b4bcdac4a42d12d3cd57fa29f1d81ccf2e6326c2430845b4a823",
+        "model.msh": "29faefe3f88855e9cd50e3872787c6cf291750f610a41f990d200f86a50680fe",
+        "model.results.json": "81d75049109ba90f102c1f1a48db1fbdfc96d00a8b27e5ab57da621b5f0665da",
+        "truth.json": "cbe7496fff2b185dab836e72765656e10ca1091f53e1236bb3a591be26675144"
+      },
+      "readings": {
+        "n_nodes": 5074,
+        "max_disp": 3.5423036675019084,
+        "max_von_mises": 15.894491983742514,
+        "max_von_mises_midsurface": 15.537162567335034,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6249,
+        "n_elements": 5144,
+        "element_types": {
+          "quad4": 5144
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_size_skin2p5",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "aec9b4e5b6d7",
+      "split": "test",
+      "split_reason": "v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）",
+      "solver": "ccx",
+      "spec_sha256": "0d48b04961d36b3a28db48ef3d7c0725a884a1488c3be52d147c91b56cfb3f19",
+      "mesh_sha256": "29faefe3f88855e9cd50e3872787c6cf291750f610a41f990d200f86a50680fe",
+      "model_sha256": "1c4309ce58593e3320d3671c1c1b9a5f7a4190d7cf80319d4bce23f29edde852",
+      "files": {
+        "spec.json": "552c556b2fcd7605f5e49fbb190d3fa37aa46ee0f05d398ea3e88693c203777e",
+        "model.inp": "c2cbf84c2ff01f47d4b8d4e991ae34017be7c9118aa40452307fe1d4631a9307",
+        "model.step": "b195f8113a6c45c98ba0082a929ce30f7fc34328e5e99c30bce275e2c37cfeef",
+        "model.msh": "29faefe3f88855e9cd50e3872787c6cf291750f610a41f990d200f86a50680fe",
+        "model.results.json": "8fafac806a39b90b4882601794c1a914bde643987c9ed6983dd8eea505ea1817",
+        "truth.json": "b1a8e97f3471e4751ed840070f0144cabee08808e0608eced2c08e005baed221"
+      },
+      "readings": {
+        "n_nodes": 5074,
+        "max_disp": 2.8365410483400644,
+        "max_von_mises": 12.714014782454635,
+        "max_von_mises_midsurface": 12.379549935925276,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6249,
+        "n_elements": 5144,
+        "element_types": {
+          "quad4": 5144
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_size_skin4",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "226322eab812",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "15d9a29a60b0921af9d2fa4d970b9381e24a0a6eb5e2d6e02ec25b1ab7d2da1e",
+      "mesh_sha256": "29faefe3f88855e9cd50e3872787c6cf291750f610a41f990d200f86a50680fe",
+      "model_sha256": "fd248515211dd16c80d7e68168bb82633adf9b86e68e5d2c4d73d3859670fcfd",
+      "files": {
+        "spec.json": "60d24edbdec380cb28b374a4d0c9e9009773e8369b174b55d7baa929ef29a3d1",
+        "model.inp": "7bdec734ff1017a0ff875188ac3439276a5347d433878baf78af101b2c14fd9a",
+        "model.step": "bdc03f38e780f60a10b14a933445ca68469561d62f2f93693322eabc1fd4cff2",
+        "model.msh": "29faefe3f88855e9cd50e3872787c6cf291750f610a41f990d200f86a50680fe",
+        "model.results.json": "7c6fe44649c9d990cb73916a8bbb95f81d23a604fc654bf56ed132c06aa34d44",
+        "truth.json": "e4837df87b2c66c5ebf56a56afe388e2c45eb3c07bec494ce1e72a8041eab3f4"
+      },
+      "readings": {
+        "n_nodes": 5074,
+        "max_disp": 1.7756731515795983,
+        "max_von_mises": 7.984641324415028,
+        "max_von_mises_midsurface": 7.672366136672327,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6249,
+        "n_elements": 5144,
+        "element_types": {
+          "quad4": 5144
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_size_span1600",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "950289bb0db0",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "810e2d3711f18c7a56b8cac43d8d97eaac49e6e58ad4627c044bcb2344a77755",
+      "mesh_sha256": "a3b33c279f7dd17b07edded693b701dda8a74882de039be00e971f2a2279d6dc",
+      "model_sha256": "32e24aa1b33571baa517e234c379d657e32750fa93e5db45bcc46a62be87af77",
+      "files": {
+        "spec.json": "32d9851c4d492e543b72b15fe2bd4a0ffd0ff560b9f88470b4e737f00db9fc75",
+        "model.inp": "ba4005a5d84161bea1ddf6d80bb46d3716d6c03c50ea01b87fcc612cb6359a23",
+        "model.step": "415efa864405d7954385312bcb1004a74beed5907a8877694462565e483c4eb6",
+        "model.msh": "a3b33c279f7dd17b07edded693b701dda8a74882de039be00e971f2a2279d6dc",
+        "model.results.json": "66d6daf0e744b5e783504c4d08638706f0f567b91744ab4ebef0c05e00861e4d",
+        "truth.json": "5ff39074cfbe99b84890a29f657d07a525502f0ded943dd41ea99b34dce1a5af"
+      },
+      "readings": {
+        "n_nodes": 4273,
+        "max_disp": 1.25061528854017,
+        "max_von_mises": 8.668618436253583,
+        "max_von_mises_midsurface": 8.442820096139366,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6204,
+        "n_elements": 4343,
+        "element_types": {
+          "quad4": 4343
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_size_span2400",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "a29aa8f4ac6e",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "d2c21bfc3febdd8bd6b7b3fdcd9be78af72344819b556417d1151b10227d5e9a",
+      "mesh_sha256": "e27845f7d892bc0b88484e7402f1e0123b7ee198c7e879dbcdaa5973ef8666cb",
+      "model_sha256": "04b038e58b431a4d65a785c8ae7c814cecfbf107a3e97cf856c6991fa8b8774d",
+      "files": {
+        "spec.json": "d9594628142f23f6c98f9d2797656c6b820d9f6b060ae884f8fd170e88123e97",
+        "model.inp": "97b057dee967794aee4d1cae33ee9c0a68b601c61bf80981a0db0459bc676a24",
+        "model.step": "c478697da2655708029f2b885c2b70895276d6f51e7a6f02d3c49d79a1424c1d",
+        "model.msh": "e27845f7d892bc0b88484e7402f1e0123b7ee198c7e879dbcdaa5973ef8666cb",
+        "model.results.json": "969caee337501726a62474122cd8c3108974774e7f5409a37502d6ced873d42a",
+        "truth.json": "55b602846ad413df2ac08006f7831208fffcc7a1af811346a4219b4b6ac6152c"
+      },
+      "readings": {
+        "n_nodes": 5836,
+        "max_disp": 4.019721212740458,
+        "max_von_mises": 12.506558671557976,
+        "max_von_mises_midsurface": 12.111057055152038,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5966,
+        "n_elements": 5906,
+        "element_types": {
+          "quad4": 5906
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_size_span2400_skin2",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "08adca20a4a7",
+      "split": "test",
+      "split_reason": "尺寸双轴组合外推（展长 2400 ≠ 2000 且 壁厚 2 ≠ 3；train 各站只动单轴，交互项未见过）",
+      "solver": "ccx",
+      "spec_sha256": "64cb204a378301bb34020bfa354a903ba232b51de7818796ec1cbd3d8af9f4b8",
+      "mesh_sha256": "e27845f7d892bc0b88484e7402f1e0123b7ee198c7e879dbcdaa5973ef8666cb",
+      "model_sha256": "59d46204d40adba8b8eb948d59e96010e0282b4782499bfa612ff8553220e324",
+      "files": {
+        "spec.json": "c6ebcff0f853e2b779481616b284331968c3bae71f9d5f94544a84f091c1bc75",
+        "model.inp": "cf4e320d1251211c6a11fccd96a97bbb51a93a11adec8a5afe92334aa5b5f407",
+        "model.step": "46adde8c685af626eaa2829660e144fa73db6139670d666a15e54a325c483172",
+        "model.msh": "e27845f7d892bc0b88484e7402f1e0123b7ee198c7e879dbcdaa5973ef8666cb",
+        "model.results.json": "849b1e68261910107bd2fb1934dc9d2012ae691f0326613c716ad010fbc1b4a6",
+        "truth.json": "ce0627ba67d32f7e11705c9da8187f8228d0279d67a45c1e64188746b65c3fcc"
+      },
+      "readings": {
+        "n_nodes": 5836,
+        "max_disp": 6.023137269431674,
+        "max_von_mises": 18.73915040664963,
+        "max_von_mises_midsurface": 18.29516056802725,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5966,
+        "n_elements": 5906,
+        "element_types": {
+          "quad4": 5906
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_size_span3000",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "aba008bb7986",
+      "split": "val",
+      "split_reason": "尺寸单维外推（展长 3000 出 train 区间 [1600, 2400]）",
+      "solver": "ccx",
+      "spec_sha256": "010c7d32732c5a9bad2577d5254394eaae434944f23f5d46486589e53ba62077",
+      "mesh_sha256": "de06afcb908a913ac4d48e3d18bed7c2157957d3d4d6cc5e338d2dece86f939c",
+      "model_sha256": "7004e3a3e34a8734101cd885b441c626b486e7bf754e3bec41b09c116cf55bec",
+      "files": {
+        "spec.json": "5b2af77b4b9c7b068bf6bff885158a49198e265bfb4380a37e1b64dac807a32a",
+        "model.inp": "d73883381f45c7a035aa3d38bdd50655098e26da6490045733e65fca21c13e05",
+        "model.step": "3e5820a150a3071e7403184dad6197647be000d7b3b4504b24a24c59da9b33ca",
+        "model.msh": "de06afcb908a913ac4d48e3d18bed7c2157957d3d4d6cc5e338d2dece86f939c",
+        "model.results.json": "606325d6d426f60577848faea2ff7ea2497daa25aba44aa8968f5153982b7f4c",
+        "truth.json": "8a51dd68a32c1ba74c2e5b60bbfbec940f35c40ef184fc3b0c409ebcb7707d4b"
+      },
+      "readings": {
+        "n_nodes": 7116,
+        "max_disp": 7.747476698568881,
+        "max_von_mises": 15.341150447870982,
+        "max_von_mises_midsurface": 14.845590612374805,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5047,
+        "n_elements": 7186,
+        "element_types": {
+          "quad4": 7186
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_size_span3000_skin1p5",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "58fefd5842da",
+      "split": "test",
+      "split_reason": "尺寸双维外推（展长 3000 出 train 区间 [1600, 2400] 且 壁厚 1.5 出 train 区间 [2, 4]）",
+      "solver": "ccx",
+      "spec_sha256": "ed91d41b803df06db5ff82b20dbd7273174831d5f71ce13d3e47babdd4d86d95",
+      "mesh_sha256": "de06afcb908a913ac4d48e3d18bed7c2157957d3d4d6cc5e338d2dece86f939c",
+      "model_sha256": "21ee6674aa0f9d97de42560ac9b2c622a764cbe978146c26821b64a21c62ccbc",
+      "files": {
+        "spec.json": "b8d6d1c2e3e6e9ede516c871bf1dd233b30b6dee88eb21e6a1722c4a4fcaedbf",
+        "model.inp": "998f0a2a4f958542fbdca1aa696cfb4df2d7dc55ff38d2c2763be0496d82ace6",
+        "model.step": "a7e982b819406d24c1859fdcda209b5159439c8d15e6ddc355b1a57c1cd693ee",
+        "model.msh": "de06afcb908a913ac4d48e3d18bed7c2157957d3d4d6cc5e338d2dece86f939c",
+        "model.results.json": "8dedca440df8bfa1c1969ce71c4b35fbce5d90595369b8e14a94a4ee99ee50e7",
+        "truth.json": "4ab129f4070164bbf05d3a9e68c0e0c925ea79a712a09ee33a97c6b919c45c0b"
+      },
+      "readings": {
+        "n_nodes": 7116,
+        "max_disp": 15.473331702048627,
+        "max_von_mises": 30.712460854481396,
+        "max_von_mises_midsurface": 30.04506475800616,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5047,
+        "n_elements": 7186,
+        "element_types": {
+          "quad4": 7186
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_str3",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "feature",
+      "geometry_class": "7af923795681",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "d81577a6f45bbc7083bd5650b9583599994fbbe9250024a122beb735c9a749c2",
+      "mesh_sha256": "9be7969c607bbf75b1cc6a8b373590206dcab327cc9ea2f04ed735a391b2faa5",
+      "model_sha256": "e3acdd0453f923909d950e7d5727a573b832c04f6ffd420b75512fb29d763e10",
+      "files": {
+        "spec.json": "60a037ef20dc1d64a33d27faed9e25d96a954b0ff8cfd54d86f25b7025f5c100",
+        "model.inp": "4ac8bc67fa85e61a3913faf8dd348c39d625a6208f59861d3080ef63feb6ef02",
+        "model.step": "0860abcdee56ee0168223ccd82faf4a662a78a97ffcd5171eafce32947428f2f",
+        "model.msh": "9be7969c607bbf75b1cc6a8b373590206dcab327cc9ea2f04ed735a391b2faa5",
+        "model.results.json": "0b2a3f2c205908b59942a57368ff187a81056d16bb3c3f175f05acaf414dac80",
+        "truth.json": "05fac4f69af5c136aaf8733492149133f17a99721ac9f6942dd325236d871ec2"
+      },
+      "readings": {
+        "n_nodes": 7387,
+        "max_disp": 2.2193965388854355,
+        "max_von_mises": 10.140596401997234,
+        "max_von_mises_midsurface": 9.825463603700657,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5228,
+        "n_elements": 7517,
+        "element_types": {
+          "quad4": 7517
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_str3_T",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "feature",
+      "geometry_class": "37f4725e4b48",
+      "split": "test",
+      "split_reason": "新截面形式（train 里没有锚定 'T' 形式）",
+      "solver": "ccx",
+      "spec_sha256": "758d33cd0830dc60107b856f262d08f92f56abaeee9acca7ca3f6c47c7a61678",
+      "mesh_sha256": "3fae671fa63a037ffd673bb2aa8744db0cd067a094dcd5f05d05d237df8c7e76",
+      "model_sha256": "cbc4c6790fb8261eeec6be42f2b3b533f637d4715914e07a27e0f4ad23a3f4f0",
+      "files": {
+        "spec.json": "4973fad36048cba217fd6a94853357bf653ff33aa6d8581babc8b850e42290ff",
+        "model.inp": "c581c3321064f4121476911370fbf784ed68558540906d08fefa1a56fe8fecbe",
+        "model.step": "6b86a1494f551dc50ed242a8b61b242b45628808f39a1a9387fb315ee9827111",
+        "model.msh": "3fae671fa63a037ffd673bb2aa8744db0cd067a094dcd5f05d05d237df8c7e76",
+        "model.results.json": "993fb318da3295fbc35c837529c600aaac424802796aa9350fc037a00f728a7e",
+        "truth.json": "89c805a53fa81397581e8791d77bcb507dbe18ff63f48ab419fc140bde0693ef"
+      },
+      "readings": {
+        "n_nodes": 29447,
+        "max_disp": 2.115066913441561,
+        "max_von_mises": 11.184666107572331,
+        "max_von_mises_midsurface": 10.67851247209391,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5332,
+        "n_elements": 29733,
+        "element_types": {
+          "quad4": 29733
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_str4",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "feature",
+      "geometry_class": "5237ded5b370",
+      "split": "test",
+      "split_reason": "v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）",
+      "solver": "ccx",
+      "spec_sha256": "4ebd51e57853078a5c4d923c3a25112587a8d2b429fb1a2c21ce93da2506e416",
+      "mesh_sha256": "3b2dac1bbcbe49b57012dbc636e88ef53d575e6b9c014f7272313f7bf6a7e74d",
+      "model_sha256": "1c0137be2d7802cdcbb14b171f272f9f39ecf3a5d24f1b0b7e9bea01b992e14f",
+      "files": {
+        "spec.json": "4bc3af536cb8384c2e9f91dbf8db720850f30995c08e86ec487131cffe45328b",
+        "model.inp": "222d1cb8b0c2c628aa08dd713a96d7481b85634e1671ced420ef969a33e9c07d",
+        "model.step": "1da262ee2acbfe2400ba055eb3ee947fa456e3d6d4a16eaa393c3e3e6d117f7f",
+        "model.msh": "3b2dac1bbcbe49b57012dbc636e88ef53d575e6b9c014f7272313f7bf6a7e74d",
+        "model.results.json": "cfbc2f1c002f41e6e8e78987de4d0796d450959af9b189f5c9e20cca11eb7028",
+        "truth.json": "df8ba0bfc3e332844f3a332b78b9b1ed58313a029a92b8bc70f939d5935dc2d2"
+      },
+      "readings": {
+        "n_nodes": 6995,
+        "max_disp": 2.175529781638333,
+        "max_von_mises": 10.057543070763854,
+        "max_von_mises_midsurface": 9.73642773905606,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.506,
+        "n_elements": 7129,
+        "element_types": {
+          "quad4": 7129
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_str5",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "feature",
+      "geometry_class": "870130300769",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "eb64113f8ac5ba633bc28f561c83c579ba4bd1aad2ab3d5df3a06efbd6aebec1",
+      "mesh_sha256": "ff0bf41ae86baca8c49eead7904caccf89d750da773b870f3b1cece38ec1f0b1",
+      "model_sha256": "06b2fb97b80330650a164f6e98f764df2c6b7bb4c55547686944552863a420da",
+      "files": {
+        "spec.json": "95713c3416ea26fb186de9508bbbd0bc1f549555c61fb9bd28baa63d05068f4e",
+        "model.inp": "e921f6b62872c36fcd88c4e8ce42909c5ed66d40df63e5cd7a8dead5915ec914",
+        "model.step": "19b41d58639d536b8dca0e99147a5edb778e563c139d0c641c6776ee15f36f7e",
+        "model.msh": "ff0bf41ae86baca8c49eead7904caccf89d750da773b870f3b1cece38ec1f0b1",
+        "model.results.json": "f581daf3917e44d0c6f0c0a084d3df42a4e605d613facc2e4f8b24bd1122f5d9",
+        "truth.json": "0dc06741d0ebd4a70bea3e56a4629f2f6d3ac0335c0e2eb9f80adc3bd30068c2"
+      },
+      "readings": {
+        "n_nodes": 8205,
+        "max_disp": 2.135446558417041,
+        "max_von_mises": 9.86918268353307,
+        "max_von_mises_midsurface": 9.641833611172135,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5351,
+        "n_elements": 8367,
+        "element_types": {
+          "quad4": 8367
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep10",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "d8e081a5f259",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "6ced682ecdbab4e14089f0a62179217a1dab933914b36f88348e2a85ec69e69d",
+      "mesh_sha256": "71190a2a1d52302bc3d229bd10e5f32877746d6dc23bcdb20227cc97a6b7615c",
+      "model_sha256": "cf60af19693f7ed12f7d9f713a7716facdec53682265c44dcf7e3067d456b716",
+      "files": {
+        "spec.json": "2e644ea3e562639f26217c1f4d2f46aa9c3ae8d0ab8cd2e762ea5e2689d7232d",
+        "model.inp": "a0fa823ee5ea074e4837c662440d71fcb1999a182eb7f6cd40aaa0a9e1dc11a5",
+        "model.step": "db7766334cf2e25084c38d32fce81c2876ea4689d0f834c41ea3fcda9bc1f7b2",
+        "model.msh": "71190a2a1d52302bc3d229bd10e5f32877746d6dc23bcdb20227cc97a6b7615c",
+        "model.results.json": "250501c88e9a9f6195db9c63e2b1a69ef37a2e152b91ce91e7f2a83f2e0ef831",
+        "truth.json": "b8a65f0dc68e2e118186d0d8186d3e450b4da4881dc33a0713e3687fa252c5f7"
+      },
+      "readings": {
+        "n_nodes": 5484,
+        "max_disp": 2.587602126746103,
+        "max_von_mises": 9.829712715372917,
+        "max_von_mises_midsurface": 9.560667467785786,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6266,
+        "n_elements": 5554,
+        "element_types": {
+          "quad4": 5554
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep20",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "47f64aa48908",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "3c58ca82c1732f3e007bfee829d95532ed40d0a368da237ab32ae618043b18e2",
+      "mesh_sha256": "5324a38876e5e877568119df20c8f99188152c842bf8c0e67e6e341e2bcc2810",
+      "model_sha256": "20c6fefb30430e930901d4df618c92e9eff254b9f7ed713d40ecad96a8550553",
+      "files": {
+        "spec.json": "17f2ea41235cab39165fc27aa47be1009d708b1586058a18c3c1827e519e13b5",
+        "model.inp": "f6ff705df0c44784668d593a6c024c03c3f3f64a24270e395bce8e9162e49117",
+        "model.step": "996f448a97407e6db37d6fe75688f4f9bf871de53ea1bf5b3dac1a8e88a827af",
+        "model.msh": "5324a38876e5e877568119df20c8f99188152c842bf8c0e67e6e341e2bcc2810",
+        "model.results.json": "2b9e5d59378ad088c6bb7b34cb8a5e74ad61eab76f7f63df838f4b4338722834",
+        "truth.json": "e617bf4d982797165bc4c74d2e4d6373854db9519a129e60c5fd29bd3626ad6e"
+      },
+      "readings": {
+        "n_nodes": 5222,
+        "max_disp": 3.169341103852119,
+        "max_von_mises": 10.475926278475475,
+        "max_von_mises_midsurface": 10.117079827363572,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.4902,
+        "n_elements": 5292,
+        "element_types": {
+          "quad4": 5292
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep20_taper060",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "838838dd03a6",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "8f5cf345d5de295b66a138d1f5b26e0a261cb7f6112f008965d437d54673c936",
+      "mesh_sha256": "b9cc31dd0e91994827af2a26505fd6bf6e567c021258d8480717d9e26294c257",
+      "model_sha256": "c01ba687c2f9eb4da80e5ec6791e10f40204dc0a5ba1a074d0dc759153bed801",
+      "files": {
+        "spec.json": "28b62b1259c494321ac41613fd64bade03369ae8e41995a65daa534531407be1",
+        "model.inp": "19e229c728cf5d3daad427a9d899be0a576a9a737ff3292ad2aa92661494029b",
+        "model.step": "5a80fd507f81ec6758fe71d252ab77d7893cab9eec7f38bdc9970d9c19799dad",
+        "model.msh": "b9cc31dd0e91994827af2a26505fd6bf6e567c021258d8480717d9e26294c257",
+        "model.results.json": "2e29f62fcf22df9985c5e37a3aacc1542de14e15ad82e1b1ddd04f1e6938896c",
+        "truth.json": "9dcd2c4f54eb4ef1c7c009bcf11d0823002abf3805d29ef98a21089d3442aeda"
+      },
+      "readings": {
+        "n_nodes": 7771,
+        "max_disp": 3.9610402229969455,
+        "max_von_mises": 9.41477507770387,
+        "max_von_mises_midsurface": 9.050886277887999,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5523,
+        "n_elements": 7847,
+        "element_types": {
+          "quad4": 7847
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep30",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "19ca7eaff9ca",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "4714d052ccd2f01af6057b2e1d2b5e4ffac0228f08a1ebfc81e670cb020804f2",
+      "mesh_sha256": "b4bdafa08c2eb79f6c1e6ff549843993047c15397d0333b44d8100bae9f9dba7",
+      "model_sha256": "8e880c4095b8f0f9aff803e56b3a7966198c002484ecda8d9f634a554a82668d",
+      "files": {
+        "spec.json": "d62d50aeab5f98e0a8c72a8ffea647e7a6c12eaa0c3f05b0faa80e2b50660bbf",
+        "model.inp": "1dd96c5fbd010d1f496b337a6d48197a5db1ae96e32976152ac6465d341e693a",
+        "model.step": "1c4c8ef1f1e52ef2ad775e4740f31f15d497c4d5527286306b1a79e9c2b17a5e",
+        "model.msh": "b4bdafa08c2eb79f6c1e6ff549843993047c15397d0333b44d8100bae9f9dba7",
+        "model.results.json": "7cb66443d239db368e82536eda459220535b054be7d74ee264bfe9ce6d97e9f8",
+        "truth.json": "467630119e04d9aafd674eb1e700a5c5004e30c646dde1ad4541c346146a06b6"
+      },
+      "readings": {
+        "n_nodes": 5347,
+        "max_disp": 4.384339379992175,
+        "max_von_mises": 13.425128840561307,
+        "max_von_mises_midsurface": 12.904310763451043,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6353,
+        "n_elements": 5417,
+        "element_types": {
+          "quad4": 5417
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep30_taper080",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "e38d85ccf6c1",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "05fca031f9c6631939dad85ccd2654683e8bc40db8f45c967b4f62f7767d0224",
+      "mesh_sha256": "01ba95d9c8a8636c1292739a8f8818e04bee95b45d7b951dbd832a1d4d83b103",
+      "model_sha256": "8b2fa2591c4bbe0e6e8d52246dda4975e660ba802dffe6682213c6132a1a9a5f",
+      "files": {
+        "spec.json": "a23c5b97d09559959e66c2d27a1bcb47ab77b5210ce0b4f5685bed845a8d9451",
+        "model.inp": "45bf777cdab144a5f7b76b353af990ffdf12ef238b93ae54dc1b199141324362",
+        "model.step": "978ce78e737b83d74fa14d0f96aff36c33016ff92720482379d518413a3ed00b",
+        "model.msh": "01ba95d9c8a8636c1292739a8f8818e04bee95b45d7b951dbd832a1d4d83b103",
+        "model.results.json": "d7047bed014e760be174bccbef7888e7b2738fe2961d0f6e647df557c4546f43",
+        "truth.json": "a08e0c3484ac068ee9f91688047183395cb0ed2942b6b26afa56299d0bc8033b"
+      },
+      "readings": {
+        "n_nodes": 5302,
+        "max_disp": 4.705019121412395,
+        "max_von_mises": 12.57602344448618,
+        "max_von_mises_midsurface": 12.12987209343447,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5606,
+        "n_elements": 5368,
+        "element_types": {
+          "quad4": 5368
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep35",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "ce92e32b3897",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "ef6172a5e3a58df62c6c609f4b3ba84394a69a8e619b021dc267dc92ac5e16fd",
+      "mesh_sha256": "e850ab9f4237a2042972c50b142be70e948e4fe3908c99ad909842a8a4ba189a",
+      "model_sha256": "33e9517d052d81cbd87303870f68ba85b388249453b2f0a6265980c0a823b800",
+      "files": {
+        "spec.json": "08dc327065892ae3aeec44221f669ea44a072022096830ffe1e285769ddc75b6",
+        "model.inp": "91e1e2c52e66952284dea40f47edff61bc84f514f1167bd5fb8def6b981950c2",
+        "model.step": "2a5306120c6b58c738e58944282a9c45ceada560ac7fd549659fd9137eab9900",
+        "model.msh": "e850ab9f4237a2042972c50b142be70e948e4fe3908c99ad909842a8a4ba189a",
+        "model.results.json": "e5b32db18e595020e70185f2939f0f7a106cab4900fc852e36541f37ce1a1102",
+        "truth.json": "bbafb002be2c42a76ec94248f39894b8df1a270db6348ea8bec0a602063f4975"
+      },
+      "readings": {
+        "n_nodes": 5687,
+        "max_disp": 5.429258752938191,
+        "max_von_mises": 15.61686475743771,
+        "max_von_mises_midsurface": 14.89797693191752,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5725,
+        "n_elements": 5757,
+        "element_types": {
+          "quad4": 5757
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep40",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "001950844b2c",
+      "split": "val",
+      "split_reason": "平面形状单维外推（后掠 40° > train 已学 35°，锥度中性）",
+      "solver": "ccx",
+      "spec_sha256": "7e0b57f03d6e092ce9fdbfaaee344cda93430df01ecb79cf2371e54f7783f504",
+      "mesh_sha256": "226b5a7471e4d516bf8a9fa1c8649abc6a4ea82be0fd1b31add627c0215e8e48",
+      "model_sha256": "4fd82b3873b77fd0c771cb28e08077bbfc4ccab90d1531a5e73d22b17cffb5e9",
+      "files": {
+        "spec.json": "95927fef3be1fbdd969d69d97ea71f0f8ea37fb178941ad36415f59cce4b04b4",
+        "model.inp": "c1a0b0cfede2c069d937523a637d6003e36c67f074624ed0f09157cd4a1fd9da",
+        "model.step": "6a93258b07cc031c744481d0a5786fb458ee4f7d465afc9ae0ddc27f178cb3b3",
+        "model.msh": "226b5a7471e4d516bf8a9fa1c8649abc6a4ea82be0fd1b31add627c0215e8e48",
+        "model.results.json": "65b0346e61292aff7fc17a50960c6f16886202e9317c50ed84d346f7f13b807e",
+        "truth.json": "dbf016ca4c2a652aa77be8445504d766a15bc61340e299a791e4b0e87e3906a7"
+      },
+      "readings": {
+        "n_nodes": 5697,
+        "max_disp": 7.014337862568018,
+        "max_von_mises": 18.651761912933694,
+        "max_von_mises_midsurface": 17.32167774629491,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.4861,
+        "n_elements": 5767,
+        "element_types": {
+          "quad4": 5767
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep40_taper040",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "808b798ff918",
+      "split": "test",
+      "split_reason": "新平面形状组合（后掠 40° × 锥度 0.4 兼具，至少一轴出 train 值域 ≤35° / ≥0.6）",
+      "solver": "ccx",
+      "spec_sha256": "301ceab5d3bb5286dbdc72e20e17aa1d5e6f0051b399112a6dd90449af1edded",
+      "mesh_sha256": "2112e151d44e6579662d18cc0782f3c598a8ae0394ee76754af3f2f5752d4f37",
+      "model_sha256": "8e7875ee60505e63a8e9d3c80a858e0e6982798a6ed8828332518361c32008e6",
+      "files": {
+        "spec.json": "9a3a385ade80dff3ba0e458eb86b4ee0c6607ff2eb9fc44ce36e6dd32e683f20",
+        "model.inp": "27a696af7686777d8a4d0e75b0c0389a5bfceccdd393d5867a517c14cc14e6d1",
+        "model.step": "41841e715f24ab31d1f04ed481f1f5bf3ed3d257fccae8a1068d508675720cf5",
+        "model.msh": "2112e151d44e6579662d18cc0782f3c598a8ae0394ee76754af3f2f5752d4f37",
+        "model.results.json": "d2182c692701aac23a65450b5e4acce67b0c3e0950033504a9d14ec40fac0e21",
+        "truth.json": "4f5ffe9478786fee0e06b6799cd3df48fb22002c63b9251aa530a92a146267df"
+      },
+      "readings": {
+        "n_nodes": 15681,
+        "max_disp": 9.867346144431435,
+        "max_von_mises": 15.940495932793402,
+        "max_von_mises_midsurface": 15.079491272314694,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5448,
+        "n_elements": 15780,
+        "element_types": {
+          "quad4": 15780
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_taper040",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "d3d62cf41985",
+      "split": "val",
+      "split_reason": "平面形状单维外推（锥度 0.4 < train 已学 0.6，后掠中性）",
+      "solver": "ccx",
+      "spec_sha256": "7cb7108cf76b6cf8ac6b94cbaaa06ceebf29f47b522adeb2ca351772dbeb69f7",
+      "mesh_sha256": "d119f3cdc934ff690be774a5195de6ddc9da6082de587d6aad73174714c8f41a",
+      "model_sha256": "7adf9576674a90a2244ec9dca9db51ebc9ed8fc9f48d6d7e4af2281c7e742af0",
+      "files": {
+        "spec.json": "57b3f9d3cbf59a8515832c8a49719adb79c5d2b57cf4045a77edbfbb7e69e703",
+        "model.inp": "0a930c087050f8974c4d5edcfa8e6bd5d124e5f9a697401dbef4ed52e601b923",
+        "model.step": "b78ea3ed6133ac96875932acb21a82af8a90b6d4d78a6854103c0f496ef21c0f",
+        "model.msh": "d119f3cdc934ff690be774a5195de6ddc9da6082de587d6aad73174714c8f41a",
+        "model.results.json": "d3d6252aad2dbe1381d4c0ecd9dbee415945f7ce718a9a6aaae292ad633998db",
+        "truth.json": "a6168447ff94db96a1b3c9e901a552222664173cb4a7d36b90991fac7136be59"
+      },
+      "readings": {
+        "n_nodes": 14937,
+        "max_disp": 4.488857764398142,
+        "max_von_mises": 12.225366825633698,
+        "max_von_mises_midsurface": 11.629420409365332,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5064,
+        "n_elements": 15036,
+        "element_types": {
+          "quad4": 15036
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_taper060",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "86cf8d83cb48",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "257dfe3567a56a7ce4549393bb8cc2994289804b5cb607d8c9e0a0cc8bcb0b81",
+      "mesh_sha256": "e921e36213b8a76f039d4cefac5cd68e290642a290b6c563e0b6e3f31bdc5f34",
+      "model_sha256": "4dca48b390795d3fd2a7dd195c1ee1096ae35be3c537635b3fa72d045bb281ec",
+      "files": {
+        "spec.json": "904fd7e3212a4950864c02cacc766b726a4da73c380d080385448f894e4c3c7f",
+        "model.inp": "b77362fcd2314d35f2acfaff9f04efd48215850ce01c1d69ee9f209c570c4d5f",
+        "model.step": "f6471c4f1f7f069be17a49f2bebc0da5dc66f9286882c7975b21833e18fa99ca",
+        "model.msh": "e921e36213b8a76f039d4cefac5cd68e290642a290b6c563e0b6e3f31bdc5f34",
+        "model.results.json": "84aae10c1052a697102fdd76454cd42b06c339c168d29b865900217f791f7759",
+        "truth.json": "3b681a65637fb13408f5ac5c6e7964fb2feb0934178341eed1aee850ccb3954a"
+      },
+      "readings": {
+        "n_nodes": 7950,
+        "max_disp": 3.3841521444874867,
+        "max_von_mises": 11.406788368911096,
+        "max_von_mises_midsurface": 10.956538876741602,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5593,
+        "n_elements": 8026,
+        "element_types": {
+          "quad4": 8026
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_taper070",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "ec5bfe48af57",
+      "split": "test",
+      "split_reason": "v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）",
+      "solver": "ccx",
+      "spec_sha256": "d26cc6cbb4d7c0a880705073fe6b967764ae14e17c437fb18c1f0564ee1ee1d1",
+      "mesh_sha256": "24a3a0c4a1dcd2107c0a1baf8d743767d34307f64a2976400ead378bfcd51c8a",
+      "model_sha256": "5afa5155a31ebb1e3b227744133c1ee332c083eb9ec8c5bed8f6342136fbe291",
+      "files": {
+        "spec.json": "4a7add67cddd5415fcbcb49642d7d88d01dcede2b8316bcfc870926ce5633069",
+        "model.inp": "ba68e5cb8a221392bbee42ba6bec68eb2033859c2003ad233d4accca737e1598",
+        "model.step": "f0c6f366bb07005042d4c73c53b471d28e0b8e5f4486b6335202725f2f2d196c",
+        "model.msh": "24a3a0c4a1dcd2107c0a1baf8d743767d34307f64a2976400ead378bfcd51c8a",
+        "model.results.json": "12d955ee0c25db9227bfc15841b0ee36382cb6be9d17448a77cb1de3b19b0a33",
+        "truth.json": "c9868ba5a26bff2fb69cab51b60c14c1b89f751da2e7bb1f4202f28db920c591"
+      },
+      "readings": {
+        "n_nodes": 6450,
+        "max_disp": 3.0283756656110494,
+        "max_von_mises": 11.095637281455511,
+        "max_von_mises_midsurface": 10.703843361124353,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5702,
+        "n_elements": 6520,
+        "element_types": {
+          "quad4": 6520
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_taper080",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "411d36dac99c",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "20e91bbabaf649524781117f18cedd3869b617ba74a39bc815a856f7b3581d1f",
+      "mesh_sha256": "f8736208da6a11ec1eaefe1a5cea632d0cce8f2b23a76cc98d5a2fe8b166577c",
+      "model_sha256": "323d7f1af4d7b53555fb7924404b447094d61b22da4a2c02cc8c038e58f026f5",
+      "files": {
+        "spec.json": "ec1b7c3b945082343031d925e0941e3615eee9b3972d697486b9d1a0f1335eec",
+        "model.inp": "11a42662825861acbec019430cfc3f02cc7d20b28a8b596346af87095345dd34",
+        "model.step": "aadf27b9ca692b1f3666e43e79ecb6f3fee1ef521ad260d82e7ae77408a88ee2",
+        "model.msh": "f8736208da6a11ec1eaefe1a5cea632d0cce8f2b23a76cc98d5a2fe8b166577c",
+        "model.results.json": "1e40aa5c4ba669389375a27e3d503cd14be925294bc91c11d98830f8b3f9b371",
+        "truth.json": "43d82cdaa816874fc667b50200bb4b60cbd9061070d8f602893aaad3b96fabdb"
+      },
+      "readings": {
+        "n_nodes": 5125,
+        "max_disp": 2.7520888147218887,
+        "max_von_mises": 10.76496177054013,
+        "max_von_mises_midsurface": 10.439201687620503,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5484,
+        "n_elements": 5191,
+        "element_types": {
+          "quad4": 5191
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_taper090",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "0218d6b27388",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "ec199faa03cbc61eb139b55358735dc58e8817c2edb683559aaed48adb213742",
+      "mesh_sha256": "c361cda8fdd9ba413dbba6cc51b51bf84d99e6d8fa8e0b73e0555b9c6faeb08e",
+      "model_sha256": "2568e08df5e66d3975e997b0064cb04fe74dc117a7404dbf8168d0b8ecceead3",
+      "files": {
+        "spec.json": "1e32cd37a3f1c3245dd6a8e2ecbc9e7be443a5883514744c864798e9f54a71b1",
+        "model.inp": "0ac5a328ceaeb14a32d3fd02306ece663b7a1ed9373f1bfbc4ad16d17d7174bf",
+        "model.step": "b5f2ccccb432379b1733dfd333286eb6e36f1dc515a44c907a4717316aa7d539",
+        "model.msh": "c361cda8fdd9ba413dbba6cc51b51bf84d99e6d8fa8e0b73e0555b9c6faeb08e",
+        "model.results.json": "e4c478722b64cb02ec8980ac102f6b9d2abffd3775ed5e8fe11108fd45df8063",
+        "truth.json": "edfa43321be9b39e9ab0e0993b228747de5f29c7ef017d5a9ac57297308c5a7d"
+      },
+      "readings": {
+        "n_nodes": 4871,
+        "max_disp": 2.53635648204659,
+        "max_von_mises": 10.580192768648201,
+        "max_von_mises_midsurface": 10.271326992381374,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5492,
+        "n_elements": 4935,
+        "element_types": {
+          "quad4": 4935
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_web1",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "4aae9b75897e",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "72c41bc9b10aa4928ee28524b74243a4ab78d9beede8db98bd6e5fdd48956a31",
+      "mesh_sha256": "10f63c3e8f2c4c13ebc5d54b96fe855ec1358e1a63a19fa88d697117d6d8d30f",
+      "model_sha256": "ca1368da38c8476d68f2d8abec06a198d3004a78bb67f7a861131bee5c04f3ad",
+      "files": {
+        "spec.json": "ad5fcfdea2ee465e5a8515d52127f05a16271e78b938e8eab4043b98ede3bf3e",
+        "model.inp": "5312acbda4d3889ac2d75f01a19e31d3c1fade9d6f8b5927d92b584c4b9dd05b",
+        "model.step": "a1f9c0f47a4120df87da6c74cad110c3a420b931d556c1b8885dbbc5e80efd32",
+        "model.msh": "10f63c3e8f2c4c13ebc5d54b96fe855ec1358e1a63a19fa88d697117d6d8d30f",
+        "model.results.json": "5a3b374fbc0f2a1e52f166ea2e305fb3fec1ac242d82496e6a2645271d228d80",
+        "truth.json": "78285f1a7f14d4a630504c926516d2c29ff32ee0803a0179ef7fd80c0a951a72"
+      },
+      "readings": {
+        "n_nodes": 5369,
+        "max_disp": 2.9645756266174628,
+        "max_von_mises": 12.697103643890502,
+        "max_von_mises_midsurface": 11.208610617304153,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5532,
+        "n_elements": 5539,
+        "element_types": {
+          "quad4": 5539
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_web1_offcentre",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "feature",
+      "geometry_class": "02769a56df7c",
+      "split": "test",
+      "split_reason": "新形式：腹板偏离等分（给定 [0.35] ≠ 等分 [0.475]；闭室不再等面积，Bredt-Batho 不再描述该截面）",
+      "solver": "ccx",
+      "spec_sha256": "b03b79c251c35d0db5019d93bdd466b36d75ccc675b2a0d7d0bd4f8390bb4e90",
+      "mesh_sha256": "bf8d7166cbf268771f83f0e8b95b358481f845c994ec5c0497e8a8afa0ed00d1",
+      "model_sha256": "18e77d148171b9b898457b32320e2588a88bb3eac9227e76107356beddcd4adf",
+      "files": {
+        "spec.json": "9e239c406ae8d84bb627cca615e162d119e20764530c01b30aedb36205784dd9",
+        "model.inp": "ac3556551e1fd6184472c161f89f605d0c3616c6c13ca67c4104e91c775ac038",
+        "model.step": "47200dfa39ddf1944596b083524113201d8c5ffa6ac413fbbe7a0461c8757387",
+        "model.msh": "bf8d7166cbf268771f83f0e8b95b358481f845c994ec5c0497e8a8afa0ed00d1",
+        "model.results.json": "377cfab6c406bfa51ee6b9cf2eb085f17fb38142a214c1e27d385773796972f8",
+        "truth.json": "9a8118ce24c7426e373233fc39557f72826b5ceea2c2b86f48fda7b15b7debb6"
+      },
+      "readings": {
+        "n_nodes": 5574,
+        "max_disp": 3.0608036591184256,
+        "max_von_mises": 14.07023624795061,
+        "max_von_mises_midsurface": 12.343593295170773,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5467,
+        "n_elements": 5744,
+        "element_types": {
+          "quad4": 5744
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "naca4412_wingbox_web2",
+      "tree": "modeling",
+      "family": "wingbox",
+      "role": "sweep",
+      "geometry_class": "60981a5c499f",
+      "split": "val",
+      "split_reason": "单维外推（腹板 2 > train 已学 1，位置仍等分）",
+      "solver": "ccx",
+      "spec_sha256": "41a06244670d82dd062d794fd66091a541783b5dba061e115eaef5e2df7ea6f3",
+      "mesh_sha256": "0e18a64c0005411e1e20d9ddeb02ce81fa7d1db50ebf8b397c9e3d9979f083d5",
+      "model_sha256": "1ee64f2f878fbfcf6570b35868f8138d6004df373a9ae382b3312c50808225db",
+      "files": {
+        "spec.json": "f70ca1e54daada38f6b3ced6d845fdb8ba726c6e435c75b1bbe4050017b6da99",
+        "model.inp": "41fbffffa2f283d79afcd43815143e62126689cb272fc1adcb022bb8999cb3a2",
+        "model.step": "23012ca46cf2999f913be139572e2e2d0eea12c2a6d8eb997952f06adab67edb",
+        "model.msh": "0e18a64c0005411e1e20d9ddeb02ce81fa7d1db50ebf8b397c9e3d9979f083d5",
+        "model.results.json": "bda771d222b2e3a13a7fe7a4e6b6c21039a190ebc0e13e863fcc4bd7aa626012",
+        "truth.json": "29f82544390b867d7d994381b322a8eea06a69b8ba9eeec16bfc5a7520aa2c89"
+      },
+      "readings": {
+        "n_nodes": 5653,
+        "max_disp": 2.8557907536180767,
+        "max_von_mises": 11.572249139130598,
+        "max_von_mises_midsurface": 10.391433412257703,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5784,
+        "n_elements": 5915,
+        "element_types": {
+          "quad4": 5915
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 10,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d20",
+      "tree": "modeling",
+      "family": "open_hole_panel",
+      "role": "baseline",
+      "geometry_class": "8d80c9bb926f",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "c57754daf578ecb747247a76e4f53af128c526f0eff6cc2a15e4d74af8b81254",
+      "mesh_sha256": "cb64167a7fe2a9c62eca07d03ea1e2ddc20d76ee51a435b059fe18da6585296f",
+      "model_sha256": "b626c3caed9c07e29b3ed5cef2c142efae68ced07e940f563121d2c07f49b9a0",
+      "files": {
+        "spec.json": "81207bc27fc19069700983b2e4e6d28111b80d1fbf70acfc2e788af8a2e9ba52",
+        "model.inp": "3da7f50c05377e3ac8b25b54327c8c1c7d4f6d062e631c614c8056a3179d562a",
+        "model.step": "bb364dae4d89d37ca63e88da0abc8752a2e00ce4a9620dbdb2c779e379899883",
+        "model.msh": "cb64167a7fe2a9c62eca07d03ea1e2ddc20d76ee51a435b059fe18da6585296f",
+        "model.results.json": "1466d83fd8c29729b8a4f5a339de5ea5cefca4e2e3478e16d15a05b9c7f780e6",
+        "truth.json": "d214d927725b84009fb622262824201d3fa75b7190bce324289dfee314b0199b"
+      },
+      "readings": {
+        "n_nodes": 9861,
+        "max_disp": 0.05749685763236197,
+        "max_von_mises": 30.379991383753765,
+        "max_von_mises_midsurface": 30.379912849830227,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6084,
+        "n_elements": 9675,
+        "element_types": {
+          "quad4": 9675
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d20_cfrp090s",
+      "tree": "modeling",
+      "family": "open_hole_panel",
+      "role": "sweep",
+      "geometry_class": "ca16d7911ae7",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "a8daf27f4774365b5f066251ef1441c558b67d2b0d0600b10e287382537483ec",
+      "mesh_sha256": "cb64167a7fe2a9c62eca07d03ea1e2ddc20d76ee51a435b059fe18da6585296f",
+      "model_sha256": "aa680b5feec16ed5a0b9784427bc0b5fa551978a0d6098329f307ffe3927a3f3",
+      "files": {
+        "spec.json": "36115fc3e2f539401db506b5ea46f03fc3708df440b5ad6ffa387cdb2c271cec",
+        "model.inp": "7267ddf57e51a33884188f06a77f2b6fa9ba8b8cb7d394af99a07ba20d7d1c11",
+        "model.step": "ebce9070dc2ed5bed99db7f7f6cea2960d69355106b53ebeaada53fd8e40fafc",
+        "model.msh": "cb64167a7fe2a9c62eca07d03ea1e2ddc20d76ee51a435b059fe18da6585296f",
+        "model.results.json": "684f7005514c2a255a02b1159d881ee034fc11fc82cab60721c89d94b42f0ecf",
+        "truth.json": "82fa7829584326c76b933771544a3d859d70f4840bbaf1fdbfbee0c58674d496"
+      },
+      "readings": {
+        "n_nodes": 9861,
+        "max_disp": 0.057345164658684174,
+        "max_von_mises": 49.01942503409144,
+        "max_von_mises_midsurface": 49.01933922566072,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6084,
+        "n_elements": 9675,
+        "element_types": {
+          "quad4": 9675
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d20_cfrp45s",
+      "tree": "modeling",
+      "family": "open_hole_panel",
+      "role": "sweep",
+      "geometry_class": "e8219d418f30",
+      "split": "val",
+      "split_reason": "复材单维外推（铺层 [45/-45]s≠[0/90]s；D30 标量轴计数 =1）",
+      "solver": "ccx",
+      "spec_sha256": "04aa998d956ef8e782070adf4c6fbaf5782d703c763da156c9f4acdc7987c682",
+      "mesh_sha256": "cb64167a7fe2a9c62eca07d03ea1e2ddc20d76ee51a435b059fe18da6585296f",
+      "model_sha256": "363e52cbdf7e5ae3dd811e6d838d3c1c02f8aa3937f0897f261aafc1ef0d4b53",
+      "files": {
+        "spec.json": "6206e535ef1eec9a40e28363fde6fb23ee6791c48ebe8e2fcb59c1707b67000a",
+        "model.inp": "3c290fafbfcd785cb98d3cd02f9518573e8f1dc33b1d1f28dc3ddc2f1c1c2ec8",
+        "model.step": "b3e637bb9d97397f0f686d34cdd1f44f2e24c58ea381c8d61901c321f89791bd",
+        "model.msh": "cb64167a7fe2a9c62eca07d03ea1e2ddc20d76ee51a435b059fe18da6585296f",
+        "model.results.json": "f5920648f5355368b45fb4af4850afc92f1fcd4698b8e5740d5430406def8479",
+        "truth.json": "a3df65d32dd86f39fc6308c03b50ee7c00205dbb62a9049af184e1d8ee0b1615"
+      },
+      "readings": {
+        "n_nodes": 9861,
+        "max_disp": 0.22584987862164105,
+        "max_von_mises": 42.822430984149904,
+        "max_von_mises_midsurface": 42.81137435819948,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6084,
+        "n_elements": 9675,
+        "element_types": {
+          "quad4": 9675
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d20_cfrp45s_d40",
+      "tree": "modeling",
+      "family": "open_hole_panel",
+      "role": "sweep",
+      "geometry_class": "a22486acc1da",
+      "split": "test",
+      "split_reason": "复材多维外推（铺层 [45/-45]s≠[0/90]s + λ=0.2≠0.1；D30 标量轴计数 ≥2）",
+      "solver": "ccx",
+      "spec_sha256": "51a3d59d2ba83f2d3b262849bb59d3e4b7c78de9e20eae8147db3616c585af2a",
+      "mesh_sha256": "c89597c2c3a054c6137d33461cdfa368d3d755ebf5241f828062c6e773f558b5",
+      "model_sha256": "f8f9826a612121c0b26c3b55e53e513c827a94a9d3d3ea2f37c1bd95811472e5",
+      "files": {
+        "spec.json": "d6ccdd2a87d2be9bd7cbb0591bef5ba638153793b0376bfa92c52b766691c44f",
+        "model.inp": "d3537150f9c8649663fd676b5876dbe0cba03fd55ed338c3cb5393f093ca0a76",
+        "model.step": "f157e9129df41a8e254a42f1b6ca974c336dfffce5c9473fc0a61dcccf56bb7f",
+        "model.msh": "c89597c2c3a054c6137d33461cdfa368d3d755ebf5241f828062c6e773f558b5",
+        "model.results.json": "9915420c238d2fcba60573c3c8d1524d30b975c08a98b979acfce2d7bc6f3693",
+        "truth.json": "01cd60e8b787e60de84cfa20e11d290ed92424bf4ff1a698f30df1bd76fd8e94"
+      },
+      "readings": {
+        "n_nodes": 8682,
+        "max_disp": 0.23270202792672434,
+        "max_von_mises": 41.42456402865787,
+        "max_von_mises_midsurface": 41.413089911987974,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6213,
+        "n_elements": 8496,
+        "element_types": {
+          "quad4": 8496
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d20_cfrpqi",
+      "tree": "modeling",
+      "family": "open_hole_panel",
+      "role": "sweep",
+      "geometry_class": "1a539873e505",
+      "split": "val",
+      "split_reason": "复材单维外推（铺层 [0/45/-45/90]s≠[0/90]s；D30 标量轴计数 =1）",
+      "solver": "ccx",
+      "spec_sha256": "0b721745c75e08e2fee6c8699bad735f78dd5e36802c8d01bed081273f4ed4ac",
+      "mesh_sha256": "cb64167a7fe2a9c62eca07d03ea1e2ddc20d76ee51a435b059fe18da6585296f",
+      "model_sha256": "43248c956124060829c31afed726399cac96f7954c00ff4027e30251255ffe69",
+      "files": {
+        "spec.json": "f6d4648a9d065c89cf8da2f200fd35fd13779882436a53249f8a4cebb3111cbf",
+        "model.inp": "69b1fce6af76670d99a32105f2d2474ab2175c806448a8fedcef83d251ff780f",
+        "model.step": "c8839df284a442707d0da706aa23ed18415b31803a25809197601adeb4b2b4e0",
+        "model.msh": "cb64167a7fe2a9c62eca07d03ea1e2ddc20d76ee51a435b059fe18da6585296f",
+        "model.results.json": "b976d5aed9341096e795dfb5adfff4fbb3fc333877e1f7364c9db3b720e9a3a2",
+        "truth.json": "27c49055867cd3ea0b64729c83cca578d5d2043bb2c038e9be282bd9c30675b4"
+      },
+      "readings": {
+        "n_nodes": 9861,
+        "max_disp": 0.07776382494169445,
+        "max_von_mises": 30.310472425353623,
+        "max_von_mises_midsurface": 30.310469957685147,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6084,
+        "n_elements": 9675,
+        "element_types": {
+          "quad4": 9675
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d20_offcentre",
+      "tree": "modeling",
+      "family": "open_hole_panel",
+      "role": "feature",
+      "geometry_class": "a4a89bc00841",
+      "split": "test",
+      "split_reason": "新形式：偏心孔（(120, 60) 偏离形心 (200, 100)；train 只有中心孔，偏心后 Howland 无解析对照）",
+      "solver": "ccx",
+      "spec_sha256": "f540b5efdc64a79b6eeeeb544701d578bdd5fa9cf136103b67b22da4ba0c8db5",
+      "mesh_sha256": "23ccf1fece10b8f4b13f0846a6ae30d1006915fc17c9d0bd273b314d636cf8e5",
+      "model_sha256": "2a165fab43c7e81734aa6fa36e0f2f6c35cea92282c78636d4c9f24fa87ca444",
+      "files": {
+        "spec.json": "c98e3ee5305592591bf17bfd54be028ba6e183bf68e3ae5c052647b62563477b",
+        "model.inp": "6fc8c7fb4547980364a76baf14249d37635d5360372c96d9c09b7f476662c811",
+        "model.step": "7af1f8935ae79d7427312ea88e803556d13d1f0aeb1cf34b4a5474f4b8101de9",
+        "model.msh": "23ccf1fece10b8f4b13f0846a6ae30d1006915fc17c9d0bd273b314d636cf8e5",
+        "model.results.json": "1c9c13b122c6d17b51535ac8f704a47a24e9dd8522e8a790e78d926925c62393",
+        "truth.json": "0de0c2a486dab28bb337462a82528203025a27a880d1c2f029256409e6bf3d9c"
+      },
+      "readings": {
+        "n_nodes": 9349,
+        "max_disp": 0.05863034576548991,
+        "max_von_mises": 30.693219249268655,
+        "max_von_mises_midsurface": 30.693182271980486,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6562,
+        "n_elements": 9163,
+        "element_types": {
+          "quad4": 9163
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d30",
+      "tree": "modeling",
+      "family": "open_hole_panel",
+      "role": "sweep",
+      "geometry_class": "bb04f7124374",
+      "split": "test",
+      "split_reason": "v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）",
+      "solver": "ccx",
+      "spec_sha256": "2d9fb282c2d18dc0f8cab915a1a8c5ae7fcdc8c8c09c81c2011fe8ecf4a0deaf",
+      "mesh_sha256": "fce34fa1c51d84ebbf1d6c2c824e57713bd93d8e48ddc14d181f8f51165ca1f2",
+      "model_sha256": "0349451ca1b1b535bdb7f8d9eb27d9b74168aef1c17a08ce5e46f2ff7e298a3a",
+      "files": {
+        "spec.json": "2653e38c47d364ab2118572135dde3e22df8496b13809279d4514763f89b3597",
+        "model.inp": "652999efdb7235819d26b3a09c5ec16436aea79f144a2c43197478ca46965520",
+        "model.step": "b537f1a7c48bd13eab211112f0a21334157b3702ea5bc06590d7b998ae9d978d",
+        "model.msh": "fce34fa1c51d84ebbf1d6c2c824e57713bd93d8e48ddc14d181f8f51165ca1f2",
+        "model.results.json": "bc5523128d3ed60f65592735621afa74c63d204abc72d8097ab8fa424d64f682",
+        "truth.json": "8ec24f9d5a887e0a458e0e8eb433f41184381dc6fc1f9f3ea0ac31a20b399b73"
+      },
+      "readings": {
+        "n_nodes": 9524,
+        "max_disp": 0.058276548259045845,
+        "max_von_mises": 30.58675618301231,
+        "max_von_mises_midsurface": 30.58675603460365,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5481,
+        "n_elements": 9338,
+        "element_types": {
+          "quad4": 9338
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d40",
+      "tree": "modeling",
+      "family": "open_hole_panel",
+      "role": "sweep",
+      "geometry_class": "68f73f8a4e9f",
+      "split": "val",
+      "split_reason": "单维外推（孔径比 λ 0.200 > train 已学 0.1，孔仍居中）",
+      "solver": "ccx",
+      "spec_sha256": "c33429586c88dd17520325ab927cd1c2018f785c41907b691b0c477f81c6f2b5",
+      "mesh_sha256": "c89597c2c3a054c6137d33461cdfa368d3d755ebf5241f828062c6e773f558b5",
+      "model_sha256": "c738fb5d5c35b4036a763de49f620faa658f0ba3f020b00ecf489b37e2c1142f",
+      "files": {
+        "spec.json": "343ef54e5d3a0fe20ae22a5f44c5f36d5fd94f5c2b40fb1fac6be53d5ce7389c",
+        "model.inp": "43de60251fc2d67d3b52d0b7736678b26fe7fadf7ba9d4e48b34f6f5a5f56e76",
+        "model.step": "13c3064ff40783858b4bae17f23c83b2d91f7a366a08de4d79f859427b2b7ee2",
+        "model.msh": "c89597c2c3a054c6137d33461cdfa368d3d755ebf5241f828062c6e773f558b5",
+        "model.results.json": "ff6cd3135aaee8905a18e83ff93700f557a3197cce020d10c2f4d947906a414f",
+        "truth.json": "bc09f1ba4f857b1e93ae5f638246d570c73ecade88f0e6719dfa9065bc0ed37a"
+      },
+      "readings": {
+        "n_nodes": 8682,
+        "max_disp": 0.059401801929534086,
+        "max_von_mises": 31.3227428718952,
+        "max_von_mises_midsurface": 31.322729480482266,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6213,
+        "n_elements": 8496,
+        "element_types": {
+          "quad4": 8496
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d40_offcentre",
+      "tree": "modeling",
+      "family": "open_hole_panel",
+      "role": "feature",
+      "geometry_class": "104c69f98102",
+      "split": "test",
+      "split_reason": "新形式：偏心孔（(120, 60) 偏离形心 (200, 100)；train 只有中心孔，偏心后 Howland 无解析对照）",
+      "solver": "ccx",
+      "spec_sha256": "abd767f395c07950294b3a9e5ea40bf4e6ac6d8c5b3150ccec7d4b7a74591b90",
+      "mesh_sha256": "535f9dbba3b77b7c439399a4759f730450cb808d8474164f99c6d5173b9d07cc",
+      "model_sha256": "d93331811f649f9b39c84fd33265f42c870b003bdf7ee62e2ea819b40fec164b",
+      "files": {
+        "spec.json": "95e0faa6ce5adb5d534792adc708bffe25e32fd6381cbea88980cbcbf8b1373d",
+        "model.inp": "658f4ac8402c8f08011a949e0501a8dcc92b2834bc2106bdfddf7c759fb2b8cc",
+        "model.step": "c7bfb68fea51201eded0840a52f2cb5753b6e4b21d6a830e1a993dca16f87943",
+        "model.msh": "535f9dbba3b77b7c439399a4759f730450cb808d8474164f99c6d5173b9d07cc",
+        "model.results.json": "365aca640e67ad2d110f17851470a607186edc69437357ed42495303e20c79d1",
+        "truth.json": "3c1b1e93dcd084901d59ddc5db60a6f77961dd164963dd93015fbbff6e24a1c8"
+      },
+      "readings": {
+        "n_nodes": 8082,
+        "max_disp": 0.0647943766931977,
+        "max_von_mises": 33.77269305684502,
+        "max_von_mises_midsurface": 33.77268455244325,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6626,
+        "n_elements": 7896,
+        "element_types": {
+          "quad4": 7896
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d50",
+      "tree": "modeling",
+      "family": "open_hole_panel",
+      "role": "sweep",
+      "geometry_class": "32e9f572f8f8",
+      "split": "val",
+      "split_reason": "单维外推（孔径比 λ 0.250 > train 已学 0.1，孔仍居中）",
+      "solver": "ccx",
+      "spec_sha256": "a7ce46849c8cf594e1afa30101b69314f21b53b661f601b13e167796bd1abcf5",
+      "mesh_sha256": "8d2cb4886bd0a7e0c0fe83a8518e4d6cc0436b7b546c1d107f3aec6b4d653045",
+      "model_sha256": "13329c6a99122a69c6ec1a848735cb0167fa5682b3a278775b42ae3b6e4d1ab3",
+      "files": {
+        "spec.json": "f3c6dcaebcc64b60aa7e85f4f13806faad43762f8de275b9147f1d039a7875fa",
+        "model.inp": "a9e10d69a6c1897bd90f1c08d34faca19c5e1e3b56a83f7320b78e090347adc6",
+        "model.step": "70320af0480cdb5eb895d2b6de1f77c2ed7c0fa15faae67117a9ffa0820b3924",
+        "model.msh": "8d2cb4886bd0a7e0c0fe83a8518e4d6cc0436b7b546c1d107f3aec6b4d653045",
+        "model.results.json": "a6ab01772012e4fb394f24aebc9c151f6e1257f8adc011fc1292dd9b30173a41",
+        "truth.json": "43087fc8d82885d709545029c52dc878181b60966f306f634b88ddb144efab35"
+      },
+      "readings": {
+        "n_nodes": 7918,
+        "max_disp": 0.06091809937957684,
+        "max_von_mises": 32.31347090482784,
+        "max_von_mises_midsurface": 32.31344491286136,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6266,
+        "n_elements": 7732,
+        "element_types": {
+          "quad4": 7732
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "open_hole_panel_500x250_d45",
+      "tree": "modeling",
+      "family": "open_hole_panel",
+      "role": "sweep",
+      "geometry_class": "e16d67d69ad4",
+      "split": "test",
+      "split_reason": "v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）",
+      "solver": "ccx",
+      "spec_sha256": "7f349eb4568c9bd845648aa9c06888eca654eb87cfe5bc7a67bbfe508478267c",
+      "mesh_sha256": "354fcd0999e6bc9f1492178834208bbefe8159fd35e09e4f09a2786c6306fbde",
+      "model_sha256": "c62568407134615119c25ab881789118d89e94d5125ad750cd7202bcc1f0b389",
+      "files": {
+        "spec.json": "913015680e85c6713b41cc8cc8502bc3b42ae3ee21f38038ad058a75be6b3339",
+        "model.inp": "17d94935c5db715d2f6f181c5d80bb333225baf5290bbf13019a6791fb9fa3a3",
+        "model.step": "c5f21d25dd8f880d8e8bad85202604b5fca6e3398e41f36538e8b617672fbada",
+        "model.msh": "354fcd0999e6bc9f1492178834208bbefe8159fd35e09e4f09a2786c6306fbde",
+        "model.results.json": "45e4671e44fe2c99e7448b89b6b8a547ba65da8ce50323f0069f7b8dc19f59de",
+        "truth.json": "9cb7c9c3d3afa74153f1a01cc49991c76e3b24e069e138a37ab4dfcc61eb97f1"
+      },
+      "readings": {
+        "n_nodes": 12863,
+        "max_disp": 0.058507446060739994,
+        "max_von_mises": 24.885598227940438,
+        "max_von_mises_midsurface": 24.885594403968764,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.571,
+        "n_elements": 12637,
+        "element_types": {
+          "quad4": 12637
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "open_hole_panel_600x300_d30",
+      "tree": "modeling",
+      "family": "open_hole_panel",
+      "role": "sweep",
+      "geometry_class": "2db453f8909f",
+      "split": "val",
+      "split_reason": "尺寸单维外推（600x300 ≠ train 已学 400x200）",
+      "solver": "ccx",
+      "spec_sha256": "e793fa8bbcdbf1aadc70042b832a2d5ca8e798913106b9941848b50219f2f2d1",
+      "mesh_sha256": "227bb7d4a3405ead34136e34b605fcbcfcb06c493207e64733a19891a5a8e931",
+      "model_sha256": "706a0ab56875b43799a8d233210c078e2a4bf91d8fd46114edf419966fc5952b",
+      "files": {
+        "spec.json": "9e64a0c17bd1c6639a2efaf7f3aa229dfe5ff73205725cdb18a3ceb3c06d9dfa",
+        "model.inp": "569fe2f1d5c059617103a33e5397bb5fa098eefef9da947964594129cebd9310",
+        "model.step": "5dd42fe57c3fe48f5d01a3403ab0baf6867dc3e096df9af37f429054b5d7e080",
+        "model.msh": "227bb7d4a3405ead34136e34b605fcbcfcb06c493207e64733a19891a5a8e931",
+        "model.results.json": "a5605817d09ead50303844aeb4b9cce07a68a7cfc3212ba320772e14aa049fdd",
+        "truth.json": "12814ceecef1b48f0eee170ce96c728ef106061193704ef5d919e88487698f9a"
+      },
+      "readings": {
+        "n_nodes": 20736,
+        "max_disp": 0.08528291970175739,
+        "max_von_mises": 30.19004763073841,
+        "max_von_mises_midsurface": 30.190029540399312,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5808,
+        "n_elements": 20474,
+        "element_types": {
+          "quad4": 20474
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "open_hole_panel_600x300_d60",
+      "tree": "modeling",
+      "family": "open_hole_panel",
+      "role": "sweep",
+      "geometry_class": "634a9fb4d54d",
+      "split": "test",
+      "split_reason": "双维外推（λ 0.200 与 600x300 同时 ≠ 锚点 λ 0.1 / 400x200）",
+      "solver": "ccx",
+      "spec_sha256": "6688e48de42162e2df8943f54e267901629732991824db65385dea8913a83706",
+      "mesh_sha256": "31f57a25e5c54a87640776b3d1b9e6fc351c82acb41d0a26276997045b2b16e3",
+      "model_sha256": "7f82671c03993ae024b01e3ad7ac7b985c8c09475e1893b817a47355ccbc4d00",
+      "files": {
+        "spec.json": "8865d470142a6eb2b39d27bad8044b73df44bc5fafdadd72ba75b223f1ae27d6",
+        "model.inp": "0a0fcc3f3e002e37194d7b1ae153fe32bfb7e3a8d66573f032be5c3d1067f216",
+        "model.step": "d635ae5e1ea05c04f81f7b350f44a9d6b9c4b28267d651e7eada91467ddb86c7",
+        "model.msh": "31f57a25e5c54a87640776b3d1b9e6fc351c82acb41d0a26276997045b2b16e3",
+        "model.results.json": "fa3b908ef858181065a164bbe38d25fcd2a9f48e3858dda79681d4c6d49b4f16",
+        "truth.json": "60c133645a35122922f734c6400f3b9f76d8b878958dcf16c685c1b91b4ed7af"
+      },
+      "readings": {
+        "n_nodes": 16151,
+        "max_disp": 0.08814676653782373,
+        "max_von_mises": 31.35007463248755,
+        "max_von_mises_midsurface": 31.35007382606262,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.602,
+        "n_elements": 15889,
+        "element_types": {
+          "quad4": 15889
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 6,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "stiffened_panel_600x600",
+      "tree": "modeling",
+      "family": "stiffened_panel",
+      "role": "degenerate",
+      "geometry_class": "7ba2e12216c0",
+      "split": "train",
+      "split_reason": "落在训练包络内（未命中任何留出区域）",
+      "solver": "ccx",
+      "spec_sha256": "dbee00034c33a1ce9ddf5ea9c1282c394e8fb69f23ef678ffe9760e98e8b7f27",
+      "mesh_sha256": "471e3857a534d4af30bc8a86073ab745b00a5b59a82f409c4c1ba9977a59f9e5",
+      "model_sha256": "685a795258e4b4b9a6c676e60d1e2cf3434a54e09f3960b4037fd9b7fc6855cc",
+      "files": {
+        "spec.json": "ed8ba7813c65827f07ceee4e513742d18f865a6c705a36b27751ab9407ba25d0",
+        "model.inp": "8fcdd2c660f5adfe742b8b77af4d3a97262671163a54464229e4f74f4c4390f0",
+        "model.step": "5a53366efaae4f53cd9d16c6e9d18cb1922a5572f5327dc45a998c6ebe055c92",
+        "model.msh": "471e3857a534d4af30bc8a86073ab745b00a5b59a82f409c4c1ba9977a59f9e5",
+        "model.results.json": "51161828f1e65853284be2aeff01ef98bc6c6ca665f65add0d9bff8d13eeb29d",
+        "truth.json": "aec9a8151ec03cbf7640c9a5aa27ec4be7732045663dac61239541f65b082578"
+      },
+      "readings": {
+        "n_nodes": 46432,
+        "max_disp": 0.961753,
+        "max_von_mises": 2.968201976638486,
+        "max_von_mises_midsurface": 1.3589707994248,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6167,
+        "n_elements": 46031,
+        "element_types": {
+          "quad4": 46031
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 4,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "stiffened_panel_600x600_str3",
+      "tree": "modeling",
+      "family": "stiffened_panel",
+      "role": "feature",
+      "geometry_class": "bc4990b00bae",
+      "split": "test",
+      "split_reason": "族内新形式（光板 ⇒ 3 根长桁）",
+      "solver": "ccx",
+      "spec_sha256": "54857698550508950bb9c37333c72aa4df7fd4ef70315a8a475d538b323a15a8",
+      "mesh_sha256": "4a7d73c77b1bc2add361bcef1afd703c2704cf24d8333f5b3a41257f09b14a85",
+      "model_sha256": "a7c0dc36d9b56309f23b05ecd1c5dec0951d240ce721bc8dab4acb4f78f344f2",
+      "files": {
+        "spec.json": "54bbbc45d8c08fa97751fda75c36aaf4a58abcc3431bd7bd00f12899d4293e3b",
+        "model.inp": "3f4e4172431754b818b2eda830787cf92c5b455eee5b7d43424ed6196f209b9a",
+        "model.step": "00ebf1acd26da7bb3c38f6f0c532bb4df9391b25cd76ff4df9b1b4c1a279c2d4",
+        "model.msh": "4a7d73c77b1bc2add361bcef1afd703c2704cf24d8333f5b3a41257f09b14a85",
+        "model.results.json": "d91a83f38b6d168892542a434b24b37c9de5a5ba63367a5b3bd57826f97d2437",
+        "truth.json": "8ad6dd36c37c67eb5053e72710dc922b6b80f9aa853d8c3e14cde43098f23f4d"
+      },
+      "readings": {
+        "n_nodes": 51401,
+        "max_disp": 0.015261651810931748,
+        "max_von_mises": 1.7743572948808453,
+        "max_von_mises_midsurface": 1.7689225568450382,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5367,
+        "n_elements": 50976,
+        "element_types": {
+          "quad4": 50976
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 4,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "stiffened_panel_700x600_str4",
+      "tree": "modeling",
+      "family": "stiffened_panel",
+      "role": "feature",
+      "geometry_class": "e30e5c5db44d",
+      "split": "test",
+      "split_reason": "v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）",
+      "solver": "ccx",
+      "spec_sha256": "37c14f1f11a98a1aabfbab4044be09135d7718d487ff5a27b49574621f3dd31a",
+      "mesh_sha256": "98e0ef91d468ac7ec5fd8bdf5b8c5944f47cc3bbbd5c45f2febe99e01a1e65f4",
+      "model_sha256": "278a30ef26ad8e1a65cf2d58baf2ad066c0cc0d88b7306778c22444e3f186d86",
+      "files": {
+        "spec.json": "e258dc4813e095797d56a7be283f2ba10d265e73f0f0f7fe6b3881ba440d4eea",
+        "model.inp": "1272ba56de6792f9248e0df4a2ed40748c91dfe8172c1fdce36b183034682e1a",
+        "model.step": "ec405549bbe1d061e4d154acd79d130a9a03680399cc6141f0b9d46df305475d",
+        "model.msh": "98e0ef91d468ac7ec5fd8bdf5b8c5944f47cc3bbbd5c45f2febe99e01a1e65f4",
+        "model.results.json": "24e54fceaf65d6df649b00f7b3b1958c093754c8d1aa3b70fc5c2d49c94116a0",
+        "truth.json": "a69a5f5483a790b393de343f0c81429958f6d96b2a68873621bf86b52b53eb5c"
+      },
+      "readings": {
+        "n_nodes": 61449,
+        "max_disp": 0.014022553800311966,
+        "max_von_mises": 1.646617909911012,
+        "max_von_mises_midsurface": 1.6421694005538352,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5561,
+        "n_elements": 60976,
+        "element_types": {
+          "quad4": 60976
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 4,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "stiffened_panel_800x600",
+      "tree": "modeling",
+      "family": "stiffened_panel",
+      "role": "degenerate",
+      "geometry_class": "652d537e3d91",
+      "split": "val",
+      "split_reason": "平板尺寸单维外推（800x600 ≠ train 已学 600x600）",
+      "solver": "ccx",
+      "spec_sha256": "07fb2e620a8fab69c762774e771e3a71907fb6f593b947338f11736fbf20e30d",
+      "mesh_sha256": "9ca6dedc23d67c4cfb9f0ccb6aee3bd3aa534c573069f580864468fc8d412af2",
+      "model_sha256": "6b2350a529fd34b1c8aa560e687ef68d43fcf2a6340ca5e2545bd68647311094",
+      "files": {
+        "spec.json": "33b642b37347dc50a427d6bc346343c55bb62571a7213d171635f9184cbda101",
+        "model.inp": "ba0e4ba1136480e44f31757e2db23abc62859830a59745d6fb7136f5b205eeda",
+        "model.step": "6b19a73ebc5b1fd638e4e1b6c8309244a7be4a89b5846d3e399e3cbd946eb5be",
+        "model.msh": "9ca6dedc23d67c4cfb9f0ccb6aee3bd3aa534c573069f580864468fc8d412af2",
+        "model.results.json": "49d5b641f6c805428b7b846db7725df0c3855d8155e7ce14655f0db186dee865",
+        "truth.json": "a99fbcbd7924fd8e925c500413462dff32215f7300f79b4034ec51fa13faba67"
+      },
+      "readings": {
+        "n_nodes": 61834,
+        "max_disp": 1.56189,
+        "max_von_mises": 4.302588854538858,
+        "max_von_mises_midsurface": 2.2929980498307287,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.6183,
+        "n_elements": 61365,
+        "element_types": {
+          "quad4": 61365
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 4,
+        "no_tri3": true
+      },
+      "class_size": 1
+    },
+    {
+      "case_id": "stiffened_panel_800x600_str3",
+      "tree": "modeling",
+      "family": "stiffened_panel",
+      "role": "feature",
+      "geometry_class": "b8239f1030bc",
+      "split": "val",
+      "split_reason": "平板尺寸单维外推（800x600 ≠ train 已学 600x600）",
+      "solver": "ccx",
+      "spec_sha256": "debd4c6d02cb4cd2354e82070c6d89da9f5b5f37941aed6acb66969ae0d901b0",
+      "mesh_sha256": "f1f733914a5750a8b510b7b1c2a37d72d695cb72d6f832c588507b512a2c2167",
+      "model_sha256": "c208386dd05cd6aa438b9bf4997cad87a1bc19ebec72f05ed17dee6de68deace",
+      "files": {
+        "spec.json": "7bcbdd272066f466053b301fccd7d0c24be0c7d8270d5c4840c977a06dc9be04",
+        "model.inp": "81c3d945cacdc2c7576e6ee2f1988491d36193a71f27900c79c6f80e3167d884",
+        "model.step": "075c675988787b8f4424c9b6cb9f9911eb48afa280d6de3f228220e631ba6e17",
+        "model.msh": "f1f733914a5750a8b510b7b1c2a37d72d695cb72d6f832c588507b512a2c2167",
+        "model.results.json": "feda662ff4ccb56bb4d637f14ef1b3b168b8c0649c25e67ad1133ca99498a131",
+        "truth.json": "ef690a9f48eef011610746d641819478d58e66a9f8e455a5bb35fbe0953ce1d3"
+      },
+      "readings": {
+        "n_nodes": 67797,
+        "max_disp": 0.028976110654446975,
+        "max_von_mises": 2.4046570188336363,
+        "max_von_mises_midsurface": 2.3935898686947783,
+        "stress_definition": "outer fibre",
+        "min_jacobian": 0.5978,
+        "n_elements": 67300,
+        "element_types": {
+          "quad4": 67300
+        },
+        "n_tri3": 0
+      },
+      "gates": {
+        "semantic_gate_pass": true,
+        "semantic_gate_n_checks": 4,
+        "no_tri3": true
+      },
+      "class_size": 1
+    }
+  ],
+  "limitations": [
+    "val 共 17 条（64 条下 6:2:2 目标要求约 13 条）：val 的绝对数量仍是样本量的限制，不是划分规则的缺陷。",
+    "每个族都有 val 样本，val 的族代表性完整。",
+    "当前划分是**规则**（feagpt/manifest.py :: HOLDOUT_REGIONS）而不是显式表：每族声明留出区域，未命中区域即进 train。规则已按 D12 锁定口径 A 复现 11 条（见 manifest.py :: D12_LOCKED_SPLIT，由 eval_dataset 断言），并在 D15（后掠/锥形兼具 -> test）与 D16（单维外推 -> val）上扩展。",
+    "柱壳族（fuselage_barrel）的网格是**有包络的**（D19，2026-10-05）：n_stringers 只接受 0 或 ≥ 5，1–4 根会在框的外弧（r ≈ R 的框/蒙皮粘结线）上留下三角（3str/2frm 20、4str/2frm 16、4str/3frm 22）。五种修法（simple 重组 / 只细分框经线 / 蒙皮与框一起细分 / 框专用尺寸场 / 逐面 2-D 算法）已全部实测否决，故族 _validate 直接**拒绝**该区间，而不是建一个带三角的模型。数据集因此暂时拿不到 1–4 根长桁的柱壳；val 落在 10/12/16 根、train 落在 5–8 根，均未受影响。",
+    "柱壳族（fuselage_barrel）的双码交叉判据口径 = **D20（2026-10-05）**：门的量是「**剔除自由端端载环后的结构 max|u|**」（该环由族自己的 fuselage.barrel_nodes 圈定，不是写死的坐标带）与「沿轴 **截面形心挠度剖面**」（偏差对**尖端挠度**归一，避免近零截面把相对误差放大），两者容差仍 1 %。**模型全域 max|u| 仍如实印出，但不用于判绿/红**：实测 ccx 2.63102 vs abaqus 2.67818 mm = 1.79 %，峰值落在**自由端框的内缘自由边**上（框建成 30×3 平环板，只沿 r = 1000 与蒙皮粘接），是「节点力压在自由壳边」的局部效应：纯内压（光滑面力）两码只差 0.25 %，剔除该环后 0.42 %，把端载只压在筒壳环上（3226→644 节点）峰值仍在同一位置、差仅降到 1.11 %。",
+    "柱壳族（fuselage_barrel）的内压方向 = **D21（2026-10-05）修正**：`*DLOAD ... P` 是沿壳面法向的**带符号**压力，而壳体法向由建面方式决定 —— `occ.revolve` 建出的桶段蒙皮与拉伸翼盒蒙皮/平板矩形**法向相反**，所以写死 `-abs(p)` 的旧 deck 实际把桶段**由外向内压**：实测中面径向位移 −0.22725 mm，而薄壁闭式解 w = pR²/(Et) = **+0.22800 mm**。符号现由建面器声明（GeometryResult.pressure_dload_sign，默认 −1 保证翼盒/平板 23 条零扰动，桶段声明 +1）。修正后实测 +0.22725 mm，差 −0.329 %。⚠️ 门禁读数：只有 `pressure.radial-growth` 抓得住这个符号错 —— `pressure.hoop-membrane` 比的是 von Mises，压/拉状态下都为正，符号错也照样 PASS。",
+    "柱壳族（fuselage_barrel）**只支持 blade 截面长桁**（D22，2026-10-05）：建面器（geometry.build_fuselage_barrel）每条长桁只出一片平面径向腹板，**从不读 stringer_kind**，所以 T/L 等带翼缘截面会被静默建成 blade。实测 T(fw=30) 与 blade 逐位相同（158548 节点 / 157972 单元 / minJ 0.5159），而 topology 按 3 面/长桁要求 48 面、只观察到 16 —— gate 4 会 FAIL（非静默），但族 schema、_validate、_design_fuselage 三处都曾声称支持。现由 _validate **拒绝**非 blade（与 D19 同一 posture），并留档为待实现能力；副作用是 manifest._fuselage_new_form（新截面形式 → test）暂无数据可匹配，T3 的留出形态改由**双维外推**提供。",
+    "柱壳族（fuselage_barrel）的尺寸维**只朝收缩方向外推**（D27，2026-10-06）：CalculiX 在分解前会把每个壳单元**展开成实体**（这**不是** `OUTPUT=3D` 的代价 —— 关掉该参数后 `number of equations` 3489495、`nnz` 194129961、`.12d` 字节数 68750934 三项分毫不变），于是方程数 ≈ **14.9 × 壳节点数**（三点实测一致）。在本机 16491000 kB 内存 + 16866936 kB 交换（≈ 33 GB 提交上限）下，**实测可算的最大点是 158548 节点 / 2359690 方程，最小的失败点是 188674 节点 / 2816466 方程**（返回 0xC0000005，而 fork 已先报 0xC000012D = STATUS_COMMITMENT_LIMIT）；柱壳基线自身（158524 节点 / 2359690 方程）已贴着这道墙。长度只放大 20 % 即触墙（d2000_l2400 建出 188555 节点）。故原计划的 D1600+L3000 与 L3000 两条被换成它们的收缩孪生点 （D1600+L1600 与 L1600）；缺的「放大臂」估计需 48 GB 级内存才能补（未实测）。⚠️ 该上限**不是常数**：Windows 在那次崩溃后把页面文件自动扩到 24975728 kB（≈ 41 GB 提交），上面记的是**当时**实测值；扩容后未再复测放大方向 —— 即便可以，数十 GB 的常驻加重度换页也不适合当作可复现的数据集流水线。",
+    "开孔板族（open_hole_panel）的双维外推 = **D28（2026-10-08）**：λ 与 (L,W) 同时 ≠ 锚点（λ 0.1 / 400×200）→ **test**（插在偏心 test 之后、两个 val 谓词之前）。声明前这样的点会同时命中两个 val 谓词、按「首个命中」落 val —— 与柱壳 D25「双维 → test」哲学相悖的宽松读法，已在 batch7 角点（600×300+d60）入库前补上。",
+    "开孔板族（open_hole_panel）的**厚度维经实测判定退化、不作为样本轴入（D30，2026-10-24 老王拍板）**：在恒定名义应力口径下，载荷 `F = sigma * width * thickness` 与膜刚度 `E * thickness` 精确抵消，所以 `u = sigma * L / E` 与壁厚**无关**。实测（`_probe_t7b`）：[0/90]s 2.0 mm → max|u| 0.05734516，1.0 mm → **0.05734516**（逐位相同）；[45/-45]s 0.22584988 vs 0.22585092；孔边峰值 vM 差 0.02%~0.09%，低于任何闸门容差。唯一的区分度是总反力（4000 N vs 2000 N）。因此厚度变体作为样本**零信息量**（模型只要会几何就能「预测」），未入库；它改立为常设自检 `check_forms :: T7.thickness-invariance`（断言载荷比恰为 2、等效模量与 t 无关）——载荷若未按 t 缩放，两个厚度的位移会差 2 倍，这是很强的载荷口径探针。厚度要有可观测性必须引入弯曲/屈曲/面外载荷（`D ∝ t^3`），那属于新结构形式，不是本族的放量。",
+    "开孔板族的**材料维 = D29（2026-10-11）**：复材层合以 CLT 等效单层入库（老王拍板架构 B —— `*ELASTIC, TYPE=ENGINEERING CONSTANTS` 9 常数 + S4 均匀壳，两码同构；层间/逐层应力不进数据集，ccx COMPOSITE 卡只支持 S6/S8R 也不支持）。划分：复材首实例（锚点几何）→ sweep/**train**（T6 web1 先例），复材+几何单维 → val，双维 → test，偏心谓词优先。**去重指纹随之扩展**：model_sha256 在网格字节 + 壳厚之外加入 deck 的 `*ELASTIC` 块（材料律）——实测复材 [0/90]s d20 与铝 d20 网格逐字节同构、厚度同为 2.0，旧指纹判为同一模型（80695b4c759e），加材料块后 0 重复、老 40 条内部零新增重复（verify_dataset 实测）。等效单层的独立验证线 = `_probe_t7/verify_laminate.py`（加载端平均恒等式口径，TOL_EFF=3% 按实测链钉）：打样双码 E_eff 残差 −2.070% / −2.073%，两码差 0.003%，偏差为 4 mm 非结构 S4 对正交异性的系统离散。",
+    "开孔板族的**划分判据 = D30（2026-10-24）标量轴计数**：本族四条标量轴 **M** 铺层（`[0/90]s` 为锚点）、**T** 壁厚（2.0 mm）、**L** `lambda_ratio`（0.1）、**S** 尺寸（400×200）；偏离锚点 **0 轴 → train、1 轴 → val、≥2 轴 → test**，偏心孔仍走独立 test 谓词（谓词优先）。D30 是 D29 的维数化重述而非推翻：实测（`_probe_t7b/probe_d30_split.py`）**8/8** 已入库开口板 case 的划分零变化，D12 复现。本批新增 3 条：`cfrp45s`（[45/-45]s，M）→ val、`cfrpqi`（[0/45/-45/90]s 准各向同性，M）→ val、`cfrp45s_d40`（M+L）→ test；`cfrp090s` 仍是 0 轴锚点 → train。**可观测量分离度**：三种铺层 max|u| 分别为 0.0573 / 0.0778 / 0.2258 mm，孔边峰值 vM 49.02 / 30.31 / 42.82 MPa（准各向同性最低，符合孔边集中最弱）。**同时修掉 D29 契约的一处实现缺陷**：`LayupSpec.is_balanced` 原按角度 `% 180` 求和判定，会把 `-45°` 归一成 `135°` 而误拒合法平衡铺层 `[+45/-45]s`；改为**有符号配对**，并让 `a_matrix` 真算 A16/A26（原为硬写 0）、`validate_for_deck` 增加 `|A16|,|A26| < 1e-9*max(A11,A22,A66)` 的物理交叉校验。准各向同性铺层另用**各向同性恒等式 `G = E/(2(1+nu))`** 独立验 CLT（实测 20616.463 vs 20616.463，不依赖任何铺层公式）。",
+    "翼盒族的**尺寸维划分 = D31（2026-10-24）train 区间**：`span` 与 `skin_thickness` 从 D25 式「精确锚点」扩为训练**区间** `WINGBOX_TRAIN_SPAN = (1600, 2400)`、`WINGBOX_TRAIN_SKIN = (2.0, 4.0)`。核心二分：**出区间 = 外推**（val 单轴出 / test 双轴出），**出锚点但仍在区间内 = 扫点**（train）。D25 的「连续维只采过一个点 ⇒ 只能等号」不是错，是**采样不足的表现**——主动补档位就造出了 interior，区间才诚实（D18「8 学 up to 8」的连续版）。test 三入口：两轴同时出区间 / 一轴出区间 + 他轴（ribs>5、sweep>20、tcr<0.6、webs>1、非锚定长桁）/ 两轴出锚点但都在区间内（交互点）。**`chord` 绝不算「他轴」**（800/1000 两档都在 train，列进去会把 3 条 chord800 重贴成 test）。落地前实测（`_probe_m8/probe_d31_landed.json`）**44 条存量 0 漂移**；补 8 条后 52 条 / 51 类 / 21-17-14（翼盒 17-7-7）。**物理核对**（`_probe_m8/physics_check.json`）：壁厚严格 `1/t`（skin 1.5→4 位移 2.656 倍、偏差 0.30%）、展长三点指数 2.899（梁论 3，±3% 偏离来自 n_ribs 固定 5 致肋距随 span 变）、交互项 0.06%/0.17%（可忽略 ⇒ 区间内双轴交互点作 test 是公平的）。**厚度维在翼盒上可观测、在开口板上不可观测**（D30）——差别全在**载荷随不随该轴缩放**：开口板 `F ∝ t` 与膜刚度 `∝ t` 精确抵消，翼盒固定 500 N 无抵消。判定某轴是否退化，先问载荷口径。",
+    "翼盒族的**标量代理目标口径 = D32（2026-10-24 老王拍板）**：主目标 `max_disp`（合位移；实测 `max|v|/max_disp` = **0.99899–0.99973**，浮动 0.07 % ⇒ 它本身就是弯曲挠度，不需要另立「法向挠度」），副目标 `max_w`（展向位移 `max|DISP[2]|`，**只报不判**，仅用于 `span` 指数的交叉检验）。**不把 `max_w` 定为代理目标**，四条实测理由（`_probe_m9/w_vs_disp_diag.json`、`baseline_d31.json`）：① 它绕开了全库唯一会崩的轴 —— `sweep40_taper040` 上 `max_w` ×1.716 而 `max_disp` ×4.171，敏感度只有 **41 %**，用它考核等于挑了一个对数据集最大缺陷不敏感的量；② 量级仅弯曲位移的 **1.9 %–5.7 %**，是泊松耦合次级量，工程上不是关注对象；③ **跨族不可用**（开孔板纯面内 ≡ 0、加筋板近刚性 ≡ 1），一个只有翼盒能用的指标不能当族间统一目标；④ 与双码闸门口径分家（`verify_solvers.py` 按 `DISP` 三向量逐节点中位比，不按单分量）。**跨目标比 MAPE 必须下掉同一条样本**：各自剔各自最差会翻转结论 —— 统一下掉 `sweep40` 时 `max_disp` **3.82 %** 优于 `max_w` **4.48 %**，分别剔则是 3.82 % vs 2.15 %。应力峰值（`vM` 中面/外表面）**不设为可学目标**：1 参数梁标度律已 10.39 %/12.22 %，最优 10 特征学习器 9.51 %/10.68 %，差 **0.88/1.54 pp** 且 4000 次 bootstrap 的 95 % CI 均跨 0；机制是峰值位置在31 条翼盒里散落在 **21/25 个不同节点**，**峰值是离散选择而非光滑泛函**。所以本数据集的应力真值用于**求解器验证**，不用于标量代理建模。",
+    "翼盒族的**后掠轴划分 = D33（2026-10-24 老王拍板）**：`WINGBOX_TRAIN_MAX_SWEEP` 20° → **30°**，新增 train 站 `naca4412_wingbox_sweep30`（仅 `sweep_deg=30`，锥度中性 1.0、其余全锚定）。目的不是放宽考试而是**把唯一的外推机制变成可内插**：实测后掠响应**超线性**（相对 0° 的位移比 **1.000 / 1.094 / 1.340 / 1.853 / 2.965**，增量 +0.094 / +0.246 / +0.514 / +1.112 严格递增，`_probe_m10/physics_sweep_axis.json`），0–20° 割线外推到 40° 差 **−43.4 %**（与 M7 的 −41.5 % 同源，两种口径互证）。补 30° 后 `sweep40` 仍是 **val**、`sweep40_taper040` 仍是 **test**（考试点一个没删），但外推距离 20° → **10°**；`sweep30` 处二次趋势预测误差 **−6.2 %** ⇒ 该点确含新信息，不是冗余叠加；4 站拟合到 40° 的残差从 −22.9 %（3 站二次）降到 −14.1 %（4 站二次）/−7.2 %（4 站三次）。落地前实测（`_probe_m10/probe_d33_split.json`）**52 条存量 0 条换边**、D12 复现 **11/11**；落地后 **53 条 / 52 类 / 22-17-14**（翼盒 18-7-7）。",
+    "翼盒族的**代理模型形式口径 = D34（2026-10-24 老王拍板「改形式」）**：`sweep` 项在 `log y` 中以 **二次**（而非线性）进入，基为 `s = sweep_deg/20` 的 `[s, s²]`，**过原点**（`sweep=0` 处修正恰为 0，无后掠是自然原点而非抛物线上任意一点）。判据：主判据是**零泄漏的 `LOO@30`**（从 train 删掉 30° 那行再预测它），保护是 train LOO 整体不得劣化 >15 %、条件数 <1e6，`val` 仅作确认，`test` 只报一次。实测（`_probe_m11/sweep_form.json`，M5 档口径）：`LOO@30` **−22.14 % → −1.07 %**、`val` 单点 `sweep40` **−34.54 % → −3.17 %**、test MAPE **7.74 % → 6.18 %**（CI [−4.46, +0.23]，**n=7 下跨 0，不显著**）、`planform_out` 组 **25.70 % → 15.70 %**。**三次基被否**：train 里 `sweep>0` 仅 3 行且几何完全相同 ⇒ `s²`/`s³` 只在这 3 行非零，3 点定 3 参数**恰好可逆**，三次式在那 3 行拟合到机器零、40° 分支全靠硬猜；实测四个指标全不如二次（`LOO@30` −1.07 → +6.02）。**「加站数就升阶」不是配方。****该形式只对 `max_disp` 采纳**：同样改动在 `max_w` 上 val 6.01→**1.93** 但 test 8.33→**13.49**、最大 APE 26.8→**65.1 %**（崩），vM 两目标同样 test 恶化；机制在系数上可见（`max_disp` 二次项 +0.064·s+0.232·s²，线性项为正、抛物线平缓；`max_w` 是 −0.069·s+0.214·s²，线性项为负、原点处向下弯）。**D34-b（对 D32 的限定）**：`val` 只有 7 条、其中 `sweep>0` 仅 1 条（taper 中性），在本轮 4 个目标上 `val` **一律**选中二次基而 `test` 只在 `max_disp` 上支持它 ⇒ **形式类决策不能用 val 选**，须用「留最高站位」LOO；D32 的「val 选」仍适用于**档位**选择。**剩余 15.7 % 不是形式问题**（`_probe_m11/residual_diag.json`）：train 中「`sweep>0` 且 `taper≠1`」的样本数 = **0** ⇒ 交互项 `s²·(taper−1)` 在 train 上恒等于零，**不是估不准而是不可估**；残差结构为 taper 中性 −3.17 %、两个 taper 角点 +13.31 / +15.70 %。**换任何基都学不到，只有补一条带锥度的后掠算例。****副产品**：`n_web` 与 `web_pos` 在 train 上**完全共线**（奇异值 1.3e-15，train 只有 1 条带腹板算例 ⇒ 两列都只在同一行非零），`is_T` 恒为 0 ⇒ M3 的 10 个特征实际只有 **8 个可辨识方向**；这解释了 M7「`n_web` 1→2 外推 +14.5 % 为第二不稳轴」——那条路在 train 上根本没有信息。"
+  ]
+}

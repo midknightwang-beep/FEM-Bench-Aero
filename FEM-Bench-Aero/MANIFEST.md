@@ -2,11 +2,11 @@
 
 由 `make_manifest.py` 生成，**确定性**（无时间戳，重跑字节一致）。机器可读版是 `manifest.json`。
 
-- 发布树 `modeling/`：**55 条 case**，**54 个几何等价类**
-- 划分：train **25** / val **17** / test **13**（目标比例 60%:20%:20%）
-- 角色：`ablation 1, baseline 3, degenerate 2, feature 8, sweep 41`
+- 发布树 `modeling/`：**64 条 case**，**63 个几何等价类**
+- 划分：train **25** / val **17** / test **22**（目标比例 60%:20%:20%）
+- 角色：`ablation 1, baseline 3, degenerate 2, feature 10, sweep 48`
 - 树内重复模型 **0**；跨集泄漏的等价类 **0**
-- 交叉验证证据（`_xval/`，商业许可，**不发布**）：54 条
+- 交叉验证证据（`_xval/`，商业许可，**不发布**）：55 条
 
 > **等价类**：几何（形状 + 壁厚）相同的 case 归为一类。同一类的成员**必须**在同一 split —— 这是「等价类不得跨集」的落地。
 
@@ -114,39 +114,57 @@
 
 </details>
 
-## test （13 条）
+## test （22 条）
 
 | case | 族 | 角色 | 等价类 | 节点 | max\|u\| (mm) | 峰值 vM | minJ | tri3 |
 |---|---|---|---|---:|---:|---:|---:|---:|
 | `fuselage_barrel_d1600_l1600_str8_frm3` | fuselage_barrel | sweep | `f8b43cc6` | 103715 | 3.00697 | 343.6255 | 0.4636 | 0 |
+| `fuselage_barrel_d2000_l1800_str8_frm3` | fuselage_barrel | sweep | `e2d05ddc` | 143702 | 2.60917 | 248.1617 | 0.5159 | 0 |
 | `fuselage_barrel_d2000_l2000_str12_frm4` | fuselage_barrel | sweep | `a9604f56` | 169606 | 2.56923 | 258.4794 | 0.5211 | 0 |
+| `naca4412_wingbox_n_ribs6_chord1000` | wingbox | sweep | `b3016d21` | 5300 | 2.36213 | 10.6114 | 0.6204 | 0 |
 | `naca4412_wingbox_n_ribs7_chord800` | wingbox | sweep | `006310d0` | 4352 | 4.51232 | 15.8507 | 0.5099 | 0 |
+| `naca4412_wingbox_size_chord900` | wingbox | sweep | `cd44c190` | 4446 | 3.20784 | 12.7506 | 0.6372 | 0 |
+| `naca4412_wingbox_size_skin2p5` | wingbox | sweep | `aec9b4e5` | 5074 | 2.83654 | 12.7140 | 0.6249 | 0 |
 | `naca4412_wingbox_size_span2400_skin2` | wingbox | sweep | `08adca20` | 5836 | 6.02314 | 18.7392 | 0.5966 | 0 |
 | `naca4412_wingbox_size_span3000_skin1p5` | wingbox | sweep | `58fefd58` | 7116 | 15.47333 | 30.7125 | 0.5047 | 0 |
 | `naca4412_wingbox_str3_T` | wingbox | feature | `37f4725e` | 29447 | 2.11507 | 11.1847 | 0.5332 | 0 |
+| `naca4412_wingbox_str4` | wingbox | feature | `5237ded5` | 6995 | 2.17553 | 10.0575 | 0.5060 | 0 |
 | `naca4412_wingbox_sweep40_taper040` | wingbox | sweep | `808b798f` | 15681 | 9.86735 | 15.9405 | 0.5448 | 0 |
+| `naca4412_wingbox_taper070` | wingbox | sweep | `ec5bfe48` | 6450 | 3.02838 | 11.0956 | 0.5702 | 0 |
 | `naca4412_wingbox_web1_offcentre` | wingbox | feature | `02769a56` | 5574 | 3.06080 | 14.0702 | 0.5467 | 0 |
 | `open_hole_panel_400x200_d20_cfrp45s_d40` | open_hole_panel | sweep | `a22486ac` | 8682 | 0.23270 | 41.4246 | 0.6213 | 0 |
 | `open_hole_panel_400x200_d20_offcentre` | open_hole_panel | feature | `a4a89bc0` | 9349 | 0.05863 | 30.6932 | 0.6562 | 0 |
+| `open_hole_panel_400x200_d30` | open_hole_panel | sweep | `bb04f712` | 9524 | 0.05828 | 30.5868 | 0.5481 | 0 |
 | `open_hole_panel_400x200_d40_offcentre` | open_hole_panel | feature | `104c69f9` | 8082 | 0.06479 | 33.7727 | 0.6626 | 0 |
+| `open_hole_panel_500x250_d45` | open_hole_panel | sweep | `e16d67d6` | 12863 | 0.05851 | 24.8856 | 0.5710 | 0 |
 | `open_hole_panel_600x300_d60` | open_hole_panel | sweep | `634a9fb4` | 16151 | 0.08815 | 31.3501 | 0.6020 | 0 |
 | `stiffened_panel_600x600_str3` | stiffened_panel | feature | `bc4990b0` | 51401 | 0.01526 | 1.7744 | 0.5367 | 0 |
+| `stiffened_panel_700x600_str4` | stiffened_panel | feature | `e30e5c5d` | 61449 | 0.01402 | 1.6466 | 0.5561 | 0 |
 
 <details><summary>分配理由</summary>
 
 - `fuselage_barrel_d1600_l1600_str8_frm3` — 尺寸双维外推（直径 1600 ≠ 2000 且 长度 1600 ≠ 2000）
+- `fuselage_barrel_d2000_l1800_str8_frm3` — v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）
 - `fuselage_barrel_d2000_l2000_str12_frm4` — 双维外推（长桁 12 与框 4 同时超出 train 包络）
+- `naca4412_wingbox_n_ribs6_chord1000` — v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）
 - `naca4412_wingbox_n_ribs7_chord800` — 双维外推（肋 7 > 5 且 弦 800 ≠ 1000）
+- `naca4412_wingbox_size_chord900` — v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）
+- `naca4412_wingbox_size_skin2p5` — v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）
 - `naca4412_wingbox_size_span2400_skin2` — 尺寸双轴组合外推（展长 2400 ≠ 2000 且 壁厚 2 ≠ 3；train 各站只动单轴，交互项未见过）
 - `naca4412_wingbox_size_span3000_skin1p5` — 尺寸双维外推（展长 3000 出 train 区间 [1600, 2400] 且 壁厚 1.5 出 train 区间 [2, 4]）
 - `naca4412_wingbox_str3_T` — 新截面形式（train 里没有锚定 'T' 形式）
+- `naca4412_wingbox_str4` — v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）
 - `naca4412_wingbox_sweep40_taper040` — 新平面形状组合（后掠 40° × 锥度 0.4 兼具，至少一轴出 train 值域 ≤35° / ≥0.6）
+- `naca4412_wingbox_taper070` — v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）
 - `naca4412_wingbox_web1_offcentre` — 新形式：腹板偏离等分（给定 [0.35] ≠ 等分 [0.475]；闭室不再等面积，Bredt-Batho 不再描述该截面）
 - `open_hole_panel_400x200_d20_cfrp45s_d40` — 复材多维外推（铺层 [45/-45]s≠[0/90]s + λ=0.2≠0.1；D30 标量轴计数 ≥2）
 - `open_hole_panel_400x200_d20_offcentre` — 新形式：偏心孔（(120, 60) 偏离形心 (200, 100)；train 只有中心孔，偏心后 Howland 无解析对照）
+- `open_hole_panel_400x200_d30` — v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）
 - `open_hole_panel_400x200_d40_offcentre` — 新形式：偏心孔（(120, 60) 偏离形心 (200, 100)；train 只有中心孔，偏心后 Howland 无解析对照）
+- `open_hole_panel_500x250_d45` — v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）
 - `open_hole_panel_600x300_d60` — 双维外推（λ 0.200 与 600x300 同时 ≠ 锚点 λ 0.1 / 400x200）
 - `stiffened_panel_600x600_str3` — 族内新形式（光板 ⇒ 3 根长桁）
+- `stiffened_panel_700x600_str4` — v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）
 
 </details>
 
@@ -156,7 +174,7 @@
 
 ## 已知限制
 
-- val 共 17 条（55 条下 6:2:2 目标要求约 11 条）：val 的绝对数量仍是样本量的限制，不是划分规则的缺陷。
+- val 共 17 条（64 条下 6:2:2 目标要求约 13 条）：val 的绝对数量仍是样本量的限制，不是划分规则的缺陷。
 - 每个族都有 val 样本，val 的族代表性完整。
 - 当前划分是**规则**（feagpt/manifest.py :: HOLDOUT_REGIONS）而不是显式表：每族声明留出区域，未命中区域即进 train。规则已按 D12 锁定口径 A 复现 11 条（见 manifest.py :: D12_LOCKED_SPLIT，由 eval_dataset 断言），并在 D15（后掠/锥形兼具 -> test）与 D16（单维外推 -> val）上扩展。
 - 柱壳族（fuselage_barrel）的网格是**有包络的**（D19，2026-10-05）：n_stringers 只接受 0 或 ≥ 5，1–4 根会在框的外弧（r ≈ R 的框/蒙皮粘结线）上留下三角（3str/2frm 20、4str/2frm 16、4str/3frm 22）。五种修法（simple 重组 / 只细分框经线 / 蒙皮与框一起细分 / 框专用尺寸场 / 逐面 2-D 算法）已全部实测否决，故族 _validate 直接**拒绝**该区间，而不是建一个带三角的模型。数据集因此暂时拿不到 1–4 根长桁的柱壳；val 落在 10/12/16 根、train 落在 5–8 根，均未受影响。

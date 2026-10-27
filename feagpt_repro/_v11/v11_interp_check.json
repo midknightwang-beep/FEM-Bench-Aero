@@ -1,0 +1,226 @@
+{
+ "schema": "v11_interp_check/v1",
+ "rule": "新案例只在单轴位于两锚点之间、其余参数相同 ⇒ 该轴**单调的**峰值量必须严格落在两锚点之间；非单调指标（如柱壳长度轴上的 max_von_mises）只报不判",
+ "n_checked": 7,
+ "n_fail": 0,
+ "n_skip": 0,
+ "brackets": [
+  {
+   "case": "naca4412_wingbox_size_skin2p5",
+   "axis": "airfoil.skin_thickness",
+   "why": "壁厚越小越软（Δ↑）",
+   "axis_value": 2.5,
+   "anchors": {
+    "naca4412_wingbox_size_skin2": 2.0,
+    "naca4412_wingbox": 3.0
+   },
+   "checks": {
+    "max_disp": {
+     "value": 2.8365410483400644,
+     "anchor_lo": 3.5423036675019084,
+     "anchor_hi": 2.3654390542892276,
+     "inside": true,
+     "gated": true,
+     "rel_pos": 0.5997,
+     "status": "PASS"
+    },
+    "max_von_mises": {
+     "value": 12.714014782454635,
+     "anchor_lo": 15.894491983742514,
+     "anchor_hi": 10.60478594684109,
+     "inside": true,
+     "gated": true,
+     "rel_pos": 0.6013,
+     "status": "PASS"
+    }
+   },
+   "status": "PASS"
+  },
+  {
+   "case": "naca4412_wingbox_n_ribs6_chord1000",
+   "axis": "airfoil.n_ribs",
+   "why": "肋越多越刚（Δ↓）",
+   "axis_value": 6,
+   "anchors": {
+    "naca4412_wingbox": 5,
+    "naca4412_wingbox_n_ribs7_chord1000": 7
+   },
+   "checks": {
+    "max_disp": {
+     "value": 2.3621330590264806,
+     "anchor_lo": 2.3654390542892276,
+     "anchor_hi": 2.3580540580706995,
+     "inside": true,
+     "gated": true,
+     "rel_pos": 0.4477,
+     "status": "PASS"
+    },
+    "max_von_mises": {
+     "value": 10.611387980202851,
+     "anchor_lo": 10.60478594684109,
+     "anchor_hi": 10.743173201647076,
+     "inside": true,
+     "gated": true,
+     "rel_pos": 0.0477,
+     "status": "PASS"
+    }
+   },
+   "status": "PASS"
+  },
+  {
+   "case": "naca4412_wingbox_str4",
+   "axis": "airfoil.n_stringers_per_skin",
+   "why": "长桁越多越刚（Δ↓）",
+   "axis_value": 4,
+   "anchors": {
+    "naca4412_wingbox_str3": 3,
+    "naca4412_wingbox_str5": 5
+   },
+   "checks": {
+    "max_disp": {
+     "value": 2.175529781638333,
+     "anchor_lo": 2.2193965388854355,
+     "anchor_hi": 2.135446558417041,
+     "inside": true,
+     "gated": true,
+     "rel_pos": 0.5225,
+     "status": "PASS"
+    },
+    "max_von_mises": {
+     "value": 10.057543070763854,
+     "anchor_lo": 10.140596401997234,
+     "anchor_hi": 9.86918268353307,
+     "inside": true,
+     "gated": true,
+     "rel_pos": 0.306,
+     "status": "PASS"
+    }
+   },
+   "status": "PASS"
+  },
+  {
+   "case": "naca4412_wingbox_size_chord900",
+   "axis": "airfoil.chord",
+   "why": "短弦更软（Δ↑）",
+   "axis_value": 900.0,
+   "anchors": {
+    "naca4412_wingbox_n_ribs5_chord800": 800,
+    "naca4412_wingbox": 1000.0
+   },
+   "checks": {
+    "max_disp": {
+     "value": 3.2078413329559337,
+     "anchor_lo": 4.526727690746489,
+     "anchor_hi": 2.3654390542892276,
+     "inside": true,
+     "gated": true,
+     "rel_pos": 0.6102,
+     "status": "PASS"
+    },
+    "max_von_mises": {
+     "value": 12.75059836722998,
+     "anchor_lo": 15.761825692876124,
+     "anchor_hi": 10.60478594684109,
+     "inside": true,
+     "gated": true,
+     "rel_pos": 0.5839,
+     "status": "PASS"
+    }
+   },
+   "status": "PASS"
+  },
+  {
+   "case": "naca4412_wingbox_taper070",
+   "axis": "airfoil.tip_chord_ratio",
+   "why": "锥度越小越软（Δ↑）",
+   "axis_value": 0.7,
+   "anchors": {
+    "naca4412_wingbox_taper060": 0.6,
+    "naca4412_wingbox_taper080": 0.8
+   },
+   "checks": {
+    "max_disp": {
+     "value": 3.0283756656110494,
+     "anchor_lo": 3.3841521444874867,
+     "anchor_hi": 2.7520888147218887,
+     "inside": true,
+     "gated": true,
+     "rel_pos": 0.5629,
+     "status": "PASS"
+    },
+    "max_von_mises": {
+     "value": 11.095637281455511,
+     "anchor_lo": 11.406788368911096,
+     "anchor_hi": 10.76496177054013,
+     "inside": true,
+     "gated": true,
+     "rel_pos": 0.4848,
+     "status": "PASS"
+    }
+   },
+   "status": "PASS"
+  },
+  {
+   "case": "open_hole_panel_400x200_d30",
+   "axis": "structure.params.hole_d",
+   "why": "孔越大越软（Δ↑）",
+   "axis_value": 30.0,
+   "anchors": {
+    "open_hole_panel_400x200_d20": 20.0,
+    "open_hole_panel_400x200_d40": 40.0
+   },
+   "checks": {
+    "max_disp": {
+     "value": 0.058276548259045845,
+     "anchor_lo": 0.05749685763236197,
+     "anchor_hi": 0.059401801929534086,
+     "inside": true,
+     "gated": true,
+     "rel_pos": 0.4093,
+     "status": "PASS"
+    },
+    "max_von_mises": {
+     "value": 30.58675618301231,
+     "anchor_lo": 30.379991383753765,
+     "anchor_hi": 31.3227428718952,
+     "inside": true,
+     "gated": true,
+     "rel_pos": 0.2193,
+     "status": "PASS"
+    }
+   },
+   "status": "PASS"
+  },
+  {
+   "case": "fuselage_barrel_d2000_l1800_str8_frm3",
+   "axis": "structure.params.length",
+   "why": "柱越长越软（Δ↑）",
+   "axis_value": 1800.0,
+   "anchors": {
+    "fuselage_barrel_d2000_l1600_str8_frm3": 1600.0,
+    "fuselage_barrel_d2000_l2000_str8_frm3": 2000.0
+   },
+   "checks": {
+    "max_disp": {
+     "value": 2.609165973783577,
+     "anchor_lo": 2.5511204284128275,
+     "anchor_hi": 2.631030661252164,
+     "inside": true,
+     "gated": true,
+     "rel_pos": 0.7264,
+     "status": "PASS"
+    },
+    "max_von_mises": {
+     "value": 248.16165094419168,
+     "anchor_lo": 249.3505562957935,
+     "anchor_hi": 249.39830401249134,
+     "inside": false,
+     "gated": false,
+     "rel_pos": -24.8997,
+     "status": "REPORTED_NOT_MONOTONE"
+    }
+   },
+   "status": "PASS"
+  }
+ ]
+}

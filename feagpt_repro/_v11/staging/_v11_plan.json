@@ -1,0 +1,113 @@
+[
+ {
+  "case": "naca4412_wingbox_size_skin2p5",
+  "template": "naca4412_wingbox",
+  "bracket": "壁厚 2 ↔ 3（span2000/skin2、skin3 两条已在集）",
+  "changes": {
+   "airfoil.skin_thickness": {
+    "from": 3.0,
+    "to": 2.5
+   }
+  }
+ },
+ {
+  "case": "naca4412_wingbox_n_ribs6_chord1000",
+  "template": "naca4412_wingbox",
+  "bracket": "肋数 5 ↔ 7（chord1000 的 ribs5/ribs7 两条已在集）",
+  "changes": {
+   "airfoil.n_ribs": {
+    "from": 5,
+    "to": 6
+   }
+  }
+ },
+ {
+  "case": "naca4412_wingbox_str4",
+  "template": "naca4412_wingbox_str3",
+  "bracket": "长桁数 3 ↔ 5（str3/str5 两条已在集）",
+  "changes": {
+   "airfoil.n_stringers_per_skin": {
+    "from": 3,
+    "to": 4
+   }
+  }
+ },
+ {
+  "case": "naca4412_wingbox_size_chord900",
+  "template": "naca4412_wingbox",
+  "bracket": "弦长 800 ↔ 1000（ribs3_chord800 与 chord1000 系列已在集）",
+  "changes": {
+   "airfoil.chord": {
+    "from": 1000.0,
+    "to": 900.0
+   }
+  }
+ },
+ {
+  "case": "naca4412_wingbox_taper070",
+  "template": "naca4412_wingbox",
+  "bracket": "锥度 0.6 ↔ 0.8（taper060/taper080 已在集）",
+  "changes": {
+   "airfoil.tip_chord_ratio": {
+    "from": 1.0,
+    "to": 0.7
+   }
+  }
+ },
+ {
+  "case": "open_hole_panel_400x200_d30",
+  "template": "open_hole_panel_400x200_d40",
+  "bracket": "孔径 20 ↔ 40（d20/d40 已在集）",
+  "changes": {
+   "structure.params.hole_d": {
+    "from": 40.0,
+    "to": 30.0
+   }
+  }
+ },
+ {
+  "case": "open_hole_panel_500x250_d45",
+  "template": "open_hole_panel_400x200_d40",
+  "bracket": "板尺寸 400×200 ↔ 600×300；孔径 40 ↔ 50",
+  "changes": {
+   "structure.params.length": {
+    "from": 400.0,
+    "to": 500.0
+   },
+   "structure.params.width": {
+    "from": 200.0,
+    "to": 250.0
+   },
+   "structure.params.hole_d": {
+    "from": 40.0,
+    "to": 45.0
+   }
+  }
+ },
+ {
+  "case": "stiffened_panel_700x600_str4",
+  "template": "stiffened_panel_800x600_str3",
+  "bracket": "板长 600 ↔ 800；长桁 3 ↔ 5",
+  "changes": {
+   "structure.params.length": {
+    "from": 800.0,
+    "to": 700.0
+   },
+   "structure.params.n_stringers": {
+    "from": 3,
+    "to": 4
+   }
+  }
+ },
+ {
+  "case": "fuselage_barrel_d2000_l1800_str8_frm3",
+  "template": "fuselage_barrel_d2000_l2000_str8_frm3",
+  "bracket": "柱长 1600 ↔ 2000（d2000 系列的 l1600 / l2000 两条都在集）",
+  "changes": {
+   "structure.params.length": {
+    "from": 2000.0,
+    "to": 1800.0
+   }
+  }
+ }
+]

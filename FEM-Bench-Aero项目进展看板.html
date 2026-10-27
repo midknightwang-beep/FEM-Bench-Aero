@@ -249,7 +249,7 @@
     <div class="sub">给老王做检查用的那一页 —— 每条结论都能点开看命令和数字，你可以自己跑一遍</div>
     <div class="stamp">
       更新于 <b>2026-10-25 23:40</b><br>
-      当前里程碑 <b>W5d + W5d-0 + W5d-1 全收口 · headline = C-032（exam 23/25 = 92.0%）· 第二模型 C-033（同 harness）exam 22/25 = 88.0% · 榜单 C-034（三列并排）· prompt v3/v3b 已证伪并回退 v2（C-035）· 负控 50/50</b><br>
+      当前里程碑 <b>W5d 全收口 + v1.1 数据集扩量（55→64 条，test 13→22，内插夹逼 7/7 PASS）· headline = C-032（exam 23/25 = 92.0%）· 第二模型 C-033（88.0%）· 榜单 C-034 · prompt 已到顶（C-035）· 负控 50/50 · <span style="color:#b45309">待办：Abaqus 双码 9 条 + 考卷 v7</span></b><br>
       数据集规模 <b>55 条 / 树 × 2 树（54 等价类，train 25 / val 17 / test 13）</b>
     </div>
   </header>
@@ -987,7 +987,7 @@ const OPENHOLE = [
    改完必须跑 node _dash_check.js 复核（条数硬编码）。 ---- */
 const SPLITS = {
   target:{train:0.6, val:0.2, test:0.2},
-  n_cases:55, n_classes:54, n_leaky:0, n_dup:0, xval:55,
+  n_cases:64, n_classes:63, n_leaky:0, n_dup:0, xval:64,
   rows:[
    {id:"naca4412_wingbox", fam:"wingbox", role:"baseline", cls:"4afd1ea3fd9f", clsN:2,
     nodes:5074, u:2.365439, vm:10.60479, minj:0.6249, split:"train",
@@ -1073,9 +1073,18 @@ const SPLITS = {
    {id:"naca4412_wingbox_web2", fam:"wingbox", role:"sweep", cls:"60981a5c499f", clsN:1,
     nodes:5653, u:2.855791, vm:11.57225, minj:0.5784, split:"val",
     why:"单维外推（腹板 2 > train 已学 1，位置仍等分）"},
+   {id:"naca4412_wingbox_n_ribs6_chord1000", fam:"wingbox", role:"sweep", cls:"b3016d214bb4", clsN:1,
+    nodes:5300, u:2.362133, vm:10.61139, minj:0.6204, split:"test",
+    why:"v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）"},
    {id:"naca4412_wingbox_n_ribs7_chord800", fam:"wingbox", role:"sweep", cls:"006310d062fa", clsN:1,
     nodes:4352, u:4.512321, vm:15.85067, minj:0.5099, split:"test",
     why:"双维外推（肋 7 > 5 且 弦 800 ≠ 1000）"},
+   {id:"naca4412_wingbox_size_chord900", fam:"wingbox", role:"sweep", cls:"cd44c1908a70", clsN:1,
+    nodes:4446, u:3.207841, vm:12.7506, minj:0.6372, split:"test",
+    why:"v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）"},
+   {id:"naca4412_wingbox_size_skin2p5", fam:"wingbox", role:"sweep", cls:"aec9b4e5b6d7", clsN:1,
+    nodes:5074, u:2.836541, vm:12.71401, minj:0.6249, split:"test",
+    why:"v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）"},
    {id:"naca4412_wingbox_size_span2400_skin2", fam:"wingbox", role:"sweep", cls:"08adca20a4a7", clsN:1,
     nodes:5836, u:6.023137, vm:18.73915, minj:0.5966, split:"test",
     why:"尺寸双轴组合外推（展长 2400 ≠ 2000 且 壁厚 2 ≠ 3；train 各站只动单轴，交互项未见过）"},
@@ -1085,9 +1094,15 @@ const SPLITS = {
    {id:"naca4412_wingbox_str3_T", fam:"wingbox", role:"feature", cls:"37f4725e4b48", clsN:1,
     nodes:29447, u:2.115067, vm:11.18467, minj:0.5332, split:"test",
     why:"新截面形式（train 里没有锚定 'T' 形式）"},
+   {id:"naca4412_wingbox_str4", fam:"wingbox", role:"feature", cls:"5237ded5b370", clsN:1,
+    nodes:6995, u:2.17553, vm:10.05754, minj:0.506, split:"test",
+    why:"v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）"},
    {id:"naca4412_wingbox_sweep40_taper040", fam:"wingbox", role:"sweep", cls:"808b798ff918", clsN:1,
     nodes:15681, u:9.867346, vm:15.9405, minj:0.5448, split:"test",
     why:"新平面形状组合（后掠 40° × 锥度 0.4 兼具，至少一轴出 train 值域 ≤35° / ≥0.6）"},
+   {id:"naca4412_wingbox_taper070", fam:"wingbox", role:"sweep", cls:"ec5bfe48af57", clsN:1,
+    nodes:6450, u:3.028376, vm:11.09564, minj:0.5702, split:"test",
+    why:"v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）"},
    {id:"naca4412_wingbox_web1_offcentre", fam:"wingbox", role:"feature", cls:"02769a56df7c", clsN:1,
     nodes:5574, u:3.060804, vm:14.07024, minj:0.5467, split:"test",
     why:"新形式：腹板偏离等分（给定 [0.35] ≠ 等分 [0.475]；闭室不再等面积，Bredt-Batho 不再描述该截面）"},
@@ -1103,6 +1118,9 @@ const SPLITS = {
    {id:"stiffened_panel_600x600_str3", fam:"stiffened_panel", role:"feature", cls:"bc4990b00bae", clsN:1,
     nodes:51401, u:0.015262, vm:1.77436, minj:0.5367, split:"test",
     why:"族内新形式（光板 ⇒ 3 根长桁）"},
+   {id:"stiffened_panel_700x600_str4", fam:"stiffened_panel", role:"feature", cls:"e30e5c5db44d", clsN:1,
+    nodes:61449, u:0.014023, vm:1.64662, minj:0.5561, split:"test",
+    why:"v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）"},
    {id:"fuselage_barrel_d2000_l2000_str8_frm3", fam:"fuselage_barrel", role:"baseline", cls:"589369d32c00", clsN:1,
     nodes:158524, u:2.631031, vm:249.3983, minj:0.5159, split:"train",
     why:"落在训练包络内（未命中任何留出区域）"},
@@ -1118,6 +1136,9 @@ const SPLITS = {
    {id:"fuselage_barrel_d1600_l1600_str8_frm3", fam:"fuselage_barrel", role:"sweep", cls:"f8b43cc6abbb", clsN:1,
     nodes:103715, u:3.006972, vm:343.62549, minj:0.4636, split:"test",
     why:"尺寸双维外推（直径 1600 ≠ 2000 且 长度 1600 ≠ 2000）"},
+   {id:"fuselage_barrel_d2000_l1800_str8_frm3", fam:"fuselage_barrel", role:"sweep", cls:"e2d05ddc307e", clsN:1,
+    nodes:143702, u:2.609166, vm:248.16165, minj:0.5159, split:"test",
+    why:"v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）"},
    {id:"fuselage_barrel_d2000_l2000_str12_frm4", fam:"fuselage_barrel", role:"sweep", cls:"a9604f56b898", clsN:1,
     nodes:169606, u:2.569232, vm:258.47943, minj:0.5211, split:"test",
     why:"双维外推（长桁 12 与框 4 同时超出 train 包络）"},
@@ -1148,9 +1169,15 @@ const SPLITS = {
    {id:"open_hole_panel_400x200_d20_offcentre", fam:"open_hole_panel", role:"feature", cls:"a4a89bc00841", clsN:1,
     nodes:9349, u:0.05863, vm:30.69322, minj:0.6562, split:"test",
     why:"新形式：偏心孔（(120, 60) 偏离形心 (200, 100)；train 只有中心孔，偏心后 Howland 无解析对照）"},
+   {id:"open_hole_panel_400x200_d30", fam:"open_hole_panel", role:"sweep", cls:"bb04f7124374", clsN:1,
+    nodes:9524, u:0.058277, vm:30.58676, minj:0.5481, split:"test",
+    why:"v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）"},
    {id:"open_hole_panel_400x200_d40_offcentre", fam:"open_hole_panel", role:"feature", cls:"104c69f98102", clsN:1,
     nodes:8082, u:0.064794, vm:33.77269, minj:0.6626, split:"test",
     why:"新形式：偏心孔（(120, 60) 偏离形心 (200, 100)；train 只有中心孔，偏心后 Howland 无解析对照）"},
+   {id:"open_hole_panel_500x250_d45", fam:"open_hole_panel", role:"sweep", cls:"e16d67d69ad4", clsN:1,
+    nodes:12863, u:0.058507, vm:24.8856, minj:0.571, split:"test",
+    why:"v1.1 内插留出（spec.extra.split_tag = v11_interior_holdout，显式声明）"},
    {id:"open_hole_panel_600x300_d60", fam:"open_hole_panel", role:"sweep", cls:"634a9fb4d54d", clsN:1,
     nodes:16151, u:0.088147, vm:31.35007, minj:0.602, split:"test",
     why:"双维外推（λ 0.200 与 600x300 同时 ≠ 锚点 λ 0.1 / 400x200）"}
@@ -1881,6 +1908,19 @@ const REVIEW = [
     '<b>★ 自我修正一条</b>：上一轮我说「<code>clarify_wrong_keys</code> 把本族合法键登记成错族键，是元数据缺陷」——<b>想窄了</b>。该键在翼盒族确实合法，但<b>本题题面根本没提长桁</b>，登记为「不该问」是对的；错在模型多问。⇒ D6 的前提减弱，本题已按 R57 用 prompt 试过，证伪',
     '<b>门禁</b>：负控 <b>50/50</b>（新增 NC-48 三向）；<code>check_claims</code> <b>27 claims / 49 artifacts / 44 语义项全过</b>（新增 S-43）；RUBRIC <b>v5.1</b>、红线 R1–R57；<code>_dash_check.js</code> PASS'],
    files:['feagpt_repro/reports/diagnostics/prompt_v3_ablation.md','feagpt_repro/reports/diagnostics/prompt_v3_ablation.json','feagpt_repro/_diag_prompt_ablation.py','feagpt_repro/reports/negative_controls_50.json','FEM-Bench-Aero/CLAIMS.md','FEM-Bench-Aero/RUBRIC.md','FEM-Bench-Aero/W5B_PLAN.md']},
+  {id:'r71', g:'W5/扩量', c:'<b>v1.1 数据集扩量：55 → 64 条，test 13 → 22</b>。9 条新案例全部取在<b>已有锚点之间</b>（内插留出），补齐「原 25 条 exam 里内插只有 6 条、全在翼盒一族」的空白。<b>train 25 / val 17 一条没动</b>（D12 锁定划分未被扰动）；<b>7 条单轴点全部通过物理夹逼校验</b>',
+   q:'<b>老王选了 B（v1.1 新几何）而不是 D7 语义回填闸</b>——理由是纯增量、不动已发布结论，而且能真正收窄 CI（n=25 时 CI95 宽到 [80,100]，4 pp 差距判不了显著）。<b>本轮的活是造数据，不是跑模型</b>：每条新案例都要过网格/语义/物理三道，还要保证既有 55 条一条不变',
+   cmd:'"$PY" _v11/make_v11_specs.py                       # 9 条 spec（带 extra.split_tag）\n"$PY" run_pipeline.py --spec _v11/staging/<case>/<case>.spec.json --out _v11/runs --solver ccx\n"$PY" make_dataset.py --solver ccx --cases _v11/runs --root ../FEM-Bench-Aero\n"$PY" make_manifest.py --root ../FEM-Bench-Aero --json ../FEM-Bench-Aero/manifest.json --md ../FEM-Bench-Aero/MANIFEST.md\n"$PY" eval_dataset.py --root ../FEM-Bench-Aero && "$PY" dedup_dataset.py --root ../FEM-Bench-Aero\n"$PY" _v11/verify_v11_interpolation.py --strict   # 内插物理夹逼',
+   ev:['<b>★ 9 条都夹在已有锚点之间</b>（不是外插）：壁厚 2↔3、肋数 5↔7、长桁 3↔5、弦长 800↔1000、锥度 0.6↔0.8、孔径 20↔40、柱长 1600↔2000；另 2 条是双轴角点（500×250/d45、700×600/str4），只报不判',
+    '<b>★★ 独立物理校验（本轮的硬证据）</b>：内插点的峰值量必须严格落在两锚点之间——<b>7/7 PASS</b>。这条判据不依赖 gold、也不依赖解析解，查的是「参数有没有真的进模型」。历史教训：厚度变体若 <code>*SHELL SECTION</code> 没跟着改，位移会与基准<b>逐位相同</b>，单条 case 内部永远查不出来',
+    '<b>★ 孔径轴三点单调</b>：d20 = 0.057497 → d30 = 0.058277 → d40 = 0.059402（孔越大越柔），方向与物理一致；壁厚轴 3.5423（t2）→ 2.8365（t2.5）→ 2.3654（t3）同样单调',
+    '<b>★ 划分用声明、不写参数谓词</b>：新 spec 打 <code>extra.split_tag</code>，<code>split_of()</code> 在族谓词<b>之前</b>认它。为什么：内插点的特征就是「每个轴都在包络内」，任何按数值写的谓词都会顺带命中一堆既有 train 条（会把 D12 锁定的 11 条重新划分）',
+    '<b>★ 闸门</b>：gate4 语义 <b>9/9 PASS</b>、网格 minJ 0.506–0.637 / <b>tri3 = 0</b>、最大 143,702 活节点（上限 158,548）、<code>eval_dataset</code> <b>PASS</b>（含 D12 复现）、<code>dedup</code> 0 重复、<code>check_claims</code> 27/49/44 全过、负控 50/50 未受影响',
+    '<b>⚠ 未完成：双码（Abaqus）</b>。<code>verify_dataset</code> 现在报 <code>pairing 55 paired + 9 modeling-only ⇒ MISMATCH / VERDICT: CHECK</code>。9 条 deck 已备好，需在<b>WorkBuddy 之外的普通 cmd</b>跑 <code>_v11\run_v11_abaqus.bat</code>（沙箱注入 tsbx.dll 会让 abaqus 在 pre.exe 阶段 __fastfail）。跑完应变 64 paired / PASS',
+    '<b>⚠ 未完成：考卷 v7</b>。数据集 64 条 ≠ 考卷 55 条任务——9 条还没接进任务层。<b>接进去 = exam 25→34，但也意味着 C-032 的 23/25 不再可比</b>（paper sha 变，R30/R39），必须重生成两模型候选（2×15 min）+ 全链 MSR（2×40 min）+ 重跑 CI/榜单。这是下一轮的主任务',
+    '<b>★ 本轮我自己踩了三个坑</b>：①<code>extra</code> 里把 tag 写成<b>键</b>而不是 <code>split_tag</code> 的<b>值</b> ⇒ 9 条先被族谓词分进 train（train 一度 29）；②柱壳第一版挑 <code>d1800_l1800</code>，可集里<b>没有 d1800_l1600</b> ⇒ 构不成单轴夹逼、校验器直接 SKIP，改挑 <code>d2000_l1800</code> 才立得住；③<b>并行跑了 ccx</b>（check_forms 还在跑时起了柱壳），违反「绝不并行」——事后单独重算，标量<b>逐位相同（差异 0 项）</b>，本次没造成污染，但这是运气不是许可',
+    '<b>★ 一条判据被证伪（不是模型错）</b>：第一版对柱壳长度轴也要求 max_von_mises 落在两锚点之间，判 FAIL。实测三点应力 249.35 / 248.16 / 249.40（差 0.5%）——根部峰值由「端部弯矩 ÷ 截面模量」决定，都不随长度变 ⇒ <b>应力在长度轴上不单调</b>。已改成按轴声明 strict_metrics：长度轴只判位移，应力只报（<code>REPORTED_NOT_MONOTONE</code>）。<b>别让判据的假设冒充模型的错</b>'],
+   files:['FEM-Bench-Aero/DATASET_V11.md','FEM-Bench-Aero/manifest.json','FEM-Bench-Aero/MANIFEST.md','feagpt_repro/_v11/make_v11_specs.py','feagpt_repro/_v11/verify_v11_interpolation.py','feagpt_repro/_v11/run_v11_abaqus.bat','feagpt_repro/_v11/v11_interp_check.json','feagpt_repro/feagpt/manifest.py']},
 ];
 
 /* ============ 渲染 ============ */
@@ -1888,7 +1928,7 @@ const $ = s => document.querySelector(s);
 
 function renderStats(){
   const html = [
-    {k:'当前里程碑', v:'W5d 收口 · prompt 已到顶', n:'<b>对外 headline = C-032（92.0%）</b>；第二模型 C-033（88.0%，supporting）；<b>榜单三列并排</b>；<b>prompt v3/v3b 证伪回退 v2</b>：考卷 v6c × 55 条重生成候选 ⇒ exam <b>TSR 23/25 (92.0%)、SFR 20/22 (90.9%)、全链 MSR 19/22 (86.4%)</b>，CI95 TSR <b>[80.0, 100.0]</b>／SFR [77.3, 100.0]／MSR [72.7, 100.0]；三栏 6/6 · 11/13 · 6/6；负控 <b>44/44</b>（含 NC-40/41/42）、自检 23 claims / 35 artifacts / <b>36 语义</b>全过；R1–<b>R49</b>、RUBRIC <b>v4.7</b>。<b>★ 第二模型 C-031（deepseek-v4-pro，同卷 v6c）exam 20/25 (80.0%)</b>，标 supporting（R48 不作 headline）：两模型 <code>spec_pass</code> 同为 <b>20/25</b>、2 条 spec_fail <b>同题同字段</b> ⇒ 差 12 pp 源于<b>缺失信息处理</b>（澄清 3/3 vs 编造 3/3），不是建模能力。剩余 2 条 exam 失败全为模型侧（自创键 / layup 标量）⇒ <b>卷子已无可解性缺陷</b>。<b>★ value_added 双尺度</b>：任务级地板 T1/T1+ <b>0.0%</b>（全或无判据的必然：T1+ 已命中 85.93% 字段、最好一条只差 1 个字段，但 25 条无一全对，族内 oracle 也 0/25）→ LLM 92.0%；<b>字段级 85.93% → 99.34%（Δ+13.4 pp）</b>——两个尺度都过 10 pp 判据。｜<b>代理模型线已冻结</b>（D37 拍板），下列 <b>M9–M14</b> 为历史口径：<b>D32 目标口径定案</b>：主 <code>max_disp</code>／副 <code>max_w</code> 只报不判／应力峰值不设为目标 ｜ <b>D33 后掠中间档</b>：<code>sweep30</code> 入 train ｜ <b>D34 换模型形式</b>：<code>sweep</code> 项改二次 ｜ <b>D35 补交互锚点</b>：D15 改二分 + <code>sweep30_taper080</code> 入 train，<code>max_disp</code> test 4.97→<b>3.01 %</b> ｜ <b>D36 补纯后掠中间站</b>：<code>WINGBOX_TRAIN_MAX_SWEEP</code> 30→<b>35</b> + <code>sweep35</code>（锥度中性），<code>max_disp</code> test 3.01→<b>2.63 %</b>、<code>planform_out</code> 3.18→<b>1.09 %</b>、val 6.86→6.30 %；<b>代价</b> <code>max_w</code> 4.26→7.46、vM 外/中 5.29/4.68→6.29/5.56（<b>退化 100 % 集中在 <code>sweep40_taper040</code> 一条</b>）。<b>D36 的方法增量 = 先预注册再测量</b>：三条独立估计全部低于实测 5.4–8.1 %，证明是 30→40 整段低估而非单站错 ｜ <b>M14 阶段审计（Conditional-Go）</b>：路线已通可结题，但 <b>2.63 % 有选择偏置</b>（加 val 训练同考点 1.09→18.35 %）、全体留一 5.35 %（p90 14.09）、<b>vM 峰值未收敛（12→6 mm 仍 +12.9 %）</b>、无 git；移交三前置 = 冻结评估协议 / 可分离交互 / 适用域（详见 STAGE_GATE_M14.md）', c:'g'},
+    {k:'当前里程碑', v:'v1.1 数据集扩量 · 64 条', n:'<b>数据集 64 条（train 25 / val 17 / test 22）</b>；新增 9 条内插留出，<b>夹逼 7/7 PASS</b>；<b>对外 headline 仍是 C-032（92.0%，考卷 v6c 55 条）</b>：考卷 v6c × 55 条重生成候选 ⇒ exam <b>TSR 23/25 (92.0%)、SFR 20/22 (90.9%)、全链 MSR 19/22 (86.4%)</b>，CI95 TSR <b>[80.0, 100.0]</b>／SFR [77.3, 100.0]／MSR [72.7, 100.0]；三栏 6/6 · 11/13 · 6/6；负控 <b>44/44</b>（含 NC-40/41/42）、自检 23 claims / 35 artifacts / <b>36 语义</b>全过；R1–<b>R49</b>、RUBRIC <b>v4.7</b>。<b>★ 第二模型 C-031（deepseek-v4-pro，同卷 v6c）exam 20/25 (80.0%)</b>，标 supporting（R48 不作 headline）：两模型 <code>spec_pass</code> 同为 <b>20/25</b>、2 条 spec_fail <b>同题同字段</b> ⇒ 差 12 pp 源于<b>缺失信息处理</b>（澄清 3/3 vs 编造 3/3），不是建模能力。剩余 2 条 exam 失败全为模型侧（自创键 / layup 标量）⇒ <b>卷子已无可解性缺陷</b>。<b>★ value_added 双尺度</b>：任务级地板 T1/T1+ <b>0.0%</b>（全或无判据的必然：T1+ 已命中 85.93% 字段、最好一条只差 1 个字段，但 25 条无一全对，族内 oracle 也 0/25）→ LLM 92.0%；<b>字段级 85.93% → 99.34%（Δ+13.4 pp）</b>——两个尺度都过 10 pp 判据。｜<b>代理模型线已冻结</b>（D37 拍板），下列 <b>M9–M14</b> 为历史口径：<b>D32 目标口径定案</b>：主 <code>max_disp</code>／副 <code>max_w</code> 只报不判／应力峰值不设为目标 ｜ <b>D33 后掠中间档</b>：<code>sweep30</code> 入 train ｜ <b>D34 换模型形式</b>：<code>sweep</code> 项改二次 ｜ <b>D35 补交互锚点</b>：D15 改二分 + <code>sweep30_taper080</code> 入 train，<code>max_disp</code> test 4.97→<b>3.01 %</b> ｜ <b>D36 补纯后掠中间站</b>：<code>WINGBOX_TRAIN_MAX_SWEEP</code> 30→<b>35</b> + <code>sweep35</code>（锥度中性），<code>max_disp</code> test 3.01→<b>2.63 %</b>、<code>planform_out</code> 3.18→<b>1.09 %</b>、val 6.86→6.30 %；<b>代价</b> <code>max_w</code> 4.26→7.46、vM 外/中 5.29/4.68→6.29/5.56（<b>退化 100 % 集中在 <code>sweep40_taper040</code> 一条</b>）。<b>D36 的方法增量 = 先预注册再测量</b>：三条独立估计全部低于实测 5.4–8.1 %，证明是 30→40 整段低估而非单站错 ｜ <b>M14 阶段审计（Conditional-Go）</b>：路线已通可结题，但 <b>2.63 % 有选择偏置</b>（加 val 训练同考点 1.09→18.35 %）、全体留一 5.35 %（p90 14.09）、<b>vM 峰值未收敛（12→6 mm 仍 +12.9 %）</b>、无 git；移交三前置 = 冻结评估协议 / 可分离交互 / 适用域（详见 STAGE_GATE_M14.md）', c:'g'},
     {k:'数据集规模', v:'55 × 2', n:'55 模型 · 54 等价类 · 4 个结构族 · train 25 ／ val 17 ／ test 13（翼盒 21-7-6）· modeling + _xval 各 55 条', c:'k'},
     {k:'门禁', v:'6 / 6 全绿', n:'关 1 <b>55/55</b>（最差 minJ 0.4636、tri3 = 0）／ 关 3 翼盒 <b>34/34</b> ／ 关 4 <b>110/110</b> ／ 自洽 <b>110/110</b>（跨树 55/55、配对 55/55、dup 0）／ 退化自检 <b>54/54</b>（按形式计项，不随算例数变）／ 无漂移 全绿；<code>eval_dataset</code> 29/29、<code>regress_groups</code> <b>9/9 组</b>、<code>baseline</code> PASS、<code>check_forms</code> <b>54 PASS / 0 FAIL</b>。<code>sweep35</code> 双码 <code>_xval_d36.json</code>：网格 5687/5687 坐标差 0、平衡残差 2.6e-04 %、<code>max|u|</code> 差 0.15 %、vM 中位差 0.20 %', c:'g'},
     {k:'结构形式', v:'4 族 + 2 截面 + 平面形状 + 多闭室 + 复材材料维 + 尺寸维', n:'T1–T7 七种形式全部落地（T7 = CLT 等效单层）· 长桁截面 blade+T · 柱壳 blade-only（D22）· 开孔板 / 多闭室各有闭式解 · D31 翼盒展长/壁厚进 train 区间', c:'a'}
