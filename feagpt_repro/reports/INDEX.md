@@ -21,7 +21,7 @@
 | **诊断（不是模型成绩）** | `baseline_scorecard_L3_v5_rescore.json` | C-025：**旧候选**（v4 生成）打 **v5** 考卷 ⇒ exam TSR 4/11。旧候选不能评新考卷（R28），只用于验证「修题改了什么」 |
 | L1 冒烟（非模型基线） | `baseline_scorecard_L1_smoke.json` | C-017：spec-copy 19 条 SFR 0/19，无 schema 约束解码时的指令遵循失败 |
 | 桥接表 | `bridge_v3_v4.json` + `bridge_A/B/C_*.json`（历史）／ **`diagnostics/bridge_w5c_table.md` + `diagnostics/bridge_w5c_B/C_*.json`（当前）** | C-024：A 7/11、B 5/11、C 0/11、D 5/11；A→D = −3 wingbox 方向 +1 d2000。**W5c 四格**：17→18（判分）→18（考卷，+0）→23（重生成） |
-| 负控 | **`negative_controls_50.json`（当前）**；`_49` 为上一代；`_48`/`_47`/`_44`/`_41`/`_39`/`_37`/`_31` **已移入 `archive/`（历史，不得引用）**（R42：数字只认最新那份） | C-019：PC-1 + NC-1..22 + NC-15b + **NC-23..47**（含 **NC-43..46**：顶层 model 写错 / 分母混类 / prompt 盲填授权 / MSR 口径未声明；**NC-47 四向**：榜单缺字段级列、分母不等却硬填可减、dev 翻转未闭合、翻转列表清空；**NC-48 三向**：消融判采纳但 sha 未换 / 判否决却已换 / 缺 decision）= **50/50** |
+| 负控 | **`negative_controls_50.json`（当前）**；`_49` 为上一代；`_48`/`_47`/`_44`/`_41`/`_39`/`_37`/`_31` **已移入 `archive/`（历史，不得引用）**（R42：数字只认最新那份） | C-019：PC-1 + NC-1..22 + NC-15b + **NC-23..48**（含 **NC-43..46**：顶层 model 写错 / 分母混类 / prompt 盲填授权 / MSR 口径未声明；**NC-47 四向**：榜单缺字段级列、分母不等却硬填可减、dev 翻转未闭合、翻转列表清空；**NC-48 三向**：消融判采纳但 sha 未换 / 判否决却已换 / 缺 decision）= **50/50** |
 | T1 检索地板 | `trivial_baselines_L3.json`（v4）/ `trivial_baselines_L3_v6b.json` / **`trivial_baselines_L3_v6c.json`（当前）** | `value_added` 的对照项：v4 exam T1 = 0/11；v6c exam **T0 0/25 · T1 0/25 · T2 25/25**。**R40：T1 已 leave-one-out**，`t1_leave_one_out=true`、`T1_self_hit` 0 条（旧版 train 12/13 全是 `T1_nn == task_id`，地板是稻草人）。**R44 新增两档**：`T1plus_family`（**逐字段族级众数**，不读输入的最强策略，众数只在 train 池取）exam **0/25**、但**字段命中率 85.93%**、缺口 min **1** / 中位 **3** / max **5** 字段；`T1plus_family_oracle`（族内 train 池覆盖力**上界**，需知道答案才能选 ⇒ 只报不判）exam **0/25** |
 | MSR 明细 | `msr_l3_v4.json` / `msr_l3_v5_rescore.json` ／ 当前版本直接并入成绩单 `msr` + `exam.msr` 节 | 逐任务门禁 + 失败分层（env/contract/model/**solver**，R16/R35）；v4 = 11/21、exam 4/9。**R35：原始口径（含 solver）与剔除口径必须并列** ⇒ `exam_msr` / `exam_msr_excl_solver` / `dev_msr` / `dev_msr_excl_solver` 四行 + 全链 `msr` / `msr_excl_solver`，并标 `solver_in_exam` / `solver_in_dev`。**顶层 `msr` 键 W5c 起才落值**（此前一直是 null，NC-36 抓到）。**R45：九个字段必须全非空** —— `exam_msr` / `exam_msr_excl_solver` / `dev_msr` / `dev_msr_pct` / `dev_msr_excl_solver` / `msr` / `msr_excl_solver` + 别名 `full_msr_excl_solver`(≡`msr_excl_solver`, 38/47) / `full_msr_excl_solver_pct`；别名由同一变量写出（`full_msr_excl_solver` / `dev_msr_pct` 此前是**缺键**，S-31 守） |
 | bootstrap CI | `bootstrap_ci_L3_v4.json` / `_v5_rescore.json` / `_v6b.json` / **`_v6c.json`（当前）** | exam 任务重采样（B=4000, seed=20261025）：TSR/SFR/MSR 点估计 + CI95 + by_family + **by_stratum（三栏，只报不判）**。v6c：TSR 92.0% **[80.0, 100.0]**、SFR 90.9% **[77.3, 100.0]**；分族 open_hole 75.0% **[25.0, 100.0]**、wingbox 94.4% **[83.3, 100.0]** |
@@ -46,11 +46,14 @@
 cd "F:/AI FEA Modeling DataSets/feagpt_repro"
 PY="C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"   # gmsh 在这个 venv
 
-# ⓪ 当前官方 headline（C-029，考卷 v6c × 候选 v6c）——先跑这三条就够
+# ⓪ 前置闸（考卷 v6c 通用，**与 headline 无关**）——先跑这三条就够
 "$PY" r32_audit.py --tasks reports/papers/tasks_v6c.jsonl --scope exam --out reports/r32_audit_v6c_exam.json   # 必须 rc=0（R33）
 "$PY" audit_contract.py --tasks reports/papers/tasks_v6c.jsonl --out reports/contract_audit_v6c.json            # gold 55/55 可建（§7.4）
 # ★ --out 是相对 --out-dir 的：旧写法 `--out reports/xxx.json` 会落到 eval_runs/reports/（R37 踩过）
 "$PY" trivial_baselines.py --levels L3 --tasks reports/papers/tasks_v6c.jsonl --out trivial_baselines_L3_v6c.json --out-dir reports
+# ⓪-hist（**historical，不是当前 headline**）：C-029 / prompt v1 代 / `candidates_l3_v6c`
+#   当前 headline 见 §1（C-032，prompt v2 代）。本段只服务于 prompt_v2_effect_glm 消融复现；
+#   两代 prompt sha 不同（C-029 那批未记录 = UNKNOWN）⇒ 按 R53 **不得把 C-029 与 C-032 并列作成绩**。
 "$PY" score_baseline.py --candidates candidates_l3_v6c \
   --tasks reports/papers/tasks_v6c.jsonl \
   --report reports/baseline_scorecard_L3_v6c.json \
@@ -60,7 +63,8 @@ PY="C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"  
   --report reports/baseline_scorecard_L3_v6c.json      # 全链 ccx，串行，约 25–40 min
 "$PY" bootstrap_ci.py --scorecard reports/baseline_scorecard_L3_v6c.json --out reports/bootstrap_ci_L3_v6c.json
 
-# ⓪b 第二模型（C-031，同考卷 v6c × candidates_l3_v6c_dsv4pro）——可重复性证据，supporting 非 headline（R48）
+# ⓪b 第二模型（C-031，**prompt v1 代 = historical**，同考卷 v6c × candidates_l3_v6c_dsv4pro）
+#    supporting 非 headline（R48）；**与 C-032/C-033 不可拼比**（R53）——首次 R53 合规的跨模型对比是 C-033
 node _probe_models.js --out reports/diagnostics/models_available.json    # 实测可用模型 id（35 个，R13 不猜）
 node gen_candidates_v2.js --tasks reports/papers/tasks_v6c.jsonl --levels L3 \
   --out candidates_l3_v6c_dsv4pro --limit 55 --model deepseek-v4-pro --max-turns 3      # 9 min

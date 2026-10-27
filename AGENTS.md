@@ -11,17 +11,19 @@
 | # | 文件 | 你要从中确认什么 |
 |---|---|---|
 | 1 | `FEM-Bench-Aero/CLAIMS.md` | 当前唯一 **headline** 是哪条 claim；哪些是 supporting / historical / diagnostic |
-| 2 | `FEM-Bench-Aero/RUBRIC.md` | 当前 rubric 版本；R1–R57 红线；分母/判分口径 |
+| 2 | `FEM-Bench-Aero/RUBRIC.md` | 当前 rubric 版本；**R42–R57 红线判定表** + 分母/判分口径（**R1–R41 不在此文件**，见 `CLAIMS.md` 的「红线条（R1–R57，挂账常设）」） |
 | 3 | `feagpt_repro/reports/INDEX.md` | 官方 artifact vs 诊断；当前成绩单路径；当前考卷 sha |
 | 4 | 当前成绩单（INDEX 指向的那份 `reports/baseline_scorecard_*.json`） | `model` / `prompt_sha` / `tasks_sha256` / 分母构成 / headline 数字 |
 | 5 | 当前考卷 + prompt | `reports/papers/tasks_v6c.jsonl` 的 sha；`gen_candidates_v2.js` 的 prompt sha |
 
 ```bash
 cd "F:/AI FEA Modeling DataSets/feagpt_repro"
-python check_claims.py          # 必须 all_ok=True；当前 27 claims / 49 artifacts / 44 semantic
+python check_claims.py --json "$TEMP/check_claims_preflight.json"   # 必须 all_ok=True；当前 27 claims / 49 artifacts / 44 semantic
 python negative_controls.py     # 必须全绿；当前 50/50
 git status --short              # 先看清工作区；有别人未提交的改动时不要覆盖
 ```
+
+> **⚠ pre-flight 必须写临时 JSON**：`--json "$TEMP/check_claims_preflight.json"`。官方 `reports/check_claims.json` 记录了每个 artifact 的 `mtime`，pre-flight 直接写它 ⇒ **每开一个任务工作区就先多一个 diff**（sha256 不变），与 C5「`git diff` 只含 allowlist」字面冲突。**官方 JSON 只在任务收口时写一次**，且顺序必须是 **先 `negative_controls.py` → 后 `check_claims.py`**（负控会重写自己的 json，反序会让官方 JSON 记到过期的 mtime）。
 
 > **硬规则**：以上任一命令不全绿、或你无法说出“当前 headline / 当前 paper sha / 当前 prompt sha / 当前分母”，**停止，不要开始任务**。先修 SOT（source of truth），再谈执行。
 
@@ -76,7 +78,7 @@ git status --short              # 先看清工作区；有别人未提交的改�
 只能同条件相减；单变量变化只允许用 **bridge 表**逐格相减，并写明“这是唯一允许相减的场景”。`compare_scorecards.py` 返回 `rc=3` 时，不得绕过。
 
 ### R-A7　当前 headline 唯一
-- 恰好一条 active claim 标注“对外 headline”；当前是 **C-032**。
+- 恰好一条 active claim 在**状态列**（`check_claims.py` 的 S-29 所判字段）带「（对外 headline）」；当前是 **C-032**。**正文里提及这串字不算**（历史 claim 会用「不再是对外 headline」「headline 见 C-032」这类否定/引用句式，字面 grep 会命中多条）。
 - 旧 headline 必须标 `historical` / `diagnostic` / `superseded`；第二模型必须标 `supporting`，不得自称 headline。
 - 新增 headline 前先跑 `check_claims.py` 的 S-29；两条 headline = 失败。
 - 不得用“也可以算 headline”“并列第一”绕过。
@@ -249,7 +251,7 @@ git status --short              # 先看清工作区；有别人未提交的改�
 | W5d 产物 | C-034 `reports/w5d_leaderboard.{json,md}`；C-035 prompt v3/v3b 消融否决、回退 v2 |
 | 当前 paper | `reports/papers/tasks_v6c.jsonl`，sha `9c1faa3a…` |
 | 当前 prompt | `gen_candidates_v2.js`，sha `ce225186…` |
-| 当前 rubric | v5.1（R1–R57） |
+| 当前 rubric | v5.1（**R42–R57 判定表在 RUBRIC**；**R1–R41 在 `CLAIMS.md` 红线条**） |
 | 门禁 | 负控 **50/50**；`check_claims` **27/49/44** |
 | 已知 P2 | C-032 dev 22/30 已由 W5d-0 定位（`reports/diagnostics/dev_reversal_v6c_p2.md`，+1/−2）；C-033 1 编造 + 1 问错（W5d-1 prompt v3/v3b 消融否决，回退 v2，C-035）；C-033 字段级 +5.0pp BELOW |
 | 下一步 | ① 9 条 v1.1 案例的 Abaqus 双码：deck 已备，在 WorkBuddy 外跑 `_v11/run_v11_abaqus.bat`；② 考卷 v7（数据集 64 条 ≠ 考卷 55 条任务） |
