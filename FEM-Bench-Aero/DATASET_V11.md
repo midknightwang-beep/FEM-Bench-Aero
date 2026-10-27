@@ -68,7 +68,7 @@ v1.1：64 条 / 63 类 / train 25 · val 17 · test 22     ← train 与 val 一
 | `dedup_dataset.py` | **0 重复** | 63 个等价类，无重复模型 |
 | 内插物理校验 | **7/7 PASS** | `--strict` rc=0 |
 | `verify_dataset.py` | **CHECK**（未 PASS） | `pairing: 55 paired + 9 modeling-only ⇒ MISMATCH`——9 条只有 ccx，**缺 Abaqus 双码（gate 3）** |
-| `check_forms.py` | **未完成** | 本轮跑到 10 分钟无输出被我终止（见 §5 的教训），**必须串行重跑一次**才算数 |
+| `check_forms.py` | **54/54 PASS（VERDICT: PASS）** | 串行重跑完成（10m25s，无其他 ccx 并行）。**首次运行是 50 PASS + 1 FAIL**：`T5.invocation` 报参考案例不存在 —— 根因不是 v1.1 数据，而是 `check_forms.py` 的 `DEFAULT_REFERENCE` 指向 `outputs_str/naca4412_wingbox_str3` 这个**本仓库不存在**的旧输出目录（潜伏缺陷，见 §5.4）。修完 T5 由 1 项扩到 4 项，故总数 51 → 54 |
 
 ## 5. 待办与教训
 
@@ -79,7 +79,7 @@ v1.1：64 条 / 63 类 / train 25 · val 17 · test 22     ← train 与 val 一
    `9 modeling-only` 变成 `64 paired / VERDICT: PASS`。
    > 不能在 agent 内跑：沙箱注入 `tsbx.dll` ⇒ `pre.exe` 阶段 `__fastfail`（~19 秒延迟 +
    > Input File Processor 报错 + `.dat` 无错 + ODB 空骨架），`dangerouslyDisableSandbox` 也无效。
-2. **`check_forms.py` 串行重跑一次**（它会自己起 ccx，不能与别的 ccx 并行）。
+2. ~~**`check_forms.py` 串行重跑一次**~~ ✅ **已完成**（T-A5）：串行、无并行 ccx，结果 **54 PASS / 0 FAIL**，产物 `feagpt_repro/reports/check_forms_v11.json`，日志 `_v11/check_forms_v11.log`（首次失败证据留档 `_v11/check_forms_v11_fail1.log`）。
 3. **考卷 v7（未做）**：把 9 条接进任务层 ⇒ exam 25 → 34，才能收窄 CI。
    代价：换卷后 **C-032 的 23/25 不再可比**（R30/R39，paper sha 变），必须重生成两模型候选
    （约 2 × 15 min）+ 全链 MSR（约 2 × 40 min）+ 重跑 CI/榜单。**这是下一轮的主任务。**
@@ -101,3 +101,11 @@ v1.1：64 条 / 63 类 / train 25 · val 17 · test 22     ← train 与 val 一
 根部峰值应力由「端部弯矩 ÷ 截面模量」决定，两者都不随长度变，长度只挪框的位置。
 ⇒ **应力在长度轴上不单调**，该轴只判位移、应力只报。
 已改成按轴声明 `strict_metrics`，并把这个物理事实写进脚本注释：**别让判据的假设冒充模型的错**。
+
+
+### 5.4 一条潜伏缺陷：T5 的参考路径指向不存在的目录（T-A5 修）
+
+- `check_forms.py` 的 `DEFAULT_REFERENCE = "outputs_str/naca4412_wingbox_str3"` —— `outputs_str/` 这个目录**在本仓库不存在**（`ls outputs_str` 无此目录）⇒ `T5.invocation` 恒 `FileNotFoundError` ⇒ **整份 check_forms 恒 `VERDICT: FAIL`**。
+- 之所以一直没暴露：check_forms 之前每次都跑不完（第十二轮 §3.2 就是 10 分钟无输出被终止），**从没跑到过 T5 之后**。这次串行跑完才看见。
+- 修法：`DEFAULT_REFERENCE` 改为用 `__file__` 推出的绝对路径、指向数据集里真实存在的同族案例 `FEM-Bench-Aero/modeling/naca4412_wingbox_str3/spec.json`（锚定语义不变——它就是 T5 要复现的那条带凸缘长桁翼盒）；同时 `_reference_spec()` 现在**两种目录布局都认**：数据集六件套 `<dir>/spec.json` 与旧输出 `<dir>/<dir>.spec.json`（只认后者会让「拿数据集案例当参考」直接报错）。
+- 教训：**「工具跑不完」和「工具跑通了」必须分开记**。前者掩盖了后者的真缺陷——如果一直把 check_forms 当成「未完成」而不去跑完一次，这条陈旧路径会永远躲着。

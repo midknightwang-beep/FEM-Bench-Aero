@@ -41,7 +41,7 @@ Registered checks
 
 ``T5``  flanged stringer section.  Degeneration: ``flange_width <= 0`` must
         reproduce the blade wing box exactly.  The reference is a shipped case
-        (``outputs_str/naca4412_wingbox_str3``), not a synthetic model, so the
+        (``FEM-Bench-Aero/modeling/naca4412_wingbox_str3``), not a synthetic model, so the
         check is anchored to a model whose numbering and grouping are already
         regression-frozen.
 
@@ -120,7 +120,12 @@ from feagpt import (  # noqa: E402
 from feagpt.spec import FEASpec  # noqa: E402
 
 ROUND = 6
-DEFAULT_REFERENCE = "outputs_str/naca4412_wingbox_str3"
+# ★ T-A5：原值 "outputs_str/naca4412_wingbox_str3" 指的是一个**本仓库不存在**的旧输出目录
+#   （`ls outputs_str` = 无此目录）⇒ T5.invocation 恒 FileNotFoundError、check_forms 全量 VERDICT: FAIL。
+#   现指向数据集里真实存在的同族案例（锚定语义不变：它就是 T5 要复现的那条带凸缘长桁翼盒），
+#   并用 __file__ 推绝对路径，避免依赖 cwd。
+DEFAULT_REFERENCE = str(Path(__file__).resolve().parent.parent / "FEM-Bench-Aero" /
+                        "modeling" / "naca4412_wingbox_str3" / "spec.json")
 
 
 # --------------------------------------------------------------------------- #
@@ -210,7 +215,14 @@ def _result(name: str, passed: bool, detail: str) -> dict:
 def _reference_spec(reference: str) -> FEASpec:
     p = Path(reference)
     if p.is_dir():
-        p = p / (p.name + ".spec.json")
+        # 两种目录布局都要认：①数据集六件套 `<dir>/spec.json`（现行）；②旧输出 `<dir>/<dir>.spec.json`。
+        # 只认后者会让「拿数据集案例当参考」直接 FileNotFoundError（T-A5 实测）。
+        for cand in (p / "spec.json", p / (p.name + ".spec.json")):
+            if cand.exists():
+                p = cand
+                break
+        else:
+            p = p / (p.name + ".spec.json")
     if not p.exists():
         raise FileNotFoundError(
             f"T5 reference case not found: {p} - it anchors the check, so it "
