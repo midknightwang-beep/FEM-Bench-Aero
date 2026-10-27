@@ -18,10 +18,14 @@
 
 ```bash
 cd "F:/AI FEA Modeling DataSets/feagpt_repro"
-python check_claims.py --json "$TEMP/check_claims_preflight.json"   # 必须 all_ok=True；当前 27 claims / 49 artifacts / 45 semantic
-python negative_controls.py     # 必须全绿；当前 51/51
+python check_claims.py --json "$TEMP/check_claims_preflight.json"   # 必须 all_ok=True；当前 27 claims / 49 artifacts / 47 semantic
+python negative_controls.py     # 必须全绿；当前 53/53
 git status --short              # 先看清工作区；有别人未提交的改动时不要覆盖
 ```
+
+> **⚠ dataset / 求解类脚本必须用项目 venv**（R60）：`verify_dataset` / `check_forms` / `score_baseline` / `msr_l3` / `eval_dataset` / `dedup_dataset` / `run_pipeline` 一律用 `…/envs/default/Scripts/python.exe`；**系统 python 缺 numpy/gmsh**，报 `ModuleNotFoundError` 是**环境问题、不得记成数据失败**（R16）。`check_claims` / `negative_controls` 两道文本闸可用系统 python。
+
+> **⚠ 收口顺序固定（R59）**：`negative_controls.py` → `check_claims.py`，**不许反**。反了官方 JSON 里记录的 artifact `mtime` 会与实际值不一致（内容/sha 都对、只有元数据过期），由 **S-45** 判红。**S-45 检查的是「磁盘上现有」的官方 JSON**：若上一次 artifact 是旧序写的，本次 `check_claims` 会先判红、写完即修复 ⇒ **再跑一次 `check_claims` 即绿，收口必须跑到 S-45 绿为止**。
 
 > **⚠ pre-flight 必须写临时 JSON**：`--json "$TEMP/check_claims_preflight.json"`。官方 `reports/check_claims.json` 记录了每个 artifact 的 `mtime`，pre-flight 直接写它 ⇒ **每开一个任务工作区就先多一个 diff**（sha256 不变），与 C5「`git diff` 只含 allowlist」字面冲突。**官方 JSON 只在任务收口时写一次**，且顺序必须是 **先 `negative_controls.py` → 后 `check_claims.py`**（负控会重写自己的 json，反序会让官方 JSON 记到过期的 mtime）。
 
@@ -91,9 +95,9 @@ git status --short              # 先看清工作区；有别人未提交的改�
 
 ### R-A9　负控先绿，且要报总数 + 编号
 - 任何基线/重打分前：`check_claims.py` + `negative_controls.py` 必须全绿。
-- 报告必须写“总数 + 编号集合”（当前 51/51，NC-1..22 + NC-15b + NC-23..49），只写“全绿”不算。
+- 报告必须写“总数 + 编号集合”（当前 53/53，NC-1..22 + NC-15b + NC-23..51），只写“全绿”不算。
 - 缺一条负控 = 失败，不是 skip；不得为了跑通而弱化/跳过负控。
-- 负控文件版本化（`negative_controls_51.json`）；旧版本归档 `reports/archive/`，不得混用。
+- 负控文件版本化（`negative_controls_53.json`）；旧版本归档 `reports/archive/`，不得混用。
 
 ### R-A10　范围锁
 - 只改 `TASK_CONTRACT` 的 allowlist 内文件；**默认不改** paper / rubric / prompt / headline / 其他模型 / 其他报告。
@@ -135,7 +139,7 @@ git status --short              # 先看清工作区；有别人未提交的改�
 - 没有第二个 Agent 时，至少让用户按 §4 清单手工核一遍。
 
 ### C3　5 分钟 pre-flight
-开工前固定跑：`git status` → `check_claims` → `negative_controls` →（如涉及跨版本）`compare_scorecards` →（如涉及考卷）`r32_audit --scope exam`。
+开工前固定跑：`git status` → `check_claims --json "$TEMP/…"`（**只看，不写官方**）→ `negative_controls` →（如涉及跨版本）`compare_scorecards` →（如涉及考卷）`r32_audit --scope exam`。**收口时顺序相反：负控 → check_claims**（R59；S-45 会把反序判红）。
 任一失败：先修 SOT，不要开始任务。
 
 ### C4　冻结清单（sha manifest）
@@ -252,7 +256,7 @@ git status --short              # 先看清工作区；有别人未提交的改�
 | 当前 paper | `reports/papers/tasks_v6c.jsonl`，sha `9c1faa3a…` |
 | 当前 prompt | `gen_candidates_v2.js`，sha `ce225186…` |
 | 当前 rubric | v5.2（**R42–R58 判定表在 RUBRIC**；**R1–R41 在 `CLAIMS.md` 红线条**） |
-| 门禁 | 负控 **51/51**；`check_claims` **27/49/45** |
+| 门禁 | 负控 **53/53**；`check_claims` **27/49/47** |
 | 已知 P2 | C-032 dev 22/30 已由 W5d-0 定位（`reports/diagnostics/dev_reversal_v6c_p2.md`，+1/−2）；C-033 1 编造 + 1 问错（W5d-1 prompt v3/v3b 消融否决，回退 v2，C-035）；C-033 字段级 +5.0pp BELOW |
 | 下一步 | ① 9 条 v1.1 案例的 Abaqus 双码：deck 已备，在 WorkBuddy 外跑 `_v11/run_v11_abaqus.bat`；② 考卷 v7（数据集 64 条 ≠ 考卷 55 条任务） |
 

@@ -595,6 +595,91 @@ def index_consistency(index_path, nc_json_path, headline_claim):
     return ok, '；'.join(det)
 
 
+_DATASET_SCRIPTS = ('verify_dataset.py', 'check_forms.py', 'score_baseline.py', 'msr_l3.py',
+                    'eval_dataset.py', 'dedup_dataset.py', 'run_pipeline.py', 'make_dataset.py',
+                    'verify_v11_interpolation.py')
+
+
+def close_order_strict(cc_json, nc_json, root):
+    """R59（第十二轮 §3.4/D5）：**收口顺序固定——官方 `check_claims.json` 必须在 `negative_controls` 之后写**。
+
+    为什么需要：负控每次都重写自己的 json（内容不变也重写）⇒ 它的 `mtime` 会变。若 `check_claims`
+    写在负控**之前**，官方 JSON 里记录的 artifact `mtime` 就与磁盘上的**实际值**不一致——内容与
+    sha256 都对，只有元数据是旧的。这种「看着全绿、记录过期」最难发现：第十二轮是靠人工比对
+    `check_claims.json`(22:18) 与 `negative_controls_51.json`(22:19) 才抓到的。
+    判据（都要成立）：
+      (a) `check_claims.json` 里 C-019 记录的 artifact `mtime` == 该 artifact 的**实际** mtime；
+      (b) `check_claims.json` 自身 mtime >= 负控 json 的 mtime。
+    """
+    if not os.path.exists(cc_json):
+        return False, f'官方 check_claims.json 不存在（{os.path.basename(cc_json)}）'
+    try:
+        d = json.load(open(cc_json, encoding='utf-8'))
+    except Exception as e:
+        return False, f'check_claims.json 读不动：{e}'
+    ent = next((r for r in (d.get('results') or []) if r.get('claim_id') == 'C-019'), None)
+    if not ent:
+        return False, 'check_claims.json 里没有 C-019（负控 artifact 未登记）'
+    art = ent.get('artifact') or ''
+    p = art if os.path.isabs(art) else os.path.join(root, art)
+    if not os.path.exists(p):
+        return False, f'C-019 的 artifact 不存在：{art}'
+    rec, act = int(ent.get('mtime') or 0), int(os.path.getmtime(p))
+    ccm = int(os.path.getmtime(cc_json))
+    ncm = int(os.path.getmtime(nc_json)) if (nc_json and os.path.exists(nc_json)) else None
+    probs = []
+    if rec != act:
+        probs.append(f'记录的 mtime {rec} ≠ 实际 {act}（差 {act - rec}s）'
+                     f'⇒ 官方 JSON 写在负控之前，或负控之后又被重写')
+    if ncm is not None and ccm < ncm:
+        probs.append(f'check_claims.json({ccm}) 早于负控 json({ncm}) ⇒ 收口顺序反了')
+    return (not probs), (f'C-019 mtime 记录/实际 = {rec}/{act}；check {ccm} vs 负控 {ncm}'
+                         + ('' if not probs else ' ⇒ ' + '；'.join(probs)))
+
+
+def dataset_cmds_use_venv(index_path):
+    """R60（第十二轮 §3.5/D6）：**dataset/求解类脚本必须用项目 venv**。
+
+    系统 python 缺 numpy/gmsh ⇒ `verify_dataset` / `check_forms` / `score_baseline` / `msr_l3`
+    直接 `ModuleNotFoundError`。危险的不是崩，而是**被读成「数据失败」**（R16：环境 vs 数据混判）。
+    判据（机器无关，只查文本形态）：
+      ① INDEX 的 ```bash 代码块里必须有 `PY=` 定义，且它指向 venv（路径含 `envs`/`venv`/`binaries`）；
+      ② 该块内 `_DATASET_SCRIPTS` 的调用行必须以 `$PY`（或 venv 绝对路径）开头；裸 `python` 判红。
+    只扫围栏内的非注释行——表格/正文里提到脚本名不算命令（否则 S-46 会被自己的文档判红）。
+    """
+    if not os.path.exists(index_path):
+        return False, 'INDEX 不存在'
+    lines = open(index_path, encoding='utf-8').read().split('\n')
+    in_block, total, bad, py_def = False, 0, [], None
+    for i, ln in enumerate(lines, 1):
+        s = ln.strip()
+        if s.startswith('```'):
+            in_block = not in_block
+            continue
+        if not in_block or not s or s.startswith('#'):
+            continue
+        m = re.match(r'PY\s*=\s*"([^"]+)"', s)
+        if m:
+            py_def = (i, m.group(1))
+        for name in _DATASET_SCRIPTS:
+            if name in s:
+                total += 1
+                head = s.split(name)[0]
+                if ('$PY' not in head) and ('python.exe' not in head) and ('envs' not in head):
+                    bad.append(f'L{i} `{name}` 未走 venv：{s[:56]}…')
+                break
+    probs = []
+    if py_def is None:
+        probs.append('bash 块里没有 `PY=` 定义（命令里的 `$PY` 会变成空）')
+    elif not any(k in py_def[1] for k in ('envs', 'venv', 'binaries')):
+        probs.append(f'`PY=` 指向的路径不像 venv：{py_def[1]}')
+    if total == 0:
+        probs.append('bash 块里没有 dataset 脚本调用（命令块可能被改写）')
+    probs += bad
+    return (not probs), (f'dataset 命令 {total} 条、PY= {py_def[1] if py_def else "(缺)"}'
+                         + ('' if not probs else ' ⇒ ' + '；'.join(probs)))
+
+
 def prompt_no_blind_default(path, label='gen_candidates_v2.js'):
     """R50（专家第十轮 §3.1）：SYS prompt **不得**对题面已提及的特征授权默认值，
     同时**不得**把 `expected_clarifications` 注入 prompt（那等于泄漏答案）。
@@ -1142,6 +1227,23 @@ def semantic_checks(root, rows):
         '含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；'
         '负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致',
         _det44, _ok44)
+
+    # S-45（R59，第十二轮 §3.4/D5）：**收口顺序固定**——官方 check_claims.json 必须在负控之后写。
+    # 动机：负控每次重写自己的 json（内容不变也重写），若 check 写在负控之前，官方 JSON 里记录的
+    # artifact mtime 就是旧值（内容/sha 都对，只有元数据过期）——第十二轮靠人工比对才抓到。
+    _ok45, _det45 = close_order_strict(
+        os.path.join(root, 'feagpt_repro', 'reports', 'check_claims.json'),
+        _latest_nc_json(root), root)
+    add('S-45', '收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）',
+        'C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime',
+        _det45, _ok45)
+
+    # S-46（R60，第十二轮 §3.5/D6）：dataset/求解类脚本必须走项目 venv（系统 python 缺 numpy/gmsh）。
+    _ok46, _det46 = dataset_cmds_use_venv(
+        os.path.join(root, 'feagpt_repro', 'reports', 'INDEX.md'))
+    add('S-46', 'dataset/求解类命令必须使用项目 venv（R60）',
+        'INDEX 的 bash 块有 `PY=` 且指向 venv；verify_dataset/check_forms/score/msr/run_pipeline 等调用行必须走 $PY',
+        _det46, _ok46)
 
     return out
 

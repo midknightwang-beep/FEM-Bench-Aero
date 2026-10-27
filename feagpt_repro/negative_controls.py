@@ -1069,8 +1069,68 @@ def main():
     print(f"  [{'ok ' if ok49 else 'BAD!'}] NC-49 INDEX 漂移必须被 S-44 拒绝                        "
           f"expect=fwd T/mut F actual={det49}")
 
-    # NC-36（R29 补）：语义项**不得静默消失**。
-    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，
+    # NC-50（R59，T-A4）：**收口顺序反了必须被抓** —— 官方 JSON 记录的 artifact mtime 过期，
+    #   或 check_claims.json 的文件时间早于负控 json。第十二轮就是这个形态（22:18 vs 22:19），
+    #   内容/sha 全对、只有元数据旧，人工比对才抓到 ⇒ 必须有闸。
+    #   ★ 用**合成夹具**而不是真实文件：负控在 check_claims 之前跑，此时官方 JSON 本来就还可能过期，
+    #     拿它当正向用例会让 NC-50 随收口顺序抖动（第一版就踩了）。
+    from check_claims import close_order_strict, dataset_cmds_use_venv
+    ok50, det50 = False, 'no fixture'
+    import tempfile as _tf50
+    _td50 = _tf50.mkdtemp()
+    _art50 = os.path.join(_td50, 'negative_controls_99.json')
+    json.dump({'n_cases': 0, 'results': []}, open(_art50, 'w', encoding='utf-8'))
+    _now50 = int(os.path.getmtime(_art50))
+    _nc50 = os.path.join(_td50, 'nc_99.json')
+    json.dump({'n_cases': 0, 'results': []}, open(_nc50, 'w', encoding='utf-8'))
+    os.utime(_nc50, (_now50 - 100, _now50 - 100))
+
+    def _mk_cc50(tag, rec_mtime, file_mtime):
+        p = os.path.join(_td50, 'cc_%s.json' % tag)
+        json.dump({'results': [{'claim_id': 'C-019', 'artifact': _art50, 'mtime': rec_mtime}]},
+                  open(p, 'w', encoding='utf-8'))
+        os.utime(p, (file_mtime, file_mtime))
+        return p
+
+    ok_f50, _ = close_order_strict(_mk_cc50('ok', _now50, _now50), _nc50, _td50)
+    ok_a50, _ = close_order_strict(_mk_cc50('stale', _now50 - 3600, _now50), _nc50, _td50)  # 记录过期
+    ok_b50, _ = close_order_strict(_mk_cc50('early', _now50, _now50 - 600), _nc50, _td50)   # 文件时间反序
+    ok50 = bool(ok_f50) and (not ok_a50) and (not ok_b50)
+    det50 = (f'正向={"过" if ok_f50 else "红"} 记录mtime过期={"红" if not ok_a50 else "漏判"} '
+             f'文件时间反序={"红" if not ok_b50 else "漏判"}')
+    results.append({'id': 'NC-50', 'desc': '收口顺序反（记录过期 / 文件时间反序）必须被 R59/S-45 拒绝',
+                    'expect': 'fwd=True / 两向变异=False', 'actual': det50, 'ok': ok50})
+    print(f"  [{'ok ' if ok50 else 'BAD!'}] NC-50 收口顺序反了必须被 S-45 拒绝                      "
+          f"expect=fwd T/mut F actual={det50}")
+
+    # NC-51（R60，T-A4）：**dataset 命令必须走 venv** —— 裸 `python` 或缺 `PY=` 必须被抓。
+    ok51, det51 = False, 'no artifact'
+    _idx51 = os.path.join(HERE, 'reports', 'INDEX.md')
+    if os.path.exists(_idx51):
+        _src51 = open(_idx51, encoding='utf-8').read()
+        ok_f51, _ = dataset_cmds_use_venv(_idx51)
+        import re as _re51
+        import tempfile as _tf51
+        _td51 = _tf51.mkdtemp()
+
+        def _w51(tag, txt):
+            p = os.path.join(_td51, 'idx_%s.md' % tag)
+            open(p, 'w', encoding='utf-8').write(txt)
+            return p
+
+        _m1 = _src51.replace('"$PY" score_baseline.py', 'python score_baseline.py', 1)
+        _m2 = _re51.sub(r'(?m)^PY=.*$', '', _src51, count=1)
+        ok_a51 = dataset_cmds_use_venv(_w51('bare', _m1))[0] if _m1 != _src51 else None
+        ok_b51 = dataset_cmds_use_venv(_w51('nopy', _m2))[0] if _m2 != _src51 else None
+        ok51 = bool(ok_f51) and ok_a51 is False and ok_b51 is False
+        det51 = (f'正向={"过" if ok_f51 else "红"} 裸python={"红" if ok_a51 is False else "漏判"} '
+                 f'缺PY={"红" if ok_b51 is False else "漏判"}')
+    results.append({'id': 'NC-51', 'desc': 'dataset 命令用裸 python / 缺 PY= 必须被 R60/S-46 拒绝',
+                    'expect': 'fwd=True / 两向变异=False', 'actual': det51, 'ok': ok51})
+    print(f"  [{'ok ' if ok51 else 'BAD!'}] NC-51 dataset 命令未走 venv 必须被 S-46 拒绝              "
+          f"expect=fwd T/mut F actual={det51}")
+
+    # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，
     # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；
     #           ③ 源码里必须存在 else 分支（缺 msr ⇒ 加一条 ok=False），防被改回去。
@@ -1109,8 +1169,21 @@ def main():
     rep_dir = os.path.join(HERE, 'reports')
     os.makedirs(rep_dir, exist_ok=True)
     out_path = os.path.join(rep_dir, f'negative_controls_{len(results)}.json')
-    json.dump(report, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-    print(f"\n负控: {n_ok}/{len(results)} ok -> reports/negative_controls_{len(results)}.json")
+    # ★ F-1（T-A4，配合 R59）：**内容没变就不重写**。原先无条件重写 ⇒ 每次跑负控都会刷新 mtime
+    #   ⇒ 官方 check_claims.json 里记录的 artifact mtime 立刻过期（R59/S-45 会因为「白跑一次负控」转红）。
+    #   比较用 dict 相等（键序无关），避免因序列化顺序变化产生假 diff。
+    _same = False
+    if os.path.exists(out_path):
+        try:
+            _same = (json.load(open(out_path, encoding='utf-8')) == report)
+        except Exception:
+            _same = False
+    if _same:
+        print(f"\n负控: {n_ok}/{len(results)} ok -> reports/negative_controls_{len(results)}.json"
+              f"（内容未变，未重写 —— F-1，避免 mtime 抖动）")
+    else:
+        json.dump(report, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+        print(f"\n负控: {n_ok}/{len(results)} ok -> reports/negative_controls_{len(results)}.json（已更新）")
     print(report['gate_message'])
     return 0 if report['all_ok'] else 2
 
