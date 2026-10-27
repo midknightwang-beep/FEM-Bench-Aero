@@ -1,0 +1,36 @@
+{
+ "task_id": "L3_naca4412_wingbox",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "769a1ebda87cddff35386ff607be64c273e5ca00976aa0ba696f2d247c0f18cc",
+ "clarify": null,
+ "spec": null,
+ "turns_used": 3,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/airfoil/n_ribs must be number",
+    "/ must match \"then\" schema",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'yield_strength'"
+   ]
+  },
+  {
+   "turn": 2,
+   "errors": [
+    "/airfoil must have required property 'n_ribs'",
+    "/ must match \"then\" schema"
+   ]
+  },
+  {
+   "turn": 3,
+   "errors": [
+    "/airfoil/n_ribs must be number",
+    "/ must match \"then\" schema"
+   ]
+  }
+ ],
+ "raw_len": 849
+}

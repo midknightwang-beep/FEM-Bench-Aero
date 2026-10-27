@@ -1,0 +1,11 @@
+{
+ "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "769a1ebda87cddff35386ff607be64c273e5ca00976aa0ba696f2d247c0f18cc",
+ "clarify": "[\"题面提到“若干个普通框”但未给框数 n_frames，需澄清框的数量\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 50
+}

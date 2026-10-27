@@ -1,0 +1,68 @@
+{
+ "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "e52f06aee99d85673067f3462558d364c33ead924d73df4c7e1b002a84061e92",
+ "clarify": null,
+ "spec": {
+  "name": "fuselage_barrel_with_stringers_frames",
+  "description": "铝 2024-T3 机身柱壳段，直径 1600 mm、长 1600 mm、壳厚 3 mm，8 根 blade 长桁，普通框，内压 + 端剪 + 端弯载荷",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "fuselage_barrel",
+   "params": {
+    "diameter": 1600,
+    "length": 1600,
+    "thickness": 3,
+    "n_stringers": 8,
+    "n_frames": 0
+   }
+  },
+  "mesh": {
+   "size_chord": 25,
+   "size_span": 25
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.05,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {
+   "end_shear": 50000,
+   "end_moment": 50000000
+  }
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/airfoil must NOT be valid",
+    "/ must match \"then\" schema",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'yield_strength'",
+    "/mesh must have required property 'size_chord'",
+    "/mesh must have required property 'size_span'",
+    "/mesh 不允许的键 \"size\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le",
+    "/load must have required property 'direction'"
+   ]
+  }
+ ],
+ "raw_len": 797
+}

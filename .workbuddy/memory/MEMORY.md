@@ -56,6 +56,8 @@
 - **代理模型线（M7/M14/D01–D37）完全冻结**（D37 拍板）；对外 KPI = TSR/FPR/修复/拒答/澄清。计划看 `FEM-Bench-Aero/ROADMAP.md`。
 - **W1–W5d 全部收口**；**对外 headline = C-032（v6c × `candidates_l3_v6c_glm_p2`，prompt v2 代）**：考卷 v6c（C-030，sha `9c1faa3a…`）。
 - **★★ 跨模型榜单 = C-034（`reports/w5d_leaderboard.{json,md}`）：三列并排是硬要求（R56）**——同一对模型**三个口径排名相反**：任务级 TSR 92.0% vs 88.0%、字段级 99.34%(PASS) vs 90.94%(BELOW)、**条件 MSR 90.9% vs 95.2%（deepseek 反而更高，因分母少 1 条且那条是失败题）**。⇒ **只引任一列都能得出「某模型更强」**，必须并排 + 归因。
+- **★★ prompt 已到顶 = C-035（别再改措辞）**：为清零 C-033 剩余失败做了 **v3**（数量铁律扩到尺寸 + 澄清列表准入）与 **v3b**（+5 步自检放 SYS 末），**exam 澄清题三版完全一致**（glm 3/3/3、deepseek 2/2/2），但失败点在迁移（多问 → 填 0 → 未收敛）⇒ 打地鼠、零收益 ⇒ **否决、回退 v2**（sha `ce225186…`）。剩余失败属**模型行为**（缺失信息处理），要动只能改 harness 口径（语义回填闸 → D7 待拍板）。**R57 扩写：prompt 变更必须消融留档、净收益 ≤0 否决、否决后 sha 回基线（S-43/NC-48）**。
+- **★ 别把「本族合法键」当成「本题该问的键」**：`n_stringers_per_skin` 在翼盒族合法，但题面没提长桁时登记为「不该问」是对的——判分元数据没问题，是模型多问（自我修正 D6 的前提）。
 - **★ dev 反向变化必须机器定位（R55）**：C-032 dev 23→22 实为 **+1/−2**——`stiffened_800x600_str3` 由 600/800 纠正为 800/600（题面 R41 修正被兑现，不重生成恒为 0）；两条柱壳 `extra.end_moment` 写 5e4/5e6 而 gold 5e7（×10⁻³/×10⁻¹ 量级偏差，与 prompt 无关）。产物 `diagnostics/dev_reversal_v6c_p2.md`，S-41/NC-47 守。
 - **★★ 双模型同 harness（R53 合规，`prompt_sha256 = ce225186…` 两者逐字相同）**：C-032（glm）exam **23/25 (92.0%)** / MSR 20/22；C-033（`deepseek-v4-pro`）exam **22/25 (88.0%)** / MSR 20/21（**条件分母 21**）。**2×2 = both 22 / only_a 1 / only_b 0 / neither 2** ⇒ 纯损失非互补；**两模型 `spec_pass` 同 20/25** ⇒ 差距不来自建模能力。**C-031（prompt v1，20/25）与 C-032/C-033 不可相减**（R53）。
 - **★ R50 修复的净效果可精确断言**：删「未提长桁→0」授权后，**glm 的 exam 逐题类别与 C-029 完全相同**（⇒ 修的是对别家的隐患，92.0% 不依赖坏 prompt）；**deepseek 回收 +2**（`n_frames`/`n_stringers`，正是 C-031 编造的两条）⇒ **C-031 的 80.0% 有 2 条是 prompt 下界**，`n_ribs` 那条才是模型侧。
@@ -102,7 +104,7 @@
 - **C-028（v6b，17/25 = 68.0%）已降级为 `diagnostic lower bound`**（第八轮 D1），**与 C-029 不可相减**：
   同 25 条 exam id 但**题面已改**（paper sha 不同，`compare_scorecards.py` 增了这条硬理由）；与 C-021 的 45.5% 另加 exam 11→25、族构成变化。
   **C-025 v5 重打分 4/11 是诊断不是成绩**（旧候选不能评新考卷，R28）。
-- **红线 R1–R57**（R42 headline 唯一 / R43 投影不冒充实测 / R44 value_added 双尺度 / R45 MSR 字段齐 / R46 key 决策留痕 / **R47 比率分母显式落盘且加和闭合** / **R48 第二模型只作可重复性证据、不得事后择优** / **R49 双尺度结论相反必须标 `verdict_split`** / **R50 prompt 不得盲填、不得注入 `expected_clarifications`** / **R51 模型标签读实测** / **R52 分母四类拆开 + 两层闭合** / **R53 改 harness 必须全量重跑（`prompt_sha256` 三件对齐才可比）** / **R54 MSR 是条件通过率：口径落盘 + 排除项点名 + 分母不同不得直减/排名** / **R55 prompt 修复逐题回归、dev 反向必须定位并闭合** / **R56 跨模型榜单三列并排、分母不等不出 Δ** / **R57 prompt v3 不得注入 `expected_clarifications`**）；R25 artifact 入 `reports/`；R26 `check_claims.py`（**负控 49/49**，含 NC-23..47；语义 **43** 项；26 claims / 47 artifacts）；R27 官方/诊断分文件；R28 旧候选不评新考卷；
+- **红线 R1–R57**（R42 headline 唯一 / R43 投影不冒充实测 / R44 value_added 双尺度 / R45 MSR 字段齐 / R46 key 决策留痕 / **R47 比率分母显式落盘且加和闭合** / **R48 第二模型只作可重复性证据、不得事后择优** / **R49 双尺度结论相反必须标 `verdict_split`** / **R50 prompt 不得盲填、不得注入 `expected_clarifications`** / **R51 模型标签读实测** / **R52 分母四类拆开 + 两层闭合** / **R53 改 harness 必须全量重跑（`prompt_sha256` 三件对齐才可比）** / **R54 MSR 是条件通过率：口径落盘 + 排除项点名 + 分母不同不得直减/排名** / **R55 prompt 修复逐题回归、dev 反向必须定位并闭合** / **R56 跨模型榜单三列并排、分母不等不出 Δ** / **R57 prompt v3 不得注入 `expected_clarifications`**）；R25 artifact 入 `reports/`；R26 `check_claims.py`（**负控 50/50**，含 NC-23..48；语义 **44** 项；27 claims / 49 artifacts）；R27 官方/诊断分文件；R28 旧候选不评新考卷；
   **R29 语义计数必须自检**（`check_claims.py --semantic` 默认开，**29 项**，期望值全从 artifact 实读；
   **缺 MSR ⇒ S-19/S-20 必须响亮失败，不得静默消失**，NC-36 三端守）；
   **R30 跨口径不得直接比**；**R31 生成前 key 预检 + 1 条冒烟**；**R33–R41** 见 CLAIMS 正文。

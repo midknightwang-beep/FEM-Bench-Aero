@@ -1,0 +1,533 @@
+{
+ "schema": "prompt_ablation/v1",
+ "subset": [
+  "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+  "L3_naca4412_wingbox",
+  "L3_stiffened_panel_600x600_str3",
+  "L3_open_hole_panel_400x200_d20",
+  "L3_stiffened_panel_600x600",
+  "L3_open_hole_panel_400x200_d40",
+  "L3_naca4412_wingbox_str3"
+ ],
+ "variants": [
+  {
+   "name": "v2（现行）",
+   "glm_dir": "candidates_l3_v6c_glm_p2",
+   "ds_dir": "candidates_l3_v6c_ds_p2",
+   "prompt_sha": {
+    "glm-5.3-flash": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+    "deepseek-v4-pro": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22"
+   }
+  },
+  {
+   "name": "v3",
+   "glm_dir": "_smoke_v3_glm",
+   "ds_dir": "_smoke_v3_ds",
+   "prompt_sha": {
+    "glm-5.3-flash": "e52f06aee99d85673067f3462558d364c33ead924d73df4c7e1b002a84061e92",
+    "deepseek-v4-pro": "e52f06aee99d85673067f3462558d364c33ead924d73df4c7e1b002a84061e92"
+   }
+  },
+  {
+   "name": "v3b",
+   "glm_dir": "_smoke_v3b_glm",
+   "ds_dir": "_smoke_v3b_ds",
+   "prompt_sha": {
+    "glm-5.3-flash": "769a1ebda87cddff35386ff607be64c273e5ca00976aa0ba696f2d247c0f18cc",
+    "deepseek-v4-pro": "769a1ebda87cddff35386ff607be64c273e5ca00976aa0ba696f2d247c0f18cc"
+   }
+  }
+ ],
+ "models": [
+  "glm-5.3-flash",
+  "deepseek-v4-pro"
+ ],
+ "summary": {
+  "v2（现行）": {
+   "glm-5.3-flash": {
+    "exam_clarify_ok": 3,
+    "exam_clarify_total": 3,
+    "control_regressions": [],
+    "fails": []
+   },
+   "deepseek-v4-pro": {
+    "exam_clarify_ok": 2,
+    "exam_clarify_total": 3,
+    "control_regressions": [],
+    "fails": [
+     "L3_naca4412_wingbox",
+     "L3_open_hole_panel_400x200_d20"
+    ]
+   }
+  },
+  "v3": {
+   "glm-5.3-flash": {
+    "exam_clarify_ok": 3,
+    "exam_clarify_total": 3,
+    "control_regressions": [],
+    "fails": []
+   },
+   "deepseek-v4-pro": {
+    "exam_clarify_ok": 2,
+    "exam_clarify_total": 3,
+    "control_regressions": [],
+    "fails": [
+     "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+     "L3_open_hole_panel_400x200_d20"
+    ]
+   }
+  },
+  "v3b": {
+   "glm-5.3-flash": {
+    "exam_clarify_ok": 3,
+    "exam_clarify_total": 3,
+    "control_regressions": [],
+    "fails": []
+   },
+   "deepseek-v4-pro": {
+    "exam_clarify_ok": 2,
+    "exam_clarify_total": 3,
+    "control_regressions": [],
+    "fails": [
+     "L3_naca4412_wingbox"
+    ]
+   }
+  }
+ },
+ "decision": {
+  "adopt": false,
+  "reason": "两版均未同时满足「exam 澄清题全对」+「对照零回归」⇒ **不采纳**，维持 v2（prompt sha 回到 `ce225186…`），否则按 R53 必须全量重跑 110 条候选 + 65 分钟 MSR，净收益为 0。",
+  "per_variant": {
+   "v3": {
+    "kind": "no_effect",
+    "per_model": {
+     "glm-5.3-flash": {
+      "gain_exam_clarify": 0,
+      "control_regression": false,
+      "all_exam_ok": true
+     },
+     "deepseek-v4-pro": {
+      "gain_exam_clarify": 0,
+      "control_regression": false,
+      "all_exam_ok": false
+     }
+    }
+   },
+   "v3b": {
+    "kind": "no_effect",
+    "per_model": {
+     "glm-5.3-flash": {
+      "gain_exam_clarify": 0,
+      "control_regression": false,
+      "all_exam_ok": true
+     },
+     "deepseek-v4-pro": {
+      "gain_exam_clarify": 0,
+      "control_regression": false,
+      "all_exam_ok": false
+     }
+    }
+   }
+  }
+ },
+ "table": {
+  "glm-5.3-flash|v2（现行）|L3_fuselage_barrel_d1600_l1600_str8_frm3": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"n_frames：题面提到'若干个普通框'但未给出框的数量，请明确 n_frames。\"]",
+   "turns": 1
+  },
+  "glm-5.3-flash|v2（现行）|L3_naca4412_wingbox": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"翼肋数量未给出：题面提到'若干翼肋等距布置'但未给出具体根数 n_ribs，请提供翼肋的具体数量（以及若需要，等距布置的间距或起止位置）。\"]",
+   "turns": 1
+  },
+  "glm-5.3-flash|v2（现行）|L3_stiffened_panel_600x600_str3": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"题面提到长桁但未给出根数，请明确 n_stringers（长桁数量）\"]",
+   "turns": 1
+  },
+  "glm-5.3-flash|v2（现行）|L3_open_hole_panel_400x200_d20": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": false,
+   "note": "",
+   "raw_clarify": "[\"hole_d（孔直径）未给出，开孔拉伸板必须有孔径才能建模，请提供孔直径（mm）\",\"hole_x/hole_y（孔心坐标）未给出，请确认孔心位置（若为中心孔请说明，hole_x/hole_y 可省略）\"]",
+   "turns": 2
+  },
+  "glm-5.3-flash|v2（现行）|L3_stiffened_panel_600x600": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "glm-5.3-flash|v2（现行）|L3_open_hole_panel_400x200_d40": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "glm-5.3-flash|v2（现行）|L3_naca4412_wingbox_str3": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "deepseek-v4-pro|v2（现行）|L3_fuselage_barrel_d1600_l1600_str8_frm3": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"n_frames\"]",
+   "turns": 1
+  },
+  "deepseek-v4-pro|v2（现行）|L3_naca4412_wingbox": {
+   "category": "clarify_wrong",
+   "pass": false,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "问题使用了错族键名（键名即契约，R19）",
+   "raw_clarify": "[\"若干翼肋等距布置：请给出翼肋数量 n_ribs\",\"未明确是否布置长桁：若布置长桁，请给出每侧蒙皮长桁数量 n_stringers_per_skin；若为素蒙皮，请明确说明无长桁\"]",
+   "turns": 3
+  },
+  "deepseek-v4-pro|v2（现行）|L3_stiffened_panel_600x600_str3": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"题面提到“若干根长桁”但未给 n_stringers 数量，须澄清长桁根数\"]",
+   "turns": 1
+  },
+  "deepseek-v4-pro|v2（现行）|L3_open_hole_panel_400x200_d20": {
+   "category": "fabricated",
+   "pass": false,
+   "is_clarify_task": true,
+   "is_exam": false,
+   "note": "澄清题静默编造 spec（缺 ['hole_d']）",
+   "raw_clarify": "",
+   "turns": 2,
+   "fab_detail": {
+    "present_keys": {},
+    "zero_keys": [],
+    "mode": "omit_key"
+   }
+  },
+  "deepseek-v4-pro|v2（现行）|L3_stiffened_panel_600x600": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "deepseek-v4-pro|v2（现行）|L3_open_hole_panel_400x200_d40": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "deepseek-v4-pro|v2（现行）|L3_naca4412_wingbox_str3": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "glm-5.3-flash|v3|L3_fuselage_barrel_d1600_l1600_str8_frm3": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"n_frames：题面提到'若干个普通框'但未给出框的数量，请提供 n_frames 的具体数值（及框截面尺寸，如有）\"]",
+   "turns": 1
+  },
+  "glm-5.3-flash|v3|L3_naca4412_wingbox": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"翼肋数量（n_ribs）是多少？题面仅说'若干翼肋等距布置'，需给出具体根数才能建模。\"]",
+   "turns": 1
+  },
+  "glm-5.3-flash|v3|L3_stiffened_panel_600x600_str3": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"长桁根数 n_stringers 未给出（题面提到长桁但未给数量），请提供加筋壁板的长桁根数。\"]",
+   "turns": 1
+  },
+  "glm-5.3-flash|v3|L3_open_hole_panel_400x200_d20": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": false,
+   "note": "",
+   "raw_clarify": "[\"孔直径 hole_d 是多少？\",\"孔心位置：是否为板中心（即 hole_x/hole_y 偏心坐标）？\"]",
+   "turns": 1
+  },
+  "glm-5.3-flash|v3|L3_stiffened_panel_600x600": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "glm-5.3-flash|v3|L3_open_hole_panel_400x200_d40": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "glm-5.3-flash|v3|L3_naca4412_wingbox_str3": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "deepseek-v4-pro|v3|L3_fuselage_barrel_d1600_l1600_str8_frm3": {
+   "category": "fabricated",
+   "pass": false,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "澄清题静默编造 spec（缺 ['n_frames']）",
+   "raw_clarify": "",
+   "turns": 2,
+   "fab_detail": {
+    "present_keys": {
+     "n_frames": 0,
+     "n_stringers": 8
+    },
+    "zero_keys": [
+     "n_frames"
+    ],
+    "mode": "fill_zero"
+   }
+  },
+  "deepseek-v4-pro|v3|L3_naca4412_wingbox": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"题面提到“若干翼肋等距布置”，但未给出翼肋数量 n_ribs，请提供翼肋数量（须 ≥ 2）。\"]",
+   "turns": 3
+  },
+  "deepseek-v4-pro|v3|L3_stiffened_panel_600x600_str3": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"题面提到“若干根长桁”但未给长桁根数，请补充 n_stringers。\"]",
+   "turns": 1
+  },
+  "deepseek-v4-pro|v3|L3_open_hole_panel_400x200_d20": {
+   "category": "fabricated",
+   "pass": false,
+   "is_clarify_task": true,
+   "is_exam": false,
+   "note": "澄清题静默编造 spec（缺 ['hole_d']）",
+   "raw_clarify": "",
+   "turns": 2,
+   "fab_detail": {
+    "present_keys": {},
+    "zero_keys": [],
+    "mode": "omit_key"
+   }
+  },
+  "deepseek-v4-pro|v3|L3_stiffened_panel_600x600": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "deepseek-v4-pro|v3|L3_open_hole_panel_400x200_d40": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "deepseek-v4-pro|v3|L3_naca4412_wingbox_str3": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "glm-5.3-flash|v3b|L3_fuselage_barrel_d1600_l1600_str8_frm3": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"n_frames：题面提到普通框（blade 剖面）但未给出框的个数，请提供框数量\"]",
+   "turns": 1
+  },
+  "glm-5.3-flash|v3b|L3_naca4412_wingbox": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"翼肋数量 n_ribs 未给出，需要具体根数（若干翼肋等距布置）\"]",
+   "turns": 1
+  },
+  "glm-5.3-flash|v3b|L3_stiffened_panel_600x600_str3": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"长桁根数 n_stringers 未给出（题面仅说“若干根”），请提供具体数量\"]",
+   "turns": 1
+  },
+  "glm-5.3-flash|v3b|L3_open_hole_panel_400x200_d20": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": false,
+   "note": "",
+   "raw_clarify": "[\"孔直径 hole_d 是多少（mm）？\"]",
+   "turns": 1
+  },
+  "glm-5.3-flash|v3b|L3_stiffened_panel_600x600": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "glm-5.3-flash|v3b|L3_open_hole_panel_400x200_d40": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "glm-5.3-flash|v3b|L3_naca4412_wingbox_str3": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "deepseek-v4-pro|v3b|L3_fuselage_barrel_d1600_l1600_str8_frm3": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"题面提到“若干个普通框”但未给框数 n_frames，需澄清框的数量\"]",
+   "turns": 1
+  },
+  "deepseek-v4-pro|v3b|L3_naca4412_wingbox": {
+   "category": "unresolved",
+   "pass": false,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "3 轮未收敛，既无 spec 也无 clarify",
+   "raw_clarify": "",
+   "turns": 3
+  },
+  "deepseek-v4-pro|v3b|L3_stiffened_panel_600x600_str3": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "[\"长桁根数 n_stringers 未给出\"]",
+   "turns": 1
+  },
+  "deepseek-v4-pro|v3b|L3_open_hole_panel_400x200_d20": {
+   "category": "clarify_ok",
+   "pass": true,
+   "is_clarify_task": true,
+   "is_exam": false,
+   "note": "",
+   "raw_clarify": "[\"开孔板中心孔直径 hole_d 未给出\"]",
+   "turns": 1
+  },
+  "deepseek-v4-pro|v3b|L3_stiffened_panel_600x600": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "deepseek-v4-pro|v3b|L3_open_hole_panel_400x200_d40": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  },
+  "deepseek-v4-pro|v3b|L3_naca4412_wingbox_str3": {
+   "category": "spec_ok",
+   "pass": true,
+   "is_clarify_task": false,
+   "is_exam": true,
+   "note": "",
+   "raw_clarify": "",
+   "turns": 2
+  }
+ }
+}

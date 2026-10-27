@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
- "n_active_claims": 26,
- "n_artifacts": 47,
+ "n_active_claims": 27,
+ "n_artifacts": 49,
  "n_fail": 0,
  "n_fail_structural": 0,
  "n_fail_semantic": 0,
@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_49.json）",
-   "expect": "49/49",
-   "actual": "49/49",
+   "desc": "C-019 负控通过数（源 negative_controls_50.json）",
+   "expect": "50/50",
+   "actual": "50/50",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "49",
-   "actual": "49",
+   "expect": "50",
+   "actual": "50",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 5.0",
-   "actual": "5.0",
+   "expect": "全部 = 5.1",
+   "actual": "5.1",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "49/49",
-   "actual": "49/49",
+   "expect": "50/50",
+   "actual": "50/50",
    "ok": true,
    "skip": false
   },
@@ -353,6 +353,14 @@
    "actual": "三列齐（任务级/字段级/失败分层）×2 模型；MSR 可减=False（分母 22 vs 21）；能说 4 条 / 不能说 6 条",
    "ok": true,
    "skip": false
+  },
+  {
+   "id": "S-43",
+   "desc": "prompt 消融结论必须与当前 prompt sha 一致（R57）",
+   "expect": "消融产物有 decision.adopt 与变体清单；否决 ⇒ 当前 sha == C-032 基线；采纳 ⇒ 当前 sha ≠ 基线",
+   "actual": "C-035 否决态：当前 sha == 基线 ce225186cafa…（未采用未采纳的变体）",
+   "ok": true,
+   "skip": false
   }
  ],
  "results": [
@@ -556,9 +564,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 35123,
-   "sha256": "05bfca0e722fe556ddbf5aba433b92434cba23e3963fe99d8c23307380618357",
-   "mtime": 1793104311
+   "size": 35776,
+   "sha256": "7b88e9e4db319727b755daa8e5390e62dab028b9b5dd23e3fa914d682b319360",
+   "mtime": 1793105502
   },
   {
    "claim_id": "C-027",
@@ -765,6 +773,30 @@
    "mtime": 1793030557
   },
   {
+   "claim_id": "C-035",
+   "artifact": "feagpt_repro/reports/diagnostics/prompt_v3_ablation.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 15276,
+   "sha256": "7ad5490dc919ae43b55d9e212ac75e6614f3966e90aa0099945b7ca85fccbecd",
+   "mtime": 1793105328
+  },
+  {
+   "claim_id": "C-035",
+   "artifact": "feagpt_repro/reports/diagnostics/prompt_v3_ablation.md",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 4531,
+   "sha256": "c4d5afbf665be7329521d6c500b3e34603ef9940889dc2dbed1d033a5c50bf72",
+   "mtime": 1793105328
+  },
+  {
    "claim_id": "C-034",
    "artifact": "feagpt_repro/reports/w5d_leaderboard.json",
    "exists": true,
@@ -910,15 +942,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_49.json",
+   "artifact": "feagpt_repro/reports/negative_controls_50.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 9730,
-   "sha256": "f2af7e42d3a52fd2b3407cd3d71a259de53b0c1a6c14a068ae0e10c788ab3858",
-   "mtime": 1793104236
+   "size": 10027,
+   "sha256": "7ffdf07cc728ae65f25bec2c97027e102d68c1d2dd5a20d5d20b7a0f730c53f9",
+   "mtime": 1793105438
   }
  ]
 }

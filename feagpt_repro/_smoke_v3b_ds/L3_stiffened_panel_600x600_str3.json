@@ -1,0 +1,11 @@
+{
+ "task_id": "L3_stiffened_panel_600x600_str3",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "769a1ebda87cddff35386ff607be64c273e5ca00976aa0ba696f2d247c0f18cc",
+ "clarify": "[\"长桁根数 n_stringers 未给出\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 36
+}

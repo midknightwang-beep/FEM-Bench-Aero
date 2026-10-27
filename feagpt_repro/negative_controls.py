@@ -985,6 +985,38 @@ def main():
     print(f"  [{'ok ' if ok47 else 'BAD!'}] NC-47 榜单三列/分母对齐/dev定位被 S-41/S-42 拒绝        "
           f"expect=fwd T/mut F actual={det47}")
 
+    # NC-48（R57 补反向，W5d-1）：消融写「否决」但 prompt 没回退（或写「采纳」但没换）必须被抓。
+    #   三向：①判采纳 + 当前 sha 仍 == 基线 ⇒ 红；②判否决 + sha 已变 ⇒ 红；③产物缺 decision ⇒ 红。
+    from check_claims import prompt_ablation_consistent
+    ok48, det48 = False, 'no artifact'
+    _abl = os.path.join(HERE, 'reports', 'diagnostics', 'prompt_v3_ablation.json')
+    _gen48 = os.path.join(HERE, 'gen_candidates_v2.js')
+    _sc32 = os.path.join(HERE, 'reports', 'baseline_scorecard_L3_v6c_p2.json')
+    if os.path.exists(_abl) and os.path.exists(_sc32):
+        _base48 = (json.load(open(_sc32, encoding='utf-8')).get('provenance') or {}).get('prompt_sha256')
+        abl_real = json.load(open(_abl, encoding='utf-8'))
+        ok_f48, _ = prompt_ablation_consistent(_abl, _gen48, _base48, 'C-035')
+        import tempfile as _tf
+        _td48 = _tf.mkdtemp()
+        m1 = json.loads(json.dumps(abl_real))
+        m1['decision'] = dict(m1.get('decision') or {}, adopt=True)     # 判采纳但 sha 没换
+        _p1 = os.path.join(_td48, 'abl_mut1.json')
+        json.dump(m1, open(_p1, 'w', encoding='utf-8'), ensure_ascii=False)
+        ok_r48a, _ = prompt_ablation_consistent(_p1, _gen48, 'deadbeef' * 8, 'mut1')   # 基线≠当前 ⇒ 采纳合法
+        ok_r48b, _ = prompt_ablation_consistent(_p1, _gen48, _base48, 'mut2')           # 基线==当前 ⇒ 应红
+        m2 = json.loads(json.dumps(abl_real))
+        m2.pop('decision', None)
+        _p2 = os.path.join(_td48, 'abl_mut2.json')
+        json.dump(m2, open(_p2, 'w', encoding='utf-8'), ensure_ascii=False)
+        ok_r48c, _ = prompt_ablation_consistent(_p2, _gen48, _base48, 'mut3')
+        ok48 = ok_f48 and ok_r48a and (not ok_r48b) and (not ok_r48c)
+        det48 = (f'正向={"过" if ok_f48 else "红"} 采纳但未换={"红" if not ok_r48b else "漏判"} '
+                 f'采纳且已换={"过" if ok_r48a else "误判"} 缺decision={"红" if not ok_r48c else "漏判"}')
+    results.append({'id': 'NC-48', 'desc': '消融判采纳但 prompt 未换 / 缺 decision 必须被 R57/S-43 拒绝',
+                    'expect': 'fwd=True / 两向变异=False / 合法采纳=True', 'actual': det48, 'ok': ok48})
+    print(f"  [{'ok ' if ok48 else 'BAD!'}] NC-48 消融结论与 prompt 不一致被 S-43 拒绝              "
+          f"expect=fwd T/mut F actual={det48}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。
     # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，
     # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。

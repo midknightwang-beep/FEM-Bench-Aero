@@ -446,6 +446,45 @@ def w5d_leaderboard_ok(path):
                   f"能说 {len(st.get('allowed') or [])} 条 / 不能说 {len(st.get('forbidden') or [])} 条")
 
 
+def prompt_ablation_consistent(ablation_path, gen_path, baseline_sha, label=''):
+    """R57 补（W5d-1）：**prompt 消融的结论必须与当前 prompt 一致**。
+
+    为什么需要这条：跑完消融写个「否决」很容易，但「写了否决却把 prompt 改回去」或者
+    「写了采纳却没重跑候选」都不会有任何报错——上一代成绩单还挂在那儿，读者无法分辨。
+    闸的两端：
+      - 结论 = 不采纳 ⇒ 当前源码的 SYS sha **必须仍等于**基线成绩单记录的 sha；
+      - 结论 = 采纳   ⇒ 当前 sha **必须已变**（且下一轮必须按 R53 全量重跑，S-39 会咬）。
+    """
+    if not os.path.exists(ablation_path):
+        return False, f'{label} 缺 prompt 消融产物（改过 prompt 就必须留档，否则等于没做）'
+    try:
+        d = json.load(open(ablation_path, encoding='utf-8'))
+    except Exception as e:
+        return False, f'{label} 消融产物读不动：{e}'
+    dec = d.get('decision') or {}
+    if dec.get('adopt') is None:
+        return False, f'{label} 消融产物没有 decision.adopt（判定未落盘）'
+    if not (d.get('variants') or []):
+        return False, f'{label} 消融产物没列变体'
+    try:
+        import subprocess
+        cur = (subprocess.run(['node', gen_path, '--print-prompt-sha'],
+                              capture_output=True, text=True, timeout=60).stdout or '').strip()
+    except Exception as e:
+        return False, f'{label} 取当前 prompt sha 失败：{e}'
+    if not cur:
+        return False, f'{label} node --print-prompt-sha 无输出'
+    if dec['adopt']:
+        if cur == baseline_sha:
+            return False, (f'{label} 消融判「采纳」，但当前 prompt sha 仍 == 基线（{str(cur)[:12]}…）'
+                           f'⇒ 没真的换上，或换上了却没重跑')
+        return True, f'{label} 采纳态：当前 sha {str(cur)[:12]}… ≠ 基线 {str(baseline_sha)[:12]}…（R53 须全量重跑）'
+    if cur != baseline_sha:
+        return False, (f'{label} 消融判「否决」，但当前 prompt sha 已变成 {str(cur)[:12]}… '
+                       f'（基线 {str(baseline_sha)[:12]}…）⇒ 否决未生效/偷换了 prompt')
+    return True, f'{label} 否决态：当前 sha == 基线 {str(cur)[:12]}…（未采用未采纳的变体）'
+
+
 def prompt_no_blind_default(path, label='gen_candidates_v2.js'):
     """R50（专家第十轮 §3.1）：SYS prompt **不得**对题面已提及的特征授权默认值，
     同时**不得**把 `expected_clarifications` 注入 prompt（那等于泄漏答案）。
@@ -966,6 +1005,18 @@ def semantic_checks(root, rows):
     add('S-42', '跨模型榜单三列并排且分母不等不出 MSR Δ（R56）',
         '榜单含任务级/字段级/失败分层三组；msr_delta_allowed 由分母算；分母不等时 msr_delta_pp 为空且 md 写明不可相减',
         _det42, _ok42)
+
+    # S-43（R57 补，W5d-1）：prompt 消融结论与当前 prompt sha 必须一致。
+    # 动机：本轮的 v3/v3b 都被否决（零收益 + 失败点迁移），prompt 已回退到 v2。
+    # 若没有这道闸，「写了否决但没回退」或「回退了但没记录」都不会报错。
+    _p43_abl = os.path.join(root, 'feagpt_repro', 'reports', 'diagnostics', 'prompt_v3_ablation.json')
+    _gen43 = os.path.join(root, 'feagpt_repro', 'gen_candidates_v2.js')
+    _base43 = ((json.load(open(_sc_paths[2][1], encoding='utf-8')).get('provenance') or {}
+                ).get('prompt_sha256') if os.path.exists(_sc_paths[2][1]) else None)
+    _ok43, _det43 = prompt_ablation_consistent(_p43_abl, _gen43, _base43, 'C-035')
+    add('S-43', 'prompt 消融结论必须与当前 prompt sha 一致（R57）',
+        '消融产物有 decision.adopt 与变体清单；否决 ⇒ 当前 sha == C-032 基线；采纳 ⇒ 当前 sha ≠ 基线',
+        _det43, _ok43)
 
     return out
 
