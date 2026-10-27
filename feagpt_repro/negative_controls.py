@@ -1130,6 +1130,36 @@ def main():
     print(f"  [{'ok ' if ok51 else 'BAD!'}] NC-51 dataset 命令未走 venv 必须被 S-46 拒绝              "
           f"expect=fwd T/mut F actual={det51}")
 
+    # NC-52（R61，T-A5）：**求解串行** —— 锁机制被抹掉、或残留锁存在，必须被 S-47 拒绝。
+    #   起因：并行跑两个 ccx 会静默空转、返回码仍 0（本仓库踩过两次，第十二轮 §3.2 复述）。
+    from check_claims import solver_serial_guard
+    ok52, det52 = False, 'no artifact'
+    _sp52 = os.path.join(HERE, 'feagpt', 'solver.py')
+    if os.path.exists(_sp52):
+        import tempfile as _tf52
+        _td52 = _tf52.mkdtemp()
+        _lk_absent = os.path.join(_td52, '.solve.lock')           # 不存在 ⇒ 正向应绿
+        ok_f52, _ = solver_serial_guard(_sp52, _lk_absent)
+        # 变异 1：把锁逻辑从源码里抹掉（模拟「防护被删」）
+        _src52 = open(_sp52, encoding='utf-8').read()
+        _m1 = (_src52.replace('_acquire_solve_lock', '_DISABLED_lock')
+                     .replace('_release_solve_lock', '_DISABLED_unlock')
+                     .replace('_run_unlocked', 'run'))
+        _p1 = os.path.join(_td52, 'solver_nolock.py')
+        open(_p1, 'w', encoding='utf-8').write(_m1)
+        ok_a52 = solver_serial_guard(_p1, _lk_absent)[0]
+        # 变异 2：残留锁（有求解在跑 / 上次崩了）
+        _lk_present = os.path.join(_td52, '.solve.lock')
+        open(_lk_present, 'w', encoding='utf-8').write('{"pid": 12345}')
+        ok_b52 = solver_serial_guard(_sp52, _lk_present)[0]
+        ok52 = bool(ok_f52) and (ok_a52 is False) and (ok_b52 is False)
+        det52 = (f'正向={"过" if ok_f52 else "红"} 抹掉锁逻辑={"红" if ok_a52 is False else "漏判"} '
+                 f'残留锁={"红" if ok_b52 is False else "漏判"}')
+    results.append({'id': 'NC-52', 'desc': '求解锁机制被删 / 残留锁必须被 R61/S-47 拒绝',
+                    'expect': 'fwd=True / 两向变异=False', 'actual': det52, 'ok': ok52})
+    print(f"  [{'ok ' if ok52 else 'BAD!'}] NC-52 求解串行（锁机制/残留锁）必须被 S-47 拒绝            "
+          f"expect=fwd T/mut F actual={det52}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，
     # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；

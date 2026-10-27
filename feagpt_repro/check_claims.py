@@ -680,6 +680,35 @@ def dataset_cmds_use_venv(index_path):
                          + ('' if not probs else ' ⇒ ' + '；'.join(probs)))
 
 
+def solver_serial_guard(solver_py, lock_path):
+    """R61（第十二轮 §3.2/§6）：**ccx/abaqus 绝不并行**——机制必须在场，且不得有残留锁。
+
+    为什么不能只写进文档：并行跑两个 ccx 会**静默空转、返回码仍 0**，结果是空的。
+    「命令返回 0 就是成功」的判读会把它当成功——比崩更危险（本仓库踩过两次）。
+    ⇒ 闸分两半：
+      ① **机制在场**（静态）：`feagpt/solver.py` 必须有 `_acquire_solve_lock` / `_release_solve_lock`
+         与 `SOLVE_LOCK`——防止「锁逻辑被人删掉」而没人发现；
+      ② **无残留**（运行时）：`.solve.lock` 不存在；存在即说明**有求解在跑，或上次崩了**。
+    只测机制与残留，不去猜「历史日志里有没有并行」——那类判断没法做成结构化判据。
+    """
+    if not os.path.exists(solver_py):
+        return False, 'feagpt/solver.py 不存在（求解路径不可追溯）'
+    src = open(solver_py, encoding='utf-8').read()
+    probs = []
+    for need in ('_acquire_solve_lock', '_release_solve_lock', 'SOLVE_LOCK'):
+        if need not in src:
+            probs.append(f'solver.py 缺 `{need}`（R61 的并行防护被删/被绕过）')
+    if '_run_unlocked' not in src:
+        probs.append('solver.py 缺 `_run_unlocked`（run 未包锁）')
+    if os.path.exists(lock_path):
+        try:
+            holder = open(lock_path, encoding='utf-8', errors='replace').read()[:160]
+        except Exception:
+            holder = '(读不到)'
+        probs.append(f'存在求解锁 `{os.path.basename(str(lock_path))}` ⇒ 有求解在跑或上次崩溃残留：{holder}')
+    return (not probs), ('机制在场、无残留锁' if not probs else '；'.join(probs))
+
+
 def prompt_no_blind_default(path, label='gen_candidates_v2.js'):
     """R50（专家第十轮 §3.1）：SYS prompt **不得**对题面已提及的特征授权默认值，
     同时**不得**把 `expected_clarifications` 注入 prompt（那等于泄漏答案）。
@@ -1244,6 +1273,14 @@ def semantic_checks(root, rows):
     add('S-46', 'dataset/求解类命令必须使用项目 venv（R60）',
         'INDEX 的 bash 块有 `PY=` 且指向 venv；verify_dataset/check_forms/score/msr/run_pipeline 等调用行必须走 $PY',
         _det46, _ok46)
+
+    # S-47（R61，第十二轮 §3.2/§6）：**ccx/abaqus 绝不并行** —— 求解锁机制必须在场且无残留。
+    _ok47, _det47 = solver_serial_guard(
+        os.path.join(root, 'feagpt_repro', 'feagpt', 'solver.py'),
+        os.path.join(root, 'feagpt_repro', '.solve.lock'))
+    add('S-47', '求解串行：solver.py 的全局锁机制在场且无残留锁（R61）',
+        'solver.py 含 _acquire_solve_lock / _release_solve_lock / SOLVE_LOCK / _run_unlocked；.solve.lock 不存在',
+        _det47, _ok47)
 
     return out
 

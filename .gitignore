@@ -65,3 +65,6 @@ feagpt_repro/package-lock.json
 feagpt_repro/_v11/runs/
 feagpt_repro/_v11/runs_abaqus/
 feagpt_repro/_v11/recheck/
+
+# 求解串行锁（R61）：运行时生成，不入库
+feagpt_repro/.solve.lock

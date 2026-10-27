@@ -27,6 +27,7 @@ Solver discovery order
 
 from __future__ import annotations
 
+import json
 import os
 import shutil
 import subprocess
@@ -39,6 +40,56 @@ _REPO_DIR = _PKG_DIR.parent
 
 #: Abaqus-specific conversion script, executed by ``abaqus python``.
 _ODB_SCRIPT = _PKG_DIR / "abaqus_odb.py"
+
+# --------------------------------------------------------------------------- #
+# 全局求解锁（R61）：同一时刻只允许一个 ccx / abaqus
+# --------------------------------------------------------------------------- #
+#: 锁文件放在 feagpt_repro 根下（gitignore）；存在 = 有求解在跑或上次崩溃残留。
+SOLVE_LOCK = _REPO_DIR / ".solve.lock"
+#: 单次求解上限 = ``timeout`` 1800s + ``extract_timeout`` 900s = 45 min；留余量取 1h。
+SOLVE_LOCK_STALE_SEC = 3600
+
+
+def _acquire_solve_lock(inp_path, solver, lock_path=None, stale_sec=SOLVE_LOCK_STALE_SEC):
+    """串行化求解（R61）：把「并行跑两个 ccx」变成**不可能**，而不是靠纪律。
+
+    为什么必须硬约束：并行跑两个 ccx/abaqus 会**静默空转、返回码仍为 0**，结果却是空的——
+    「命令返回 0 就算成功」的判读方式会把它当成功，比直接崩更危险。本仓库踩过两次
+    （`check_forms` 未停就起柱壳 ccx；第十二轮 §3.2 复述该违规）。
+
+    锁超时（默认 1h，> 45min 求解上限）视为上次崩溃残留：**接管并打印警告**，
+    不无限阻塞（否则一次崩溃会把后面所有求解都锁死）。
+    """
+    lock = Path(lock_path) if lock_path else SOLVE_LOCK
+    payload = json.dumps({'pid': os.getpid(), 'start': time.time(),
+                          'inp': str(inp_path), 'solver': str(solver)}, ensure_ascii=False)
+    try:
+        fd = os.open(str(lock), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        try:
+            age = time.time() - lock.stat().st_mtime
+            holder = lock.read_text(encoding='utf-8', errors='replace')[:300]
+        except Exception:
+            age, holder = 0.0, '(读不到)'
+        if age <= stale_sec:
+            raise RuntimeError(
+                f'检测到另一个求解正在进行：锁 {lock}，已 {age:.0f}s，持有者 {holder}\n'
+                f'R61 禁止并行 ccx/abaqus（会静默空转、返回码仍 0）。等它结束；'
+                f'若确认是崩溃残留（> {stale_sec/60:.0f} min），删掉该锁文件再重试。')
+        print(f'[solver] WARNING: 接管过期求解锁（{age/60:.0f} min > {stale_sec/60:.0f} min）：{holder}')
+        lock.unlink(missing_ok=True)
+        return _acquire_solve_lock(inp_path, solver, lock_path, stale_sec)
+    with os.fdopen(fd, 'w', encoding='utf-8') as fh:
+        fh.write(payload)
+    return lock
+
+
+def _release_solve_lock(lock=None):
+    p = Path(lock) if lock else SOLVE_LOCK
+    try:
+        p.unlink()
+    except FileNotFoundError:
+        pass
 
 
 @dataclass
@@ -224,6 +275,17 @@ def _clear_stale_abaqus_lock(job: Path) -> str:
 
 def run(inp_path, solver: str | None = None, timeout: int = 1800,
         extract_timeout: int = 900) -> SolveResult:
+    """公开入口：先拿全局求解锁（R61），再干活；无论成败都释放。"""
+    lock = _acquire_solve_lock(inp_path, solver or 'auto')
+    try:
+        return _run_unlocked(inp_path, solver=solver, timeout=timeout,
+                             extract_timeout=extract_timeout)
+    finally:
+        _release_solve_lock(lock)
+
+
+def _run_unlocked(inp_path, solver: str | None = None, timeout: int = 1800,
+                  extract_timeout: int = 900) -> SolveResult:
     """Solve ``inp_path`` and return the artifacts that were produced."""
     inp_path = Path(inp_path).resolve()
     job = inp_path.with_suffix("")
