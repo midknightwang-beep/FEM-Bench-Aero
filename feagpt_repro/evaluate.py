@@ -69,7 +69,13 @@ EXEC_CONFIG_KEYS = {
     'analysis': {'incremental', 'initial_increment', 'outputs', 'step_type',
                  'total_time'},
     # gold 内部编码键（数据集离散索引/方向轴表示，NL 任务书永远不会提及）
-    'extra': {'sweep_index', 'shear_axis', 'moment_axis'},
+    # N-19（T-A10b）：v1.1 的 4 个**数据集构建记账键**同属此类——它们记录「哪一版内插、
+    # 夹逼哪两个锚点、划分标签」，属 spec 的元信息而非模型该产出的物理字段。
+    # 不豁免的后果实测：v7 卷 9 条 v1.1 case 必然全 FAIL（模型不可能凭空写出
+    # split_tag='v11_interior_holdout'），且报告会把它读成「模型不行」（M7 同源）。
+    # 范围实测：这 4 个键**只出现在新增 9 条**，老 55 条一个都没有 ⇒ 补豁免不改动任何历史数字。
+    'extra': {'sweep_index', 'shear_axis', 'moment_axis',
+              'split_tag', 'v11_template', 'v11_bracket', 'v11_interior_holdout'},
 }
 # W4e 收紧（专家第四轮 P0-4/R18，预注册于 RUBRIC.md）：纯元数据自创键白名单只保留
 # 真正的描述性说明；'type'/'element(s)'/'order'/'application'/'point' 等可承载语义的键

@@ -34,6 +34,15 @@ ID_TEST_REGIONS = [
     {'axis': 'tip_chord_ratio', 'match': {'tip_chord_ratio': 0.9}},
 ]
 
+# L2 省略字段【冻结表】（N-16 / 老王 2026-10-28 拍板 A）
+# 为什么需要它：原实现 rotate_idx=stats['L1']（已处理 L1 累计数）⇒ 位置耦合。
+#   v1.1 的 9 条新 case 散布在 manifest 中间（idx 3/11/16/19/28/40/52/56/61），
+#   导致排在它们之后的老 case 轮换位全部 +1，老 55 条里 48 条 L2 题目被静默改写
+#   （n_frames→thickness 之类）。实测见 CONFLICT.md N-16。
+# 本表语义 = lockfile：命中即用登记值；未命中才按【族内稳定序号】轮换并追加写回；
+#   已有条目永不被改写（若算出的值 != 登记值 ⇒ 直接抛错）。
+L2_MAP_PATH = os.path.join(OUT_DIR, 'l2_omit_map.json')
+
 # L2 派生：可省略字段池（缺了必须澄清，不能静默默认）
 # W4a 纠偏（专家第二轮 3.4a）：按 case 顺序【轮换】池子，不再永远取第一个。
 L2_OMITABLE = {
@@ -82,22 +91,68 @@ def id_test_hit(spec):
     return None
 
 
-def make_l2_input(l1_spec, family, rotate_idx=0):
-    """从 L1 规范化 spec 删一个可省字段，按 rotate_idx 轮换池子（W4a 纠偏 3.4a）。"""
+def load_l2_map():
+    """读冻结表；不存在则空表（首跑）。`_` 前缀为元数据，不当条目。"""
+    if not os.path.exists(L2_MAP_PATH):
+        return {}
+    with open(L2_MAP_PATH, encoding='utf-8') as f:
+        raw = json.load(f)
+    return {k: v for k, v in raw.items() if not k.startswith('_')}
+
+
+def save_l2_map(old_map, new_entries):
+    """lockfile 语义写回：已有条目**不得**被改写（改写即抛错，R-A2）。"""
+    for k, v in new_entries.items():
+        if k in old_map and old_map[k] != v:
+            raise RuntimeError(
+                f'[FATAL] L2 冻结表冲突：{k} 已登记 {old_map[k]!r}，本次算得 {v!r}。'
+                ' 已发布卷子的 L2 题目不得改写（CONFLICT N-16 / R-A2）。')
+    merged = dict(old_map)
+    merged.update(new_entries)
+    out = {'_note': ('L2 省略字段冻结表（lockfile 语义）。由 make_tasks.py 读取：命中即用此值，'
+                     '未命中才按族内稳定序号轮换并追加写回。★ 已有条目永不被改写'
+                     '（改写即抛错，R-A2）。初始 55 条由 git HEAD 的 tasks/tasks.jsonl 反推，'
+                     '见 CONFLICT.md N-16。'),
+           '_lockfile': True}
+    for k in sorted(merged):
+        out[k] = merged[k]
+    with open(L2_MAP_PATH, 'w', encoding='utf-8') as f:
+        json.dump(out, f, ensure_ascii=False, indent=2)
+        f.write('\n')
+    return len(new_entries)
+
+
+def _pick_field(s, family, key):
+    """字段在该 spec 里的挂载点：翼盒在 airfoil，其余在 structure.params。"""
+    if family == 'wingbox':
+        return ('airfoil', key) if key in s.get('airfoil', {}) else None
+    return ('params', key) if key in (s.get('structure') or {}).get('params', {}) else None
+
+
+def make_l2_input(l1_spec, family, rotate_idx=0, force_key=None):
+    """从 L1 规范化 spec 删一个可省字段。
+
+    force_key 给定 → 直接删该字段（值来自冻结表 l2_omit_map.json，N-16）。
+    否则 → 按 rotate_idx 在池内轮换（仅用于**尚未登记**的新 case）。
+    返回 (spec, key)；无法删除时返回 (None, force_key or None)。
+    """
     s = copy.deepcopy(l1_spec)
     pool = L2_OMITABLE.get(family, [])
-    # 轮换：从 rotate_idx 开始找第一个池内且实际存在的字段
-    target = None
-    for off in range(len(pool)):
-        k = pool[(rotate_idx + off) % len(pool)]
-        if family == 'wingbox':
-            if k in s.get('airfoil', {}):
-                target = ('airfoil', k); break
-        else:
-            if k in s.get('structure', {}).get('params', {}):
-                target = ('params', k); break
-    if target is None:
-        return None, None
+    if force_key is not None:
+        target = _pick_field(s, family, force_key)
+        if target is None:
+            # 表里登记的字段在该 spec 不存在：说明 spec 变了或表登记错了，硬错
+            return None, force_key
+    else:
+        target = None
+        for off in range(len(pool)):
+            k = pool[(rotate_idx + off) % len(pool)]
+            hit = _pick_field(s, family, k)
+            if hit:
+                target = hit
+                break
+        if target is None:
+            return None, None
     holder, key = target
     if holder == 'airfoil':
         del s['airfoil'][key]
@@ -116,6 +171,17 @@ def main():
     man = json.load(open(os.path.join(FEA, 'manifest.json'), encoding='utf-8'))
     tasks, stats = [], {'L1': 0, 'L2': 0, 'boundary_holdout': 0}
     id_assign = {}
+
+    # N-16：族内稳定序号（按 case_id 字典序），与 manifest 排列顺序解耦。
+    # 只用于【未登记】的新 case 的轮换初值；已登记条目一律查冻结表。
+    fam_cids = collections.defaultdict(list)
+    for c in man['cases']:
+        if c['tree'] == 'modeling':
+            fam_cids[c['family']].append(c['case_id'])
+    for k in fam_cids:
+        fam_cids[k].sort()
+    l2_map = load_l2_map()
+    l2_new = {}
 
     for c in man['cases']:
         if c['tree'] != 'modeling':
@@ -152,8 +218,19 @@ def main():
         if sv2 == 'id_test':
             stats['id_test'] += 1
 
-        # L2（W4a 纠偏：按 case 序轮换省略字段，不再永远取第一个）
-        l2, omitted = make_l2_input(norm, fam, rotate_idx=stats['L1'])
+        # L2（N-16：查冻结表；未登记才按族内稳定序号轮换，并登记进表）
+        if cid in l2_map:
+            l2, omitted = make_l2_input(norm, fam, force_key=l2_map[cid])
+            if l2 is None:
+                # 表登记了但 spec 里没这个字段 ⇒ 表或 spec 有问题，不许静默跳过
+                raise RuntimeError(
+                    f'[FATAL] {cid}：冻结表登记的省略字段 {l2_map[cid]!r} 在该 spec 中不存在。'
+                    f'（family={fam}）请核对 tasks/l2_omit_map.json 或 spec。')
+        else:
+            idx = fam_cids[fam].index(cid)
+            l2, omitted = make_l2_input(norm, fam, rotate_idx=idx)
+            if l2 is not None:
+                l2_new[cid] = omitted
         if l2 is not None:
             tasks.append({
                 'task_id': f'L2_{cid}',
@@ -226,6 +303,13 @@ def main():
             for t in tasks:
                 f.write(json.dumps(t, ensure_ascii=False) + '\n')
         print(f"[OK] 写盘 tasks/tasks.jsonl（{len(tasks)} 行）")
+        # N-16：冻结表只在真有新增时重写（F-1 同源：内容不变不重写，避免 mtime 抖动）
+        if l2_new:
+            save_l2_map(l2_map, l2_new)
+            print(f"[LOCK] 冻结表新增 {len(l2_new)} 条 -> tasks/l2_omit_map.json"
+                  f"（共 {len(l2_map) + len(l2_new)} 条；已有条目零改动）")
+        else:
+            print(f"[LOCK] 冻结表无新增（共 {len(l2_map)} 条，全部命中）")
 
 if __name__ == '__main__':
     main()

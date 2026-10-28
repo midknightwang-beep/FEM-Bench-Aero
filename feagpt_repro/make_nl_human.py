@@ -116,6 +116,23 @@ def sp_text(p, style, mesh_size=3.0):
 
 STYLE_CYCLE = ['描述', '任务单', '图纸']
 
+# NL 题面冻结基线（N-18 / 老王 2026-10-28 拍板「冻结已发布卷子」模式的延伸）
+# 为什么需要：本文件有三处**位置耦合**，数据集一扩容就整体漂移（实测 55→64 时）：
+#   ① STYLE_CYCLE[i % 3]      —— i = 族内序号 ⇒ 新 case 插中间则后面全部换笔调（37/55 条被改写）
+#   ② omit 名额 if i < n_l2   —— 名额给"族内第 0 条" ⇒ 新 case 排前面就抢走 clarify（sp 族实测被抢）
+#   ③ picked = cands[:n]      —— 取法依赖 manifest 顺序
+# 处置：`tasks/nl_frozen.jsonl` 存**已发布**的整行（当前 = v6c 的 55 条，sha 3a5a54d2…）。
+# 生成时 task_id 命中即**整行复用、不重算** ⇒ 老题逐字节不变是构造性保证，不靠巧合。
+# ★ 本文件不得从当前的 nl_human.jsonl 重建（那会被新卷污染）；只可从上一版已冻结的卷取。
+FROZEN = os.path.join(HERE, 'tasks', 'nl_frozen.jsonl')
+
+
+def load_frozen():
+    if not os.path.exists(FROZEN):
+        return {}
+    return {r['task_id']: r
+            for r in (json.loads(l) for l in open(FROZEN, encoding='utf-8') if l.strip())}
+
 def main():
     import argparse
     ap = argparse.ArgumentParser()
@@ -168,6 +185,8 @@ def main():
     n_l2 = {'wingbox': 1, 'open_hole_panel': 1, 'fuselage_barrel': 1, 'stiffened_panel': 1}
 
     out = []
+    frozen = load_frozen()
+    n_frozen = 0
     for fam, n in quota.items():
         cands = by_fam.get(fam, [])
         # 优先挑非锚定基线的（覆盖更多样）
@@ -178,6 +197,12 @@ def main():
         if fam == 'stiffened_panel':
             picked = sorted(picked, key=lambda t: -int(t['input']['spec_normalized']['structure']['params'].get('n_stringers', 0)))
         for i, t in enumerate(picked):
+            # ★ N-18：已发布题目整行复用（三处位置耦合的根治）
+            _tid = f"L3_{t['task_id'][3:]}"
+            if _tid in frozen:
+                out.append(frozen[_tid])
+                n_frozen += 1
+                continue
             norm = t['input']['spec_normalized']
             fam_ = t['family']
             omit = None
@@ -222,6 +247,13 @@ def main():
             # 下游工具（旧脚本/外部复现/T1 以外的检索）都会把它们当 train 用，发生泄漏。
             is_interp = t['task_id'][3:] in interp_pick
             sv2 = 'interpolation_test' if is_interp else t['split_v2']
+            # N-15（老王拍板 A：双分母并列）：v1.1 的 9 条内插留出点，dataset 侧仍是 test
+            # （D12 的 split_of 规则不破），但任务层如实标 exam_stratum='interpolation_v11'，
+            # 使 exam 可拆成两个分母：
+            #   exam_legacy = interpolation 6 + boundary 6 + extrapolation 13 = 25（与 C-032 同卷）
+            #   exam_full   = exam_legacy + interpolation_v11 9 = 34
+            # R54 只禁**跨分母相减**，不禁并列；成绩单必须两个都报。
+            is_v11 = ((norm.get('extra') or {}).get('split_tag') == 'v11_interior_holdout')
             row = {
                 'task_id': f"L3_{t['task_id'][3:]}",
                 'family': fam_, 'input_level': 'L3', 'input_source': 'human',
@@ -229,11 +261,14 @@ def main():
                 'truth_ref': t['truth_ref'], 'gates': t['gates'],
                 'split_v2': sv2,
                 'split_reason': t['split_reason'] + ' | L3 人工 NL'
-                                + (' | 任务层内插留出（W5c/R36）' if is_interp else ''),
+                                + (' | 任务层内插留出（W5c/R36）' if is_interp else '')
+                                + (' | v1.1 内插留出点：dataset 侧 = test（D12），任务层归 interpolation_v11'
+                                   '（N-15 双分母）' if is_v11 else ''),
                 'geometry_class': t['geometry_class'],
                 # W5b（RUBRIC §1.1）：难度分层——boundary/extrapolation 来自 dataset split，
                 # interpolation 是任务层内插留出（split_v2 仍为 train，不破 D12）
-                'exam_stratum': ('boundary' if t['split_v2'] == 'boundary_holdout' else
+                'exam_stratum': ('interpolation_v11' if is_v11 else
+                                 'boundary' if t['split_v2'] == 'boundary_holdout' else
                                  'extrapolation' if t['split_v2'] == 'extrapolation_test' else
                                  'interpolation' if t['task_id'][3:] in interp_pick else None),
                 # W5a（R21）：坐标系约定随任务落盘——载荷方向属任务输入，不属于隐藏约定
@@ -276,7 +311,13 @@ def main():
             f.write(json.dumps(r, ensure_ascii=False) + '\n')
     n_l2c = sum(1 for r in out if 'expected_clarifications' in r)
     n_i = sum(1 for r in out if r.get('exam_stratum') == 'interpolation')
-    print(f"[OK] {path}（{len(out)} 行，clarify {n_l2c} 条，interp 留出 {n_i} 条）")
+    n_v11 = sum(1 for r in out if r.get('exam_stratum') == 'interpolation_v11')
+    exam_legacy = sum(1 for r in out if r.get('exam_stratum') in
+                      ('interpolation', 'boundary', 'extrapolation'))
+    print(f"[OK] {path}（{len(out)} 行，clarify {n_l2c} 条，interp 留出 {n_i} 条，"
+          f"v11 内插 {n_v11} 条；**复用冻结 {n_frozen} 行**）")
+    print(f"[EXAM] exam_legacy = {exam_legacy} ／ exam_full = {exam_legacy + n_v11}"
+          f"（N-15 双分母：R54 只禁跨分母相减，两个都必须报）")
     for r in out[:3]:
         print(' ', r['task_id'], r['input']['nl'][:60], '...')
 

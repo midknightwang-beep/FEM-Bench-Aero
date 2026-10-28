@@ -12,8 +12,10 @@
 用来补上「内插留出」这块空白（原 25 条 exam 里内插只有 6 条、且全在翼盒一族）。
 
 **注意口径**：这里改的是**数据集本体**（`modeling/`）。
-**考卷仍是 v6c 的 55 条任务**（`tasks_v6c.jsonl`，sha `9c1faa3a…`）——把新几何接进考卷要在任务层
-另建 v7，并重跑基线，那一步**还没做**（见 §5）。
+**考卷已建到 v7 = 64 条任务**（`tasks_v7.jsonl`，sha `caf0f6c3…`，C-037 已冻结）：
+**v6c → v7 只加行不改行**（老 165 行逐字节不变，`_verify_tasks_v7.py` PASS，R65/S-52 机器守）。
+**exam 双分母**：`exam_legacy = 25`（与 C-032 同卷可比）／`exam_full = 34`（+ `interpolation_v11` 9 条）。
+**但 v7 的候选还没跑** ⇒ 对外 headline 仍是 C-032（v6c 的 23/25）——卷归卷、成绩归成绩。
 
 ## 1. 为什么加内插点
 
@@ -99,11 +101,14 @@ v1.1：64 条 / 63 类 / train 25 · val 17 · test 22     ← train 与 val 一
    == artifact 实读）/ **S-50**（对外数字表：分母口径列 + 每个 `A/B` 的 `B ∈ {spec 64, 目录 128}` +
    **重跑生成器逐字节比对**）/ **S-51**（协议文件不得写死计数）+ **NC-54 十向**；
    新增数据层 claim **C-036**（`check_forms 54/54`、`双码配对 64/64`、`gate4 128/128`、`eval 64/0`）；
-   RUBRIC **v5.6**（R63/R64）。顺带修正 `manifest.summary.xval_cases_available` **55 → 64**
+   RUBRIC **v5.6**（R63/R64；v5.7 加 R65 见 C-037）。顺带修正 `manifest.summary.xval_cases_available` **55 → 64**
    （dry-run 逐键比对证明只此一键变化、splits 逐位相同）。详见 `CONFLICT.md` N-12/N-13/N-14。
-6. **考卷 v7（未做）**：把 9 条接进任务层 ⇒ exam 25 → 34，才能收窄 CI。
-   代价：换卷后 **C-032 的 23/25 不再可比**（R30/R39，paper sha 变），必须重生成两模型候选
-   （约 2 × 15 min）+ 全链 MSR（约 2 × 40 min）+ 重跑 CI/榜单。**这是下一轮的主任务。**
+6. **考卷 v7 ✅ 已冻结（paper 层）**：9 条接进任务层 ⇒ **exam_legacy 25 / exam_full 34**。
+   机器验收：`_verify_tasks_v7.py` PASS（老 165 行逐字节不变、双分母 25/34、冻结表 64/64）；
+   `r32_audit --scope exam` **34 条 × 1177 字段 0 违规 rc=0**，`--scope all` 只剩 C-030 已登记的
+   白名单 4 处。**v7 candidates 未跑** —— 跑之前必须先定 **N-17**（19/64 条 L2 的 `spec.name`
+   直接写出被省略值 ⇒ clarify 判据本身无效）。代价不变：换卷后 C-032 的 23/25 只能与本卷的
+   `exam_legacy` 栏比，**不得与 `exam_full` 相减**（R54）。
 
 ### 5.2 本轮我自己踩的三个坑（都留在代码注释里）
 

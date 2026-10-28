@@ -510,17 +510,26 @@ def main():
           f"{'None' if err_ok is None else 'raise'}")
 
     # ---- W5b-3 扩展（专家第七轮 6.2/R29/R30/R31）：NC-27..29 ----
-    # NC-27（P1-5/R29）：文本数字漂移必须被语义检查抓到——注入 C-010「140 行」，artifact 仍 165。
-    # 先断言替换真的命中：W5a 的教训是「替换没命中却记 PASS」= 静默空转的负控。
+    # NC-27（P1-5/R29）：文本数字漂移必须被语义检查抓到——把 C-010 的「任务层 N 行」改小。
+    # ★ 变异锚点**不得写死**（这是同一坑第三次复发：NC-49 写死 NC-23..48、本轮又写死「165」）。
+    #   数据集一扩容，`replace('任务层 **165 行**', ...)` 就静默不命中 ⇒ hit=False ⇒ 负控假红，
+    #   而它红的原因与本次改动毫无关系。**锚点必须从被测产物现取**（R29）。
+    import re as _re27
     real_md = open(os.path.join(ROOT_, 'FEM-Bench-Aero', 'CLAIMS.md'), encoding='utf-8').read()
-    mut_md = real_md.replace('任务层 **165 行**', '任务层 140 行')
-    hit27 = (mut_md != real_md)
+    _m27 = _re27.search(r'(任务层\s*\*\*)(\d+)(\s*行\*\*)', real_md)
+    mut_md, hit27, _v27 = real_md, False, None
+    if _m27:
+        _v27 = int(_m27.group(2))
+        mut_md = real_md[:_m27.start(2)] + str(_v27 - 25) + real_md[_m27.end(2):]
+        hit27 = (mut_md != real_md)
     rc27, o27 = run_check_claims(mut_md, 'nc27')
     ok27 = hit27 and rc27 != 0 and 'S-01' in o27
-    results.append({'id': 'NC-27', 'desc': '文本计数漂移（C-010 140 vs artifact 165）⇒ 语义检查 FAIL',
-                    'expect': 'rc!=0 + 报 S-01', 'actual': f'hit={hit27} rc={rc27}', 'ok': ok27})
+    results.append({'id': 'NC-27',
+                    'desc': '文本计数漂移（C-010 任务层行数 −25 vs artifact 实读）⇒ 语义检查 FAIL',
+                    'expect': 'rc!=0 + 报 S-01', 'actual': f'hit={hit27} rc={rc27} 锚点={_v27}',
+                    'ok': ok27})
     print(f"  [{'ok ' if ok27 else 'BAD!'}] NC-27 文本计数漂移被语义检查抓到                    "
-          f"expect=rc!=0+S-01 actual=hit={hit27} rc{rc27}")
+          f"expect=rc!=0+S-01 actual=hit={hit27} rc{rc27} 锚点值={_v27}")
 
     # NC-28（R31）：v6 考卷 55 条、候选只有 30 条 ⇒ 成绩单必须拒绝当正式成绩（覆盖不全）
     from score_baseline import scorecard_coverage_problems
@@ -1343,8 +1352,107 @@ def main():
     print(f"  [{'ok ' if ok54 else 'BAD!'}] NC-54 claim 计数 + 对外表分母 + 协议写死必须被拒         "
           f"expect=fwd T/10向 F actual={det54}")
 
-    # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，
-    # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
+    # NC-55（R65，T-A10b；来自 N-16/N-18）：**S-52 的三条断言必须能各自独立地红**。
+    #   为什么必须分向：S-52 的 (c)「跨版只许加行」几乎能吃下任何「改老行」的变异 ——
+    #   若只断言「红了吗」，(a) 当前卷不一致 与 (b) NL 被改写 这两条会**永远得不到证伪**，
+    #   长期处于假绿（被 (c) 顺手抓到）。★ 强判据会吃掉弱判据的证据（与 NC-54 同源）。
+    #   隔离手法：每向换一个 chain 参数 / 只动一份文件，使被证伪的断言成为唯一失败项。
+    from check_claims import task_layer_frozen as _tlf55
+    import shutil as _sh55
+    import tempfile as _tf55
+    ok55, det55 = False, 'no artifact'
+    _src55 = HERE
+    _need55 = ([os.path.join(_src55, 'tasks', x) for x in
+                ('tasks.jsonl', 'nl_human.jsonl', 'nl_frozen.jsonl')] +
+               [os.path.join(_src55, 'reports', 'papers', x) for x in
+                ('tasks_v6c.jsonl', 'tasks_v7.jsonl')])
+    if all(os.path.exists(p) for p in _need55):
+        _CH55 = [('tasks_v6c.jsonl', 'tasks_v7.jsonl')]
+        _FILES55 = [('tasks', 'tasks.jsonl'), ('tasks', 'nl_human.jsonl'),
+                    ('tasks', 'nl_frozen.jsonl'),
+                    ('reports/papers', 'tasks_v6c.jsonl'),
+                    ('reports/papers', 'tasks_v7.jsonl')]
+
+        def _mk55():
+            d = _tf55.mkdtemp()
+            for sub, name in _FILES55:
+                os.makedirs(os.path.join(d, sub), exist_ok=True)
+                _sh55.copyfile(os.path.join(_src55, sub, name),
+                               os.path.join(d, sub, name))
+            return d
+
+        def _rows55(p):
+            return [l.rstrip('\n') for l in open(p, encoding='utf-8') if l.strip()]
+
+        def _idx55(p, tid):
+            for i, l in enumerate(_rows55(p)):
+                if json.loads(l).get('task_id') == tid:
+                    return i
+            return None
+
+        def _mut55(p, i, fn):
+            """就地改第 i 行；返回是否真的改了（改不动 ⇒ 调用方判漏判，R29）。"""
+            ls = _rows55(p)
+            if i is None or i >= len(ls):
+                return False
+            new = fn(ls[i])
+            if new == ls[i]:
+                return False
+            ls[i] = new
+            open(p, 'w', encoding='utf-8').write('\n'.join(ls) + '\n')
+            return True
+
+        def _bad_spec(line):
+            """给该行加一个键（模拟内容被改写）。
+            ★ 不能用「把 input 里某个数 +1」：L3 的 input 只有 {'nl': 字符串}，无数值可 bump，
+              那样变异会静默不生效、被误判成「闸漏判」（第一版就踩了这个）。"""
+            j = json.loads(line)
+            j['_nc55_mut'] = True
+            return json.dumps(j, ensure_ascii=False)
+
+        # ---- 正向 ----
+        _fwd55 = _tlf55(base=_mk55(), chain=_CH55)
+
+        # ---- (a) 当前卷不一致：只动 tasks/tasks.jsonl，且**必须挑新行** ----
+        #      挑新行（不在 v6c 里的 L3）⇒ (c) 天然绿，使 (a) 成为唯一失败项。
+        #      若挑老行，(c) 会同时红、把 (a) 的证据吃掉（强判据吃弱判据，NC-54 同源）。
+        _da = _mk55()
+        _ia = _idx55(os.path.join(_da, 'tasks', 'tasks.jsonl'),
+                     'L3_naca4412_wingbox_str4')          # v1.1 新增行，v6c 里没有
+        _ok_a_mut = _mut55(os.path.join(_da, 'tasks', 'tasks.jsonl'), _ia, _bad_spec)
+        _a55, _ra55 = _tlf55(base=_da, chain=_CH55)
+
+        # ---- (b) 已发布 NL 被改写：只动 tasks/nl_human.jsonl 里的一条**老**行 ----
+        #      (a) 只比 tasks.jsonl vs papers，与 nl_human 无关 ⇒ 天然隔离
+        _db = _mk55()
+        _ib = _idx55(os.path.join(_db, 'tasks', 'nl_human.jsonl'), 'L3_naca4412_wingbox')
+        _ok_b_mut = _mut55(os.path.join(_db, 'tasks', 'nl_human.jsonl'), _ib, _bad_spec)
+        _b55, _rb55 = _tlf55(base=_db, chain=_CH55)
+
+        # ---- (c) 跨版改老行：同时改磁盘与当前卷同一行 ⇒ (a) 一致，(c) 必红 ----
+        _dc = _mk55()
+        _ic = _idx55(os.path.join(_dc, 'tasks', 'tasks.jsonl'), 'L3_naca4412_wingbox')
+        _ok_c1 = _mut55(os.path.join(_dc, 'tasks', 'tasks.jsonl'), _ic, _bad_spec)
+        _ok_c2 = _mut55(os.path.join(_dc, 'reports', 'papers', 'tasks_v7.jsonl'),
+                        _ic, _bad_spec)
+        _c55, _rc55 = _tlf55(base=_dc, chain=_CH55)
+
+        ok55 = (bool(_fwd55) is True and _ok_a_mut and _ok_b_mut and _ok_c1 and _ok_c2
+                and _a55 is False and '不一致' in _ra55
+                and _b55 is False and '已发布 NL' in _rb55
+                and _c55 is False and '只许' in _rc55)
+        det55 = (f'fwd={"T" if _fwd55 else "F"} ‖ '
+                 f'(a)卷不一致={"红·不一致" if (_a55 is False and "不一致" in _ra55) else "漏判/因不对"} '
+                 f'(b)NL改写={"红·已发布NL" if (_b55 is False and "已发布 NL" in _rb55) else "漏判/因不对"} '
+                 f'(c)跨版改老行={"红·只许" if (_c55 is False and "只许" in _rc55) else "漏判/因不对"}')
+    results.append({'id': 'NC-55',
+                    'desc': 'S-52 三向独立证伪：当前卷不一致 / 已发布 NL 被改写 / 跨版改老行',
+                    'expect': 'fwd=T / 三向=F 且原因分别命中「不一致」「已发布 NL」「只许」',
+                    'actual': det55, 'ok': ok55})
+    print(f"  [{'ok ' if ok55 else 'BAD!'}] NC-55 任务层冻结漂移必须被 S-52 分向拒绝          "
+          f"expect=fwd T/3向 F actual={det55}")
+
+    # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，    # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；
     #           ③ 源码里必须存在 else 分支（缺 msr ⇒ 加一条 ok=False），防被改回去。
     sc36_p = latest_scorecard()

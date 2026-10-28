@@ -329,6 +329,183 @@ headline 结构判定：仅 C-032 的 status 列带「（对外 headline）」�
 - **处置**：按 D5(b) 去掉全部写死计数（改「以 §0 实读为准」），并修 2/3/4/5 四处事实；
   新增 **S-51** 防计数被抄回去。
 
+### N-15（高，v7 paper 开工前）「9 条只当 dev」会把 test 变成 dev
+
+- **冲突点**：老王在 v7 开工前拍板「exam 保持 25，9 条只当 dev」。但实测 9 条在
+  `manifest.json` 里的 `split` **全部是 `test`**：
+  ```
+  naca4412_wingbox_taper070 / open_hole_panel_400x200_d30 / stiffened_panel_700x600_str4 …
+  9 条全部 test；全量 {'test': 22, 'val': 17, 'train': 25}
+  ```
+  而 v6c 的「dev」= **30 条 = train 13 + val 17，一条 test 都没有**。
+- **为什么是冲突**：把 9 条 test 放进 dev，dev 就不再与 test 互斥。此后任何一轮
+  基于 dev 的调参（prompt 措辞、判分细则、阈值）都会直接污染这 9 条，
+  它们**再也不能当留出证据**——不是"数字不可比"，是**证据不再独立**。
+  这条比 R30/R39 更根本：R30 说的是"不同卷不能相减"，这里连"卷"的定义都会被破坏。
+- **而且它达不到原目的**：exam 仍 25，CI 仍宽，统计有效性仍是 2/3。v1.1 造这 9 条
+  的原始动机（`DATASET_V11` §1：exam n=25 ⇒ CI95 宽到 [80.0, 100.0]，4 pp 差异判不显著）
+  一条都没被解决。
+- **3 个选项**：
+  - **A（推荐）双分母并列**：9 条进 exam 的**新栏** `interpolation_v11`，
+    同时报两个分母——`exam_legacy = 25`（与 C-032 **同卷可比**）与 `exam_full = 34`（含新增）。
+    R54 只禁止**跨分母相减**，不禁止**并列报告**；桥表（bridge）本来就是为这种场景存在的。
+    ⇒ 既保住与 C-032 的可比性，又用上这 9 条、把 CI 收窄。
+  - B（原拍板）：9 条当 dev。代价见上——dev 与 test 不再互斥，且统计不改善。
+    若坚持 B，必须同时在 `DATASET_V11` 与 `RUBRIC` 显式登记「dev 含 9 条 test，
+    因此 v7 起 dev 不再是留出集」，并且此后**不得**再用 dev 数字做任何"新设计泛化"的论证。
+  - C：9 条标 `heldout_ungraded`，既不进 exam 也不进 dev。最保守、无污染，
+    但等于 v7 只做了数据层，任务层白扩。
+- **建议**：**A**。理由：它是唯一同时满足「保住 C-032 可比」「用上 9 条」「不污染留出」的方案，
+  且实现代价很小（多一栏 `exam_stratum=interpolation_v11` + 成绩单多两个分母字段）。
+  **B 的代价是永久的，A 的代价只是一栏字段。**
+- **待老王重新拍板后再开 v7 paper。**
+- **✅ 已拍板（老王，2026-10-28）：A —— 双分母并列。** 落实要求：9 条标
+  `exam_stratum = interpolation_v11`，成绩单同时报 `exam_legacy = 25` 与 `exam_full = 34`；
+  R54 只禁跨分母相减，不禁并列。
+
+### N-16（**高，阻断 v7 paper**）数据集扩容会**改写已有 case 的 L2 卷子**
+
+- **怎么发现的**：按 R-A2「先冻结后运行」，跑完 `make_tasks.py`（55→64）后，
+  把 `tasks/tasks.jsonl`（183 行）与 git HEAD 版（165 行）逐条比对，**不按行号按 `task_id`**：
+  ```
+  L1: 旧 55 新 64  字节级差异 0        ← 干净
+  L3: 旧 55 新 55  字节级差异 0        ← 干净
+  L2: 旧 55 新 64  字节级差异 48  ★★★
+  ```
+- **不是键序、是内容**：
+  ```
+  L2_fuselage_barrel_d2000_l2000_str12_frm4   ['n_frames']        -> ['thickness']
+  L2_fuselage_barrel_d2000_l2000_str8_frm3    ['thickness']       -> ['n_stringers']
+  L2_naca4412_wingbox                         ['rib_thickness']   -> ['n_stringers_per_skin']
+  L2_naca4412_wingbox_n_ribs3_chord1000       ['n_stringers_per_skin'] -> ['stringer_height']
+  ...  48/55 条被改写（只有 7 条恰好不动）
+  ```
+  覆盖分布也整体漂移：旧 `rib_thickness:5 / n_stringers_per_skin:5 / stringer_height:5 …`
+  → 新 `rib_thickness:5 / n_stringers_per_skin:6 / stringer_height:6 …`。
+- **根因（一行代码）**：`make_tasks.py:156`
+  ```python
+  l2, omitted = make_l2_input(norm, fam, rotate_idx=stats['L1'])   # ← stats['L1'] = 已处理 L1 累计数
+  ```
+  `rotate_idx` 取的是**全局累计计数**，而 v1.1 的 9 条新 case **散布在 manifest 中间**
+  （idx 3 / 11 / 16 / 19 / 28 / 40 / 52 / 56 / 61），不是追加在末尾
+  ⇒ 排在每个新 case 之后的老 case，`rotate_idx` 全部 +1，省略字段沿池子整体滑动一格。
+  注释写着「按 case 序轮换」——**看起来是确定性轮换，实际是位置耦合**：
+  只要数据集条数/顺序变化，已发布卷子就会被静默改写。
+- **为什么这是硬问题**（比 N-15 更根本）：
+  1. **v6c 的 L2 子集失去可复现性**：`tasks.jsonl` 是唯一真源，一旦重生成，
+     老 55 条的 L2 题目就变了；v6c 的 L2 成绩此后只能引用存档成绩，**不能重跑**。
+  2. **v7 vs v6c 的 L2 不是同一张卷**：`input` 少的是不同字段 ⇒ 题目难度/考点都变了，
+     跨版本比较 L2 通过率是**伪造的归因**（R30/R54 管的是"分母不同"，这里连"题不同"）。
+  3. **现有闸一个都抓不到**：S-48 只查「claim 的计数 == artifact 计数」，
+     S-49 同理，`verify_dataset` 只看目录不读 tasks.jsonl ⇒
+     **L2 内容漂移目前处于零闸状态**（R58：没有工具读的东西等于没校验）。
+  4. 它同时也证明 **R-A2 缺一环**：我这次是"跑了全量生成才发现"，
+     如果没做逐条比对（本可以只 `wc -l` 看一眼 183 行就过），这条会直接进 v7。
+- **3 个选项**：
+  - **A（推荐）显式冻结映射表 + 稳定派生**：新建 `tasks/l2_omit_map.json`
+    （`case_id → omitted_field`）。生成时**先查表，命中即用**；未命中（新 case）才按
+    **族内稳定序号**轮换，并把结果**追加写表**。首次建表时用 git HEAD 的 `tasks.jsonl`
+    读出旧值 ⇒ **老 55 条逐字节恢复原状**，新 9 条为新增。此后任何人扩容都不会改动已有条目。
+    代价：一个 json + 约 20 行代码。收益：把「已发布卷子」变成**显式冻结件**，
+    正好补上 R-A2 现在缺的那一环。
+  - **B 改成 `stable_hash(case_id) % len(pool)`**：确定性、与位置无关、扩容不动老条目。
+    **但旧值无法恢复**（hash ≠ 旧位置）⇒ v6c 的 L2 子集永久失去可复现性，
+    只能接受「v6c 的 L2 引用存档成绩、不再重跑」。比 A 少写一个 json，代价是丢掉一段可复现性。
+  - **C 接受漂移 + 登记降级**：`CLAIMS`/`RUBRIC` 显式登记「L2 子集跨版本不可比」，
+    headline 只用 L3/exam，L2 只报字段级覆盖、不参与任何纵向对比。
+    代价：**「澄清能力」这一维度的跨版本证据全废**，而 L2 正是 v6c 里唯一测 clarify 的层。
+- **建议**：**A**。它是唯一同时做到「恢复旧值」「永久防漂」「不牺牲 L2 维度」的方案。
+- **无论选哪个都要加闸**（这条比选项本身更重要）：新增 **S-52**
+  「重生成 `tasks.jsonl` 后，老 `task_id` 的 L2/L3 条目必须与冻结基线逐字节一致，
+  否则红」。理由同 S-51：**消掉一个漂移面之后，必须防它长回来** ——
+  L2 这次是「恰好在数据集扩容时」暴露的，下一次可能是「某人调了 manifest 排序」。
+- **本轮已做的止损**：`git checkout -- tasks/tasks.jsonl` ⇒ 回到
+  `9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5`（165 行），
+  **v6c 冻结件完好**。v7 paper 暂停在此，等拍板。
+- **✅ 已拍板（老王，2026-10-28）：A + 加 S-52。** 已落地：`tasks/l2_omit_map.json`
+  （64 条，`lockfile` 语义；初始 55 条由 git HEAD 反推）+ `make_tasks.py` 改为查表
+  （命中即用；未命中按**族内稳定序号**轮换并追加；已有条目改写即抛错）+ 幂等实测通过。
+  **老 55 条 L1/L2/L3 字节级差异全部 = 0。**
+
+### N-17（高，v7 candidates 之前）L2 澄清题有 **19/64 条** `name` 自己写出答案
+
+- **怎么发现的**：N-16 修完后，逐条核对新登记的 9 条省略字段，发现
+  `open_hole_panel_400x200_d30` 省略的正是 `hole_d`，而 `spec.name` 就写着 `d30`。
+- **实质**：L2 靠「删一个字段、要求模型澄清」出题，但 `spec.name = case_id`，
+  而 case_id 是人给的**描述性名字**，经常把设计变量写在自己身上。
+  ```
+  省略 hole_d(=30)    而 name = "open_hole_panel_400x200_d30"        ⇒ 答案在题面
+  省略 n_frames(=3)   而 name = "fuselage_barrel_..._str8_frm3"      ⇒ 答案在题面
+  省略 sweep_deg(=40) 而 name = "naca4412_wingbox_sweep40"           ⇒ 答案在题面
+  ```
+  模型读 `name` 就知道，不必澄清；此时判它「clarify 失败」是**判据的错，不是模型的错**
+  —— 与 M7「诊断假设与被测对象必须同口径」是同一类。
+- **量化**（`check_l2_leak.py`，可复跑，判据印在 docstring 里）：
+  ```
+  $ python check_l2_leak.py --out reports/l2_name_leak_2026-10-28.json --md ...md
+  L2 总数 64；name 泄漏被省略值 19 条；干净 45 条（informative 70.3%）
+  按族: {open_hole_panel: 10, fuselage_barrel: 5, wingbox: 3, stiffened_panel: 1}
+  ```
+  **老 14 / 新 5**（本轮新增 9 条里占了 5 条）⇒ **是既存缺陷，不是本轮引入**，
+  但本轮把它量化了出来。
+- **判据为什么这么做**：不能用裸数字碰撞。反例：
+  `naca4412_wingbox_str4` 省略 `rib_thickness`(4.0)，`str4` 揭示的是 `n_stringers`(=4)，
+  与 rib_thickness 只是**数值撞车** ⇒ 判不泄漏（W4a 已定的口径）。
+  所以必须按**语义前缀**（`d<N>`→hole_d、`frm<N>`→n_frames…）匹配。
+  ★ 第一版用 `\bd(\d+)` 写错边界（`_d30` 里 `_` 是 word 字符，`\b` 不成立）
+  ⇒ 只抓到 5 条、漏了 14 条。**判据自己漏了比没判据更危险**（它给了一个好看的假数）。
+- **为什么必须处理**：C-032 报了 clarify 通过率，其中 19 条的下限被 `name` 抬高了上限。
+  v7 若照抄口径，等于把一个**已知无效的子集**继续算进对外数字。
+- **3 个选项**：
+  - **A 抹掉 name 里的数值语义**（如 L2 的 name 统一改成 `case_<序号>`）：
+    最干净，但**会改写老 55 条的 L2 题面** —— 刚用 N-16 冻结住的东西又要动，
+    与「保住 C-032 同卷可比」直接冲突。
+  - **B 从 `expected_clarifications` 移除这 19 条**：等于**改卷**（期望答案变了），
+    同样破坏可比性，而且 L2 分母从 64 掉到 45。
+  - **C'（推荐）不动题、只改评分口径**：`tasks.jsonl` **零改动**；
+    评分时用 `check_l2_leak.py` 的 `scan()` **现算** informative 子集，
+    clarify 分数**双报**——`clarify_all(n=64)` 与 `clarify_informative(n=45)`
+    （与 N-15 的双分母同构，R54 只禁跨分母相减、不禁并列）。
+    代价：评分脚本要接一个函数；收益：**零数据改动、保住同卷可比、且口径可被闸复算**。
+  - D 只登记不复算：`CLAIMS` 写「19/64 条 L2 的 name 含答案」但分数照旧。
+    代价：对外数字里仍含已知无效子集，等于知道错了不改。
+- **建议**：**C'**。核心理由：**判据的错不该算到模型头上，但也不该靠改题来遮** ——
+  改题会连历史一起废掉，改口径只影响这一维的分子分母，且能被闸独立复算。
+- **配套闸（建议同时加 S-53）**：评分脚本必须调用 `check_l2_leak.scan()`
+  产出 informative 掩码；成绩单若只报单一口径（无 informative 拆分）即红。
+  否则「双报」会退化成一句写在文档里的承诺（R58：没工具读的承诺等于没有）。
+- **待老王拍板。** 不影响 v7 paper 的 NL 生成（那是 L3，不走这段逻辑），
+  但必须在 **v7 candidates 开跑之前**定下来。
+
+### N-19（高，已按既有口径处置）v1.1 元数据被当成判分字段 ⇒ 9 条题**不可解**
+
+- **怎么发现的**：v7 卷跑 `r32_audit --scope all` 得 **34 处 VIOLATION**，其中 **30 处**
+  是 `extra.split_tag` / `extra.v11_template` / `extra.v11_bracket` / `extra.v11_interior_holdout`
+  报「题面无依据」。
+- **实质**：`evaluate.py` 的判分循环对 `gold['extra']` **逐键判等**，豁免表只有
+  `EXEC_CONFIG_KEYS['extra'] = {sweep_index, shear_axis, moment_axis}`（W4d 定的
+  「gold 内部编码键，NL 任务书永远不会提及」）。v1.1 的 4 个键是**数据集构建记账信息**
+  （哪一版内插、夹逼哪两个锚点、划分标签），性质与 `sweep_index` **完全同类**，
+  但不在豁免表里 ⇒ **模型必须凭空产出 `split_tag='v11_interior_holdout'` 才算 PASS**。
+  题面根本不可能写这些 ⇒ **9 条必然全 FAIL**，而报告会把它读成「模型不行」。
+  **这就是 M7 那条：判据的假设在冒充模型的错。**
+- **范围实测**（不是推断）：
+  ```
+  split_tag 9 / v11_template 9 / v11_bracket 9 / v11_interior_holdout 8
+  —— 全部只出现在新增的 9 条里；老 55 条一个都没有
+  ```
+  ⇒ 补豁免**不改变任何历史数字**（C-030/C-032 的 55 条口径逐位不变）。
+- **处置（✅ 已做）**：把 4 个键并入 `EXEC_CONFIG_KEYS['extra']`（`evaluate.py`）。
+  理由：这是把 v1.1 元数据归入**既有类别**，不是新开口径 —— 与 W4d 拍板
+  「执行配置键 REPORTED NOT GATED」同一条。`r32_audit.py` 复用同一常量，自动同步。
+- **不动的部分**：`spec.extra` 本身**一个字节都不改**（改 spec 会动 `spec_sha256`
+  ⇒ `truth.json` 全档失效须重导，这是 D 系铁律）。
+- **验收**：重跑 `r32_audit --scope all`，违规应从 34 → **4**，且剩下 4 处必须精确等于
+  白名单 `{stiffened_panel_800x600, _str3} × {params.length, params.width}`（C-030 已登记的
+  已知下界，冻结行原样保留）。
+
+
+
 ---
 
 ## 3. 门禁与工作区实况（本轮 pre-flight 原始结果）

@@ -805,6 +805,11 @@ def gate3_counts_consistent(claims_md, artifact_json, claim_id='C-003'):
 #: 不写死为「2」而是每次用 verify_dataset 的 `trees` 段核实（见 claim_counts_consistent）。
 SOLVER_TREES = 2
 
+#: 任务层卷链（R65 / S-52）：上一版 → 当前版，语义是「**只许加行，不许改老行**」。
+#: 下一版冻结时**必须手工把链往前推一格**（v7 → v8），因为「只许加行」不是天然语义：
+#: v6 → v6b（补 exam_stratum）→ v6c（R32/R36 改 10 行）都是**改行**，不在链上。
+TASK_CHAIN = [('tasks_v6c.jsonl', 'tasks_v7.jsonl')]
+
 
 def _row_of(claims_md, claim_id):
     """取 CLAIMS 表里 `| C-xxx |` 开头的整行；找不到返回 None。"""
@@ -1192,6 +1197,98 @@ def protocol_no_hardcoded_counts(paths):
     if not n_seen:
         return False, '两份协议文件都没读到（锚点缺失不得 skip）'
     return (not probs), ('协议文件无写死计数' if not probs else '；'.join(probs[:6]))
+
+
+def task_layer_frozen(base=None, chain=None):
+    """R65（T-A10b；来自 N-16 / N-18）：**任务层冻结件不得漂移**。
+
+    为什么需要（同一轮踩了两次）：
+      · **N-16**：`make_tasks.py` 用 `rotate_idx=stats['L1']`（**全局累计计数**）轮换
+        L2 的省略字段 ⇒ 数据集 55→64 时，老 55 条里 **48 条 L2 题目被静默改写**
+        （`n_frames`→`thickness` 之类）。
+      · **N-18**：`make_nl_human.py` 用 `STYLE_CYCLE[i % 3]`（**族内序号**）轮换笔调
+        ⇒ 同一次扩容把 **37/55 条 NL 题面**改写。
+    两次都是「看起来是确定性轮换、实际依赖位置」，而**没有任何闸能发现** ——
+    S-48/S-49 只比计数、`verify_dataset` 只数目录、`r32_audit` 只查题面可解性。
+    ⇒ 这正是 R58：没有工具读的东西等于没校验。
+
+    三条断言：
+      (a) `tasks/tasks.jsonl` 与 `reports/papers/<当前卷>` **逐字节一致**（当前卷未被私改）
+      (b) `tasks/nl_frozen.jsonl` 的每一行都在 `tasks/nl_human.jsonl`（已发布 NL 未被改写）
+      (c) 上一版卷的每一行都在当前卷里（**跨版本只许加行，不许改老行**）
+
+    (c) 的链写死在 `TASK_CHAIN` 里；下一版必须把链往前推一格（这是刻意的手工动作，
+    因为「只许加行」不是天然成立的语义，v6→v6b→v6c 都是改行）。
+
+    `base` / `chain` 可传参：负控要能在临时目录里构造变异（NC-55），
+    否则这个闸无法被证伪（只能测「有没有红」，测不了「红得对不对」）。
+    """
+    base = base or HERE
+    chain = TASK_CHAIN if chain is None else chain
+    tasks_p = os.path.join(base, 'tasks', 'tasks.jsonl')
+    nl_cur = os.path.join(base, 'tasks', 'nl_human.jsonl')
+    nl_frz = os.path.join(base, 'tasks', 'nl_frozen.jsonl')
+    papers = os.path.join(base, 'reports', 'papers')
+
+    def _lines(p):
+        if not os.path.exists(p):
+            return None
+        return set(l.rstrip('\n') for l in open(p, encoding='utf-8') if l.strip())
+
+    t = _lines(tasks_p)
+    if t is None:
+        return False, f'找不到 {tasks_p}（先跑 make_tasks.py）'
+
+    problems, notes = [], []
+
+    # (a) 当前卷 == 已冻结副本
+    cur_vol = os.path.join(papers, chain[-1][1])
+    if not os.path.exists(cur_vol):
+        problems.append(f'当前卷 {os.path.basename(cur_vol)} 不存在（卷必须落档）')
+    else:
+        cv = _lines(cur_vol)
+        if cv != t:
+            only_t, only_c = len(t - cv), len(cv - t)
+            problems.append(f'tasks.jsonl 与当前卷 {os.path.basename(cur_vol)} 不一致'
+                            f'（仅磁盘 {only_t} 行 / 仅卷 {only_c} 行）')
+        else:
+            notes.append(f'当前卷 {os.path.basename(cur_vol)} 逐字节一致（{len(t)} 行）')
+
+    # (b) 已发布 NL 行不得被改写
+    fz, nc = _lines(nl_frz), _lines(nl_cur)
+    if fz is None:
+        problems.append('找不到 tasks/nl_frozen.jsonl（冻结基线缺失 ⇒ 无从判断漂移）')
+    elif nc is None:
+        problems.append('找不到 tasks/nl_human.jsonl')
+    else:
+        lost = fz - nc
+        if lost:
+            problems.append(f'已发布 NL 有 {len(lost)} 行被改写（nl_frozen 中的行不在当前卷里）')
+        else:
+            notes.append(f'已发布 NL {len(fz)} 行全部原样保留')
+
+    # (c) 跨版本只许加行
+    for prev, nxt in chain:
+        pp, np_ = os.path.join(papers, prev), os.path.join(papers, nxt)
+        if not (os.path.exists(pp) and os.path.exists(np_)):
+            problems.append(f'卷链 {prev} → {nxt} 缺文件')
+            continue
+        a, b = _lines(pp), _lines(np_)
+        changed = a - b
+        if changed:
+            problems.append(f'{prev} 有 {len(changed)} 行在 {nxt} 中不存在'
+                            f'（跨版本只许**加行**，不许改老行）')
+            for x in list(changed)[:2]:
+                try:
+                    problems.append('    · ' + json.loads(x)['task_id'])
+                except Exception:
+                    pass
+        else:
+            notes.append(f'{prev} 的 {len(a)} 行在 {nxt} 中全部原样保留')
+
+    if problems:
+        return False, '；'.join(problems[:6])
+    return True, '；'.join(notes)
 
 
 def prompt_no_blind_default(path, label='gen_candidates_v2.js'):
@@ -1810,6 +1907,16 @@ def semantic_checks(root, rows):
         '正文与代码围栏都不得出现 `N claims/N artifacts/N semantic`、'
         '`check_claims N/N/N`、`负控 N/N`；应写「以 §0 实读为准」',
         _det51, _ok51)
+
+    # S-52（R65，T-A10b；来自 N-16/N-18）：**任务层冻结件不得漂移**。
+    # 同一轮踩了两次位置耦合（L2 省略字段吃全局累计数、NL 笔调吃族内序号），
+    # 两次都是「确定性轮换 + 位置依赖」，且**没有任何闸能发现**（R58 的反面）。
+    _ok52, _det52 = task_layer_frozen()
+    add('S-52', '任务层冻结件不得漂移：当前卷==磁盘、已发布 NL 行未改写、跨版只许加行（R65）',
+        '(a) tasks/tasks.jsonl 必须与 reports/papers/ 当前卷逐字节一致；'
+        '(b) tasks/nl_frozen.jsonl 每一行必须仍在 tasks/nl_human.jsonl；'
+        '(c) 卷链上一版的每一行必须仍在当前版（TASK_CHAIN）',
+        _det52, _ok52)
 
     return out
 

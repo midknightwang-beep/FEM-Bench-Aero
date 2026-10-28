@@ -1,0 +1,225 @@
+{
+  "_note": "L2 澄清题的 name 泄漏诊断（CONFLICT N-17）。判据见 check_l2_leak.py docstring；撞车不算泄漏。可用 check_l2_leak.py 复跑复现。",
+  "tasks": "tasks/tasks.jsonl",
+  "n_l2": 64,
+  "n_leak": 19,
+  "n_clean": 45,
+  "informative_pct": 70.3,
+  "by_family": {
+    "fuselage_barrel": 5,
+    "wingbox": 3,
+    "open_hole_panel": 10,
+    "stiffened_panel": 1
+  },
+  "hits": [
+    {
+      "case_id": "fuselage_barrel_d1600_l1600_str8_frm3",
+      "task_id": "L2_fuselage_barrel_d1600_l1600_str8_frm3",
+      "family": "fuselage_barrel",
+      "omitted_field": "n_frames",
+      "name": "fuselage_barrel_d1600_l1600_str8_frm3",
+      "name_evidence": [
+        "frm3"
+      ],
+      "split_v2": "extrapolation_test"
+    },
+    {
+      "case_id": "fuselage_barrel_d2000_l1600_str8_frm3",
+      "task_id": "L2_fuselage_barrel_d2000_l1600_str8_frm3",
+      "family": "fuselage_barrel",
+      "omitted_field": "n_stringers",
+      "name": "fuselage_barrel_d2000_l1600_str8_frm3",
+      "name_evidence": [
+        "str8"
+      ],
+      "split_v2": "val"
+    },
+    {
+      "case_id": "fuselage_barrel_d2000_l1800_str8_frm3",
+      "task_id": "L2_fuselage_barrel_d2000_l1800_str8_frm3",
+      "family": "fuselage_barrel",
+      "omitted_field": "n_stringers",
+      "name": "fuselage_barrel_d2000_l1800_str8_frm3",
+      "name_evidence": [
+        "str8"
+      ],
+      "split_v2": "extrapolation_test"
+    },
+    {
+      "case_id": "fuselage_barrel_d2000_l2000_str12_frm4",
+      "task_id": "L2_fuselage_barrel_d2000_l2000_str12_frm4",
+      "family": "fuselage_barrel",
+      "omitted_field": "n_frames",
+      "name": "fuselage_barrel_d2000_l2000_str12_frm4",
+      "name_evidence": [
+        "frm4"
+      ],
+      "split_v2": "extrapolation_test"
+    },
+    {
+      "case_id": "fuselage_barrel_d2000_l2000_t2_str8_frm3",
+      "task_id": "L2_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+      "family": "fuselage_barrel",
+      "omitted_field": "n_stringers",
+      "name": "fuselage_barrel_d2000_l2000_t2_str8_frm3",
+      "name_evidence": [
+        "str8"
+      ],
+      "split_v2": "val"
+    },
+    {
+      "case_id": "naca4412_wingbox_n_ribs9_chord1000",
+      "task_id": "L2_naca4412_wingbox_n_ribs9_chord1000",
+      "family": "wingbox",
+      "omitted_field": "n_ribs",
+      "name": "naca4412_wingbox_n_ribs9_chord1000",
+      "name_evidence": [
+        "n_ribs9"
+      ],
+      "split_v2": "val"
+    },
+    {
+      "case_id": "naca4412_wingbox_size_skin2p5",
+      "task_id": "L2_naca4412_wingbox_size_skin2p5",
+      "family": "wingbox",
+      "omitted_field": "skin_thickness",
+      "name": "naca4412_wingbox_size_skin2p5",
+      "name_evidence": [
+        "skin2"
+      ],
+      "split_v2": "extrapolation_test"
+    },
+    {
+      "case_id": "naca4412_wingbox_sweep40",
+      "task_id": "L2_naca4412_wingbox_sweep40",
+      "family": "wingbox",
+      "omitted_field": "sweep_deg",
+      "name": "naca4412_wingbox_sweep40",
+      "name_evidence": [
+        "sweep40"
+      ],
+      "split_v2": "val"
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d20",
+      "task_id": "L2_open_hole_panel_400x200_d20",
+      "family": "open_hole_panel",
+      "omitted_field": "length",
+      "name": "open_hole_panel_400x200_d20",
+      "name_evidence": [
+        "400x200"
+      ],
+      "split_v2": "train"
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d20_cfrp090s",
+      "task_id": "L2_open_hole_panel_400x200_d20_cfrp090s",
+      "family": "open_hole_panel",
+      "omitted_field": "hole_d",
+      "name": "open_hole_panel_400x200_d20_cfrp090s",
+      "name_evidence": [
+        "d20"
+      ],
+      "split_v2": "train"
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d20_cfrp45s_d40",
+      "task_id": "L2_open_hole_panel_400x200_d20_cfrp45s_d40",
+      "family": "open_hole_panel",
+      "omitted_field": "width",
+      "name": "open_hole_panel_400x200_d20_cfrp45s_d40",
+      "name_evidence": [
+        "400x200"
+      ],
+      "split_v2": "extrapolation_test"
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d20_cfrpqi",
+      "task_id": "L2_open_hole_panel_400x200_d20_cfrpqi",
+      "family": "open_hole_panel",
+      "omitted_field": "length",
+      "name": "open_hole_panel_400x200_d20_cfrpqi",
+      "name_evidence": [
+        "400x200"
+      ],
+      "split_v2": "val"
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d20_offcentre",
+      "task_id": "L2_open_hole_panel_400x200_d20_offcentre",
+      "family": "open_hole_panel",
+      "omitted_field": "hole_d",
+      "name": "open_hole_panel_400x200_d20_offcentre",
+      "name_evidence": [
+        "d20"
+      ],
+      "split_v2": "extrapolation_test"
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d30",
+      "task_id": "L2_open_hole_panel_400x200_d30",
+      "family": "open_hole_panel",
+      "omitted_field": "hole_d",
+      "name": "open_hole_panel_400x200_d30",
+      "name_evidence": [
+        "d30"
+      ],
+      "split_v2": "extrapolation_test"
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d40_offcentre",
+      "task_id": "L2_open_hole_panel_400x200_d40_offcentre",
+      "family": "open_hole_panel",
+      "omitted_field": "width",
+      "name": "open_hole_panel_400x200_d40_offcentre",
+      "name_evidence": [
+        "400x200"
+      ],
+      "split_v2": "extrapolation_test"
+    },
+    {
+      "case_id": "open_hole_panel_400x200_d50",
+      "task_id": "L2_open_hole_panel_400x200_d50",
+      "family": "open_hole_panel",
+      "omitted_field": "length",
+      "name": "open_hole_panel_400x200_d50",
+      "name_evidence": [
+        "400x200"
+      ],
+      "split_v2": "val"
+    },
+    {
+      "case_id": "open_hole_panel_500x250_d45",
+      "task_id": "L2_open_hole_panel_500x250_d45",
+      "family": "open_hole_panel",
+      "omitted_field": "hole_d",
+      "name": "open_hole_panel_500x250_d45",
+      "name_evidence": [
+        "d45"
+      ],
+      "split_v2": "extrapolation_test"
+    },
+    {
+      "case_id": "open_hole_panel_600x300_d30",
+      "task_id": "L2_open_hole_panel_600x300_d30",
+      "family": "open_hole_panel",
+      "omitted_field": "hole_d",
+      "name": "open_hole_panel_600x300_d30",
+      "name_evidence": [
+        "d30"
+      ],
+      "split_v2": "val"
+    },
+    {
+      "case_id": "stiffened_panel_700x600_str4",
+      "task_id": "L2_stiffened_panel_700x600_str4",
+      "family": "stiffened_panel",
+      "omitted_field": "n_stringers",
+      "name": "stiffened_panel_700x600_str4",
+      "name_evidence": [
+        "str4"
+      ],
+      "split_v2": "extrapolation_test"
+    }
+  ]
+}
