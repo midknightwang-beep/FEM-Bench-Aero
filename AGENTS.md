@@ -18,8 +18,8 @@
 
 ```bash
 cd "F:/AI FEA Modeling DataSets/feagpt_repro"
-python check_claims.py --json "$TEMP/check_claims_preflight.json"   # 必须 all_ok=True；当前 27 claims / 49 artifacts / 48 semantic
-python negative_controls.py     # 必须全绿；当前 54/54
+python check_claims.py --json "$TEMP/check_claims_preflight.json"   # 必须 all_ok=True；当前 27 claims / 49 artifacts / 49 semantic
+python negative_controls.py     # 必须全绿；当前 55/55
 git status --short              # 先看清工作区；有别人未提交的改动时不要覆盖
 ```
 
@@ -97,9 +97,9 @@ git status --short              # 先看清工作区；有别人未提交的改�
 
 ### R-A9　负控先绿，且要报总数 + 编号
 - 任何基线/重打分前：`check_claims.py` + `negative_controls.py` 必须全绿。
-- 报告必须写“总数 + 编号集合”（当前 54/54，NC-1..22 + NC-15b + NC-23..52），只写“全绿”不算。
+- 报告必须写“总数 + 编号集合”（当前 55/55，NC-1..22 + NC-15b + NC-23..53），只写“全绿”不算。
 - 缺一条负控 = 失败，不是 skip；不得为了跑通而弱化/跳过负控。
-- 负控文件版本化（`negative_controls_54.json`）；旧版本归档 `reports/archive/`，不得混用。
+- 负控文件版本化（`negative_controls_55.json`）；旧版本归档 `reports/archive/`，不得混用。
 
 ### R-A10　范围锁
 - 只改 `TASK_CONTRACT` 的 allowlist 内文件；**默认不改** paper / rubric / prompt / headline / 其他模型 / 其他报告。
@@ -258,7 +258,7 @@ git status --short              # 先看清工作区；有别人未提交的改�
 | 当前 paper | `reports/papers/tasks_v6c.jsonl`，sha `9c1faa3a…` |
 | 当前 prompt | `gen_candidates_v2.js`，sha `ce225186…` |
 | 当前 rubric | v5.2（**R42–R58 判定表在 RUBRIC**；**R1–R41 在 `CLAIMS.md` 红线条**） |
-| 门禁 | 负控 **54/54**；`check_claims` **27/49/48** |
+| 门禁 | 负控 **55/55**；`check_claims` **27/49/49** |
 | 已知 P2 | C-032 dev 22/30 已由 W5d-0 定位（`reports/diagnostics/dev_reversal_v6c_p2.md`，+1/−2）；C-033 1 编造 + 1 问错（W5d-1 prompt v3/v3b 消融否决，回退 v2，C-035）；C-033 字段级 +5.0pp BELOW |
 | 下一步 | ① 9 条 v1.1 案例的 Abaqus 双码：deck 已备，在 WorkBuddy 外跑 `_v11/run_v11_abaqus.bat`；② 考卷 v7（数据集 64 条 ≠ 考卷 55 条任务） |
 

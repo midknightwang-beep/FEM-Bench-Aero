@@ -1160,6 +1160,63 @@ def main():
     print(f"  [{'ok ' if ok52 else 'BAD!'}] NC-52 求解串行（锁机制/残留锁）必须被 S-47 拒绝            "
           f"expect=fwd T/mut F actual={det52}")
 
+    # NC-53（R62，T-A9；来自 N-10）：**claim 正文里的计数漂移必须被抓**。
+    #   根因：`grep "gate3\|C-003" check_claims.py` 曾是 0 命中——sha256 能证明「文件没被换」，
+    #   不能证明「文件里写的数是对的」⇒ C-003 从 34/15/6 漂到 39/18/7 全程绿灯。
+    #   四向（全部靠**正则从当前正文现取**，不写死数字）：
+    #     ① field 减 1        ⇒ 红（计数漂移的原始形态）
+    #     ② scalar-disp 减 2  ⇒ 红（正是 55 条时代的旧值 15/16，跨版本未更新的真实案例）
+    #     ③ d36 子项加 1      ⇒ 红（构成闭合）
+    #     ④ 删掉「不说 N/N」   ⇒ 红（锚点缺失必须判红，不得 skip —— R29 同源）
+    from check_claims import gate3_counts_consistent
+    import re as _re53
+    ok53, det53 = False, 'no artifact'
+    _root53 = os.path.dirname(HERE)
+    _md53 = os.path.join(_root53, 'FEM-Bench-Aero', 'CLAIMS.md')
+    _art53 = os.path.join(_root53, 'FEM-Bench-Aero', 'gate3_all55_d37.json')
+    if os.path.exists(_md53) and os.path.exists(_art53):
+        import tempfile as _tf53
+        _td53 = _tf53.mkdtemp()
+        _src53 = open(_md53, encoding='utf-8').read()
+        _i53 = next((i for i, l in enumerate(_src53.split('\n'))
+                     if l.lstrip().startswith('| C-003 |')), None)
+
+        def _mut53(tag, pat, fn53):
+            """只改 C-003 那一行；锚点缺失 / 替换无变化 ⇒ 返回 None ⇒ 判红（不 skip）。"""
+            if _i53 is None:
+                return None
+            lines = _src53.split('\n')
+            new = _re53.sub(pat, fn53, lines[_i53], count=1)
+            if new == lines[_i53]:
+                return None
+            lines[_i53] = new
+            p = os.path.join(_td53, 'claims_%s.md' % tag)
+            open(p, 'w', encoding='utf-8').write('\n'.join(lines))
+            return p
+
+        _p_f = _md53                                        # 正向：真文件
+        _p_a = _mut53('field', r'(\d+)(\s*field)',
+                      lambda m: '%d%s' % (int(m.group(1)) - 1, m.group(2)))
+        _p_b = _mut53('scalar', r'(\d+)(\s*scalar-disp)',
+                      lambda m: '%d%s' % (int(m.group(1)) - 2, m.group(2)))
+        _p_c = _mut53('d36', r'(\d+)(\s*条\s*d36)',
+                      lambda m: '%d%s' % (int(m.group(1)) + 1, m.group(2)))
+        _p_d = _mut53('nodim', r'（\s*\**\s*不说\s*\d+\s*/\s*\d+\s*\**\s*）', lambda m: '')
+        _f53 = gate3_counts_consistent(_p_f, _art53)[0]
+        _a53 = gate3_counts_consistent(_p_a, _art53)[0] if _p_a else None
+        _b53 = gate3_counts_consistent(_p_b, _art53)[0] if _p_b else None
+        _c53 = gate3_counts_consistent(_p_c, _art53)[0] if _p_c else None
+        _d53 = gate3_counts_consistent(_p_d, _art53)[0] if _p_d else None
+        ok53 = bool(_f53) and all(x is False for x in (_a53, _b53, _c53, _d53))
+        det53 = (f'正向={"过" if _f53 else "红"} field-1={"红" if _a53 is False else "漏判"} '
+                 f'scalar-2={"红" if _b53 is False else "漏判"} '
+                 f'd36+1={"红" if _c53 is False else "漏判"} '
+                 f'删分母={"红" if _d53 is False else "漏判"}')
+    results.append({'id': 'NC-53', 'desc': 'C-003 计数漂移/构成不闭合/分母丢失必须被 R62/S-48 拒绝',
+                    'expect': 'fwd=True / 四向变异=False', 'actual': det53, 'ok': ok53})
+    print(f"  [{'ok ' if ok53 else 'BAD!'}] NC-53 C-003 计数漂移必须被 S-48 拒绝                      "
+          f"expect=fwd T/mut F actual={det53}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，
     # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；

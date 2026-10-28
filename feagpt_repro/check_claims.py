@@ -709,6 +709,98 @@ def solver_serial_guard(solver_py, lock_path):
     return (not probs), ('机制在场、无残留锁' if not probs else '；'.join(probs))
 
 
+def gate3_counts_consistent(claims_md, artifact_json, claim_id='C-003'):
+    """R62（T-A9；来自 N-10）：**claim 正文里的计数必须等于 artifact 里的计数**。
+
+    根因（N-10）：`grep -n "gate3\\|C-003" check_claims.py` = **0 命中**——S-00..S-47 共 48 项
+    只核「artifact 存在 + sha256 一致」，**从不核 claim 正文里的计数**。于是 C-003 的三个计数
+    从 55 条时代的 `34 field / 15 scalar / 6 reported-only` 漂到 64 条时代的 `39/18/7`，
+    期间每一次 `check_claims` 都是绿的，直到 T-A7 手工发现才暴露。
+    ⇒ 与 R58 同源：**claim 正文也是 SOT，没有闸就会漂**。sha 只能证明「文件没被换」，
+    不能证明「文件里写的数是对的」。
+
+    判据（**只认结构化记号**，不按自然语言判读——S-29 第一版栽在这上面）：
+      (a) 三个计数逐项相等：`N field` / `N scalar-disp` / `N reported-only`
+          == artifact.evidence_levels 的 field / scalar_disp / reported_only；
+      (b) 加和闭合：三者之和 == artifact.n_cases；
+      (c) 构成闭合：`N 条 d36` + `N 条 <日期> 实测` == field（仅当两个子项都写了才判）；
+      (d) 分母：`不说 N/N` 的 N == artifact.n_cases 且分子 == 分母。
+    ★ **任何一项解析不出来都判红**（锚点缺失不得 skip，R29 同源）：
+      计数被写丢和写错一样危险——丢了就没人核，闸会变成永远绿。
+    """
+    if not os.path.exists(claims_md):
+        return False, f'CLAIMS 不存在（{claims_md}）'
+    if not os.path.exists(artifact_json):
+        return False, f'artifact 不存在（{os.path.basename(artifact_json)}）'
+    try:
+        art = json.load(open(artifact_json, encoding='utf-8'))
+        ev = art['evidence_levels']
+        n_cases = int(art['n_cases'])
+        want = {'field': int(ev['field']),
+                'scalar_disp': int(ev['scalar_disp']),
+                'reported_only': int(ev['reported_only'])}
+    except Exception as e:
+        return False, f'artifact 结构不符（缺 evidence_levels/n_cases）：{e}'
+
+    line = next((ln for ln in open(claims_md, encoding='utf-8').read().split('\n')
+                 if ln.lstrip().startswith(f'| {claim_id} |') or f'| {claim_id} |' in ln), None)
+    if line is None:
+        return False, f'CLAIMS 里找不到 {claim_id} 行 ⇒ 锚点缺失（不得 skip）'
+
+    def grab(pat, label):
+        m = re.search(pat, line)
+        return (int(m.group(1)) if m else None,
+                None if m else f'正文解析不出「{label}」')
+
+    f_field, e1 = grab(r'(\d+)\s*field', 'N field')
+    f_scalar, e2 = grab(r'(\d+)\s*scalar-disp', 'N scalar-disp')
+    f_rep, e3 = grab(r'(\d+)\s*reported-only', 'N reported-only')
+
+    probs = []
+    det = []
+    # (a) 三项相等
+    for got, key, err, cn in ((f_field, 'field', e1, 'field'),
+                              (f_scalar, 'scalar_disp', e2, 'scalar-disp'),
+                              (f_rep, 'reported_only', e3, 'reported-only')):
+        if err:
+            probs.append(err)
+        elif got != want[key]:
+            probs.append(f'正文 {cn}={got} ≠ artifact {want[key]}')
+        else:
+            det.append(f'{cn}={got}')
+    # (b) 加和闭合
+    if all(x is not None for x in (f_field, f_scalar, f_rep)):
+        s = f_field + f_scalar + f_rep
+        if s != n_cases:
+            probs.append(f'{f_field}+{f_scalar}+{f_rep}={s} ≠ artifact n_cases={n_cases}')
+        else:
+            det.append(f'加和 {s}={n_cases}')
+    # (c) field 的构成（两者都写了才判；只写一个就放行，但要点名）
+    m36 = re.search(r'(\d+)\s*条\s*d36', line)
+    mms = re.search(r'(\d+)\s*条\s*[\d]{4}-[\d]{2}-[\d]{2}\s*实测', line)
+    if m36 and mms and f_field is not None:
+        if int(m36.group(1)) + int(mms.group(1)) != f_field:
+            probs.append(f'构成 {m36.group(1)}+{mms.group(1)} ≠ field {f_field}')
+        else:
+            det.append(f'构成 {m36.group(1)}d36+{mms.group(1)}实测')
+    elif m36 is None and mms is None:
+        det.append('构成：正文未拆分子项（只判总数）')
+    # (d) 分母
+    mdn = re.search(r'不说\s*\**\s*(\d+)\s*/\s*(\d+)', line)
+    if not mdn:
+        probs.append('正文解析不出「不说 N/N」分母')
+    else:
+        a, b = int(mdn.group(1)), int(mdn.group(2))
+        if a != b:
+            probs.append(f'分母分子不一致 {a}/{b}')
+        if b != n_cases:
+            probs.append(f'分母 {b} ≠ artifact n_cases={n_cases}')
+        else:
+            det.append(f'分母 {a}/{b}')
+
+    return (not probs), ('；'.join(det) if not probs else '；'.join(probs))
+
+
 def prompt_no_blind_default(path, label='gen_candidates_v2.js'):
     """R50（专家第十轮 §3.1）：SYS prompt **不得**对题面已提及的特征授权默认值，
     同时**不得**把 `expected_clarifications` 注入 prompt（那等于泄漏答案）。
@@ -1281,6 +1373,19 @@ def semantic_checks(root, rows):
     add('S-47', '求解串行：solver.py 的全局锁机制在场且无残留锁（R61）',
         'solver.py 含 _acquire_solve_lock / _release_solve_lock / SOLVE_LOCK / _run_unlocked；.solve.lock 不存在',
         _det47, _ok47)
+
+    # S-48（R62，T-A9；来自 N-10）：**claim 正文也是 SOT，没有闸就会漂**。
+    # 根因：`grep -n "gate3\|C-003" check_claims.py` 曾是 0 命中——48 项语义检查只核
+    # artifact 存在与 sha256，从不核正文里的计数；于是 C-003 从 34/15/6 漂到 39/18/7 全程绿灯。
+    # sha 只能证明「文件没被换」，不能证明「文件里写的数是对的」。
+    _ok48, _det48 = gate3_counts_consistent(
+        os.path.join(root, 'FEM-Bench-Aero', 'CLAIMS.md'),
+        os.path.join(root, 'FEM-Bench-Aero', 'gate3_all55_d37.json'),
+        'C-003')
+    add('S-48', '关 3 claim 的三个计数与分母必须等于 artifact 实读（R62）',
+        '正文 N field / N scalar-disp / N reported-only == evidence_levels；'
+        '加和 == n_cases；构成（d36 + 实测）== field；「不说 N/N」分母 == n_cases',
+        _det48, _ok48)
 
     return out
 
