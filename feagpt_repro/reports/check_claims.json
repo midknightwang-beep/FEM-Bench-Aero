@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
- "n_active_claims": 29,
- "n_artifacts": 58,
+ "n_active_claims": 30,
+ "n_artifacts": 60,
  "n_fail": 0,
  "n_fail_structural": 0,
  "n_fail_semantic": 0,
@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_57.json）",
-   "expect": "57/57",
-   "actual": "57/57",
+   "desc": "C-019 负控通过数（源 negative_controls_58.json）",
+   "expect": "58/58",
+   "actual": "58/58",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "57",
-   "actual": "57",
+   "expect": "58",
+   "actual": "58",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 5.7",
-   "actual": "5.7",
+   "expect": "全部 = 5.8",
+   "actual": "5.8",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "57/57",
-   "actual": "57/57",
+   "expect": "58/58",
+   "actual": "58/58",
    "ok": true,
    "skip": false
   },
@@ -366,7 +366,7 @@
    "id": "S-44",
    "desc": "官方导航文件 INDEX 的 headline 指向与负控编号必须与 artifact 一致（R58）",
    "expect": "含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致",
-   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L24 主区间 NC-23..55 / 总数 57；artifact 最大 NC-55、共 57 条",
+   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L24 主区间 NC-23..56 / 总数 58；artifact 最大 NC-56、共 58 条",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793200032/1793200032；check 1793200195 vs 负控 1793200032",
+   "actual": "C-019 mtime 记录/实际 = 1793200986/1793200986；check 1793201008 vs 负控 1793200986",
    "ok": true,
    "skip": false
   },
@@ -431,6 +431,14 @@
    "desc": "任务层冻结件不得漂移：当前卷==磁盘、已发布 NL 行未改写、跨版只许加行（R65）",
    "expect": "(a) tasks/tasks.jsonl 必须与 reports/papers/ 当前卷逐字节一致；(b) tasks/nl_frozen.jsonl 每一行必须仍在 tasks/nl_human.jsonl；(c) 卷链上一版的每一行必须仍在当前版（TASK_CHAIN）",
    "actual": "当前卷 tasks_v7.jsonl 逐字节一致（192 行）；已发布 NL 55 行全部原样保留；tasks_v6c.jsonl 的 165 行在 tasks_v7.jsonl 中全部原样保留",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-53",
+   "desc": "L2 clarify 无效子集必须隔离并双报：clarify_all(64) 与 clarify_informative(45) 并列（R66）",
+   "expect": "reports/l2_clarify_dual.json 必须同时含两块且闭合（all−inf==invalid）；informative 掩码必须与现算一致（防过期）；delta_allowed 必须 False（R54）；status=scored 时两侧都必须有整数 passed",
+   "actual": "掩码与现算一致（invalid 19 / informative 45）；all n=64 ／ informative n=45（status=not_run）",
    "ok": true,
    "skip": false
   }
@@ -648,9 +656,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 37758,
-   "sha256": "bbc8e271d1a187630253b80cccd85238a5405be1e863ee11b535461f9ea85178",
-   "mtime": 1793199998
+   "size": 37889,
+   "sha256": "c02195ea883ddf1138c8236e7e1fafed84ce67c5abc8083957ff83cb90e002fa",
+   "mtime": 1793200949
   },
   {
    "claim_id": "C-027",
@@ -953,6 +961,30 @@
    "mtime": 1793200201
   },
   {
+   "claim_id": "C-038",
+   "artifact": "feagpt_repro/reports/l2_clarify_dual.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 9495,
+   "sha256": "bf06b39e0e072aca26e077ac8a39ba3ab99c091c849ad123462ba0da1212ba50",
+   "mtime": 1793200704
+  },
+  {
+   "claim_id": "C-038",
+   "artifact": "feagpt_repro/reports/l2_clarify_dual.md",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 2596,
+   "sha256": "ca9924adbe4fc2bc40adfe995ea9a90cc2b67439961cb9dfb01d99825756b89c",
+   "mtime": 1793200704
+  },
+  {
    "claim_id": "C-035",
    "artifact": "feagpt_repro/reports/diagnostics/prompt_v3_ablation.json",
    "exists": true,
@@ -1122,15 +1154,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_57.json",
+   "artifact": "feagpt_repro/reports/negative_controls_58.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 12166,
-   "sha256": "db2708927ac8debb9661d959b7d66c7f5e68513e3f80d7278f30184a7c00651e",
-   "mtime": 1793200032
+   "size": 12619,
+   "sha256": "71553389043077b27f056bf8d78c56dbb432031c7baac7fd1b4d86b87c796205",
+   "mtime": 1793200986
   }
  ]
 }

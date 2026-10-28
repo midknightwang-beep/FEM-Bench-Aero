@@ -1199,6 +1199,98 @@ def protocol_no_hardcoded_counts(paths):
     return (not probs), ('协议文件无写死计数' if not probs else '；'.join(probs[:6]))
 
 
+def l2_clarify_dual(base=None, report=None):
+    """R66（T-A10c；来自 N-17 / 老王拍板 C'）：**无效子集必须隔离并双报**。
+
+    为什么需要：
+      L2 的 clarify 判据在 **19/64 条**上无效 —— `spec.name` 把被省略的值写在自己
+      身上（`name=..._d30` 而省略 `hole_d`），模型读 name 就知道，不必问。
+      这时判它「clarify 失败」是**判据的错**，不是模型的错（M7 同源）。
+
+    纪律（R66）：遇到「判据在某个子集上无效」，
+      · **不得改题掩盖**（会连历史一起废掉，且与 R65 任务层冻结直接冲突）；
+      · **不得把无效子集继续算进单一对外数字**（那是知道错了不改）；
+      · 必须**隔离 + 双报**，且两个分母不同 ⇒ **禁止相减/排名**（R54 一并适用）。
+
+    四条断言（`report` 可传参，负控要在临时目录构造变异，否则闸无法被证伪）：
+      (a) 两个口径块**都必须在**（`clarify_all` / `clarify_informative`）
+      (b) 闭合：`all.n - informative.n == invalid.n`，且 `invalid.n == len(invalid.task_ids)`
+      (c) `informative` 掩码必须与**现算**一致（防 artifact 过期：题改了掩码没重算）
+      (d) `delta_allowed` 必须为 False（R54：分母不等不得相减）；
+          `status == 'scored'` 时两侧都必须有整数 `passed`（不得只报一侧）
+    """
+    import importlib
+    if HERE not in sys.path:
+        sys.path.insert(0, HERE)
+    base = base or HERE
+    rep_path = report or os.path.join(base, 'reports', 'l2_clarify_dual.json')
+    tasks_p = os.path.join(base, 'tasks', 'tasks.jsonl')
+
+    if not os.path.exists(rep_path):
+        return False, f'双口径 artifact 不存在：{os.path.basename(rep_path)}（先跑 report_l2_clarify.py）'
+    try:
+        rep = json.load(open(rep_path, encoding='utf-8'))
+    except Exception as e:
+        return False, f'{os.path.basename(rep_path)} 读不动：{e}'
+
+    problems, notes = [], []
+
+    # (a) 两块必须在
+    all_b, inf_b = rep.get('clarify_all'), rep.get('clarify_informative')
+    for name, blk in (('clarify_all', all_b), ('clarify_informative', inf_b)):
+        if not isinstance(blk, dict):
+            problems.append(f'缺 {name} 块（R66：无效子集必须双报，只报一侧即红）')
+        elif not isinstance(blk.get('n'), int):
+            problems.append(f'{name}.n 不是整数')
+    if problems:
+        return False, '；'.join(problems)
+
+    # (b) 闭合
+    inv = rep.get('invalid') or {}
+    inv_ids = inv.get('task_ids') or []
+    if all_b['n'] - inf_b['n'] != inv.get('n'):
+        problems.append(f"分母不闭合：all {all_b['n']} - inf {inf_b['n']} != invalid {inv.get('n')}")
+    if len(inv_ids) != inv.get('n'):
+        problems.append(f"invalid.task_ids 条数 {len(inv_ids)} != invalid.n {inv.get('n')}")
+
+    # (c) 掩码必须与现算一致（防 artifact 陈旧 —— 题变了掩码没重算，数字看着对其实换了一批题）
+    if os.path.exists(tasks_p):
+        try:
+            mod = importlib.import_module('report_l2_clarify')
+            fresh = mod.dual_clarify(tasks_p)
+        except SystemExit as e:      # 没有 L2 任务
+            problems.append(f'现算失败：{e}')
+            fresh = None
+        if fresh is not None:
+            f_inf = fresh['clarify_informative']['task_ids']
+            f_inv = fresh['invalid']['task_ids']
+            if sorted(inf_b.get('task_ids') or []) != f_inf:
+                problems.append('informative 掩码与现算不一致（artifact 过期，须重跑 report_l2_clarify.py）')
+            elif sorted(inv_ids) != f_inv:
+                problems.append('invalid 掩码与现算不一致（artifact 过期）')
+            else:
+                notes.append(f"掩码与现算一致（invalid {len(f_inv)} / informative {len(f_inf)}）")
+    else:
+        problems.append('找不到 tasks/tasks.jsonl（掩码无法复算）')
+
+    # (d) R54 + 状态
+    if rep.get('delta_allowed') is not False:
+        problems.append(f"delta_allowed 必须为 False（R54：分母 {all_b['n']} ≠ {inf_b['n']}，"
+                        f'不得相减/排名），实测 {rep.get("delta_allowed")!r}')
+    st = rep.get('status')
+    if st == 'scored':
+        for name, blk in (('clarify_all', all_b), ('clarify_informative', inf_b)):
+            if not isinstance(blk.get('passed'), int):
+                problems.append(f'{name}.passed 不是整数（status=scored 时两侧都必须报分）')
+    elif st != 'not_run':
+        problems.append(f"status 只能是 'not_run' 或 'scored'，实测 {st!r}")
+
+    if problems:
+        return False, '；'.join(problems)
+    notes.append(f"all n={all_b['n']} ／ informative n={inf_b['n']}（status={st}）")
+    return True, '；'.join(notes)
+
+
 def task_layer_frozen(base=None, chain=None):
     """R65（T-A10b；来自 N-16 / N-18）：**任务层冻结件不得漂移**。
 
@@ -1917,6 +2009,15 @@ def semantic_checks(root, rows):
         '(b) tasks/nl_frozen.jsonl 每一行必须仍在 tasks/nl_human.jsonl；'
         '(c) 卷链上一版的每一行必须仍在当前版（TASK_CHAIN）',
         _det52, _ok52)
+
+    # S-53（R66，T-A10c；来自 N-17 / 拍板 C'）：**无效子集必须隔离并双报**。
+    # clarify 判据在 19/64 条 L2 上无效（name 泄漏）⇒ 不改题、改口径：64 / 45 并列。
+    _ok53, _det53 = l2_clarify_dual()
+    add('S-53', 'L2 clarify 无效子集必须隔离并双报：clarify_all(64) 与 clarify_informative(45) 并列（R66）',
+        'reports/l2_clarify_dual.json 必须同时含两块且闭合（all−inf==invalid）；'
+        'informative 掩码必须与现算一致（防过期）；delta_allowed 必须 False（R54）；'
+        'status=scored 时两侧都必须有整数 passed',
+        _det53, _ok53)
 
     return out
 

@@ -1452,6 +1452,77 @@ def main():
     print(f"  [{'ok ' if ok55 else 'BAD!'}] NC-55 任务层冻结漂移必须被 S-52 分向拒绝          "
           f"expect=fwd T/3向 F actual={det55}")
 
+    # NC-56（R66，T-A10c；来自 N-17 / 拍板 C'）：**S-53 的四条断言必须能各自独立地红**。
+    #   为什么必须分向：最容易被顺手抓到的是 (a)「缺一块」—— 只要块缺了，后面三条
+    #   全都无从判起、一起变红。若只断言「红了吗」，(b) 掩码过期 / (c) delta_allowed /
+    #   (d) 只报一侧分 这三条**永远得不到证伪**，长期假绿（与 NC-55 同源：强判据吃弱判据）。
+    #   隔离手法：每向**只造一个差异**，其余全部原样。
+    from check_claims import l2_clarify_dual as _l2d56
+    import shutil as _sh56
+    import tempfile as _tf56
+    ok56, det56 = False, 'no artifact'
+    _src56 = HERE
+    _rep56 = os.path.join(_src56, 'reports', 'l2_clarify_dual.json')
+    _task56 = os.path.join(_src56, 'tasks', 'tasks.jsonl')
+    if os.path.exists(_rep56) and os.path.exists(_task56):
+        _RAW56 = json.load(open(_rep56, encoding='utf-8'))
+
+        def _mk56(mut=None):
+            """造一个临时 base：只含 tasks.jsonl + 双口径 artifact；mut 就地改副本。"""
+            d = _tf56.mkdtemp()
+            os.makedirs(os.path.join(d, 'tasks'), exist_ok=True)
+            os.makedirs(os.path.join(d, 'reports'), exist_ok=True)
+            _sh56.copyfile(_task56, os.path.join(d, 'tasks', 'tasks.jsonl'))
+            obj = json.loads(json.dumps(_RAW56))      # 深拷贝
+            if mut:
+                mut(obj)
+            with open(os.path.join(d, 'reports', 'l2_clarify_dual.json'), 'w',
+                      encoding='utf-8') as f:
+                json.dump(obj, f, ensure_ascii=False, indent=2)
+            return d
+
+        # ---- 正向：原样必须过 ----
+        _fwd56 = _l2d56(base=_mk56())[0]
+
+        # ---- (a) 缺一块：删掉 clarify_informative（R66 正面形态）----
+        _a56, _ra56 = _l2d56(base=_mk56(lambda o: o.pop('clarify_informative', None)))
+
+        # ---- (b) 掩码过期：从 informative.task_ids 挪走一条（分母与 invalid 都不动）----
+        #      只改掩码 ⇒ (a)(b) 的闭合仍然成立，唯一失败项是「与现算不一致」
+        def _mut_b56(o):
+            tids = o['clarify_informative']['task_ids']
+            if tids:
+                tids.pop(0)
+        _b56, _rb56 = _l2d56(base=_mk56(_mut_b56))
+
+        # ---- (c) delta_allowed 改 True（R54：分母不等却允许相减）----
+        _c56, _rc56 = _l2d56(base=_mk56(lambda o: o.update({'delta_allowed': True})))
+
+        # ---- (d) status=scored 但只有一侧报分（「只报有利一侧」）----
+        def _mut_d56(o):
+            o['status'] = 'scored'
+            o['clarify_all']['passed'] = 3
+            o['clarify_all']['pct'] = 4.7
+            # informative 仍为 None ⇒ 必须红
+        _d56, _rd56 = _l2d56(base=_mk56(_mut_d56))
+
+        ok56 = (_fwd56 is True
+                and _a56 is False and '缺 clarify_informative' in _ra56
+                and _b56 is False and '掩码与现算不一致' in _rb56
+                and _c56 is False and 'delta_allowed' in _rc56
+                and _d56 is False and 'passed 不是整数' in _rd56)
+        det56 = (f'fwd={"T" if _fwd56 else "F"} ‖ '
+                 f'(a)缺一块={"红·缺块" if (_a56 is False and "缺 clarify_informative" in _ra56) else "漏判/因不对"} '
+                 f'(b)掩码过期={"红·不一致" if (_b56 is False and "掩码与现算不一致" in _rb56) else "漏判/因不对"} '
+                 f'(c)允许相减={"红·delta" if (_c56 is False and "delta_allowed" in _rc56) else "漏判/因不对"} '
+                 f'(d)只报一侧={"红·passed" if (_d56 is False and "passed 不是整数" in _rd56) else "漏判/因不对"}')
+    results.append({'id': 'NC-56',
+                    'desc': 'S-53 四向独立证伪：缺一块 / 掩码过期 / 允许相减 / 只报一侧分',
+                    'expect': 'fwd=T / 四向=F 且原因分别命中「缺 clarify_informative」「掩码与现算不一致」「delta_allowed」「passed 不是整数」',
+                    'actual': det56, 'ok': ok56})
+    print(f"  [{'ok ' if ok56 else 'BAD!'}] NC-56 L2 双口径缺块/过期/相减/单侧必须被 S-53 分向拒  "
+          f"expect=fwd T/4向 F actual={det56}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，    # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；
     #           ③ 源码里必须存在 else 分支（缺 msr ⇒ 加一条 ok=False），防被改回去。
