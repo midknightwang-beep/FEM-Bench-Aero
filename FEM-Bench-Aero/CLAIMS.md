@@ -8,7 +8,7 @@
 |---|---|---|---|---|---|---|---|
 | C-001 | 数据集规模 55 条 × 2 树 = 110 算例目录 | manifest.json | `python -c "import json;print(json.load(open('FEM-Bench-Aero/manifest.json'))['summary'])"` | 2026-10-24 | GATED | 55/55 | active |
 | C-002 | 关 1 网格 55/55（minJ 0.4636、tri3 0） | gates_all55_d36.json | `python -c "import json;d=json.load(open('FEM-Bench-Aero/gates_all55_d36.json'));print(d['gate1_mesh_quality'])"` | 2026-10-24 | GATED | 55/55 | active |
-| C-003 | 关 3 双码 = 34 field + 15 scalar-disp + 6 reported-only（**不说 55/55**） | gate3_all55_d37.json | `python gate3_all55.py` | 2026-10-24 | 分级 | 55/55 | active |
+| C-003 | 关 3 双码 = 39 field（34 条 d36 明细 + 5 条 2026-10-28 实测）+ 18 scalar-disp + 7 reported-only（**不说 64/64**） | gate3_all55_d37.json | `python gate3_all55.py` | 2026-10-28 | 分级 | 64/64 | active |
 | C-004 | 关 4 语义 110/110 | gate4_d36.json | `python check_semantics.py --root ../FEM-Bench-Aero` | 2026-10-24 | GATED | 110/110 | active |
 | C-005 | 自洽 110/110、dup 0、配对 55/55 | verify_dataset_d36.json | `python verify_dataset.py --root ../FEM-Bench-Aero` | 2026-10-24 | GATED | 110/110 | active |
 | C-006 | 代理基线 max_disp test 2.631 %（CI [0.89,4.51]，地板 49.44）——**附录口径，对外承诺写 5–9 %** | baseline_d36_final.json | `python baseline.py --boot 4000` | 2026-10-24 | GATED* | 6 test | active（带 M14 caveat） |

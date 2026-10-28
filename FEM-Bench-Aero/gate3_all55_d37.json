@@ -1,15 +1,20 @@
 {
- "milestone": "M14/D37-W4a",
- "note": "关 3 证据机读化（W4a 状态分级）：禁止把 reported-only 计入 PASS。翼盒 34 条 field-level（既有 xval_m8 判据引用）+ 15 条 scalar-disp-gated（<1%）+ 6 条柱壳 REPORTED-ONLY（D20 场级判据在归档包 F:/FEA_Archive_20261024/，需时解包重算）。对外表述统一为「34 field + 15 scalar + 6 reported-only」，不说 55/55。",
+ "milestone": "M14/D37-W4a + T-A7 (64 cases)",
+ "note": "关 3 证据机读化（W4a 状态分级）：禁止把 reported-only 计入 PASS，也禁止把「继承来的 PASS」计入 field-level（T-A7 / N-6）。v1.1 起覆盖 64 条：翼盒 field-level 39 条（其中 34 条引用 d36 既有明细、5 条为 2026-10-28 verify_solvers 实测） + 18 条 scalar-disp-gated（<1%） + 7 条柱壳 REPORTED-ONLY（D20 场级判据在归档包 F:/FEA_Archive_20261024/，需时解包重算）。对外表述统一为「39 field (34 d36 + 5 measured) + 18 scalar-disp + 7 reported-only」，不说 64/64。★ N-8：文件名保留 all55 是历史（CLAIMS C-003 的 artifact 指针指向它），内容已是 64 条。",
+ "headline_cn": "39 field (34 d36 + 5 measured) + 18 scalar-disp + 7 reported-only",
  "n_cases": 64,
  "n_gated_pass": 57,
  "n_reported_only": 7,
  "n_fail": 0,
  "evidence_levels": {
   "field": 39,
+  "field_from_d36": 34,
+  "field_measured": 5,
+  "field_no_evidence": 0,
   "scalar_disp": 18,
   "reported_only": 7
  },
+ "measured_source": "reports/diagnostics/xval_v11_9cases.json",
  "tolerance": {
   "disp_pct": 1.0
  },
@@ -215,351 +220,507 @@
    "family": "wingbox",
    "geometry_class": "4afd1ea3fd9f",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.3562,
+   "vm_median_gap_pct": 0.3081,
+   "vm_p90_gap_pct": 33.8964,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_n_ribs3_chord1000",
    "family": "wingbox",
    "geometry_class": "4cf4571c551d",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.2612,
+   "vm_median_gap_pct": 0.1749,
+   "vm_p90_gap_pct": 14.2039,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_n_ribs3_chord800",
    "family": "wingbox",
    "geometry_class": "1927d89dcb96",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.2242,
+   "vm_median_gap_pct": 0.1166,
+   "vm_p90_gap_pct": 42.6162,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_n_ribs5_chord800",
    "family": "wingbox",
    "geometry_class": "791f1043b549",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.355,
+   "vm_median_gap_pct": 0.2532,
+   "vm_p90_gap_pct": 41.1175,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_n_ribs6_chord1000",
    "family": "wingbox",
    "geometry_class": "b3016d214bb4",
-   "evidence_level": "field-level (displacement nodes + vM median)",
+   "evidence_level": "field-level (measured v1.1 close / W5B T-A7)",
+   "gate_status": "field-level",
    "pass": true,
-   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "source": "reports/diagnostics/xval_v11_9cases.json（verify_solvers 逐条实测，判据 clamp/500N）",
+   "disp_gap_pct": 0.385,
+   "vm_median_gap_pct": 0.37,
+   "vm_p90_gap_pct": 36.69,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（与 d36 stress_field.tol_pct 同口径）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_n_ribs7_chord1000",
    "family": "wingbox",
    "geometry_class": "db9dab06eff6",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.4547,
+   "vm_median_gap_pct": 0.5872,
+   "vm_p90_gap_pct": 38.312,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_n_ribs7_chord800",
    "family": "wingbox",
    "geometry_class": "006310d062fa",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.5048,
+   "vm_median_gap_pct": 0.5179,
+   "vm_p90_gap_pct": 40.6058,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_n_ribs9_chord1000",
    "family": "wingbox",
    "geometry_class": "6085570a4247",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.5544,
+   "vm_median_gap_pct": 0.9979,
+   "vm_p90_gap_pct": 38.8572,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_recombination_algorithm3",
    "family": "wingbox",
    "geometry_class": "4afd1ea3fd9f",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.3182,
+   "vm_median_gap_pct": 0.2221,
+   "vm_p90_gap_pct": 34.5555,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_size_chord900",
    "family": "wingbox",
    "geometry_class": "cd44c1908a70",
-   "evidence_level": "field-level (displacement nodes + vM median)",
+   "evidence_level": "field-level (measured v1.1 close / W5B T-A7)",
+   "gate_status": "field-level",
    "pass": true,
-   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "source": "reports/diagnostics/xval_v11_9cases.json（verify_solvers 逐条实测，判据 clamp/500N）",
+   "disp_gap_pct": 0.401,
+   "vm_median_gap_pct": 0.29,
+   "vm_p90_gap_pct": 38.97,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（与 d36 stress_field.tol_pct 同口径）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_size_skin1p5",
    "family": "wingbox",
    "geometry_class": "4227a5994f3e",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.5001,
+   "vm_median_gap_pct": 0.4173,
+   "vm_p90_gap_pct": 35.7252,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_size_skin2",
    "family": "wingbox",
    "geometry_class": "621898f41a1d",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.4368,
+   "vm_median_gap_pct": 0.3574,
+   "vm_p90_gap_pct": 36.5767,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_size_skin2p5",
    "family": "wingbox",
    "geometry_class": "aec9b4e5b6d7",
-   "evidence_level": "field-level (displacement nodes + vM median)",
+   "evidence_level": "field-level (measured v1.1 close / W5B T-A7)",
+   "gate_status": "field-level",
    "pass": true,
-   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "source": "reports/diagnostics/xval_v11_9cases.json（verify_solvers 逐条实测，判据 clamp/500N）",
+   "disp_gap_pct": 0.392,
+   "vm_median_gap_pct": 0.32,
+   "vm_p90_gap_pct": 35.15,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（与 d36 stress_field.tol_pct 同口径）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_size_skin4",
    "family": "wingbox",
    "geometry_class": "226322eab812",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.3034,
+   "vm_median_gap_pct": 0.2746,
+   "vm_p90_gap_pct": 35.0024,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_size_span1600",
    "family": "wingbox",
    "geometry_class": "950289bb0db0",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.3996,
+   "vm_median_gap_pct": 0.4481,
+   "vm_p90_gap_pct": 36.4031,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_size_span2400",
    "family": "wingbox",
    "geometry_class": "a29aa8f4ac6e",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.3041,
+   "vm_median_gap_pct": 0.2343,
+   "vm_p90_gap_pct": 31.1162,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_size_span2400_skin2",
    "family": "wingbox",
    "geometry_class": "08adca20a4a7",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.3665,
+   "vm_median_gap_pct": 0.26,
+   "vm_p90_gap_pct": 34.4455,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_size_span3000",
    "family": "wingbox",
    "geometry_class": "aba008bb7986",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.2642,
+   "vm_median_gap_pct": 0.1761,
+   "vm_p90_gap_pct": 22.2263,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_size_span3000_skin1p5",
    "family": "wingbox",
    "geometry_class": "58fefd5842da",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.3603,
+   "vm_median_gap_pct": 0.2453,
+   "vm_p90_gap_pct": 24.9415,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_str3",
    "family": "wingbox",
    "geometry_class": "7af923795681",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.2775,
+   "vm_median_gap_pct": 0.483,
+   "vm_p90_gap_pct": 56.0569,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_str3_T",
    "family": "wingbox",
    "geometry_class": "37f4725e4b48",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.144,
+   "vm_median_gap_pct": 0.1243,
+   "vm_p90_gap_pct": 39.278,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_str4",
    "family": "wingbox",
    "geometry_class": "5237ded5b370",
-   "evidence_level": "field-level (displacement nodes + vM median)",
+   "evidence_level": "field-level (measured v1.1 close / W5B T-A7)",
+   "gate_status": "field-level",
    "pass": true,
-   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "source": "reports/diagnostics/xval_v11_9cases.json（verify_solvers 逐条实测，判据 clamp/500N）",
+   "disp_gap_pct": 0.291,
+   "vm_median_gap_pct": 0.75,
+   "vm_p90_gap_pct": 67.51,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（与 d36 stress_field.tol_pct 同口径）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_str5",
    "family": "wingbox",
    "geometry_class": "870130300769",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.2661,
+   "vm_median_gap_pct": 0.6421,
+   "vm_p90_gap_pct": 64.2989,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_sweep10",
    "family": "wingbox",
    "geometry_class": "d8e081a5f259",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.2873,
+   "vm_median_gap_pct": 0.2196,
+   "vm_p90_gap_pct": 30.3685,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_sweep20",
    "family": "wingbox",
    "geometry_class": "47f64aa48908",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.2607,
+   "vm_median_gap_pct": 0.2407,
+   "vm_p90_gap_pct": 30.083,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_sweep20_taper060",
    "family": "wingbox",
    "geometry_class": "838838dd03a6",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.1937,
+   "vm_median_gap_pct": 0.137,
+   "vm_p90_gap_pct": 22.5359,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_sweep30",
    "family": "wingbox",
    "geometry_class": "19ca7eaff9ca",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.2151,
+   "vm_median_gap_pct": 0.2339,
+   "vm_p90_gap_pct": 34.3796,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_sweep30_taper080",
    "family": "wingbox",
    "geometry_class": "e38d85ccf6c1",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.189,
+   "vm_median_gap_pct": 0.2074,
+   "vm_p90_gap_pct": 37.6453,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_sweep35",
    "family": "wingbox",
    "geometry_class": "ce92e32b3897",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.1526,
+   "vm_median_gap_pct": 0.1975,
+   "vm_p90_gap_pct": 29.8225,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_sweep40",
    "family": "wingbox",
    "geometry_class": "001950844b2c",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.1762,
+   "vm_median_gap_pct": 0.265,
+   "vm_p90_gap_pct": 22.6297,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_sweep40_taper040",
    "family": "wingbox",
    "geometry_class": "808b798ff918",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.071,
+   "vm_median_gap_pct": 0.0708,
+   "vm_p90_gap_pct": 6.1867,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_taper040",
    "family": "wingbox",
    "geometry_class": "d3d62cf41985",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.1386,
+   "vm_median_gap_pct": 0.0751,
+   "vm_p90_gap_pct": 4.5859,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_taper060",
    "family": "wingbox",
    "geometry_class": "86cf8d83cb48",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.2155,
+   "vm_median_gap_pct": 0.1258,
+   "vm_p90_gap_pct": 15.8302,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_taper070",
    "family": "wingbox",
    "geometry_class": "ec5bfe48af57",
-   "evidence_level": "field-level (displacement nodes + vM median)",
+   "evidence_level": "field-level (measured v1.1 close / W5B T-A7)",
+   "gate_status": "field-level",
    "pass": true,
-   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "source": "reports/diagnostics/xval_v11_9cases.json（verify_solvers 逐条实测，判据 clamp/500N）",
+   "disp_gap_pct": 0.268,
+   "vm_median_gap_pct": 0.17,
+   "vm_p90_gap_pct": 24.68,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（与 d36 stress_field.tol_pct 同口径）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_taper080",
    "family": "wingbox",
    "geometry_class": "411d36dac99c",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.3232,
+   "vm_median_gap_pct": 0.2405,
+   "vm_p90_gap_pct": 36.0292,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_taper090",
    "family": "wingbox",
    "geometry_class": "0218d6b27388",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.3453,
+   "vm_median_gap_pct": 0.2744,
+   "vm_p90_gap_pct": 37.3773,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_web1",
    "family": "wingbox",
    "geometry_class": "4aae9b75897e",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.2762,
+   "vm_median_gap_pct": 0.156,
+   "vm_p90_gap_pct": 29.7921,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_web1_offcentre",
    "family": "wingbox",
    "geometry_class": "02769a56df7c",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.2618,
+   "vm_median_gap_pct": 0.1603,
+   "vm_p90_gap_pct": 28.5656,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "naca4412_wingbox_web2",
    "family": "wingbox",
    "geometry_class": "60981a5c499f",
    "evidence_level": "field-level (displacement nodes + vM median)",
+   "gate_status": "field-level",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
-   "disp_gap_pct": null
+   "disp_gap_pct": 0.3028,
+   "vm_median_gap_pct": 0.2259,
+   "vm_p90_gap_pct": 30.7785,
+   "gate_rule": "vM 逐节点中位差 < 5.0%（d36 stress_field.tol_pct）；max|u| 只报不判"
   },
   {
    "case_id": "open_hole_panel_400x200_d20",

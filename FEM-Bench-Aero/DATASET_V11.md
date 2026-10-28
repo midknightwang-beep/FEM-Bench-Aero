@@ -71,7 +71,7 @@ v1.1：64 条 / 63 类 / train 25 · val 17 · test 22     ← train 与 val 一
 | `verify_dataset.py` | **PASS** ✅ | 双码补齐后：`pairing: 64 paired, 0 modeling-only, 0 xval-only -> PASS`；`cross-tree mesh agreement 64/64 identical`；`case consistency 128/128 OK`；`stress definition agreement (D8) PASS`；`VERDICT: PASS` |
 | 双码物理一致性（`verify_solvers.py`，逐条） | **9/9 实质通过**（8 gated + 1 reported-only） | 实测见 `reports/diagnostics/xval_v11_9cases.json`：翼盒 `max\|u\|` 0.268–0.401 %、vM 逐节点中位差 0.17–0.75 %；开孔板 0.101–0.185 %、中位差 0.01 %；加筋板 0.045 %、中位差 0.22 %；柱壳 1.495 % 但按 **D20 只报不判**（中位差 0.08 %） |
 | `check_forms.py` | **54/54 PASS（VERDICT: PASS）** | 串行重跑完成（10m25s，无其他 ccx 并行）。**首次运行是 50 PASS + 1 FAIL**：`T5.invocation` 报参考案例不存在 —— 根因不是 v1.1 数据，而是 `check_forms.py` 的 `DEFAULT_REFERENCE` 指向 `outputs_str/naca4412_wingbox_str3` 这个**本仓库不存在**的旧输出目录（潜伏缺陷，见 §5.4）。修完 T5 由 1 项扩到 4 项，故总数 51 → 54 |
-| `gate3_all55.py` | **57 gated_pass / 7 reported-only / 0 fail**（field=39, scalar_disp=18） | ⚠ 存在**证据链缺口**：新增 5 条翼盒被标 field-level 但该脚本无其场级读数（`disp_gap_pct=None`）。实测数字已在 `reports/diagnostics/xval_v11_9cases.json`，待接进门禁 —— 见 `CONFLICT.md` N-6 / N-7 |
+| `gate3_all55.py` | **57 gated_pass / 7 reported-only / 0 fail（rc=0）** | 取证分层：**39 field（34 条 d36 明细 + 5 条 2026-10-28 实测）+ 18 scalar-disp + 7 reported-only = 64**。★ T-A7 查出真因：d36 的明细键是 `case` 而脚本查 `case_id` ⇒ **39 条翼盒从来没被逐条读取过**，全部走「继承整体 PASS」；且翼盒登记判据是 **vM 逐节点中位差 < 5%**（`stress_field.gated=true`），`max\|u\|` 是 REPORTED NOT GATED。修后翼盒 `vm_median` 缺失 **0/39** |
 
 ## 5. 待办与教训
 
@@ -85,10 +85,13 @@ v1.1：64 条 / 63 类 / train 25 · val 17 · test 22     ← train 与 val 一
    > 目录里 9 条产物齐全，但汇总文件自身的写入有 bug。判据必须是产物本身。
    > 不能在 agent 内跑的原因见旧记录：沙箱注入 `tsbx.dll` ⇒ `pre.exe` 阶段 `__fastfail`。
 2. ~~**`check_forms.py` 串行重跑一次**~~ ✅ **已完成**（T-A5）：串行、无并行 ccx，结果 **54 PASS / 0 FAIL**，产物 `feagpt_repro/reports/check_forms_v11.json`，日志 `_v11/check_forms_v11.log`（首次失败证据留档 `_v11/check_forms_v11_fail1.log`）。
-3. **gate3 证据链（T-A7，待拍板）**：把 `reports/diagnostics/xval_v11_9cases.json` 接进 `gate3_all55.py`，
-   让新增 5 条翼盒用**实测**场级读数而不是继承整体 PASS；同时修第 141 行硬编码的「34/15/6」。
-   详见 `CONFLICT.md` N-6 / N-7，**选项 A 已备**。
-4. **考卷 v7（未做）**：把 9 条接进任务层 ⇒ exam 25 → 34，才能收窄 CI。
+3. ~~**gate3 证据链（T-A7）**~~ ✅ **已完成**（2026-10-28，老王拍板 A）：`gate3_all55.py` 三分支化
+   （d36 明细 / v1.1 实测 / **两者都没有 ⇒ pass=False 直接报红**），并修掉查了不存在的
+   `case_id` 键、`max_disp_gap_pct` 键、以及按 `max|u|<1%` 判翼盒的口径错。
+   详见 `CONFLICT.md` N-6 的「★ 执行时查出的真因」。
+4. **对外数字表（T-A8，新）**：`external_numbers.md` 后 5 行仍读 `*_d36` 死快照（关 1 = 55/55、
+   关 4 = 110/110、自洽 = 110/110），与前 7 行的 64 条自相矛盾。见 `CONFLICT.md` N-9。
+5. **考卷 v7（未做）**：把 9 条接进任务层 ⇒ exam 25 → 34，才能收窄 CI。
    代价：换卷后 **C-032 的 23/25 不再可比**（R30/R39，paper sha 变），必须重生成两模型候选
    （约 2 × 15 min）+ 全链 MSR（约 2 × 40 min）+ 重跑 CI/榜单。**这是下一轮的主任务。**
 

@@ -111,7 +111,8 @@ def main(write=True):
         'n_fail': g3all.get('n_fail'),
         'claim': f"{g3all['evidence_levels']['field']} field + "
                  f"{g3all['evidence_levels']['scalar_disp']} scalar-disp + "
-                 f"{g3all['n_reported_only']} reported-only（不说 55/55）",
+                 f"{g3all['n_reported_only']} reported-only"
+                 f"（不说 {g3all['n_cases']}/{g3all['n_cases']}）",
         'source': 'gate3_all55_d37.json',
     }
     # 自洽 / 划分复算（summary 实读）
@@ -139,7 +140,8 @@ def main(write=True):
     # 关 3（W4a 纠偏 P0-2：分级表述，禁止 55/55）
     md.append(f'| 关 3 双码 | **{g3all["evidence_levels"]["field"]} field-level + '
               f'{g3all["evidence_levels"]["scalar_disp"]} scalar-disp-gated + '
-              f'{g3all["n_reported_only"]} reported-only**（不说 55/55） | gate3_all55_d37 |')
+              f'{g3all["n_reported_only"]} reported-only**'
+              f'（不说 {g3all["n_cases"]}/{g3all["n_cases"]}） | gate3_all55_d37 |')
     md.append(f'| 关 4 语义 | {out["gates"]["gate4_semantics"]}/{out["gates"]["gate4_semantics"]} | gate4_d36 |')
     sc = out['selfcheck']
     md.append(f'| 自洽 | {sc["n_ok"]}/{sc["n_cases"]}、重复 {sc["n_duplicate_cases"]}、配对 {sc["pairing_ok"]} | verify_dataset_d36 |')

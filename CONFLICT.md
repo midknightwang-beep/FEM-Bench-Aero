@@ -158,6 +158,26 @@ headline 结构判定：仅 C-032 的 status 列带「（对外 headline）」�
   - **C（不改判定，只改标注）**：保留 PASS 但把 `evidence_level` 改成 `field-level (inherited, no per-case reading)`，并从 `n_gated_pass` 里剔除（`57 → 52`）。代价：artifact 内部自相矛盾（PASS 却不计入 gated_pass）。
 - **建议**：**A**。理由：实测数字已经在手，B 是丢弃证据、C 是制造内部矛盾；A 只改「证据从哪来」，不改任何阈值、不改判定方向，符合 R-A1 单变量（变量 = 证据来源，不是 rubric）。
 
+> **★ 执行时查出的真因（比上面的初判更严重，2026-10-28 老王拍板 A 之后）**
+>
+> 按 A 改代码时发现：`gates_all55_d36.json::gate3_dual_solver` **`rows` 是存在的**（34 条明细全在），
+> 但明细键名是 **`case`**，脚本查的是 **`case_id`** ⇒ `item.get('case_id')` 恒 `None`
+> ⇒ **34 条一次都没命中过**，全部走 `idx is None` 的「继承整体 PASS」。
+>
+> 即：**问题不是「新增 5 条没证据」，而是「39 条翼盒从来没有任何一条被逐条读取过」**。
+> 旧版 `n_gated_pass` 里那 34 条与 5 条一样，都是 `wingbox_ref['pass']` 的一个复制品。
+> 这解释了为什么 `disp_gap_pct` 一直是 `None`——不是新 case 缺，是**所有翼盒都缺**。
+>
+> 第二层：即使命中，旧代码取的是 `idx.get('max_disp_gap_pct')`，而 d36 的字段是
+> `max_disp.gap_pct`（嵌套）。而且 **`max_disp.gated = false`** —— 翼盒登记判据不是
+> `max|u| < 1%`，而是 **`stress_field.median_pct < 5%`**（`stress_field.gated = true,
+> tol_pct = 5.0`），`max|u|` 与 vM 峰值都是 REPORTED NOT GATED。**按 1% 判翼盒是口径错**
+> （我第一版就是这么写的，已改回与 d36 同口径）。
+>
+> 修完实测：`gate3_all55: cases=64 gated_pass=57 reported_only=7 fail=0 (field=39, scalar_disp=18)`，
+> `headline_cn = 39 field (34 d36 + 5 measured) + 18 scalar-disp + 7 reported-only`，
+> **翼盒 vm_median 缺失 0 条**（39/39 都有真读数），`rc=0`。
+
 ### N-7（中）`gate3_all55.py` 第 141 行的对外表述是**硬编码**，与实际计数不符
 
 - **冲突点**：脚本自己算出 `field=39, scalar_disp=18, reported_only=7`，但第 141 行 `print` 写死「34 field + 15 scalar-disp + 6 reported-only」；第 117–119 行的 `note` 也是写死的。
@@ -175,6 +195,39 @@ headline 结构判定：仅 C-032 的 status 列带「（对外 headline）」�
 - **风险**：低，纯命名。但它是「文件名暗示分母」的典型陷阱——下一个读的人会以为还是 55 条。
 - **3 个选项**：**A（推荐）**不改名（改名要同步改 C-003 + `check_claims` 的 artifact 清单，属于跨文件连锁），改为在 `note` 字段首句写明「文件名保留历史，内容为 64 条（v1.1）」；B. 改名 `gate3_all64_v11.json` + 同步三处引用；C. 不动。
 - **建议**：**A**，并在 `DATASET_V11.md` 的 artifact 表里注明。
+
+### N-9（中，新发现）`external_numbers.md` 前段跟到 64 条、后段仍读 `*_d36` 死快照 ⇒ 表内自相矛盾
+
+- **冲突点**：生成器 `make_external_numbers.py` 前 7 行读 `manifest.json`（活数据，已跟到 64 条：算例 64×2=128、等价类 63、划分 25/17/22、族分布 7/13/5/39），但后 5 行读的是 `gates_all55_d36.json` / `gate4_d36.json` / `verify_dataset_d36.json` / `eval_report_d36.json` 四份 **10-24 的静态快照** ⇒ 同一张表里「64 条」和「关 1 网格 55/55」「关 4 语义 110/110」「自洽 110/110」并存。
+- **SOT 文件 / 行**：`feagpt_repro/make_external_numbers.py:37-39,138,143,145`；输出 `FEM-Bench-Aero/external_numbers.md`
+- **实际值**（重跑生成器后）：
+  ```
+  | 算例规模 | 64 条 × 2 棵求解器树 = 128 个算例目录 | manifest.summary |
+  | 关 1 网格 | 55/55（最差 minJ 0.4636、tri3 0） | gates_all55_d36 |   ← 旧
+  | 关 3 双码 | 39 field-level + 18 scalar-disp-gated + 7 reported-only（不说 64/64） | gate3_all55_d37 |
+  | 关 4 语义 | 110/110 | gate4_d36 |                                  ← 旧
+  | 自洽 | 110/110、重复 0、配对 True | verify_dataset_d36 |            ← 旧
+  ```
+- **风险**：中。这是**对外数字表**，一旦对外引用「自洽 110/110」而实际是 128，就是给外部一个错数。而且它不会被任何闸发现（`check_claims` 不读 `external_numbers.md`）。
+- **已做的最小修复**：把两处硬编码的「（不说 55/55）」改成从 `g3all['n_cases']` 现算 —— 这属 N-7 拍板的「计数一律现算」范围，零风险。
+- **3 个选项**：**A（推荐）**做一个独立任务：为关 1 / 关 4 / 自洽三项各生成一份 v1.1 的活 artifact（`check_forms_v11.json` 已有 54/54；`verify_dataset.py --json` 可出 128/128；关 4 需重跑 `gate4`），再把 `make_external_numbers.py` 的四个 `_d36` 引用换成 v1.1 版；B. 只改文本，把后 5 行标注「（v1.0/55 条口径，未随 v1.1 重算）」——诚实但对外表半旧；C. 整表退回 55 条口径，等 v7 一并重算 —— 会让已更新的前 7 行又变错。
+- **建议**：**A**，作为 **T-A8** 单独立项（变量 = 对外数字表的数据源），不夹在 T-A7 里。
+
+### N-10（高，新发现）C-003 的三个计数**没有任何闸**校验
+
+- **冲突点**：`check_claims.py` 里 `grep -n "gate3\|C-003"` = **0 命中**。它对 artifact 只做通用的「文件存在 + sha256 记录」，**不校验 claim 文本里的数字是否等于 artifact 里的数字**。所以 C-003 的「34 field + 15 scalar-disp + 6 reported-only」可以从 55 条时代一直漂到 64 条时代而全程绿灯——正是本轮 T-A7 之前的状态。
+- **SOT 文件**：`feagpt_repro/check_claims.py`（48 项语义检查里没有一项覆盖 C-003）；`FEM-Bench-Aero/CLAIMS.md:11`；artifact `FEM-Bench-Aero/gate3_all55_d37.json`
+- **证据**：
+  ```
+  $ grep -n "gate3\|C-003" feagpt_repro/check_claims.py
+  （无输出）
+  $ python check_claims.py    # 在 C-003 写着 34/15/6、artifact 已是 39/18/7 的状态下
+  active claims 27 条 / artifact 49 个 / 语义项 48 条 -> 全过      ← 全绿
+  ```
+- **正是 R58 说的那类洞**：「没有任何工具读的文件 = 没有闸」。C-003 是**数据类** claim（R58 边界内），本该被闸读，却没有。
+- **风险**：高。它是「关 3」这个对外数字的唯一 claim，三个计数全无护栏；下一轮 v7 换卷时它还会再漂一次，而没有任何东西会响。
+- **3 个选项**：**A（推荐）**新增 **S-48 + NC-53**：断言 `CLAIMS.md` C-003 行里的 `N field` / `N scalar-disp` / `N reported-only` 三个整数分别等于 `gate3_all55_d37.json` 的 `evidence_levels.field` / `.scalar_disp` / `.reported_only`；负控三向（改大 / 改小 / 删掉该行）必须判红。B. 让 C-003 改成**指针式**（只写「见 gate3_all55_d37.json 的 evidence_levels」，不写数字）——彻底消除漂移面，但 CLAIMS 的可读性下降，且对外引用要两跳。C. 不管，靠人工 review。
+- **建议**：**A**，作为 **T-A9** 单独立项。这条闸与 S-44（INDEX 与负控编号对齐）同源，都是「文本里的计数必须等于 artifact 里的计数」，可以直接复用 S-44 的解析骨架。
 
 ---
 
@@ -229,7 +282,9 @@ pairing: 55 paired, 9 modeling-only, 0 xval-only -> MISMATCH     ← 等 §7 的
 | **T-A5**（R61 全局求解锁 + S-47 + NC-52） | ✅ `405a4c9`，RUBRIC v5.4 |
 | **T-A6**（`check_forms` 陈旧参考路径 → 54 PASS/0 FAIL） | ✅ `cdef350` |
 | **Abaqus 双码**（v1.1 的 9 条） | ✅ **已完成**（老王在 WorkBuddy 外跑 `_v11/run_v11_abaqus.bat`，2026-10-28 21:32）。9/9 真跑通；`verify_dataset` = **64 paired / 0 modeling-only / VERDICT: PASS** |
-| **T-A7**（gate3 证据链：N-6 + N-7） | ⏸ **待拍板**（选项 A 已备，实测证据已落 `reports/diagnostics/xval_v11_9cases.json`） |
+| **T-A7**（gate3 证据链：N-6 + N-7 + N-8） | ✅ **已完成**（老王拍板 A）。真因比初判严重：d36 明细键是 `case` 而脚本查 `case_id` ⇒ **39 条翼盒从来没被逐条读取过**；且翼盒真判据是 vM 中位差 < 5%、不是 max\|u\| < 1%。修后 `gated_pass=57 / reported_only=7 / fail=0`，`headline = 39 field (34 d36 + 5 measured) + 18 scalar + 7 reported-only`，rc=0 |
+| **T-A8**（N-9：`external_numbers.md` 后 5 行仍读 `*_d36` 死快照） | ⏸ **待开工**（变量 = 对外数字表的数据源；需为关 1/关 4/自洽各出 v1.1 活 artifact） |
+| **T-A9**（N-10：C-003 三计数无闸 → S-48 + NC-53） | ⏸ **待拍板**（推荐 A：断言 CLAIMS C-003 的三个整数 == artifact 的 `evidence_levels`；负控三向） |
 | **考卷 v7**（接 v1.1 的 9 条进任务层） | ⏸ 未开工；按 R-A1 拆两步 + bridge，且 C-032 的 23/25 将不可比（R-A6） |
 
 > 本轮起按 N-5 的 **C+**：pre-flight 走 `--json "$TEMP/check_claims_preflight.json"`，官方 `reports/check_claims.json` 只在收口写一次（先负控后 check_claims）。
