@@ -212,6 +212,31 @@ headline 结构判定：仅 C-032 的 status 列带「（对外 headline）」�
 - **已做的最小修复**：把两处硬编码的「（不说 55/55）」改成从 `g3all['n_cases']` 现算 —— 这属 N-7 拍板的「计数一律现算」范围，零风险。
 - **3 个选项**：**A（推荐）**做一个独立任务：为关 1 / 关 4 / 自洽三项各生成一份 v1.1 的活 artifact（`check_forms_v11.json` 已有 54/54；`verify_dataset.py --json` 可出 128/128；关 4 需重跑 `gate4`），再把 `make_external_numbers.py` 的四个 `_d36` 引用换成 v1.1 版；B. 只改文本，把后 5 行标注「（v1.0/55 条口径，未随 v1.1 重算）」——诚实但对外表半旧；C. 整表退回 55 条口径，等 v7 一并重算 —— 会让已更新的前 7 行又变错。
 - **建议**：**A**，作为 **T-A8** 单独立项（变量 = 对外数字表的数据源），不夹在 T-A7 里。
+- **处置（2026-10-28，T-A8 已完成）**：按 **A** 落地，但执行时范围比原判更大。
+  1. **新建三份 v1.1 活 artifact**：`gate4_v11.json`（128/128）、`verify_dataset_v11.json`（128/128）、
+     `eval_report_v11.json`（0 failures）。命令即生成命令（R26），全部用 venv。
+  2. **关 1 改为从 `manifest.readings` 现算**，不再读 `gates_all55_d36.json`。理由：gate1 的真相
+     本来就是逐条 readings，而 `min_jacobian` / `n_tri3` **每一条**都被 `eval_dataset.py` 用
+     `msh_quality` 与 `model.inp` 独立复算过（不是抽检）⇒ 从 manifest 现算不产生副本，读快照才产生副本。
+  3. **表加「分母口径」列**（R54）：关 1/关 3/划分复算 = **spec 数**；关 4/自洽 = **算例目录数**
+     （= spec 数 × 2 树）。原表把 55/55 与 110/110 并列却都不标分母——**那两个数从来不是同一个分母**，
+     只是恰好都"全过"才没暴露。表尾新增「分母口径警告」段。
+  4. **基线与 M14 三条限制标注版本**：基线是 v1（翼盒 test 6 条）冻结，v1.1 翼盒 test 11 条
+     ⇒ 不可并列（R30/R39）；M14「全体 34 条留一」原先是硬编码字面量，改为从
+     `_probe_m14/all_loo.json` 现读（n_cases=34 就是 artifact 里的值），并标注「v1 口径、v1.1 未重跑」。
+  5. **溢出发现两处**（不在 N-9 原描述里，但同属「对外表写死数字」）：
+     - `FEM-Bench-Aero/README.md` 的**目录布局**写着「manifest 53 条 → 52 等价类」「gate4.json 80/80 PASS」
+       「verify_report.json 80/80 OK」——**比 55 更旧的 40/53 条口径**。已改为不报数、只述用途，
+       并加一句「各闸当前读数只在 `external_numbers.md`」⇒ README 不再是第二个数字源。
+     - README 的「门禁结论」表：关 1 55/55 → **64/64**、关 4 110/110 → **128/128**、
+       自洽 110/110 & 跨树 55/55 & 配对 55/55 → **128/128 & 64/64 & 64/64**。
+       关 3 那一行是 D34/D36 的实测记录（翼盒 34 + 其余 21），**保留原样**并加指针说明当前分级只看
+       `external_numbers.md`（改数字会让 D34 假 FAIL 的实证失真）。
+  6. **CLAIMS 四条同步**：C-001（55→64 条 / 110→128 目录）、C-002（关 1 55/55→64/64，artifact 改为
+     `manifest.json::readings`）、C-004、C-005（110/110→128/128、配对 55→64，artifact 改 `_v11`）。
+- **遗留（→ N-12）**：这批新 artifact 与 C-001/C-002/C-004/C-005 的计数**仍然无闸**——
+  `grep "gate4_v11\|verify_dataset_v11\|external_numbers" check_claims.py negative_controls.py` = **0 命中**。
+  S-48 只覆盖 C-003。这与 N-10 同型，须另立任务（S-49）。
 
 ### N-10（高，新发现）C-003 的三个计数**没有任何闸**校验
 
@@ -230,6 +255,28 @@ headline 结构判定：仅 C-032 的 status 列带「（对外 headline）」�
 - **建议**：**A**，作为 **T-A9** 单独立项。这条闸与 S-44（INDEX 与负控编号对齐）同源，都是「文本里的计数必须等于 artifact 里的计数」，可以直接复用 S-44 的解析骨架。
 - **处置（2026-10-28，T-A9 已完成，`8efdbbe`）**：按 **A** 落地 **R62 / S-48 / NC-53 四向**。执行时把判据从「三向」扩到四条——除三个计数逐项相等外，还加 **(b) 加和闭合（三者之和 == `n_cases`）**、**(c) 构成闭合（`N 条 d36` + `N 条 <日期> 实测` == field）**、**(d) 分母对齐（`不说 N/N` == `n_cases`）**；负控相应扩到四向（field−1 / scalar−2 / d36+1 / 删分母）。**关键设计：任一计数解析不出来一律判红，不得 skip**——锚点缺失与写错同罪，丢了就没人核，闸会退化成永远绿（R29 同源）。实测：负控 **55/55**、语义 **49/49** 全过，S-48 明细 `field=39; scalar-disp=18; reported-only=7; 加和 64=64; 构成 34d36+5实测; 分母 64/64`。
   > 同轮发现并修掉一处制度性混乱：根目录原同时留 `_53`、`_54` 两份「上一代」负控，而 RUBRIC 写「`_53` 为上一代」、CLAIMS 写「`_54` 为上一代」，两处互相矛盾。现已把 `_53`/`_54` 一并移入 `reports/archive/`，根目录只留现行 `_55`。
+
+### N-12（高，T-A8 执行时发现）换完数据源，新数据源**依然没有闸**
+
+- **冲突点**：`grep -n "gate4_v11\|verify_dataset_v11\|eval_report_v11\|external_numbers" check_claims.py negative_controls.py`
+  = **两文件均 0 命中**。也就是说：
+  - `external_numbers.md` / `.json`（**对外数字的唯一来源**）没有任何工具读；
+  - 新建的 `gate4_v11.json` / `verify_dataset_v11.json` / `eval_report_v11.json` 没有任何工具读；
+  - C-001 / C-002 / C-004 / C-005 的 `coverage` 列（64/64、128/128）**不受 S-48 管**——S-48 只解析 C-003 那一行。
+- **为什么算高**：这正是 N-10 的同型，而 N-10 的代价是 C-003 从 `34/15/6` 漂到 `39/18/7` **全程绿灯**。
+  T-A9 只给一条 claim 加了闸，其余四条仍裸奔；而 T-A8 刚刚把这四条指向了新 artifact，
+  **下一轮只要有人改数据集而不重跑生成器，`external_numbers.md` 就会再次变成 55/64 混杂，且无任何信号。**
+- **风险**：高。它不制造错数，但它保证「错数不会被发现」。
+- **3 个选项**：
+  - **A（推荐）**：把 S-48 泛化成 **S-49**——对 C-001/C-002/C-004/C-005 逐条断言
+    「claim 的 `coverage` 分子/分母 == 其 artifact 的实读计数」；再对 `external_numbers.md` 加一条
+    「md 里的每个闸门读数 == 生成器从 artifact 现读的值」（等价于 `make_external_numbers.py --check` 的严格版：不一致就 rc≠0）。负控两向（改 claim 计数 / 改 md 数字）。
+  - B. 让 C-001/C-002/C-004/C-005 全部改成**指针式**（只写 artifact 名不写数），彻底消除漂移面。
+    代价：CLAIMS 的可读性下降（这是对外引用的一跳入口），且 `coverage` 列会整体失去意义。
+  - C. 不管，等 v7 换卷时一起做。风险：v7 恰好是**最会改这批计数**的动作（64→73 条），
+    没有闸就是在裸奔——与当初「T-A3 先于 v7」同一条理由。
+- **建议**：**A**，作为 **T-A10** 单独立项，且**排在 v7 之前**。理由与 T-A9 完全相同：
+  v7 会把 exam 25→34 并重算一批计数，闸先于它会便宜得多。
 
 ---
 
@@ -285,8 +332,9 @@ pairing: 55 paired, 9 modeling-only, 0 xval-only -> MISMATCH     ← 等 §7 的
 | **T-A6**（`check_forms` 陈旧参考路径 → 54 PASS/0 FAIL） | ✅ `cdef350` |
 | **Abaqus 双码**（v1.1 的 9 条） | ✅ **已完成**（老王在 WorkBuddy 外跑 `_v11/run_v11_abaqus.bat`，2026-10-28 21:32）。9/9 真跑通；`verify_dataset` = **64 paired / 0 modeling-only / VERDICT: PASS** |
 | **T-A7**（gate3 证据链：N-6 + N-7 + N-8） | ✅ **已完成**（老王拍板 A）。真因比初判严重：d36 明细键是 `case` 而脚本查 `case_id` ⇒ **39 条翼盒从来没被逐条读取过**；且翼盒真判据是 vM 中位差 < 5%、不是 max\|u\| < 1%。修后 `gated_pass=57 / reported_only=7 / fail=0`，`headline = 39 field (34 d36 + 5 measured) + 18 scalar + 7 reported-only`，rc=0 |
-| **T-A8**（N-9：`external_numbers.md` 后 5 行仍读 `*_d36` 死快照） | ⏸ **待开工**（变量 = 对外数字表的数据源；需为关 1/关 4/自洽各出 v1.1 活 artifact） |
+| **T-A8**（N-9：`external_numbers.md` 后 5 行仍读 `*_d36` 死快照） | ✅ **已完成**（2026-10-28）：三份 v1.1 活 artifact + 关 1 改现算 + 「分母口径」列 + 基线/M14 标版本 + README 去数字 |
 | **T-A9**（N-10：C-003 三计数无闸 → S-48 + NC-53） | ✅ **已完成**（`8efdbbe`）：R62/S-48 四条判据 + NC-53 四向；负控 55/55、语义 49/49 |
+| **T-A10**（N-12：C-001/2/4/5 与 `external_numbers.md` 无闸 → S-49） | ⏸ **待开工**，建议**先于 v7** |
 | **考卷 v7**（接 v1.1 的 9 条进任务层） | ⏸ 未开工；按 R-A1 拆两步 + bridge，且 C-032 的 23/25 将不可比（R-A6） |
 
 > 本轮起按 N-5 的 **C+**：pre-flight 走 `--json "$TEMP/check_claims_preflight.json"`，官方 `reports/check_claims.json` 只在收口写一次（先负控后 check_claims）。

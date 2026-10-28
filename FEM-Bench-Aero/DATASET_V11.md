@@ -65,13 +65,14 @@ v1.1：64 条 / 63 类 / train 25 · val 17 · test 22     ← train 与 val 一
 | gate 4 语义（建模侧） | **9/9 PASS** | 每条 4–10 项拓扑/语义检查，`make_dataset.py` 逐条打印 |
 | 网格质量 | **9/9** | minJ 0.506–0.637（阈值 0.30）；**tri3 = 0** |
 | 节点上限 | **9/9 未越线** | 最大 `d2000_l1800` = 143,702 活节点（ccx 壳展开上限 158,548） |
-| `eval_dataset.py` | **PASS** | 含 `rule_reproduces_D12`（11 条锁定划分未被改动） |
+| `eval_dataset.py` | **PASS** | 含 `rule_reproduces_D12`（11 条锁定划分未被改动）。产物 `eval_report_v11.json`：`python eval_dataset.py --root ../FEM-Bench-Aero --json ../FEM-Bench-Aero/eval_report_v11.json` |
 | `dedup_dataset.py` | **0 重复** | 63 个等价类，无重复模型 |
 | 内插物理校验 | **7/7 PASS** | `--strict` rc=0 |
 | `verify_dataset.py` | **PASS** ✅ | 双码补齐后：`pairing: 64 paired, 0 modeling-only, 0 xval-only -> PASS`；`cross-tree mesh agreement 64/64 identical`；`case consistency 128/128 OK`；`stress definition agreement (D8) PASS`；`VERDICT: PASS` |
 | 双码物理一致性（`verify_solvers.py`，逐条） | **9/9 实质通过**（8 gated + 1 reported-only） | 实测见 `reports/diagnostics/xval_v11_9cases.json`：翼盒 `max\|u\|` 0.268–0.401 %、vM 逐节点中位差 0.17–0.75 %；开孔板 0.101–0.185 %、中位差 0.01 %；加筋板 0.045 %、中位差 0.22 %；柱壳 1.495 % 但按 **D20 只报不判**（中位差 0.08 %） |
 | `check_forms.py` | **54/54 PASS（VERDICT: PASS）** | 串行重跑完成（10m25s，无其他 ccx 并行）。**首次运行是 50 PASS + 1 FAIL**：`T5.invocation` 报参考案例不存在 —— 根因不是 v1.1 数据，而是 `check_forms.py` 的 `DEFAULT_REFERENCE` 指向 `outputs_str/naca4412_wingbox_str3` 这个**本仓库不存在**的旧输出目录（潜伏缺陷，见 §5.4）。修完 T5 由 1 项扩到 4 项，故总数 51 → 54 |
 | `gate3_all55.py` | **57 gated_pass / 7 reported-only / 0 fail（rc=0）** | 取证分层：**39 field（34 条 d36 明细 + 5 条 2026-10-28 实测）+ 18 scalar-disp + 7 reported-only = 64**。★ T-A7 查出真因：d36 的明细键是 `case` 而脚本查 `case_id` ⇒ **39 条翼盒从来没被逐条读取过**，全部走「继承整体 PASS」；且翼盒登记判据是 **vM 逐节点中位差 < 5%**（`stress_field.gated=true`），`max\|u\|` 是 REPORTED NOT GATED。修后翼盒 `vm_median` 缺失 **0/39**。外部一致性由 **S-48（R62）** 守：`CLAIMS` C-003 行的三个分项计数、构成拆分与分母必须与 `gate3_all55_d37.json::evidence_levels` **逐项相等**（此处不复写数字，避免在闸的覆盖范围外再造一份会漂的副本）|
+| **对外数字源**（T-A8） | **全部走 v1.1 活源** | 关 1 ← `manifest.readings`（现算，不再读 55 条聚合）；关 4 ← `gate4_v11.json`；自洽 ← `verify_dataset_v11.json`；划分复算 ← `eval_report_v11.json`。表新增**「分母口径」列**（R54：关 1/关 3/划分复算 = spec 数，关 4/自洽 = 算例目录数，两套不得相减）；基线与 M14 三条限制标注「v1 口径、v1.1 未重跑」 |
 
 ## 5. 待办与教训
 
@@ -89,8 +90,11 @@ v1.1：64 条 / 63 类 / train 25 · val 17 · test 22     ← train 与 val 一
    （d36 明细 / v1.1 实测 / **两者都没有 ⇒ pass=False 直接报红**），并修掉查了不存在的
    `case_id` 键、`max_disp_gap_pct` 键、以及按 `max|u|<1%` 判翼盒的口径错。
    详见 `CONFLICT.md` N-6 的「★ 执行时查出的真因」。
-4. **对外数字表（T-A8，新）**：`external_numbers.md` 后 5 行仍读 `*_d36` 死快照（关 1 = 55/55、
-   关 4 = 110/110、自洽 = 110/110），与前 7 行的 64 条自相矛盾。见 `CONFLICT.md` N-9。
+4. ~~**对外数字表（T-A8）**~~ ✅ **已完成**（2026-10-28）：`make_external_numbers.py` 全部改读 v1.1 活源——
+   关 1 改为从 `manifest.readings` 现算（不再读 55 条聚合的 `gates_all55_d36.json`）、关 4 / 自洽 / 划分复算
+   分别读新建的 `gate4_v11.json` / `verify_dataset_v11.json` / `eval_report_v11.json`。表新增
+   **「分母口径」列**（R54：spec 数 vs 算例目录数，两套分母不得相减）；基线与 M14 三条限制显式标注
+   「v1 口径、v1.1 未重跑」。详见 `CONFLICT.md` N-9 的处置记录。
 5. **考卷 v7（未做）**：把 9 条接进任务层 ⇒ exam 25 → 34，才能收窄 CI。
    代价：换卷后 **C-032 的 23/25 不再可比**（R30/R39，paper sha 变），必须重生成两模型候选
    （约 2 × 15 min）+ 全链 MSR（约 2 × 40 min）+ 重跑 CI/榜单。**这是下一轮的主任务。**

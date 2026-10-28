@@ -1,5 +1,6 @@
 {
- "generated_from": "manifest.json + gates_all55_d36 + gate4_d36 + verify_dataset_d36 + eval_report_d36 + baseline_d36_final",
+ "generated_from": "manifest.json + gate3_all55_d37 + gate4_v11 + verify_dataset_v11 + eval_report_v11 + baseline_d36_final",
+ "dataset_version": "v1.1（64 条；train 25 / val 17 / test 22）",
  "naming_note": "FEM-Bench-Aero（本仓库内部命名，A 建模集；与 GitHub 公开仓库 FEM-Bench 无关联，公开发布前将评估更名）",
  "scale": {
   "cases_total": 64,
@@ -38,12 +39,19 @@
   "n_limitations": 16
  },
  "gates": {
-  "gate4_semantics": 110,
+  "gate4_semantics": 128,
   "gate1_mesh": {
-   "n_measured": 55,
+   "n_cases": 64,
+   "n_measured": 64,
+   "threshold_min_jacobian": 0.3,
    "n_below_threshold": 0,
+   "worst_min_jacobian": 0.4636,
+   "worst_case": "fuselage_barrel_d1600_l1600_str8_frm3",
+   "n_tri3_cases": 0,
    "n_tri3_total": 0,
-   "worst_min_jacobian": 0.4636
+   "pass": true,
+   "scope_note": "分母 = 64 条 spec（modeling 树）。两树 msh 逐字节相同（verify_dataset cross_tree_mesh），故不按 128 个目录重复计数",
+   "source": "manifest.json::cases[].readings（min_jacobian / n_tri3，已由 eval_dataset.py 逐条复算）"
   },
   "gate3_all55": {
    "evidence_levels": {
@@ -63,6 +71,7 @@
  },
  "baseline_frozen": {
   "status": "附录（可学性证明），非产品 KPI。D37 起项目 KPI = TSR/FPR/修复/拒答/澄清",
+  "dataset_version": "★ 该基线冻结于 v1（55 条，翼盒族 test 6 条）的 baseline_d36_final.json，v1.1（64 条，翼盒族 test 11 条）**未重跑**。按 R30/R39 不得与 v1.1 的成绩并列相减或声称提升——它只证明\"这条路线在 v1 上可学\"，不是当前数据集的分数",
   "max_disp_test_mape": 2.631,
   "max_disp_test_ci95": [
    0.89,
@@ -71,7 +80,7 @@
   "constant_floor": 49.439,
   "known_limits": [
    "vM 峰值网格未收敛（12→6 mm 仍 +12.9 %），应力真值带 ≥13 % 偏不安全低估",
-   "机器可读双码 PASS 仅翼盒 34 条；其余 21 条分族取证（关 3 机读化 = W3 任务）",
+   "双码证据分级见 gates.gate3_all55（field / scalar-disp / reported-only 三档），不宣称全体逐条场级；此处不复写计数",
    "test 13 条全部为外推/新形式（无 ID 内插点；ID test = W3 任务）",
    "recombination_algorithm3 为同几何网格鲁棒性对照样本，不参与样本量统计"
   ]
@@ -80,15 +89,55 @@
   "B 解读集 / C 更新集（近期不做，2026-10-24 拍板移出对外承诺）"
  ],
  "selfcheck": {
-  "n_cases": 110,
-  "n_ok": 110,
+  "n_cases": 128,
+  "n_ok": 128,
+  "n_paired": 64,
   "n_duplicate_cases": 0,
   "pairing_ok": true,
-  "all_ok": true
+  "all_ok": true,
+  "scope_note": "分母 = 算例目录数（2 棵求解器树 × spec 数），不是 spec 数",
+  "source": "verify_dataset_v11.json"
  },
  "split_recheck": {
-  "n_cases": 55,
-  "n_geometry_classes": 54,
-  "n_failures": 0
+  "n_cases": 64,
+  "n_geometry_classes": 63,
+  "n_failures": 0,
+  "scope_note": "分母 = spec 数",
+  "source": "eval_report_v11.json"
+ },
+ "source_artifacts": {
+  "scale": "manifest.json",
+  "gate1_mesh": "manifest.json::cases[].readings（复算见 eval_report_v11）",
+  "gate3_all55": "gate3_all55_d37.json",
+  "gate4_semantics": "gate4_v11.json",
+  "selfcheck": "verify_dataset_v11.json",
+  "split_recheck": "eval_report_v11.json",
+  "baseline_frozen": "baseline_d36_final.json（v1 数据集冻结）"
+ },
+ "m14_limits": {
+  "dataset_version": "v1（55 条时代；翼盒 34 条）。**v1.1（翼盒 39 条）未重跑**，不可当作 v1.1 成绩，也不可与本表上方任何一格并列相减",
+  "vm_peak_not_converged": {
+   "statement": "12→6 mm 仍 +12.9 %，应力真值带 ≥13 % 偏不安全低估",
+   "artifact": null,
+   "evidence_gap": "无机器可读 artifact —— h_convergence.json 只记录 max_disp 的收敛；该结论目前只在 STAGE_GATE_M14.md 正文，须补 artifact 后才可升为 GATED"
+  },
+  "displacement_converged": {
+   "statement": "位移良定义（12→6 mm 变化 −0.48 %）",
+   "baseline_12mm_error_pct": -0.4803436167710753,
+   "finest_error_pct": -0.3128920523481338,
+   "artifact": "feagpt_repro/_probe_m14/h_convergence.json"
+  },
+  "promise_5_to_9_pct": {
+   "statement": "2.63 % 是「组合插值」成绩，不是「新设计」成绩；对外承诺写 5–9 %，不写 3 %",
+   "artifact": "STAGE_GATE_M14.md §4.4"
+  },
+  "loo_mape": {
+   "n_cases": 34,
+   "mape": 5.350907070279112,
+   "median": 2.572531900203175,
+   "p90": 14.085834813838959,
+   "max": 33.10322996091423,
+   "artifact": "feagpt_repro/_probe_m14/all_loo.json"
+  }
  }
 }
