@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_54.json）",
-   "expect": "54/54",
-   "actual": "54/54",
+   "desc": "C-019 负控通过数（源 negative_controls_55.json）",
+   "expect": "55/55",
+   "actual": "55/55",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "54",
-   "actual": "54",
+   "expect": "55",
+   "actual": "55",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 5.4",
-   "actual": "5.4",
+   "expect": "全部 = 5.5",
+   "actual": "5.5",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "54/54",
-   "actual": "54/54",
+   "expect": "55/55",
+   "actual": "55/55",
    "ok": true,
    "skip": false
   },
@@ -366,7 +366,7 @@
    "id": "S-44",
    "desc": "官方导航文件 INDEX 的 headline 指向与负控编号必须与 artifact 一致（R58）",
    "expect": "含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致",
-   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L24 主区间 NC-23..52 / 总数 54；artifact 最大 NC-52、共 54 条",
+   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L24 主区间 NC-23..53 / 总数 55；artifact 最大 NC-53、共 55 条",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793113504/1793113504；check 1793195872 vs 负控 1793113504",
+   "actual": "C-019 mtime 记录/实际 = 1793196388/1793196388；check 1793196587 vs 负控 1793196388",
    "ok": true,
    "skip": false
   },
@@ -391,6 +391,14 @@
    "desc": "求解串行：solver.py 的全局锁机制在场且无残留锁（R61）",
    "expect": "solver.py 含 _acquire_solve_lock / _release_solve_lock / SOLVE_LOCK / _run_unlocked；.solve.lock 不存在",
    "actual": "机制在场、无残留锁",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-48",
+   "desc": "关 3 claim 的三个计数与分母必须等于 artifact 实读（R62）",
+   "expect": "正文 N field / N scalar-disp / N reported-only == evidence_levels；加和 == n_cases；构成（d36 + 实测）== field；「不说 N/N」分母 == n_cases",
+   "actual": "field=39；scalar-disp=18；reported-only=7；加和 64=64；构成 34d36+5实测；分母 64/64",
    "ok": true,
    "skip": false
   }
@@ -596,9 +604,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 37214,
-   "sha256": "6c8030b8299414c02e010faa283e3164cd86f1edc23eef36b54d2424c9ca3499",
-   "mtime": 1793195432
+   "size": 37351,
+   "sha256": "83cf6e8cac41f9efd9093bde69d6a4496ade1f5ab68715784865067e42351a08",
+   "mtime": 1793196532
   },
   {
    "claim_id": "C-027",
@@ -974,15 +982,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_54.json",
+   "artifact": "feagpt_repro/reports/negative_controls_55.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 11039,
-   "sha256": "7528a92edd32766bea03eaaf6b79f13973dbc06e9e6f728495c0095dc510f827",
-   "mtime": 1793113504
+   "size": 11308,
+   "sha256": "30183aadc94be1fbfc9adbaf611a05df17cc948fbdcef240d2b4d673f60ba1c9",
+   "mtime": 1793196388
   }
  ]
 }

@@ -71,7 +71,7 @@ v1.1：64 条 / 63 类 / train 25 · val 17 · test 22     ← train 与 val 一
 | `verify_dataset.py` | **PASS** ✅ | 双码补齐后：`pairing: 64 paired, 0 modeling-only, 0 xval-only -> PASS`；`cross-tree mesh agreement 64/64 identical`；`case consistency 128/128 OK`；`stress definition agreement (D8) PASS`；`VERDICT: PASS` |
 | 双码物理一致性（`verify_solvers.py`，逐条） | **9/9 实质通过**（8 gated + 1 reported-only） | 实测见 `reports/diagnostics/xval_v11_9cases.json`：翼盒 `max\|u\|` 0.268–0.401 %、vM 逐节点中位差 0.17–0.75 %；开孔板 0.101–0.185 %、中位差 0.01 %；加筋板 0.045 %、中位差 0.22 %；柱壳 1.495 % 但按 **D20 只报不判**（中位差 0.08 %） |
 | `check_forms.py` | **54/54 PASS（VERDICT: PASS）** | 串行重跑完成（10m25s，无其他 ccx 并行）。**首次运行是 50 PASS + 1 FAIL**：`T5.invocation` 报参考案例不存在 —— 根因不是 v1.1 数据，而是 `check_forms.py` 的 `DEFAULT_REFERENCE` 指向 `outputs_str/naca4412_wingbox_str3` 这个**本仓库不存在**的旧输出目录（潜伏缺陷，见 §5.4）。修完 T5 由 1 项扩到 4 项，故总数 51 → 54 |
-| `gate3_all55.py` | **57 gated_pass / 7 reported-only / 0 fail（rc=0）** | 取证分层：**39 field（34 条 d36 明细 + 5 条 2026-10-28 实测）+ 18 scalar-disp + 7 reported-only = 64**。★ T-A7 查出真因：d36 的明细键是 `case` 而脚本查 `case_id` ⇒ **39 条翼盒从来没被逐条读取过**，全部走「继承整体 PASS」；且翼盒登记判据是 **vM 逐节点中位差 < 5%**（`stress_field.gated=true`），`max\|u\|` 是 REPORTED NOT GATED。修后翼盒 `vm_median` 缺失 **0/39** |
+| `gate3_all55.py` | **57 gated_pass / 7 reported-only / 0 fail（rc=0）** | 取证分层：**39 field（34 条 d36 明细 + 5 条 2026-10-28 实测）+ 18 scalar-disp + 7 reported-only = 64**。★ T-A7 查出真因：d36 的明细键是 `case` 而脚本查 `case_id` ⇒ **39 条翼盒从来没被逐条读取过**，全部走「继承整体 PASS」；且翼盒登记判据是 **vM 逐节点中位差 < 5%**（`stress_field.gated=true`），`max\|u\|` 是 REPORTED NOT GATED。修后翼盒 `vm_median` 缺失 **0/39**。外部一致性由 **S-48（R62）** 守：`CLAIMS` C-003 行的三个分项计数、构成拆分与分母必须与 `gate3_all55_d37.json::evidence_levels` **逐项相等**（此处不复写数字，避免在闸的覆盖范围外再造一份会漂的副本）|
 
 ## 5. 待办与教训
 

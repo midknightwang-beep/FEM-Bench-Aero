@@ -228,6 +228,8 @@ headline 结构判定：仅 C-032 的 status 列带「（对外 headline）」�
 - **风险**：高。它是「关 3」这个对外数字的唯一 claim，三个计数全无护栏；下一轮 v7 换卷时它还会再漂一次，而没有任何东西会响。
 - **3 个选项**：**A（推荐）**新增 **S-48 + NC-53**：断言 `CLAIMS.md` C-003 行里的 `N field` / `N scalar-disp` / `N reported-only` 三个整数分别等于 `gate3_all55_d37.json` 的 `evidence_levels.field` / `.scalar_disp` / `.reported_only`；负控三向（改大 / 改小 / 删掉该行）必须判红。B. 让 C-003 改成**指针式**（只写「见 gate3_all55_d37.json 的 evidence_levels」，不写数字）——彻底消除漂移面，但 CLAIMS 的可读性下降，且对外引用要两跳。C. 不管，靠人工 review。
 - **建议**：**A**，作为 **T-A9** 单独立项。这条闸与 S-44（INDEX 与负控编号对齐）同源，都是「文本里的计数必须等于 artifact 里的计数」，可以直接复用 S-44 的解析骨架。
+- **处置（2026-10-28，T-A9 已完成，`8efdbbe`）**：按 **A** 落地 **R62 / S-48 / NC-53 四向**。执行时把判据从「三向」扩到四条——除三个计数逐项相等外，还加 **(b) 加和闭合（三者之和 == `n_cases`）**、**(c) 构成闭合（`N 条 d36` + `N 条 <日期> 实测` == field）**、**(d) 分母对齐（`不说 N/N` == `n_cases`）**；负控相应扩到四向（field−1 / scalar−2 / d36+1 / 删分母）。**关键设计：任一计数解析不出来一律判红，不得 skip**——锚点缺失与写错同罪，丢了就没人核，闸会退化成永远绿（R29 同源）。实测：负控 **55/55**、语义 **49/49** 全过，S-48 明细 `field=39; scalar-disp=18; reported-only=7; 加和 64=64; 构成 34d36+5实测; 分母 64/64`。
+  > 同轮发现并修掉一处制度性混乱：根目录原同时留 `_53`、`_54` 两份「上一代」负控，而 RUBRIC 写「`_53` 为上一代」、CLAIMS 写「`_54` 为上一代」，两处互相矛盾。现已把 `_53`/`_54` 一并移入 `reports/archive/`，根目录只留现行 `_55`。
 
 ---
 
@@ -284,7 +286,7 @@ pairing: 55 paired, 9 modeling-only, 0 xval-only -> MISMATCH     ← 等 §7 的
 | **Abaqus 双码**（v1.1 的 9 条） | ✅ **已完成**（老王在 WorkBuddy 外跑 `_v11/run_v11_abaqus.bat`，2026-10-28 21:32）。9/9 真跑通；`verify_dataset` = **64 paired / 0 modeling-only / VERDICT: PASS** |
 | **T-A7**（gate3 证据链：N-6 + N-7 + N-8） | ✅ **已完成**（老王拍板 A）。真因比初判严重：d36 明细键是 `case` 而脚本查 `case_id` ⇒ **39 条翼盒从来没被逐条读取过**；且翼盒真判据是 vM 中位差 < 5%、不是 max\|u\| < 1%。修后 `gated_pass=57 / reported_only=7 / fail=0`，`headline = 39 field (34 d36 + 5 measured) + 18 scalar + 7 reported-only`，rc=0 |
 | **T-A8**（N-9：`external_numbers.md` 后 5 行仍读 `*_d36` 死快照） | ⏸ **待开工**（变量 = 对外数字表的数据源；需为关 1/关 4/自洽各出 v1.1 活 artifact） |
-| **T-A9**（N-10：C-003 三计数无闸 → S-48 + NC-53） | ⏸ **待拍板**（推荐 A：断言 CLAIMS C-003 的三个整数 == artifact 的 `evidence_levels`；负控三向） |
+| **T-A9**（N-10：C-003 三计数无闸 → S-48 + NC-53） | ✅ **已完成**（`8efdbbe`）：R62/S-48 四条判据 + NC-53 四向；负控 55/55、语义 49/49 |
 | **考卷 v7**（接 v1.1 的 9 条进任务层） | ⏸ 未开工；按 R-A1 拆两步 + bridge，且 C-032 的 23/25 将不可比（R-A6） |
 
 > 本轮起按 N-5 的 **C+**：pre-flight 走 `--json "$TEMP/check_claims_preflight.json"`，官方 `reports/check_claims.json` 只在收口写一次（先负控后 check_claims）。
