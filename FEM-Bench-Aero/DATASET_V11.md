@@ -1,10 +1,10 @@
 # DATASET v1.1 —— 9 条内插留出（interior holdout）
 
-> **状态：数据层双码已闭合（ccx + Abaqus 两侧都在，64 paired）。**
+> **状态：数据层已闭合 —— `CLAIMS` C-036 GATED（`check_forms 54/54`、双码配对 `64/64`、`gate4 128/128`、`eval 64 cases / 0 failures`）。**
 > 生成器 `feagpt_repro/_v11/make_v11_specs.py`；物理校验 `feagpt_repro/_v11/verify_v11_interpolation.py`；
 > 双码脚本 `feagpt_repro/_v11/run_v11_abaqus.bat`（**必须在 WorkBuddy 之外的普通 cmd 里跑**）——
 > 已于 2026-10-28 21:32 跑完，9/9 真跑通，见 §4。
-> 日期：2026-10-27 建；2026-10-28 双码闭合。
+> 日期：2026-10-27 建；2026-10-28 双码闭合；2026-10-28 T-A10 入 claim 账本（C-036）。
 
 ## 0. 一句话
 
@@ -95,7 +95,13 @@ v1.1：64 条 / 63 类 / train 25 · val 17 · test 22     ← train 与 val 一
    分别读新建的 `gate4_v11.json` / `verify_dataset_v11.json` / `eval_report_v11.json`。表新增
    **「分母口径」列**（R54：spec 数 vs 算例目录数，两套分母不得相减）；基线与 M14 三条限制显式标注
    「v1 口径、v1.1 未重跑」。详见 `CONFLICT.md` N-9 的处置记录。
-5. **考卷 v7（未做）**：把 9 条接进任务层 ⇒ exam 25 → 34，才能收窄 CI。
+5. ~~**闸覆盖补全（T-A10）**~~ ✅ **已完成**（2026-10-28）：新增 **S-49**（`C-001/2/4/5/036` 的正文计数
+   == artifact 实读）/ **S-50**（对外数字表：分母口径列 + 每个 `A/B` 的 `B ∈ {spec 64, 目录 128}` +
+   **重跑生成器逐字节比对**）/ **S-51**（协议文件不得写死计数）+ **NC-54 十向**；
+   新增数据层 claim **C-036**（`check_forms 54/54`、`双码配对 64/64`、`gate4 128/128`、`eval 64/0`）；
+   RUBRIC **v5.6**（R63/R64）。顺带修正 `manifest.summary.xval_cases_available` **55 → 64**
+   （dry-run 逐键比对证明只此一键变化、splits 逐位相同）。详见 `CONFLICT.md` N-12/N-13/N-14。
+6. **考卷 v7（未做）**：把 9 条接进任务层 ⇒ exam 25 → 34，才能收窄 CI。
    代价：换卷后 **C-032 的 23/25 不再可比**（R30/R39，paper sha 变），必须重生成两模型候选
    （约 2 × 15 min）+ 全链 MSR（约 2 × 40 min）+ 重跑 CI/榜单。**这是下一轮的主任务。**
 

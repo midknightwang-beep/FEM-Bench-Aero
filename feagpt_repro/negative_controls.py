@@ -1217,6 +1217,132 @@ def main():
     print(f"  [{'ok ' if ok53 else 'BAD!'}] NC-53 C-003 计数漂移必须被 S-48 拒绝                      "
           f"expect=fwd T/mut F actual={det53}")
 
+    # NC-54（R63/R64，T-A10；来自 N-12）：**S-48 之外的四条 claim 与对外数字表也必须被拒**。
+    #   根因：S-48 只覆盖 C-003；`grep "gate4_v11|verify_dataset_v11|eval_report_v11|external_numbers"
+    #   check_claims.py negative_controls.py` 曾两文件 0 命中 ⇒ C-001/2/4/5 与对外表裸奔。
+    #   ★ 判据不只看「是否红」，还看**红的原因对不对**：S-50 的 (c) 陈旧判据几乎能吃下任何
+    #     变异，若只断言「红」，(a) 缺分母列与 (b) 分母混写这两条会永远得不到证伪。
+    from check_claims import claim_counts_consistent, external_numbers_consistent
+    import re as _re54
+    ok54, det54 = False, 'no artifact'
+    _root54 = os.path.dirname(HERE)
+    _md54 = os.path.join(_root54, 'FEM-Bench-Aero', 'CLAIMS.md')
+    _ext_md54 = os.path.join(_root54, 'FEM-Bench-Aero', 'external_numbers.md')
+    _ext_js54 = os.path.join(_root54, 'FEM-Bench-Aero', 'external_numbers.json')
+    if all(os.path.exists(p) for p in (_md54, _ext_md54, _ext_js54)):
+        import tempfile as _tf54
+        _td54 = _tf54.mkdtemp()
+        _lines54 = open(_md54, encoding='utf-8').read().split('\n')
+
+        def _row54(cid):
+            return next((i for i, l in enumerate(_lines54)
+                         if l.lstrip().startswith('| %s |' % cid)), None)
+
+        def _mut54(cid, pat, repl):
+            """只改 cid 那一行；锚点缺失 / 替换无变化 ⇒ None ⇒ 判红（不 skip，R29）。"""
+            i = _row54(cid)
+            if i is None:
+                return None
+            new = _re54.sub(pat, repl, _lines54[i], count=1)
+            if new == _lines54[i]:
+                return None
+            lines = list(_lines54)
+            lines[i] = new
+            p = os.path.join(_td54, 'claims_%s.md' % cid.replace('-', ''))
+            open(p, 'w', encoding='utf-8').write('\n'.join(lines))
+            return p
+
+        def _dec(m):
+            return '%d%s' % (int(m.group(1)) - 1, m.group(2))
+
+        # ---- S-49 五向 ----
+        _p_ok = _md54                                             # 正向：真文件
+        _p_a = _mut54('C-001', r'(\d+)(\s*条\s*×)', _dec)          # 规模漂移
+        _p_b = _mut54('C-002', r'(minJ\s+)([\d.]+)', r'\g<1>0.5000')  # minJ 写错
+        _p_c = _mut54('C-004', r'(关\s*4\s*语义\s*)(\d+)',
+                      lambda m: '%s%d' % (m.group(1), int(m.group(2)) - 1))
+        _p_d = _mut54('C-005', r'dup\s*\d+', '重复已省略')          # 锚点被删 ⇒ 必须判红
+        # 删整行 C-036（不是改错，是"少查一条"——静默消失必须红）
+        _i36 = _row54('C-036')
+        _p_e = None
+        if _i36 is not None:
+            l36 = [l for j, l in enumerate(_lines54) if j != _i36]
+            _p_e = os.path.join(_td54, 'claims_no036.md')
+            open(_p_e, 'w', encoding='utf-8').write('\n'.join(l36))
+
+        _f = claim_counts_consistent(_p_ok, _root54)[0]
+        _a = claim_counts_consistent(_p_a, _root54)[0] if _p_a else None
+        _b = claim_counts_consistent(_p_b, _root54)[0] if _p_b else None
+        _c = claim_counts_consistent(_p_c, _root54)[0] if _p_c else None
+        _d = claim_counts_consistent(_p_d, _root54)[0] if _p_d else None
+        _e = claim_counts_consistent(_p_e, _root54)[0] if _p_e else None
+
+        # ---- S-50 三向（断言"红的原因"对，见上面的 ★） ----
+        _md54txt = open(_ext_md54, encoding='utf-8').read()
+
+        def _tmp54(tag, text):
+            p = os.path.join(_td54, 'ext_%s.md' % tag)
+            open(p, 'w', encoding='utf-8').write(text)
+            return p
+
+        # ① 分母混写 55（正是 55 条时代的旧口径）—— 只改比值的分母，不动结构
+        _x1 = _tmp54('den', _md54txt.replace('| 128/128 |', '| 55/55 |', 1))
+        _r1ok, _r1 = external_numbers_consistent(_x1, _ext_js54, _root54) \
+            if _x1 != _md54txt or '| 128/128 |' in _md54txt else (None, '锚点缺失')
+        # ② 表头删掉「分母口径」列 —— 口径被抹掉
+        _x2 = _tmp54('hdr', _md54txt.replace('| 项 | 数值 | 分母口径 | 来源 |',
+                                             '| 项 | 数值 | 来源 |', 1))
+        _r2ok, _r2 = external_numbers_consistent(_x2, _ext_js54, _root54) \
+            if _x2 != _md54txt else (None, '锚点缺失')
+        # ③ 手改一格数字（不改分母）—— 陈旧/手改必须抓
+        _x3 = _tmp54('edit', _md54txt.replace('2.631', '2.632', 1))
+        _r3ok, _r3 = external_numbers_consistent(_x3, _ext_js54, _root54) \
+            if _x3 != _md54txt else (None, '锚点缺失')
+        _f50ok = external_numbers_consistent(_ext_md54, _ext_js54, _root54)[0]
+
+        # 每向要求：判红 **且** 原因命中对应关键词
+        _m1 = (_r1ok is False) and ('分母' in _r1)
+        _m2 = (_r2ok is False) and ('分母口径' in _r2)
+        _m3 = (_r3ok is False) and ('不一致' in _r3)
+
+        # ---- S-51 两向（R63：把计数抄回协议文件必须红） ----
+        from check_claims import protocol_no_hardcoded_counts
+        _agents54 = os.path.join(_root54, 'AGENTS.md')
+        _a0 = open(_agents54, encoding='utf-8').read() if os.path.exists(_agents54) else None
+        _p_a1 = _p_a2 = None
+        if _a0 is not None:
+            _p_a1 = os.path.join(_td54, 'AGENTS_triple.md')
+            open(_p_a1, 'w', encoding='utf-8').write(
+                _a0 + '\n> 门禁：27 claims / 50 artifacts / 51 semantic\n')
+            _p_a2 = os.path.join(_td54, 'AGENTS_nc.md')
+            open(_p_a2, 'w', encoding='utf-8').write(_a0 + '\n> 负控 56/56\n')
+        _f51 = protocol_no_hardcoded_counts([_agents54, os.path.join(_root54, 'CLAUDE.md')])[0] \
+            if _a0 is not None else None
+        _a1 = protocol_no_hardcoded_counts([_p_a1, _p_a1])[0] if _p_a1 else None
+        _a2 = protocol_no_hardcoded_counts([_p_a2, _p_a2])[0] if _p_a2 else None
+
+        ok54 = (bool(_f) and all(x is False for x in (_a, _b, _c, _d, _e))
+                and bool(_f50ok) and _m1 and _m2 and _m3
+                and bool(_f51) and _a1 is False and _a2 is False)
+        det54 = (f'S-49 正向={"过" if _f else "红"} '
+                 f'C001-1={"红" if _a is False else "漏判"} '
+                 f'minJ改={"红" if _b is False else "漏判"} '
+                 f'C004-1={"红" if _c is False else "漏判"} '
+                 f'删dup={"红" if _d is False else "漏判"} '
+                 f'删C036={"红" if _e is False else "漏判"} ‖ '
+                 f'S-50 正向={"过" if _f50ok else "红"} '
+                 f'分母55={"红·分母" if _m1 else "漏判"} '
+                 f'删列={"红·口径" if _m2 else "漏判"} '
+                 f'手改={"红·陈旧" if _m3 else "漏判"} ‖ '
+                 f'S-51 正向={"过" if _f51 else "红"} '
+                 f'写死三元组={"红" if _a1 is False else "漏判"} '
+                 f'写死负控={"红" if _a2 is False else "漏判"}')
+    results.append({'id': 'NC-54',
+                    'desc': 'C-001/2/4/5/036 计数漂移、对外表分母混写/陈旧、协议写死计数必须被拒',
+                    'expect': 'fwd=T / 十向变异=F 且原因命中', 'actual': det54, 'ok': ok54})
+    print(f"  [{'ok ' if ok54 else 'BAD!'}] NC-54 claim 计数 + 对外表分母 + 协议写死必须被拒         "
+          f"expect=fwd T/10向 F actual={det54}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，
     # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；

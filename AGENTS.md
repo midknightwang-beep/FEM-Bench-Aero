@@ -11,19 +11,21 @@
 | # | 文件 | 你要从中确认什么 |
 |---|---|---|
 | 1 | `FEM-Bench-Aero/CLAIMS.md` | 当前唯一 **headline** 是哪条 claim；哪些是 supporting / historical / diagnostic |
-| 2 | `FEM-Bench-Aero/RUBRIC.md` | 当前 rubric 版本；**R42–R58 红线判定表** + 分母/判分口径（**R1–R41 不在此文件**，见 `CLAIMS.md` 的「红线条（R1–R58，挂账常设）」） |
+| 2 | `FEM-Bench-Aero/RUBRIC.md` | 当前 rubric 版本；**R42–R64 红线判定表** + 分母/判分口径（**R1–R41 不在此文件**，见 `CLAIMS.md` 的「红线条（R1–R64，挂账常设）」） |
 | 3 | `feagpt_repro/reports/INDEX.md` | 官方 artifact vs 诊断；当前成绩单路径；当前考卷 sha |
 | 4 | 当前成绩单（INDEX 指向的那份 `reports/baseline_scorecard_*.json`） | `model` / `prompt_sha` / `tasks_sha256` / 分母构成 / headline 数字 |
 | 5 | 当前考卷 + prompt | `reports/papers/tasks_v6c.jsonl` 的 sha；`gen_candidates_v2.js` 的 prompt sha |
 
 ```bash
 cd "F:/AI FEA Modeling DataSets/feagpt_repro"
-python check_claims.py --json "$TEMP/check_claims_preflight.json"   # 必须 all_ok=True；当前 27 claims / 49 artifacts / 49 semantic
-python negative_controls.py     # 必须全绿；当前 55/55
+python check_claims.py --json "$TEMP/check_claims_preflight.json"   # 必须 all_ok=True；条数以本次输出为准（R63：不写死，写死必漂）
+python negative_controls.py     # 必须全绿；条数以本次输出为准（R63）
 git status --short              # 先看清工作区；有别人未提交的改动时不要覆盖
 ```
 
-> **⚠ dataset / 求解类脚本必须用项目 venv**（R60）：`verify_dataset` / `check_forms` / `score_baseline` / `msr_l3` / `eval_dataset` / `dedup_dataset` / `run_pipeline` 一律用 `…/envs/default/Scripts/python.exe`；**系统 python 缺 numpy/gmsh**，报 `ModuleNotFoundError` 是**环境问题、不得记成数据失败**（R16）。`check_claims` / `negative_controls` 两道文本闸可用系统 python。
+> **⚠ dataset / 求解类脚本必须用项目 venv**（R60）：`verify_dataset` / `check_forms` / `score_baseline` / `msr_l3` / `eval_dataset` / `dedup_dataset` / `run_pipeline` 一律用 `…/envs/default/Scripts/python.exe`；**系统 python 缺 numpy/gmsh**，报 `ModuleNotFoundError` 是**环境问题、不得记成数据失败**（R16）。
+>
+> **⚠ `negative_controls.py` 也必须用 venv**（T-A10 实测：系统 python 直接 `ModuleNotFoundError: numpy`）：NC-52 会真的跑一次求解冒烟，链路 import 到 `feagpt.geometry`。**只有 `check_claims.py` 可以用系统 python**（纯文本/JSON 解析）。旧版这句写的是「两道文本闸可用系统 python」，已证伪。
 
 > **⚠ 绝不并行跑 ccx/abaqus（R61）**：`feagpt/solver.py` 的 `run()` 已加**全局求解锁** `feagpt_repro/.solve.lock`——第二个求解会直接抛错而不是静默空转（并行时返回码仍可能是 0，结果却是空的）。锁超过 1 h 视为崩溃残留，自动接管并警告。**手工跑 bat / 外部 abaqus 时也要确认没有别的求解在跑。**
 
@@ -97,9 +99,9 @@ git status --short              # 先看清工作区；有别人未提交的改�
 
 ### R-A9　负控先绿，且要报总数 + 编号
 - 任何基线/重打分前：`check_claims.py` + `negative_controls.py` 必须全绿。
-- 报告必须写“总数 + 编号集合”（当前 55/55，NC-1..22 + NC-15b + NC-23..53），只写“全绿”不算。
+- 报告必须写“总数 + 编号集合”，**且总数与编号以最新 `negative_controls_<N>.json` 实读为准、不写死在文档里**（R63），只写“全绿”不算。
 - 缺一条负控 = 失败，不是 skip；不得为了跑通而弱化/跳过负控。
-- 负控文件版本化（`negative_controls_55.json`）；旧版本归档 `reports/archive/`，不得混用。
+- 负控文件版本化（`negative_controls_<N>.json`，N = 实读条数）；根目录**只留最新一份**，旧版本归档 `reports/archive/`，不得混用。
 
 ### R-A10　范围锁
 - 只改 `TASK_CONTRACT` 的 allowlist 内文件；**默认不改** paper / rubric / prompt / headline / 其他模型 / 其他报告。
@@ -247,7 +249,7 @@ git status --short              # 先看清工作区；有别人未提交的改�
 
 ---
 
-## 7. 当前 SOT 快照（2026-10-27，仅供定位；以 live 文件为准）
+## 7. 当前 SOT 快照（2026-10-28，仅供定位；以 live 文件为准）
 
 | 项 | 当前值 |
 |---|---|
@@ -257,10 +259,10 @@ git status --short              # 先看清工作区；有别人未提交的改�
 | W5d 产物 | C-034 `reports/w5d_leaderboard.{json,md}`；C-035 prompt v3/v3b 消融否决、回退 v2 |
 | 当前 paper | `reports/papers/tasks_v6c.jsonl`，sha `9c1faa3a…` |
 | 当前 prompt | `gen_candidates_v2.js`，sha `ce225186…` |
-| 当前 rubric | v5.2（**R42–R58 判定表在 RUBRIC**；**R1–R41 在 `CLAIMS.md` 红线条**） |
-| 门禁 | 负控 **55/55**；`check_claims` **27/49/49** |
+| 当前 rubric | v5.6（**R42–R64 判定表在 RUBRIC**；**R1–R41 在 `CLAIMS.md` 红线条**） |
+| 门禁 | 负控全绿、`check_claims` 全过 —— **条数以 §0 实读为准**（R63：本表不写死计数） |
 | 已知 P2 | C-032 dev 22/30 已由 W5d-0 定位（`reports/diagnostics/dev_reversal_v6c_p2.md`，+1/−2）；C-033 1 编造 + 1 问错（W5d-1 prompt v3/v3b 消融否决，回退 v2，C-035）；C-033 字段级 +5.0pp BELOW |
-| 下一步 | ① 9 条 v1.1 案例的 Abaqus 双码：deck 已备，在 WorkBuddy 外跑 `_v11/run_v11_abaqus.bat`；② 考卷 v7（数据集 64 条 ≠ 考卷 55 条任务） |
+| 下一步 | ① **T-A10 已完成**（S-49/S-50/S-51 + C-036 + NC-54 + RUBRIC v5.6）；② **v7 paper**（9 条 v1.1 案例接进任务层，exam 25→34）→ **v7 candidates**（两模型重生成 + MSR + CI/榜单）→ C-032/C-033 转 historical |
 
 > **不要相信这张表本身**：每次开工前用 §0 的 5 个文件 + 2 个命令重新确认；表只是“你可能在哪”的路标。
 

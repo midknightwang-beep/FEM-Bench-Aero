@@ -277,6 +277,57 @@ headline 结构判定：仅 C-032 的 status 列带「（对外 headline）」�
     没有闸就是在裸奔——与当初「T-A3 先于 v7」同一条理由。
 - **建议**：**A**，作为 **T-A10** 单独立项，且**排在 v7 之前**。理由与 T-A9 完全相同：
   v7 会把 exam 25→34 并重算一批计数，闸先于它会便宜得多。
+- ✅ **处置（T-A10 已完成）**：选 A 并扩成三条闸 + 一条 claim + 十向负控。
+  - **S-49**（`claim_counts_consistent`）：覆盖 **C-001 / C-002 / C-004 / C-005 / C-036** 五条，
+    判据逐条落到结构化记号（规模 = 条数×树数=目录数；关 1 按**正文自己声明的阈值**现算通过数；
+    关 4 / 自洽 / 配对直接对 artifact；C-036 对四份 v1.1 活源）。**任一锚点解析不出即判红**。
+  - **S-50**（`external_numbers_consistent`）：没有采用「逐行对 artifact」这种脆弱做法，
+    而是把 `make_external_numbers.py` 重构出**纯函数 `build()`**，让闸**重跑生成器并逐字节比对**
+    （把「陈旧」和「手改」一次性覆盖），另加三条语义判据：分母口径列在场 / 每个 `A/B` 的
+    `B ∈ {spec 64, 目录 128}` 且 `A==B` / 两套分母都出现。
+  - **S-51**（`protocol_no_hardcoded_counts`）：新增 R63 —— 协议文件**不得写死**可推导计数。
+    ★ 这里改了原提议：专家 §6 建议「写死 counts + S-49 核对」，老王拍板改为
+    **「不写死，以 §0 实读为准」**。理由是这些数就是两个闸脚本自己的输出，抄进文档
+    等于制造第二数据源，而**第二数据源必然漂**（N-1/N-2/N-10/N-12 全是这个形态）。
+    原提议还会让 R58「不用闸校验协议文本」的边界失效；改法既消掉漂移面，又保住边界。
+  - **C-036**：新增 v1.1 数据层 claim（`check_forms 54/54`、`双码配对 64/64`、
+    `gate4 128/128`、`eval 64/0`）。★ 它补的正是原账本的空白：**`check_forms 54/0` 与「9/9 双码」
+    此前不在任何 claim 里**，却在 DATASET_V11 与对外文档反复使用。
+  - **NC-54 十向**，且**每向断言「红的原因对」**——因为 S-50 的陈旧判据几乎能吃下任何变异，
+    若只断言「是否红」，(a) 缺分母列与 (b) 分母混写这两条会永远得不到证伪。
+  - 实测：`check_claims` 28/54/52 全过；负控 56/56；NC-54 十向全红且原因命中。
+
+### N-13（中，T-A10 执行时发现）`manifest.summary.xval_cases_available` 停在 55
+
+- **冲突点**：`manifest.json` 的 `summary.xval_cases_available` = **55**，而 `verify_dataset_v11.json`
+  的 `pairing.paired` = **64**（`_xval/` 9 个目录 10-28 21:32 就跑完了）。`MANIFEST.md` 同段也写「55 条」。
+- **根因**：这两个字段由 `make_manifest.py` 的 `paired` 写入，而 **manifest 自 10-24 之后没重跑过** ——
+  双码补跑只往 `_xval/` 加了目录，没有回头重生成清单。**没有任何闸读这个字段**（S-49 只读 `n_cases`
+  与 `cases[].readings`），所以它漂了整整一天没人发现。
+- **处置**：先 dry-run 到临时路径**逐键比对**，确认重生成只改这一个键：
+  ```
+  差异键数 = 1
+    /summary/xval_cases_available   new=64  old=55
+  splits 相同: True {'train': 25, 'val': 17, 'test': 22}
+  ```
+  确认后重生成 `manifest.json` + `MANIFEST.md`，`git diff` 各 **1 行**。
+- **为什么不能直接重生成**：R-A2「先冻结后运行」——`make_manifest` 会重算 `split_of(spec)`，
+  若划分规则被动过，重跑就会静默改掉 25/17/22。**必须先证明「除目标键外零差异」再落盘。**
+
+### N-14（中，T-A10b）`AGENTS.md` §7 快照比专家指出的过期更多
+
+- **专家指出**：CLAUDE 仍写 27/49/49（实测确认）。
+- **实际**：`AGENTS.md` 有 **5 处**，且不只计数：
+  1. `:21` §0 → 27/49/49（应 27/50/49）
+  2. `:26` §0 → 「`check_claims` / `negative_controls` **两道文本闸可用系统 python**」
+     —— **实测证伪**：`python negative_controls.py` 直接 `ModuleNotFoundError: No module named 'numpy'`
+     （NC-52 要真跑求解冒烟，链路 import `feagpt.geometry`）。**专家自己的附录 A.2 也写了 `SYS="python"`
+     然后拿它跑负控，照抄会失败。**
+  3. §0 表格 → 「R42–R58 红线判定表 / R1–R58」落后 4 条红线
+  4. §7 → 「rubric v5.2」落后 3 个版本
+  5. §7 → 下一步仍写「9 条 v1.1 的 Abaqus deck 已备，在 WorkBuddy 外跑 bat」——**10-28 21:32 已完成**
+- **处置**：按 D5(b) 去掉全部写死计数（改「以 §0 实读为准」），并修 2/3/4/5 四处事实；
+  新增 **S-51** 防计数被抄回去。
 
 ---
 
@@ -334,7 +385,8 @@ pairing: 55 paired, 9 modeling-only, 0 xval-only -> MISMATCH     ← 等 §7 的
 | **T-A7**（gate3 证据链：N-6 + N-7 + N-8） | ✅ **已完成**（老王拍板 A）。真因比初判严重：d36 明细键是 `case` 而脚本查 `case_id` ⇒ **39 条翼盒从来没被逐条读取过**；且翼盒真判据是 vM 中位差 < 5%、不是 max\|u\| < 1%。修后 `gated_pass=57 / reported_only=7 / fail=0`，`headline = 39 field (34 d36 + 5 measured) + 18 scalar + 7 reported-only`，rc=0 |
 | **T-A8**（N-9：`external_numbers.md` 后 5 行仍读 `*_d36` 死快照） | ✅ **已完成**（2026-10-28）：三份 v1.1 活 artifact + 关 1 改现算 + 「分母口径」列 + 基线/M14 标版本 + README 去数字 |
 | **T-A9**（N-10：C-003 三计数无闸 → S-48 + NC-53） | ✅ **已完成**（`8efdbbe`）：R62/S-48 四条判据 + NC-53 四向；负控 55/55、语义 49/49 |
-| **T-A10**（N-12：C-001/2/4/5 与 `external_numbers.md` 无闸 → S-49） | ⏸ **待开工**，建议**先于 v7** |
+| **T-A10**（N-12：C-001/2/4/5 与 `external_numbers.md` 无闸） | ✅ **已完成**：S-49 / S-50 / S-51 + C-036 + NC-54 十向 + RUBRIC v5.6（R63/R64） |
+| **T-A10b**（N-14：AGENTS/CLAUDE 计数与 §7 快照过期） | ✅ **已完成**：按 D5(b) 去掉写死计数，改「以 §0 实读为准」 |
 | **考卷 v7**（接 v1.1 的 9 条进任务层） | ⏸ 未开工；按 R-A1 拆两步 + bridge，且 C-032 的 23/25 将不可比（R-A6） |
 
 > 本轮起按 N-5 的 **C+**：pre-flight 走 `--json "$TEMP/check_claims_preflight.json"`，官方 `reports/check_claims.json` 只在收口写一次（先负控后 check_claims）。

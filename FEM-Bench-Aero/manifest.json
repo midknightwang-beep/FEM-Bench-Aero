@@ -57,7 +57,7 @@
     },
     "n_duplicate_models": 0,
     "n_leaky_classes": 0,
-    "xval_cases_available": 55
+    "xval_cases_available": 64
   },
   "classes": {
     "001950844b2c": [

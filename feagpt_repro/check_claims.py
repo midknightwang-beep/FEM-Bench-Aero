@@ -31,7 +31,7 @@ README 同时写 RUBRIC v3.1 与 v4。**每轮靠人查不可持续 ⇒ 数字�
 声称值 != 实测值 ⇒ FAIL。注入模式（账本里没有 C-xxx claim，例如 NC-23..25 的临时账本）
 自动跳过，只留一条 skip 记录。
 """
-import argparse, collections, glob, hashlib, json, os, re, subprocess, sys
+import argparse, collections, glob, hashlib, importlib.util, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)                      # 仓库根 = F:/AI FEA Modeling DataSets
@@ -801,6 +801,399 @@ def gate3_counts_consistent(claims_md, artifact_json, claim_id='C-003'):
     return (not probs), ('；'.join(det) if not probs else '；'.join(probs))
 
 
+#: `modeling/`（ccx，可发布）+ `_xval/`（abaqus，禁发布）= 两棵求解器树。
+#: 不写死为「2」而是每次用 verify_dataset 的 `trees` 段核实（见 claim_counts_consistent）。
+SOLVER_TREES = 2
+
+
+def _row_of(claims_md, claim_id):
+    """取 CLAIMS 表里 `| C-xxx |` 开头的整行；找不到返回 None。"""
+    for ln in open(claims_md, encoding='utf-8').read().split('\n'):
+        if ln.lstrip().startswith(f'| {claim_id} |'):
+            return ln
+    return None
+
+
+def _cmp_int(label, got, want, probs, det):
+    if got is None:
+        probs.append(f'解析不出「{label}」')
+    elif int(got) != int(want):
+        probs.append(f'{label}={got} ≠ artifact {want}')
+    else:
+        det.append(f'{label}={got}')
+
+
+def _cmp_lit(label, lit, want, probs, det):
+    """按正文里写的小数位数做四舍五入比较（`0.4636` 对 `0.4635896…`）。"""
+    if lit is None:
+        probs.append(f'解析不出「{label}」')
+        return
+    dp = len(lit.split('.')[1]) if '.' in lit else 0
+    got, exp = round(float(lit), dp), round(float(want), dp)
+    if abs(got - exp) > 1e-12:
+        probs.append(f'{label}={lit} ≠ artifact {exp}（同 {dp} 位）')
+    else:
+        det.append(f'{label}={lit}')
+
+
+def claim_counts_consistent(claims_md, root):
+    """R63（T-A10；来自 N-12）：**逐条 claim 的正文数字必须等于 artifact 实读**。
+
+    根因（N-12，与 N-10 同型）：S-48 只覆盖了 C-003 一行——因为 N-10 是那条先暴露的。
+    换完数据源后实测 `grep "gate4_v11|verify_dataset_v11|eval_report_v11|external_numbers"
+    check_claims.py negative_controls.py` = **两文件均 0 命中**
+    ⇒ C-001/2/4/5 的正文数字与 `external_numbers.md` **全部裸奔**。
+    T-A8 刚把四条 claim 指向新的 v1.1 artifact，若不加闸，下一次改规模仍会静默漂移。
+
+    判据（**只认结构化记号**；任一锚点解析不出来一律判红，不得 skip —— R29 同源）：
+      C-001  `N 条 × T 树 = D 个算例目录`  → N==spec 数、T==求解器树数、D==N×T
+      C-002  `关 1 网格 P/T`、`minJ X`、`tri3 Z`、`阈值 minJ ≥ thr`
+             → T==spec 数；按正文声明的 thr 现算 P（min_jacobian≥thr 且 n_tri3==0）；
+               X==min(min_jacobian)；Z==Σ n_tri3
+      C-004  `关 4 语义 P/T`               → gate4_v11 的 n_pass / n_cases
+      C-005  `自洽 O/T`、`dup U`、`配对 P/T` → verify_dataset_v11 的 summary / pairing
+      C-036  `check_forms P/T`、`配对 P/T`、`gate4 P/T`、`eval N cases / F failures`
+             → 四份 v1.1 活源实读
+
+    ★ C-002 的阈值**从正文自己取**（`阈值 minJ ≥ thr`），不引外部常量：这样既避免在闸里
+      再复制一份阈值，又能在有人把阈值改小以「凑过」时当场暴露（分母/闸门一起动）。
+    ★ 求解器树数用 `verify_dataset_v11.json::trees` 的键数核实，不用魔法数 2。
+    """
+    if not os.path.exists(claims_md):
+        return False, f'CLAIMS 不存在（{claims_md}）'
+
+    def _j(name):
+        p = os.path.join(root, 'FEM-Bench-Aero', name)
+        if not os.path.exists(p):
+            raise FileNotFoundError(name)
+        return json.load(open(p, encoding='utf-8'))
+
+    probs, det = [], []
+    try:
+        man = _j('manifest.json')
+        g4 = _j('gate4_v11.json')
+        vf = _j('verify_dataset_v11.json')
+        ev = _j('eval_report_v11.json')
+        cf = json.load(open(os.path.join(root, 'feagpt_repro', 'reports', 'check_forms_v11.json'),
+                            encoding='utf-8'))
+    except Exception as e:
+        return False, f'artifact 缺失或结构不符：{e}'
+
+    sumry = man['summary']
+    n_spec = int(sumry['n_cases'])
+    readings = [c['readings'] for c in man['cases']]
+    trees = list((vf.get('trees') or {}).keys())
+    n_trees = len(trees) or SOLVER_TREES
+    n_dirs = n_spec * n_trees
+    vsum, vpair = vf['summary'], (vf.get('pairing') or {})
+
+    # ---- C-001：规模 = spec 数 × 树数 ----
+    cid = 'C-001'
+    line = _row_of(claims_md, cid)
+    if line is None:
+        probs.append(f'{cid} 行缺失')
+    else:
+        m = re.search(r'(\d+)\s*条\s*×\s*(\d+)\s*树\s*=\s*(\d+)\s*个?\s*算例目录', line)
+        if not m:
+            probs.append(f'{cid}: 解析不出「N 条 × T 树 = D 个算例目录」')
+        else:
+            sub_probs, sub_det = [], []
+            _cmp_int('条数', m.group(1), n_spec, sub_probs, sub_det)
+            _cmp_int('树数', m.group(2), n_trees, sub_probs, sub_det)
+            _cmp_int('目录数', m.group(3), n_dirs, sub_probs, sub_det)
+            probs += [f'{cid}: {p}' for p in sub_probs]
+            det += [f'{cid}: {"；".join(sub_det)}'] if not sub_probs else []
+
+    # ---- C-002：关 1 网格（minJ / tri3 / 通过数，阈值取自正文） ----
+    cid = 'C-002'
+    line = _row_of(claims_md, cid)
+    if line is None:
+        probs.append(f'{cid} 行缺失')
+    else:
+        sub_probs, sub_det = [], []
+        mthr = re.search(r'阈值\s*minJ\s*≥\s*([\d.]+)', line)
+        mpass = re.search(r'关\s*1\s*网格\s*(\d+)\s*/\s*(\d+)', line)
+        mmj = re.search(r'minJ\s+([\d.]+)', line)
+        mtri = re.search(r'tri3\s+(\d+)', line)
+        if not mthr:
+            sub_probs.append('解析不出「阈值 minJ ≥ thr」')
+            thr = None
+        else:
+            thr = float(mthr.group(1))
+        if not mpass:
+            sub_probs.append('解析不出「关 1 网格 P/T」')
+        else:
+            if thr is None:
+                pass
+            else:
+                n_pass = sum(1 for r in readings
+                             if float(r['min_jacobian']) >= thr and int(r['n_tri3']) == 0)
+                _cmp_int('通过数', mpass.group(1), n_pass, sub_probs, sub_det)
+                _cmp_int('分母', mpass.group(2), n_spec, sub_probs, sub_det)
+        _cmp_lit('minJ', mmj.group(1) if mmj else None,
+                 min(float(r['min_jacobian']) for r in readings), sub_probs, sub_det)
+        _cmp_int('tri3', mtri.group(1) if mtri else None,
+                 sum(int(r['n_tri3']) for r in readings), sub_probs, sub_det)
+        probs += [f'{cid}: {p}' for p in sub_probs]
+        det += [f'{cid}: {"；".join(sub_det)}'] if not sub_probs else []
+
+    # ---- C-004：关 4 语义 ----
+    cid = 'C-004'
+    line = _row_of(claims_md, cid)
+    if line is None:
+        probs.append(f'{cid} 行缺失')
+    else:
+        sub_probs, sub_det = [], []
+        m = re.search(r'关\s*4\s*语义\s*(\d+)\s*/\s*(\d+)', line)
+        if not m:
+            sub_probs.append('解析不出「关 4 语义 P/T」')
+        else:
+            _cmp_int('通过数', m.group(1), g4['n_pass'], sub_probs, sub_det)
+            _cmp_int('分母', m.group(2), g4['n_cases'], sub_probs, sub_det)
+        probs += [f'{cid}: {p}' for p in sub_probs]
+        det += [f'{cid}: {"；".join(sub_det)}'] if not sub_probs else []
+
+    # ---- C-005：自洽 / dup / 配对 ----
+    cid = 'C-005'
+    line = _row_of(claims_md, cid)
+    if line is None:
+        probs.append(f'{cid} 行缺失')
+    else:
+        sub_probs, sub_det = [], []
+        m = re.search(r'自洽\s*(\d+)\s*/\s*(\d+)', line)
+        if not m:
+            sub_probs.append('解析不出「自洽 O/T」')
+        else:
+            _cmp_int('自洽通过', m.group(1), vsum['n_ok'], sub_probs, sub_det)
+            _cmp_int('自洽分母', m.group(2), vsum['n_cases'], sub_probs, sub_det)
+        md_ = re.search(r'dup\s*(\d+)', line)
+        _cmp_int('dup', md_.group(1) if md_ else None,
+                 vsum['n_duplicate_cases'], sub_probs, sub_det)
+        mp = re.search(r'配对\s*(\d+)\s*/\s*(\d+)', line)
+        if not mp:
+            sub_probs.append('解析不出「配对 P/T」')
+        else:
+            _cmp_int('配对', mp.group(1), vpair.get('paired'), sub_probs, sub_det)
+            _cmp_int('配对分母', mp.group(2), n_spec, sub_probs, sub_det)
+        probs += [f'{cid}: {p}' for p in sub_probs]
+        det += [f'{cid}: {"；".join(sub_det)}'] if not sub_probs else []
+
+    # ---- C-036：v1.1 数据层（四份活源） ----
+    cid = 'C-036'
+    line = _row_of(claims_md, cid)
+    if line is None:
+        # C-036 是 T-A10 新增的；它若被删掉，本闸必须报红而不是静默少查一条（R29 同源）
+        probs.append(f'{cid} 行缺失（v1.1 数据层 claim 被删 ⇒ 关闭数不再受管）')
+    else:
+        sub_probs, sub_det = [], []
+        m = re.search(r'check_forms\s*(\d+)\s*/\s*(\d+)', line)
+        if not m:
+            sub_probs.append('解析不出「check_forms P/T」')
+        else:
+            _cmp_int('check_forms 通过', m.group(1), cf['n_pass'], sub_probs, sub_det)
+            _cmp_int('check_forms 分母', m.group(2),
+                     int(cf['n_pass']) + int(cf['n_fail']), sub_probs, sub_det)
+        mp = re.search(r'双码配对\s*(\d+)\s*/\s*(\d+)', line)
+        if not mp:
+            sub_probs.append('解析不出「双码配对 P/T」')
+        else:
+            _cmp_int('双码配对', mp.group(1), vpair.get('paired'), sub_probs, sub_det)
+            _cmp_int('双码配对分母', mp.group(2), n_spec, sub_probs, sub_det)
+        mg = re.search(r'gate4\s*(\d+)\s*/\s*(\d+)', line)
+        if not mg:
+            sub_probs.append('解析不出「gate4 P/T」')
+        else:
+            _cmp_int('gate4 通过', mg.group(1), g4['n_pass'], sub_probs, sub_det)
+            _cmp_int('gate4 分母', mg.group(2), g4['n_cases'], sub_probs, sub_det)
+        me = re.search(r'eval\s*(\d+)\s*cases\s*/\s*(\d+)\s*failures', line)
+        if not me:
+            sub_probs.append('解析不出「eval N cases / F failures」')
+        else:
+            _cmp_int('eval cases', me.group(1), ev['summary']['n_cases'], sub_probs, sub_det)
+            _cmp_int('eval failures', me.group(2), len(ev.get('failures') or []),
+                     sub_probs, sub_det)
+        probs += [f'{cid}: {p}' for p in sub_probs]
+        det += [f'{cid}: {"；".join(sub_det)}'] if not sub_probs else []
+
+    return (not probs), (' | '.join(det) if not probs else '；'.join(probs))
+
+
+def external_numbers_consistent(md_path, json_path, root):
+    """R64（T-A10）：**对外数字表必须有分母口径，且内容必须等于生成器的当前输出**。
+
+    根因（N-9 的收尾 / 专家第十三轮 §3.6）：`external_numbers.md` 是对外**唯一**数字源，
+    但它没有任何工具读——`grep "external_numbers" check_claims.py negative_controls.py`
+    = 0 命中。T-A8 把它的数据源换成活 artifact 之后，剩下的风险是：
+    ① 下次改数据规模时忘了重跑生成器 ⇒ 表比 artifact 旧（陈旧）；
+    ② 有人手改表里的数字（表头明确写「勿手抄」）；
+    ③ 「spec 数 64」与「算例目录数 128」两套分母被混用或互相加减（R54）。
+    这三条都是「sha256 绿但内容是错的」——与本轮 N-10/N-12 同型。
+
+    判据：
+      (a) **结构**：表头必须含「分母口径」列；每个数据行 4 列且该列非空
+          （空 = 口径被抹掉，读者会把两套分母当成一个）；
+      (b) **分母合法性**：表中每个 `A/B` 比值必须 A==B 且 B ∈ {spec 数, 算例目录数}
+          ——只要出现第三个值（如 55），说明有旧口径残留；且两套分母必须**都至少出现一次**
+          （否则「单列口径」退化成摆设）；
+      (c) **不陈旧**：磁盘上的 md / json 必须与 `make_external_numbers.build()` 的当前输出
+          **逐字节相同**（生成器是纯函数，见其 docstring）。手改或忘重跑都会在这里红；
+      (d) **可追溯**：json 的 `source_artifacts` 每一项都必须解析出真实存在的 .json。
+
+    ★ 为什么不检查「来源」列的文字：那是自然语言，按文字判会像 S-29 一样翻车。
+      追溯性放在 (d) 的 `source_artifacts`（结构化字段）上判。
+    """
+    for p in (md_path, json_path):
+        if not os.path.exists(p):
+            return False, f'文件不存在：{os.path.basename(p)}'
+    try:
+        manifest = json.load(open(os.path.join(root, 'FEM-Bench-Aero', 'manifest.json'),
+                                  encoding='utf-8'))
+    except Exception as e:
+        return False, f'manifest.json 读不出（分母无法核实）：{e}'
+    n_spec = int(manifest['summary']['n_cases'])
+    # 树数从 verify_dataset 的 trees 段核实，不用魔法数
+    try:
+        vf = json.load(open(os.path.join(root, 'FEM-Bench-Aero', 'verify_dataset_v11.json'),
+                            encoding='utf-8'))
+        n_trees = len((vf.get('trees') or {})) or SOLVER_TREES
+    except Exception:
+        n_trees = SOLVER_TREES
+    n_dirs = n_spec * n_trees
+    legal = {n_spec, n_dirs}
+
+    probs, det = [], []
+    md_disk = open(md_path, encoding='utf-8').read()
+
+    # ---- (a) 结构：分母口径列 ----
+    rows = [ln for ln in md_disk.split('\n') if ln.strip().startswith('|')]
+    if len(rows) < 3:
+        return False, '对外数字表没有表格行（或格式已变）'
+    header = [c.strip() for c in rows[0].strip().strip('|').split('|')]
+    if '分母口径' not in header:
+        probs.append('表头缺「分母口径」列（R64 要求；两套分母会被读成一个）')
+    col = header.index('分母口径') if '分母口径' in header else None
+    n_data, seen_denoms = 0, set()
+    for ln in rows[2:]:
+        cells = [c.strip() for c in ln.strip().strip('|').split('|')]
+        if not any(cells):
+            continue
+        n_data += 1
+        if col is None:
+            continue
+        if len(cells) <= col:
+            probs.append(f'行「{cells[0][:18]}…」列数不足，取不到分母口径')
+            continue
+        den = cells[col]
+        if not den:
+            probs.append(f'行「{cells[0][:18]}…」分母口径为空')
+            continue
+        # ---- (b) 分母合法性：该行所有 A/B 的分母 ----
+        for a, b in re.findall(r'(\d+)\s*/\s*(\d+)', cells[1] if len(cells) > 1 else ''):
+            a, b = int(a), int(b)
+            if a != b:
+                probs.append(f'行「{cells[0][:18]}…」比值 {a}/{b} 分子≠分母'
+                             f'（非全过却按全过写）')
+            if b not in legal:
+                probs.append(f'行「{cells[0][:18]}…」分母 {b} 既不是 spec 数 {n_spec} '
+                             f'也不是算例目录数 {n_dirs}（旧口径残留？）')
+            else:
+                seen_denoms.add(b)
+    if n_data == 0:
+        probs.append('表里没有数据行')
+    if col is not None:
+        missing = legal - seen_denoms
+        if missing:
+            probs.append(f'两套分母没有同时出现：缺 {sorted(missing)}'
+                         f'（口径列退化 ⇒ 读者分不清 spec 与算例目录）')
+        else:
+            det.append(f'分母两类齐（{n_spec} spec / {n_dirs} 目录）· {n_data} 行')
+
+    # ---- (d) 可追溯：source_artifacts 解析出真实文件 ----
+    try:
+        js = json.load(open(json_path, encoding='utf-8'))
+        srcs = js.get('source_artifacts') or {}
+    except Exception as e:
+        return False, f'external_numbers.json 读不出：{e}'
+    if not srcs:
+        probs.append('external_numbers.json 缺 source_artifacts（无法追溯）')
+    for section, val in srcs.items():
+        names = re.findall(r'([A-Za-z0-9_\-]+\.json)', str(val))
+        if not names:
+            probs.append(f'source_artifacts[{section}] 解析不出 .json 产物：{val}')
+            continue
+        for nm in names:
+            if not os.path.exists(os.path.join(root, 'FEM-Bench-Aero', nm)):
+                probs.append(f'source_artifacts[{section}] 指向不存在的 {nm}')
+    if srcs and not probs:
+        det.append(f'source_artifacts {len(srcs)} 项可追溯')
+
+    # ---- (c) 不陈旧：与生成器当前输出逐字节比对 ----
+    gen = os.path.join(root, 'feagpt_repro', 'make_external_numbers.py')
+    try:
+        spec_ = importlib.util.spec_from_file_location('_men_check', gen)
+        mod = importlib.util.module_from_spec(spec_)
+        spec_.loader.exec_module(mod)
+        out_now, md_now = mod.build()
+        want_md = mod.MD_HEADER + md_now + '\n'
+    except Exception as e:
+        probs.append(f'生成器重跑失败 ⇒ 表不可验证：{type(e).__name__}: {e}')
+        want_md, out_now = None, None
+    if want_md is not None:
+        if want_md != md_disk:
+            diff = [f'{i+1}' for i, (a, b) in
+                    enumerate(zip(md_disk.split('\n'), want_md.split('\n'))) if a != b][:5]
+            probs.append(f'external_numbers.md 与生成器当前输出不一致'
+                         f'（行数 disk={len(md_disk.split(chr(10)))} '
+                         f'gen={len(want_md.split(chr(10)))}；首个差异行 {diff}）'
+                         f'⇒ 陈旧或被手改，重跑 make_external_numbers.py')
+        else:
+            det.append('md 与生成器逐字节一致')
+        if (js.get('scale') or {}).get('cases_total') != (out_now.get('scale') or {}).get('cases_total'):
+            probs.append('external_numbers.json 的 scale.cases_total 与生成器当前输出不一致')
+
+    return (not probs), ('；'.join(det) if not probs else '；'.join(probs))
+
+
+def protocol_no_hardcoded_counts(paths):
+    """R63（T-A10；D5 拍板 = 「不写死，以 §0 实读为准」）：**协议文件里不得写死可推导的计数**。
+
+    为什么不是「写死 + 校验」：`check_claims` 的 claims / artifacts / semantic / 负控计数
+    都是**可推导**的——它们就是两个闸脚本自己的输出。把它抄进 `AGENTS.md`/`CLAUDE.md`
+    等于制造第二数据源，而第二数据源必然漂：
+      - N-1/N-2：INDEX 里两个「当前 headline」并存；
+      - N-10：C-003 的 34/15/6 漂到 39/18/7，全程绿灯；
+      - N-12：C-001/2/4/5 与 external_numbers 无闸；
+      - T-A10 顺带发现 `manifest.summary.xval_cases_available` 还停在 55（实测 64）。
+    这些都不是「忘了改」，是**结构上允许漂**。所以正解不是加闸核对副本，而是**不产生副本**：
+    文档只写「以 §0 实读为准」。本闸防的就是有人再把数字抄回去。
+
+    判据：`AGENTS.md` / `CLAUDE.md` 正文（含代码围栏）不得出现
+      ① `N claims / N artifacts / N semantic` 三元组
+      ② `check_claims` 后的 `N/N/N`
+      ③ `负控 N/N`
+    命中即红；两个文件都不存在也红（锚点缺失不得 skip）。
+    """
+    PATS = [
+        (re.compile(r'\d+\s*claims\s*/\s*\d+\s*artifacts\s*/\s*\d+\s*semantic'), 'claims/artifacts/semantic 三元组'),
+        (re.compile(r'check_claims\s*\**\s*\d+\s*/\s*\d+\s*/\s*\d+'), 'check_claims 三计数'),
+        (re.compile(r'负控\s*\**\s*\d+\s*/\s*\d+'), '负控总数'),
+    ]
+    probs, n_seen = [], 0
+    for p in paths:
+        if not os.path.exists(p):
+            probs.append(f'{os.path.basename(p)} 不存在')
+            continue
+        n_seen += 1
+        for i, ln in enumerate(open(p, encoding='utf-8').read().split('\n'), 1):
+            for pat, label in PATS:
+                if pat.search(ln):
+                    probs.append(f'{os.path.basename(p)}:{i} 写死了{label}'
+                                 f'（R63：改为「以 §0 实读为准」）')
+    if not n_seen:
+        return False, '两份协议文件都没读到（锚点缺失不得 skip）'
+    return (not probs), ('协议文件无写死计数' if not probs else '；'.join(probs[:6]))
+
+
 def prompt_no_blind_default(path, label='gen_candidates_v2.js'):
     """R50（专家第十轮 §3.1）：SYS prompt **不得**对题面已提及的特征授权默认值，
     同时**不得**把 `expected_clarifications` 注入 prompt（那等于泄漏答案）。
@@ -1386,6 +1779,37 @@ def semantic_checks(root, rows):
         '正文 N field / N scalar-disp / N reported-only == evidence_levels；'
         '加和 == n_cases；构成（d36 + 实测）== field；「不说 N/N」分母 == n_cases',
         _det48, _ok48)
+
+    # S-49（R63，T-A10；来自 N-12）：**S-48 只覆盖 C-003 一行**，其余 claim 的正文数字裸奔。
+    # 根因：grep "gate4_v11|verify_dataset_v11|eval_report_v11|external_numbers" 两文件 0 命中。
+    # T-A8 刚把 C-001/2/4/5 指到新的 v1.1 活源；没有闸，下次改规模还会静默漂。
+    _ok49, _det49 = claim_counts_consistent(
+        os.path.join(root, 'FEM-Bench-Aero', 'CLAIMS.md'), root)
+    add('S-49', 'C-001/2/4/5/036 的正文计数与分母必须等于 artifact 实读（R63）',
+        'C-001 条数×树数=目录数；C-002 关1 通过数(minJ≥正文阈值)+minJ+tri3；'
+        'C-004 关4；C-005 自洽+dup+配对；C-036 check_forms+配对+gate4+eval'
+        '（任一锚点解析不出即判红）',
+        _det49, _ok49)
+
+    # S-50（R64，T-A10；收尾 N-9/§3.6）：对外数字表是对外**唯一**数字源，此前无人读。
+    # 三条风险：忘重跑（陈旧）、手改（表头明写「勿手抄」）、spec/算例两套分母被混用。
+    _ok50, _det50 = external_numbers_consistent(
+        os.path.join(root, 'FEM-Bench-Aero', 'external_numbers.md'),
+        os.path.join(root, 'FEM-Bench-Aero', 'external_numbers.json'), root)
+    add('S-50', '对外数字表必须有分母口径且内容 == 生成器当前输出（R64）',
+        '表头含「分母口径」列且每行非空；每个 A/B 的 A==B 且 B ∈ {spec 数, 算例目录数}；'
+        '两套分母都出现；md/json 与 make_external_numbers.build() 逐字节一致；'
+        'source_artifacts 全部真实存在',
+        _det50, _ok50)
+
+    # S-51（R63，T-A10；D5 拍板「不写死」）：**防有人把计数抄回协议文件**。
+    # 写死 = 制造第二数据源 ⇒ 必漂（N-1/N-2/N-10/N-12 + xval_cases_available 都是这个形态）。
+    _ok51, _det51 = protocol_no_hardcoded_counts([
+        os.path.join(root, 'AGENTS.md'), os.path.join(root, 'CLAUDE.md')])
+    add('S-51', '协议文件（AGENTS/CLAUDE）不得写死可推导的计数（R63）',
+        '正文与代码围栏都不得出现 `N claims/N artifacts/N semantic`、'
+        '`check_claims N/N/N`、`负控 N/N`；应写「以 §0 实读为准」',
+        _det51, _ok51)
 
     return out
 

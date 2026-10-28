@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
- "n_active_claims": 27,
- "n_artifacts": 50,
+ "n_active_claims": 28,
+ "n_artifacts": 54,
  "n_fail": 0,
  "n_fail_structural": 0,
  "n_fail_semantic": 0,
@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_55.json）",
-   "expect": "55/55",
-   "actual": "55/55",
+   "desc": "C-019 负控通过数（源 negative_controls_56.json）",
+   "expect": "56/56",
+   "actual": "56/56",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "55",
-   "actual": "55",
+   "expect": "56",
+   "actual": "56",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 5.5",
-   "actual": "5.5",
+   "expect": "全部 = 5.6",
+   "actual": "5.6",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "55/55",
-   "actual": "55/55",
+   "expect": "56/56",
+   "actual": "56/56",
    "ok": true,
    "skip": false
   },
@@ -366,7 +366,7 @@
    "id": "S-44",
    "desc": "官方导航文件 INDEX 的 headline 指向与负控编号必须与 artifact 一致（R58）",
    "expect": "含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致",
-   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L24 主区间 NC-23..53 / 总数 55；artifact 最大 NC-53、共 55 条",
+   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L24 主区间 NC-23..54 / 总数 56；artifact 最大 NC-54、共 56 条",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793196388/1793196388；check 1793197403 vs 负控 1793196388",
+   "actual": "C-019 mtime 记录/实际 = 1793198439/1793198439；check 1793198461 vs 负控 1793198439",
    "ok": true,
    "skip": false
   },
@@ -401,6 +401,30 @@
    "actual": "field=39；scalar-disp=18；reported-only=7；加和 64=64；构成 34d36+5实测；分母 64/64",
    "ok": true,
    "skip": false
+  },
+  {
+   "id": "S-49",
+   "desc": "C-001/2/4/5/036 的正文计数与分母必须等于 artifact 实读（R63）",
+   "expect": "C-001 条数×树数=目录数；C-002 关1 通过数(minJ≥正文阈值)+minJ+tri3；C-004 关4；C-005 自洽+dup+配对；C-036 check_forms+配对+gate4+eval（任一锚点解析不出即判红）",
+   "actual": "C-001: 条数=64；树数=2；目录数=128 | C-002: 通过数=64；分母=64；minJ=0.4636；tri3=0 | C-004: 通过数=128；分母=128 | C-005: 自洽通过=128；自洽分母=128；dup=0；配对=64；配对分母=64 | C-036: check_forms 通过=54；check_forms 分母=54；双码配对=64；双码配对分母=64；gate4 通过=128；gate4 分母=128；eval cases=64；eval failures=0",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-50",
+   "desc": "对外数字表必须有分母口径且内容 == 生成器当前输出（R64）",
+   "expect": "表头含「分母口径」列且每行非空；每个 A/B 的 A==B 且 B ∈ {spec 数, 算例目录数}；两套分母都出现；md/json 与 make_external_numbers.build() 逐字节一致；source_artifacts 全部真实存在",
+   "actual": "分母两类齐（64 spec / 128 目录）· 13 行；source_artifacts 7 项可追溯；md 与生成器逐字节一致",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-51",
+   "desc": "协议文件（AGENTS/CLAUDE）不得写死可推导的计数（R63）",
+   "expect": "正文与代码围栏都不得出现 `N claims/N artifacts/N semantic`、`check_claims N/N/N`、`负控 N/N`；应写「以 §0 实读为准」",
+   "actual": "协议文件无写死计数",
+   "ok": true,
+   "skip": false
   }
  ],
  "results": [
@@ -413,8 +437,8 @@
    "ok": true,
    "problems": [],
    "size": 132652,
-   "sha256": "6488f55e81f6cbee0934261d9f5b450a010428225e437715b5e7c880c3ba8190",
-   "mtime": 1793107351
+   "sha256": "6eed0db8bc6b0cf6928d15fdb71ac98442ba532b6e44cebb1a1fd1608aed94d3",
+   "mtime": 1793198194
   },
   {
    "claim_id": "C-002",
@@ -425,8 +449,8 @@
    "ok": true,
    "problems": [],
    "size": 132652,
-   "sha256": "6488f55e81f6cbee0934261d9f5b450a010428225e437715b5e7c880c3ba8190",
-   "mtime": 1793107351
+   "sha256": "6eed0db8bc6b0cf6928d15fdb71ac98442ba532b6e44cebb1a1fd1608aed94d3",
+   "mtime": 1793198194
   },
   {
    "claim_id": "C-002",
@@ -616,9 +640,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 37351,
-   "sha256": "83cf6e8cac41f9efd9093bde69d6a4496ade1f5ab68715784865067e42351a08",
-   "mtime": 1793196532
+   "size": 37652,
+   "sha256": "b7debb96e5a131d77f6b2dd90cb7e0fd4857bb99930b92bab74b07b3f488de44",
+   "mtime": 1793198339
   },
   {
    "claim_id": "C-027",
@@ -825,6 +849,54 @@
    "mtime": 1793030557
   },
   {
+   "claim_id": "C-036",
+   "artifact": "feagpt_repro/reports/check_forms_v11.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 13481,
+   "sha256": "ed573421ced430d44f34a23dc68af111a47f8eec16387470b2cabe3716aee051",
+   "mtime": 1793113974
+  },
+  {
+   "claim_id": "C-036",
+   "artifact": "FEM-Bench-Aero/verify_dataset_v11.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 126006,
+   "sha256": "28ca501a7b01f0e96d5620f39dab1047724050795a405add1613695f2da8bdd5",
+   "mtime": 1793197317
+  },
+  {
+   "claim_id": "C-036",
+   "artifact": "FEM-Bench-Aero/gate4_v11.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 170461,
+   "sha256": "0c7ead7b3857223e4b553fb6488c898600d206bd0118504637a722636f25c352",
+   "mtime": 1793197309
+  },
+  {
+   "claim_id": "C-036",
+   "artifact": "FEM-Bench-Aero/eval_report_v11.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 7395,
+   "sha256": "9d44f675c84f706ea38c634ba9c8277929d830aca71e722de04ae331e20eb4a3",
+   "mtime": 1793197344
+  },
+  {
    "claim_id": "C-035",
    "artifact": "feagpt_repro/reports/diagnostics/prompt_v3_ablation.json",
    "exists": true,
@@ -994,15 +1066,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_55.json",
+   "artifact": "feagpt_repro/reports/negative_controls_56.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 11308,
-   "sha256": "30183aadc94be1fbfc9adbaf611a05df17cc948fbdcef240d2b4d673f60ba1c9",
-   "mtime": 1793196388
+   "size": 11755,
+   "sha256": "3f874b79a541856708873f2e4eb3cc9df06787183f7c296e569868d1fd61402e",
+   "mtime": 1793198439
   }
  ]
 }

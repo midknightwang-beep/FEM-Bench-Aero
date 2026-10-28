@@ -51,7 +51,14 @@ def fam_counts(manifest):
         fams[fam][split] += 1
     return fams
 
-def main(write=True):
+def build():
+    """**纯函数**：返回 `(out_dict, md_text)`，不写盘、不打印。
+
+    为什么拆出来（T-A10 / S-50 / R64）：对外数字表必须能被机械核对「是否等于
+    权威 artifact 的当前值」。S-50 的做法是**重跑本函数并逐字节比对磁盘文件**——
+    若表比 artifact 旧，或被人手改，当场判红。原 `main(write=True)` 会打印整张表，
+    放进 check_claims 会污染输出，故拆成 build() + main()。
+    """
     man = load('manifest.json')
     g4 = load('gate4_v11.json')
     vf = load('verify_dataset_v11.json')
@@ -284,16 +291,25 @@ def main(write=True):
         '- M14 三条限制的分母是 **v1 翼盒 34 条**，同样与 v1.1 不可比。',
     ]
 
+    return out, '\n'.join(md)
+
+
+MD_HEADER = ('# 对外数字源（单一来源，勿手抄）\n\n'
+             '> 由 `feagpt_repro/make_external_numbers.py` 从权威 JSON 生成；'
+             '更新数据集后必须重跑本脚本再改对外文档。\n\n')
+
+
+def main(write=True):
+    out, md_text = build()
     if write:
         json.dump(out, open(os.path.join(FEA, 'external_numbers.json'), 'w', encoding='utf-8'),
                   ensure_ascii=False, indent=1)
         open(os.path.join(FEA, 'external_numbers.md'), 'w', encoding='utf-8').write(
-            '# 对外数字源（单一来源，勿手抄）\n\n> 由 `feagpt_repro/make_external_numbers.py` 从权威 JSON 生成；'
-            '更新数据集后必须重跑本脚本再改对外文档。\n\n' + '\n'.join(md) + '\n')
+            MD_HEADER + md_text + '\n')
         print('[OK] 写盘 external_numbers.json / .md')
     else:
         print('[CHECK] 只校验未写盘')
-    print('\n'.join(md))
+    print(md_text)
 
 if __name__ == '__main__':
     main(write='--check' not in sys.argv)
