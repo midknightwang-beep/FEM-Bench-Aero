@@ -1,9 +1,10 @@
 # DATASET v1.1 —— 9 条内插留出（interior holdout）
 
-> **状态：数据层已落地（ccx 侧），双码（Abaqus）待外部手工补跑。**
+> **状态：数据层双码已闭合（ccx + Abaqus 两侧都在，64 paired）。**
 > 生成器 `feagpt_repro/_v11/make_v11_specs.py`；物理校验 `feagpt_repro/_v11/verify_v11_interpolation.py`；
-> 双码脚本 `feagpt_repro/_v11/run_v11_abaqus.bat`（**必须在 WorkBuddy 之外的普通 cmd 里跑**）。
-> 日期：2026-10-27。
+> 双码脚本 `feagpt_repro/_v11/run_v11_abaqus.bat`（**必须在 WorkBuddy 之外的普通 cmd 里跑**）——
+> 已于 2026-10-28 21:32 跑完，9/9 真跑通，见 §4。
+> 日期：2026-10-27 建；2026-10-28 双码闭合。
 
 ## 0. 一句话
 
@@ -67,20 +68,27 @@ v1.1：64 条 / 63 类 / train 25 · val 17 · test 22     ← train 与 val 一
 | `eval_dataset.py` | **PASS** | 含 `rule_reproduces_D12`（11 条锁定划分未被改动） |
 | `dedup_dataset.py` | **0 重复** | 63 个等价类，无重复模型 |
 | 内插物理校验 | **7/7 PASS** | `--strict` rc=0 |
-| `verify_dataset.py` | **CHECK**（未 PASS） | `pairing: 55 paired + 9 modeling-only ⇒ MISMATCH`——9 条只有 ccx，**缺 Abaqus 双码（gate 3）** |
+| `verify_dataset.py` | **PASS** ✅ | 双码补齐后：`pairing: 64 paired, 0 modeling-only, 0 xval-only -> PASS`；`cross-tree mesh agreement 64/64 identical`；`case consistency 128/128 OK`；`stress definition agreement (D8) PASS`；`VERDICT: PASS` |
+| 双码物理一致性（`verify_solvers.py`，逐条） | **9/9 实质通过**（8 gated + 1 reported-only） | 实测见 `reports/diagnostics/xval_v11_9cases.json`：翼盒 `max\|u\|` 0.268–0.401 %、vM 逐节点中位差 0.17–0.75 %；开孔板 0.101–0.185 %、中位差 0.01 %；加筋板 0.045 %、中位差 0.22 %；柱壳 1.495 % 但按 **D20 只报不判**（中位差 0.08 %） |
 | `check_forms.py` | **54/54 PASS（VERDICT: PASS）** | 串行重跑完成（10m25s，无其他 ccx 并行）。**首次运行是 50 PASS + 1 FAIL**：`T5.invocation` 报参考案例不存在 —— 根因不是 v1.1 数据，而是 `check_forms.py` 的 `DEFAULT_REFERENCE` 指向 `outputs_str/naca4412_wingbox_str3` 这个**本仓库不存在**的旧输出目录（潜伏缺陷，见 §5.4）。修完 T5 由 1 项扩到 4 项，故总数 51 → 54 |
+| `gate3_all55.py` | **57 gated_pass / 7 reported-only / 0 fail**（field=39, scalar_disp=18） | ⚠ 存在**证据链缺口**：新增 5 条翼盒被标 field-level 但该脚本无其场级读数（`disp_gap_pct=None`）。实测数字已在 `reports/diagnostics/xval_v11_9cases.json`，待接进门禁 —— 见 `CONFLICT.md` N-6 / N-7 |
 
 ## 5. 待办与教训
 
 ### 5.1 待办
 
-1. **双码（Abaqus）**：9 条 deck 已生成（`_v11/runs_abaqus/`）。在**普通 cmd**里跑
-   `feagpt_repro\_v11\run_v11_abaqus.bat`。跑完 `_xval/` 会补 9 个目录，`verify_dataset` 应从
-   `9 modeling-only` 变成 `64 paired / VERDICT: PASS`。
-   > 不能在 agent 内跑：沙箱注入 `tsbx.dll` ⇒ `pre.exe` 阶段 `__fastfail`（~19 秒延迟 +
-   > Input File Processor 报错 + `.dat` 无错 + ODB 空骨架），`dangerouslyDisableSandbox` 也无效。
+1. ~~**双码（Abaqus）**~~ ✅ **已完成**（2026-10-28 21:32，老王在**普通 cmd** 里跑 `run_v11_abaqus.bat`）。
+   9/9 真跑通（不是「返回 0」——逐条核过 `.truth.json` 的 `n_nodes` / `max_disp` / `max_von_mises` 非零、
+   `.odb.json` 有量；barrel 的 `2.64876` 与 `batch_summary.json` 的 `2.6487554` 逐位一致）。
+   `verify_dataset` ⇒ `64 paired / VERDICT: PASS`。
+   > ⚠ `batch_summary.json` **只写了 9 条中的 1 条**（barrel）——又一次印证「不能只信 summary 的 `ok:true`」：
+   > 目录里 9 条产物齐全，但汇总文件自身的写入有 bug。判据必须是产物本身。
+   > 不能在 agent 内跑的原因见旧记录：沙箱注入 `tsbx.dll` ⇒ `pre.exe` 阶段 `__fastfail`。
 2. ~~**`check_forms.py` 串行重跑一次**~~ ✅ **已完成**（T-A5）：串行、无并行 ccx，结果 **54 PASS / 0 FAIL**，产物 `feagpt_repro/reports/check_forms_v11.json`，日志 `_v11/check_forms_v11.log`（首次失败证据留档 `_v11/check_forms_v11_fail1.log`）。
-3. **考卷 v7（未做）**：把 9 条接进任务层 ⇒ exam 25 → 34，才能收窄 CI。
+3. **gate3 证据链（T-A7，待拍板）**：把 `reports/diagnostics/xval_v11_9cases.json` 接进 `gate3_all55.py`，
+   让新增 5 条翼盒用**实测**场级读数而不是继承整体 PASS；同时修第 141 行硬编码的「34/15/6」。
+   详见 `CONFLICT.md` N-6 / N-7，**选项 A 已备**。
+4. **考卷 v7（未做）**：把 9 条接进任务层 ⇒ exam 25 → 34，才能收窄 CI。
    代价：换卷后 **C-032 的 23/25 不再可比**（R30/R39，paper sha 变），必须重生成两模型候选
    （约 2 × 15 min）+ 全链 MSR（约 2 × 40 min）+ 重跑 CI/榜单。**这是下一轮的主任务。**
 

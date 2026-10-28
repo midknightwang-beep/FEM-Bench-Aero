@@ -1,0 +1,198 @@
+{
+ "milestone": "v1.1 close / W5B T-A7 (2026-10-28)",
+ "tool": "feagpt_repro/verify_solvers.py",
+ "command_root": {
+  "ccx": "feagpt_repro/_v11/runs",
+  "abaqus": "feagpt_repro/_v11/runs_abaqus"
+ },
+ "raw_log": "_v11_xval_9cases.log",
+ "note": "场级（逐节点）实测由 verify_solvers 独立计算，本文件只做转录。判据口径与 gate3_all55.py 完全一致；柱壳按 D20 只报不判。",
+ "n_cases": 9,
+ "n_gated": 8,
+ "n_reported_only": 1,
+ "n_pass": 9,
+ "all_pass": true,
+ "problems": [],
+ "cases": [
+  {
+   "case_id": "naca4412_wingbox_n_ribs6_chord1000",
+   "family": "wingbox",
+   "max_u_ccx_mm": 2.36213,
+   "max_u_abaqus_mm": 2.37127,
+   "max_u_gap_pct": 0.385,
+   "n_nodes_compared": 5300,
+   "vm_median_gap_pct": 0.37,
+   "vm_p90_gap_pct": 36.69,
+   "vm_peak_gap_pct": 18.13,
+   "verify_solvers_verdict": "PASS",
+   "gate": {
+    "reaction_set": "clamp",
+    "force_n": 500.0,
+    "max_u_gated": true,
+    "rule": "max|u| gap < 1.0%"
+   },
+   "moved": true,
+   "pass": true
+  },
+  {
+   "case_id": "naca4412_wingbox_size_chord900",
+   "family": "wingbox",
+   "max_u_ccx_mm": 3.20784,
+   "max_u_abaqus_mm": 3.22075,
+   "max_u_gap_pct": 0.401,
+   "n_nodes_compared": 4446,
+   "vm_median_gap_pct": 0.29,
+   "vm_p90_gap_pct": 38.97,
+   "vm_peak_gap_pct": 16.379,
+   "verify_solvers_verdict": "PASS",
+   "gate": {
+    "reaction_set": "clamp",
+    "force_n": 500.0,
+    "max_u_gated": true,
+    "rule": "max|u| gap < 1.0%"
+   },
+   "moved": true,
+   "pass": true
+  },
+  {
+   "case_id": "naca4412_wingbox_size_skin2p5",
+   "family": "wingbox",
+   "max_u_ccx_mm": 2.83654,
+   "max_u_abaqus_mm": 2.84771,
+   "max_u_gap_pct": 0.392,
+   "n_nodes_compared": 5074,
+   "vm_median_gap_pct": 0.32,
+   "vm_p90_gap_pct": 35.15,
+   "vm_peak_gap_pct": 18.284,
+   "verify_solvers_verdict": "PASS",
+   "gate": {
+    "reaction_set": "clamp",
+    "force_n": 500.0,
+    "max_u_gated": true,
+    "rule": "max|u| gap < 1.0%"
+   },
+   "moved": true,
+   "pass": true
+  },
+  {
+   "case_id": "naca4412_wingbox_str4",
+   "family": "wingbox",
+   "max_u_ccx_mm": 2.17553,
+   "max_u_abaqus_mm": 2.18189,
+   "max_u_gap_pct": 0.291,
+   "n_nodes_compared": 6995,
+   "vm_median_gap_pct": 0.75,
+   "vm_p90_gap_pct": 67.51,
+   "vm_peak_gap_pct": 17.798,
+   "verify_solvers_verdict": "PASS",
+   "gate": {
+    "reaction_set": "clamp",
+    "force_n": 500.0,
+    "max_u_gated": true,
+    "rule": "max|u| gap < 1.0%"
+   },
+   "moved": true,
+   "pass": true
+  },
+  {
+   "case_id": "naca4412_wingbox_taper070",
+   "family": "wingbox",
+   "max_u_ccx_mm": 3.02838,
+   "max_u_abaqus_mm": 3.03651,
+   "max_u_gap_pct": 0.268,
+   "n_nodes_compared": 6450,
+   "vm_median_gap_pct": 0.17,
+   "vm_p90_gap_pct": 24.68,
+   "vm_peak_gap_pct": 17.825,
+   "verify_solvers_verdict": "PASS",
+   "gate": {
+    "reaction_set": "clamp",
+    "force_n": 500.0,
+    "max_u_gated": true,
+    "rule": "max|u| gap < 1.0%"
+   },
+   "moved": true,
+   "pass": true
+  },
+  {
+   "case_id": "open_hole_panel_400x200_d30",
+   "family": "open_hole_panel",
+   "max_u_ccx_mm": 0.05828,
+   "max_u_abaqus_mm": 0.05838,
+   "max_u_gap_pct": 0.185,
+   "n_nodes_compared": 9524,
+   "vm_median_gap_pct": 0.01,
+   "vm_p90_gap_pct": 0.12,
+   "vm_peak_gap_pct": 0.655,
+   "verify_solvers_verdict": "PASS",
+   "gate": {
+    "reaction_set": "clamp",
+    "force_n": 4000.0,
+    "max_u_gated": true,
+    "rule": "max|u| gap < 1.0%"
+   },
+   "moved": true,
+   "pass": true
+  },
+  {
+   "case_id": "open_hole_panel_500x250_d45",
+   "family": "open_hole_panel",
+   "max_u_ccx_mm": 0.05851,
+   "max_u_abaqus_mm": 0.05857,
+   "max_u_gap_pct": 0.101,
+   "n_nodes_compared": 12863,
+   "vm_median_gap_pct": 0.01,
+   "vm_p90_gap_pct": 0.09,
+   "vm_peak_gap_pct": 2.125,
+   "verify_solvers_verdict": "PASS",
+   "gate": {
+    "reaction_set": "clamp",
+    "force_n": 4000.0,
+    "max_u_gated": true,
+    "rule": "max|u| gap < 1.0%"
+   },
+   "moved": true,
+   "pass": true
+  },
+  {
+   "case_id": "fuselage_barrel_d2000_l1800_str8_frm3",
+   "family": "fuselage_barrel",
+   "max_u_ccx_mm": 2.60917,
+   "max_u_abaqus_mm": 2.64876,
+   "max_u_gap_pct": 1.495,
+   "n_nodes_compared": 143702,
+   "vm_median_gap_pct": 0.08,
+   "vm_p90_gap_pct": 1.59,
+   "vm_peak_gap_pct": 11.428,
+   "verify_solvers_verdict": "CHECK",
+   "gate": {
+    "reaction_set": "all",
+    "force_n": null,
+    "max_u_gated": false,
+    "rule": "D20: model-wide max|u| REPORTED NOT GATED"
+   },
+   "moved": true,
+   "pass": true
+  },
+  {
+   "case_id": "stiffened_panel_700x600_str4",
+   "family": "stiffened_panel",
+   "max_u_ccx_mm": 0.01402,
+   "max_u_abaqus_mm": 0.01403,
+   "max_u_gap_pct": 0.045,
+   "n_nodes_compared": 61449,
+   "vm_median_gap_pct": 0.22,
+   "vm_p90_gap_pct": 1.56,
+   "vm_peak_gap_pct": 1.155,
+   "verify_solvers_verdict": "CHECK",
+   "gate": {
+    "reaction_set": "all",
+    "force_n": null,
+    "max_u_gated": true,
+    "rule": "max|u| gap < 1.0%"
+   },
+   "moved": true,
+   "pass": true
+  }
+ ]
+}

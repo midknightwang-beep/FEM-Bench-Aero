@@ -129,6 +129,55 @@ headline 结构判定：仅 C-032 的 status 列带「（对外 headline）」�
 
 ---
 
+### N-6（高）`gate3_all55.py` 把 v1.1 新增的 5 条翼盒标成 **field-level**，但该文件里没有它们的场级读数
+
+- **冲突点**：翼盒分支（`gate3_all55.py:48-65`）不自己算场级，而是到 `gates_all55_d36.json::gate3_dual_solver` 里按 `case_id` 找明细；**找不到时 `idx = None`**，于是 `pass = wingbox_ref.get('pass')`（整体 PASS）且 `disp_gap_pct = None`。v1.1 新增的 5 条翼盒在 d36 写于 2026-10-24，**当时这些 case 还不存在** ⇒ 必然 `idx is None` ⇒ **等级是 field-level，证据是空的**。
+- **这正是红线 R2 的镜像**：R2 说「reported-only 不得计入 PASS」，而这里是「无读数不得计入 field-level」。
+- **SOT 文件 / 行**：`feagpt_repro/gate3_all55.py:51-65,121`；artifact `FEM-Bench-Aero/gate3_all55_d37.json`
+- **实际值**（本轮实跑，64 条 manifest）：
+  ```
+  gate3_all55: gated_pass=57 reported_only=7 fail=0 (field=39, scalar_disp=18)
+  新增 5 条翼盒：evidence_level='field-level (displacement nodes + vM median)', pass=True, disp_gap_pct=None
+  ```
+  其中 `n_gated_pass=57` 把 5 条无证据的算成了 GATED。
+- **证据（本轮已实测，可补真读数）**：`reports/diagnostics/xval_v11_9cases.json`（由 `parse_xval_v11_log.py` 从 `_v11_xval_9cases.log` 转录，未做算术）
+
+  | case | max\|u\| 差 | vM 逐节点中位差 | p90 |
+  |---|---|---|---|
+  | naca4412_wingbox_n_ribs6_chord1000 | 0.385 % | 0.37 % | 36.69 % |
+  | naca4412_wingbox_size_chord900 | 0.401 % | 0.29 % | 38.97 % |
+  | naca4412_wingbox_size_skin2p5 | 0.392 % | 0.32 % | 35.15 % |
+  | naca4412_wingbox_str4 | 0.291 % | 0.75 % | 67.51 % |
+  | naca4412_wingbox_taper070 | 0.268 % | 0.17 % | 24.68 % |
+
+  中位差全在 0.17–0.75 %（门槛 5 % 内），max\|u\| 全在 0.27–0.40 %（门槛 1 % 内）⇒ **实测结论与「PASS」一致，问题只在证据链断裂，不是结论错**。
+  p90 高（25–68 %）是翼盒族已知特性：峰值落在 spar/rib 交汇的网格依赖点上，中位差才是判据（C-003 的 field-level 定义）。
+- **3 个选项**：
+  - **A（推荐）补证据**：`gate3_all55.py` 翼盒分支在 `idx is None` 时读 `reports/diagnostics/xval_v11_9cases.json`，把这 5 条标成 `field-level (measured 2026-10-28)` 并带上 `disp_gap_pct` / `vm_median_gap_pct`。对外表述随之变 **39 field + 18 scalar-disp + 7 reported-only**。代价：gate3 多一个输入文件依赖，须同时改 `check_claims` 的 artifact 清单（或确认它在 allowlist 里）。
+  - **B（保守）降级**：把这 5 条按 `scalar-level` 判（只比 `max_disp < 1 %`），不声称场级。代价：明明测了逐节点中位差却不用，等于**低估**证据，且与翼盒族其余 34 条口径不一致。
+  - **C（不改判定，只改标注）**：保留 PASS 但把 `evidence_level` 改成 `field-level (inherited, no per-case reading)`，并从 `n_gated_pass` 里剔除（`57 → 52`）。代价：artifact 内部自相矛盾（PASS 却不计入 gated_pass）。
+- **建议**：**A**。理由：实测数字已经在手，B 是丢弃证据、C 是制造内部矛盾；A 只改「证据从哪来」，不改任何阈值、不改判定方向，符合 R-A1 单变量（变量 = 证据来源，不是 rubric）。
+
+### N-7（中）`gate3_all55.py` 第 141 行的对外表述是**硬编码**，与实际计数不符
+
+- **冲突点**：脚本自己算出 `field=39, scalar_disp=18, reported_only=7`，但第 141 行 `print` 写死「34 field + 15 scalar-disp + 6 reported-only」；第 117–119 行的 `note` 也是写死的。
+- **SOT 文件 / 行**：`feagpt_repro/gate3_all55.py:117-119,141`
+- **实际值**：实际 39/18/7（64 条），文本说 34/15/6（55 条）。
+- **违反**：R-A4「计数类文本（行数、条数、负控数、exam 数、族分布）必须从 artifact 重新计算，不得沿用上一版」。
+- **风险**：中。`CLAIMS.md` C-003 的「34 field + 15 scalar-disp + 6 reported-only」是**同一组数字的另一个副本**；脚本 console 输出又一份。两份都会随 64 条过期，且没有任何闸能同时看住（`check_claims` 只读 claim 文本 + artifact 的 sha，不读脚本 print）。
+- **3 个选项**：**A（推荐）**改成从 `report` 现算打印 + `note` 现算拼字符串；B. 删掉这行 print，只留 `gated_pass/reported_only/fail` 数值；C. 不改，等 v7 一并重写。
+- **建议**：**A**，且与 N-6 同一次提交（同属 gate3 证据链，不是两个变量）。
+
+### N-8（低，命名债）`gate3_all55_d37.json` 装的是 64 条，文件名还带 `all55`
+
+- **冲突点**：v1.1 把数据集扩到 64 条，artifact 未改名；`check_forms_v11.json` 同理（54 项，名字不带项数，尚可）。
+- **SOT 文件**：`FEM-Bench-Aero/gate3_all55_d37.json`（被 `CLAIMS.md` C-003 的 artifact 列引用）
+- **风险**：低，纯命名。但它是「文件名暗示分母」的典型陷阱——下一个读的人会以为还是 55 条。
+- **3 个选项**：**A（推荐）**不改名（改名要同步改 C-003 + `check_claims` 的 artifact 清单，属于跨文件连锁），改为在 `note` 字段首句写明「文件名保留历史，内容为 64 条（v1.1）」；B. 改名 `gate3_all64_v11.json` + 同步三处引用；C. 不动。
+- **建议**：**A**，并在 `DATASET_V11.md` 的 artifact 表里注明。
+
+---
+
 ## 3. 门禁与工作区实况（本轮 pre-flight 原始结果）
 
 ```
@@ -175,8 +224,12 @@ pairing: 55 paired, 9 modeling-only, 0 xval-only -> MISMATCH     ← 等 §7 的
 | 任务 | 状态 |
 |---|---|
 | **T-A2**（文本：INDEX ⓪/⓪b/负控行 + AGENTS 三处 + CLAUDE.md 一行） | ✅ 已完成，验收见交付报告 |
-| **T-A3**（gate：`check_claims` 读 `INDEX.md` → S-44 + NC-49） | ⏭ 下一项，按老王要求**先于 v7** |
+| **T-A3**（gate：`check_claims` 读 `INDEX.md` → S-44 + NC-49） | ✅ 已完成（含 S-45/S-46/S-47 + NC-49..52） |
+| **T-A4**（R59 收口顺序 + R60 venv + S-45/S-46） | ✅ `6170f3b`，RUBRIC v5.3 |
+| **T-A5**（R61 全局求解锁 + S-47 + NC-52） | ✅ `405a4c9`，RUBRIC v5.4 |
+| **T-A6**（`check_forms` 陈旧参考路径 → 54 PASS/0 FAIL） | ✅ `cdef350` |
+| **Abaqus 双码**（v1.1 的 9 条） | ✅ **已完成**（老王在 WorkBuddy 外跑 `_v11/run_v11_abaqus.bat`，2026-10-28 21:32）。9/9 真跑通；`verify_dataset` = **64 paired / 0 modeling-only / VERDICT: PASS** |
+| **T-A7**（gate3 证据链：N-6 + N-7） | ⏸ **待拍板**（选项 A 已备，实测证据已落 `reports/diagnostics/xval_v11_9cases.json`） |
 | **考卷 v7**（接 v1.1 的 9 条进任务层） | ⏸ 未开工；按 R-A1 拆两步 + bridge，且 C-032 的 23/25 将不可比（R-A6） |
-| **Abaqus 双码**（v1.1 的 9 条） | ⏸ 等老王在 **WorkBuddy 外**跑 `_v11/run_v11_abaqus.bat` |
 
 > 本轮起按 N-5 的 **C+**：pre-flight 走 `--json "$TEMP/check_claims_preflight.json"`，官方 `reports/check_claims.json` 只在收口写一次（先负控后 check_claims）。

@@ -1,14 +1,14 @@
 {
  "milestone": "M14/D37-W4a",
  "note": "关 3 证据机读化（W4a 状态分级）：禁止把 reported-only 计入 PASS。翼盒 34 条 field-level（既有 xval_m8 判据引用）+ 15 条 scalar-disp-gated（<1%）+ 6 条柱壳 REPORTED-ONLY（D20 场级判据在归档包 F:/FEA_Archive_20261024/，需时解包重算）。对外表述统一为「34 field + 15 scalar + 6 reported-only」，不说 55/55。",
- "n_cases": 55,
- "n_gated_pass": 49,
- "n_reported_only": 6,
+ "n_cases": 64,
+ "n_gated_pass": 57,
+ "n_reported_only": 7,
  "n_fail": 0,
  "evidence_levels": {
-  "field": 34,
-  "scalar_disp": 15,
-  "reported_only": 6
+  "field": 39,
+  "scalar_disp": 18,
+  "reported_only": 7
  },
  "tolerance": {
   "disp_pct": 1.0
@@ -94,6 +94,34 @@
      "key": "xval.vM_scalar_reported_not_gated",
      "expected": "REPORTED NOT GATED (D8; field-level in archive)",
      "actual": "5.895%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "fuselage_barrel_d2000_l1800_str8_frm3",
+   "family": "fuselage_barrel",
+   "geometry_class": "e2d05ddc307e",
+   "evidence_level": "scalar-reported (D20 field-level gate in archive)",
+   "pass": true,
+   "gate_status": "REPORTED-ONLY (field-level gate in archive)",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "REPORTED NOT GATED (D20: barrel gate = structure_peak, field-level)",
+     "actual": "1.495%",
+     "pass": true
+    },
+    {
+     "key": "xval.max_w",
+     "expected": "REPORTED NOT GATED (D20: barrel gate = structure_peak, field-level)",
+     "actual": "1.970%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "5.158%",
      "pass": true
     }
    ]
@@ -219,6 +247,15 @@
    "disp_gap_pct": null
   },
   {
+   "case_id": "naca4412_wingbox_n_ribs6_chord1000",
+   "family": "wingbox",
+   "geometry_class": "b3016d214bb4",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
    "case_id": "naca4412_wingbox_n_ribs7_chord1000",
    "family": "wingbox",
    "geometry_class": "db9dab06eff6",
@@ -255,6 +292,15 @@
    "disp_gap_pct": null
   },
   {
+   "case_id": "naca4412_wingbox_size_chord900",
+   "family": "wingbox",
+   "geometry_class": "cd44c1908a70",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
    "case_id": "naca4412_wingbox_size_skin1p5",
    "family": "wingbox",
    "geometry_class": "4227a5994f3e",
@@ -267,6 +313,15 @@
    "case_id": "naca4412_wingbox_size_skin2",
    "family": "wingbox",
    "geometry_class": "621898f41a1d",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_size_skin2p5",
+   "family": "wingbox",
+   "geometry_class": "aec9b4e5b6d7",
    "evidence_level": "field-level (displacement nodes + vM median)",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
@@ -339,6 +394,15 @@
    "case_id": "naca4412_wingbox_str3_T",
    "family": "wingbox",
    "geometry_class": "37f4725e4b48",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_str4",
+   "family": "wingbox",
+   "geometry_class": "5237ded5b370",
    "evidence_level": "field-level (displacement nodes + vM median)",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
@@ -438,6 +502,15 @@
    "case_id": "naca4412_wingbox_taper060",
    "family": "wingbox",
    "geometry_class": "86cf8d83cb48",
+   "evidence_level": "field-level (displacement nodes + vM median)",
+   "pass": true,
+   "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
+   "disp_gap_pct": null
+  },
+  {
+   "case_id": "naca4412_wingbox_taper070",
+   "family": "wingbox",
+   "geometry_class": "ec5bfe48af57",
    "evidence_level": "field-level (displacement nodes + vM median)",
    "pass": true,
    "source": "gates_all55_d36.json::gate3_dual_solver（判据 xval_m8，D18–22）",
@@ -621,6 +694,28 @@
    ]
   },
   {
+   "case_id": "open_hole_panel_400x200_d30",
+   "family": "open_hole_panel",
+   "geometry_class": "bb04f7124374",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.185%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "0.660%",
+     "pass": true
+    }
+   ]
+  },
+  {
    "case_id": "open_hole_panel_400x200_d40",
    "family": "open_hole_panel",
    "geometry_class": "68f73f8a4e9f",
@@ -682,6 +777,28 @@
      "key": "xval.vM_scalar_reported_not_gated",
      "expected": "REPORTED NOT GATED (D8; field-level in archive)",
      "actual": "1.900%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "open_hole_panel_500x250_d45",
+   "family": "open_hole_panel",
+   "geometry_class": "e16d67d69ad4",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.101%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "2.171%",
      "pass": true
     }
    ]
@@ -770,6 +887,28 @@
      "key": "xval.vM_scalar_reported_not_gated",
      "expected": "REPORTED NOT GATED (D8; field-level in archive)",
      "actual": "1.251%",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "case_id": "stiffened_panel_700x600_str4",
+   "family": "stiffened_panel",
+   "geometry_class": "e30e5c5db44d",
+   "evidence_level": "scalar-level (dual-solver scalars)",
+   "pass": true,
+   "gate_status": "GATED",
+   "checks": [
+    {
+     "key": "xval.max_disp",
+     "expected": "<1.0%",
+     "actual": "0.045%",
+     "pass": true
+    },
+    {
+     "key": "xval.vM_scalar_reported_not_gated",
+     "expected": "REPORTED NOT GATED (D8; field-level in archive)",
+     "actual": "1.245%",
      "pass": true
     }
    ]

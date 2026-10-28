@@ -53,10 +53,10 @@ PY="C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"  
 "$PY" trivial_baselines.py --levels L3 --tasks reports/papers/tasks_v6c.jsonl --out trivial_baselines_L3_v6c.json --out-dir reports
 
 # ⓪v11 v1.1 数据层校验（**必须走 $PY = 项目 venv**：系统 python 缺 numpy/gmsh，见 R60/S-46）
-"$PY" verify_dataset.py --root ../FEM-Bench-Aero        # 目标 64 paired / VERDICT: PASS（现 55+9，等 Abaqus）
+"$PY" verify_dataset.py --root ../FEM-Bench-Aero        # ✅ 2026-10-28 双码闭合后：64 paired / VERDICT: PASS
 "$PY" eval_dataset.py   --root ../FEM-Bench-Aero        # 含 D12 复现断言
 "$PY" dedup_dataset.py  --root ../FEM-Bench-Aero        # 目标 0 重复
-"$PY" check_forms.py --json reports/check_forms_v11.json # 串行；勿与其他 ccx 并行（R61 待落）
+"$PY" check_forms.py --json reports/check_forms_v11.json # 串行；R61 全局锁已落（并发会抛错，不会静默空转）
 "$PY" _v11/verify_v11_interpolation.py --strict         # 内插夹逼 7/7；不依赖 gold
 # ⓪-hist（**historical，不是当前 headline**）：C-029 / prompt v1 代 / `candidates_l3_v6c`
 #   当前 headline 见 §1（C-032，prompt v2 代）。本段只服务于 prompt_v2_effect_glm 消融复现；
