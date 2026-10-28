@@ -248,8 +248,8 @@
     <h1>FEM-Bench-Aero · 项目进展看板</h1>
     <div class="sub">给老王做检查用的那一页 —— 每条结论都能点开看命令和数字，你可以自己跑一遍</div>
     <div class="stamp">
-      更新于 <b>2026-10-28 23:15</b><br>
-      当前里程碑 <b>T-A10b：考卷 v7 冻结（64 条任务，C-037）· 三层口径别混：数据集 v1.1 = 64 条 ／ 考卷 v7 = 64 条 ／ headline 仍是 C-032（v6c 55 条、exam 23/25 = 92.0%）· 负控 57/57 · 红线 R1–R65 · RUBRIC v5.7 · <span style="color:#b45309">待办：N-17 拍板 → v7 candidates</span></b><br>
+      更新于 <b>2026-10-29 00:10</b><br>
+      当前里程碑 <b>T-A10b：考卷 v7 冻结（64 条任务，C-037）· 三层口径别混：数据集 v1.1 = 64 条 ／ 考卷 v7 = 64 条 ／ headline 仍是 C-032（v6c 55 条、exam 23/25 = 92.0%）· 负控 58/58 · 红线 R1–R66 · RUBRIC v5.8 · <span style="color:#b45309">待办：v7 candidates（N-17 已拍板 C'）</span></b><br>
       数据集规模 <b>64 条 / 树 × 2 树（train 25 / val 17 / test 22）· 考卷 v7 = L1/L2/L3 各 64 行（老 165 行逐字节不变）</b>
     </div>
   </header>
@@ -1937,6 +1937,19 @@ const REVIEW = [
     '<b>★ 负控内部纪律又咬到两次</b>：① NC-55 的 <code>_bad_spec</code> 想「把 input 里某个数 +1」，但 L3 的 input 只有 <code>{\'nl\': 字符串}</code>、无数值可 bump ⇒ 变异<b>静默不生效</b>、被误判成「闸漏判」；② <b>NC-27 第二次「写死锚点」</b>：<code>replace(\'任务层 **165 行**\')</code> 而 C-010 已改成 192 ⇒ 变异不命中、转红。改为正则现取',
     '<b>门禁</b>：<b>负控 57/57</b>（新增 NC-55 三向）；<code>check_claims</code> <b>29 claims / 58 artifacts / 53 语义项</b>全过（新增 S-52）；RUBRIC <b>v5.7</b>、红线 <b>R1–R65</b>；<code>_verify_tasks_v7.py</code> PASS；<code>r32_audit --scope exam</code> rc=0；commit <code>1505e3c</code>'],
    files:['feagpt_repro/tasks/l2_omit_map.json','feagpt_repro/tasks/nl_frozen.jsonl','feagpt_repro/reports/papers/tasks_v7.jsonl','feagpt_repro/reports/papers/nl_human_v7.jsonl','feagpt_repro/_verify_tasks_v7.py','feagpt_repro/check_l2_leak.py','feagpt_repro/reports/l2_name_leak_2026-10-28.md','feagpt_repro/reports/negative_controls_57.json','FEM-Bench-Aero/CLAIMS.md','FEM-Bench-Aero/RUBRIC.md','CONFLICT.md']},
+  {id:'r73', g:'W5/扩量', c:'<b>N-17 拍板 C\' 落实：L2 澄清题「无效子集」双口径（C-038）</b>——`clarify_all n=64` ／ `clarify_informative n=45` ／ invalid 19，<b>不动一道题</b>；新增 <b>R66 / S-53 / NC-56 四向</b>',
+   q:'<b>为什么不能改题</b>：L2 靠「删一个字段、要求模型澄清」出题，但 `spec.name = case_id` 是<b>人给的描述性名字</b>，19/64 条把被删的值写在自己身上（`..._d30` 省略 `hole_d`、`..._str8_frm3` 省略 `n_frames`）⇒ 模型读 name 就知道，<b>不必问</b>。<b>此时判它「clarify 失败」是判据的错，不是模型的错</b>。而改题（改名/换省略字段）会连历史一起废掉，且与刚立起来的 R65 任务层冻结<b>直接冲突</b> ⇒ 只能改口径',
+   cmd:'"$PY" report_l2_clarify.py --out reports/l2_clarify_dual.json --md reports/l2_clarify_dual.md\n"$PY" negative_controls.py      # 58/58（含 NC-56 四向）\n"C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe" check_claims.py   # 30 claims / 60 artifacts / 54 语义',
+   ev:['<b>★ 双口径必须并列，且禁止相减</b>：`clarify_all` n=<b>64</b>（全卷，与旧口径同分母、跨版本可比）／`clarify_informative` n=<b>45</b>（name 没泄漏的可判子集，informative 70.3%）／invalid <b>19</b>（老 14 / 新 5）。两个分母不同 ⇒ <b>R54 一并适用</b>：`delta_allowed=false` 写进 artifact，<b>禁止相减、禁止据此排名</b>',
+    '<b>★ 边界不含糊</b>：`status = not_run`、`passed = null` —— L2 <b>至今从未跑过模型</b>（全仓无 `clarification.json`，`score_baseline.py` 只读 L3），所以空着是<b>如实</b>不是漏算。S-53 现在只守「两个分母在场」；等 L2 首次跑分，`status` 升 `scored`，闸<b>自动加严</b>为「两侧都必须有整数 passed」——<b>不假装现在守住了还没发生的事</b>',
+    '<b>★★ 顺带更正我自己一条错判（本轮最重要的一条）</b>：上一版 `CONFLICT N-17` 写「C-032 报的 clarify 通过率被这 19 条污染」——<b>这句是错的</b>。实测：`score_baseline.py` 只读 `input_level=="L3"`，C-032 的 `fpr.n_clarify_tasks = <b>4</b>` 是 <b>L3 的 4 条</b>；且 L3 的 prompt <b>只发 `input.nl`</b>（`gen_candidates_v2.js:138`，<b>task_id 不进 prompt</b>），5 条 L3 澄清题的题面逐条核过（「若干个普通框」「若干翼肋」「若干根长桁」「孔周加密」，<b>均未给数</b>）⇒ <b>N-17 不污染任何已发布数字</b>，它是 L2 轨道的<b>潜伏</b>缺陷。优先级从「已污染」降为「待上膛」',
+    '<b>★★ 判据自己漏了比没判据更危险</b>：泄漏判据第一版用 `\\bd(\\d+)` 匹配 `_d30` —— `_` 是 word 字符，`\\b` <b>不成立</b> ⇒ <b>只抓到 5 条、漏了 14 条，给了个好看的假数</b>。改 `(?:^或_)` 语义前缀才对。中间还试过「裸数字碰撞」（抓到 23 条），把 `naca4412_wingbox_str4`（省略 `rib_thickness`，而 `str4` 揭示的是 `n_stringers`）这类<b>数值撞车</b>误判成泄漏',
+    '<b>★ 新闸 S-53 四条断言</b>：①两块都必须在（只报一侧即红）；②闭合 `all − inf == invalid`；③<b>informative 掩码必须与现算一致</b>（防 artifact 过期：题改了掩码没重算，数字看着对其实换了一批题）；④`delta_allowed is False` + `status=scored` 时两侧都必须有整数 `passed`',
+    '<b>★ NC-56 四向必须各自成为唯一失败项</b>：缺一块 / 掩码过期 / 允许相减 / 只报一侧分。设计要点与 NC-55 同源——<b>「缺一块」会一次吃掉后三条</b>，若只断言「红了吗」，后三条<b>永远得不到证伪</b>，长期假绿（强判据吃弱判据）',
+    '<b>★ 踩到一个只在临时目录才现形的 bug</b>：`os.path.relpath` 在负控的 `tempfile.mkdtemp()`（C:）与仓库（F:）<b>跨盘符时直接抛 ValueError</b> ⇒ 闸在临时目录里根本跑不起来、等于无法被证伪。已加 `_rel()` 兜底。这条是 NC-56 第一次运行就炸出来的，<b>不做负控就发现不了</b>',
+    '<b>★ markdown 表格里的竖线会切单元格</b>：C-038 的正文引了正则 `(?:^|_)`，裸竖线把该行切成 9 格 ⇒ 8 列表头错位、`status` 被读成 `coverage`、claim 总数停在 29 而<b>闸一声不响</b>。改用 `&#124;` 才对。<b>解析器按行切、不认转义 —— 写数据类文档时凡含正则一律用实体</b>',
+    '<b>门禁</b>：负控 <b>58/58</b>（新增 NC-56 四向）；`check_claims` <b>30 claims / 60 artifacts / 54 语义项全过</b>（新增 S-53）；RUBRIC <b>v5.8</b>、红线 <b>R1–R66</b>；artifact 幂等（重跑 sha 不变）；`_dash_check.js` PASS'],
+   files:['feagpt_repro/report_l2_clarify.py','feagpt_repro/reports/l2_clarify_dual.json','feagpt_repro/reports/l2_clarify_dual.md','feagpt_repro/check_l2_leak.py','feagpt_repro/reports/negative_controls_58.json','FEM-Bench-Aero/CLAIMS.md','FEM-Bench-Aero/RUBRIC.md','CONFLICT.md']},
 ];
 
 /* ============ 渲染 ============ */
