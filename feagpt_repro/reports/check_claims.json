@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
  "n_active_claims": 27,
- "n_artifacts": 49,
+ "n_artifacts": 50,
  "n_fail": 0,
  "n_fail_structural": 0,
  "n_fail_semantic": 0,
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793196388/1793196388；check 1793196587 vs 负控 1793196388",
+   "actual": "C-019 mtime 记录/实际 = 1793196388/1793196388；check 1793197403 vs 负控 1793196388",
    "ok": true,
    "skip": false
   },
@@ -418,15 +418,27 @@
   },
   {
    "claim_id": "C-002",
-   "artifact": "FEM-Bench-Aero/gates_all55_d36.json",
+   "artifact": "FEM-Bench-Aero/manifest.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 64437,
-   "sha256": "acb5a86c30bea267799c0c4de25ec2539574a5aa6945d5d483750fca5a65e7fe",
-   "mtime": 1792837938
+   "size": 132652,
+   "sha256": "6488f55e81f6cbee0934261d9f5b450a010428225e437715b5e7c880c3ba8190",
+   "mtime": 1793107351
+  },
+  {
+   "claim_id": "C-002",
+   "artifact": "FEM-Bench-Aero/eval_report_v11.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 7395,
+   "sha256": "9d44f675c84f706ea38c634ba9c8277929d830aca71e722de04ae331e20eb4a3",
+   "mtime": 1793197344
   },
   {
    "claim_id": "C-003",
@@ -442,27 +454,27 @@
   },
   {
    "claim_id": "C-004",
-   "artifact": "FEM-Bench-Aero/gate4_d36.json",
+   "artifact": "FEM-Bench-Aero/gate4_v11.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 147036,
-   "sha256": "609363829b8a97553c9b8a038cc85efdf045b56c3f26d3853f5108ffa68c2fd5",
-   "mtime": 1792839077
+   "size": 170461,
+   "sha256": "0c7ead7b3857223e4b553fb6488c898600d206bd0118504637a722636f25c352",
+   "mtime": 1793197309
   },
   {
    "claim_id": "C-005",
-   "artifact": "FEM-Bench-Aero/verify_dataset_d36.json",
+   "artifact": "FEM-Bench-Aero/verify_dataset_v11.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 108438,
-   "sha256": "6aa774e1d5ee3c96d4e905066f2314a7b572cbf615b1fe076f15506827e7472e",
-   "mtime": 1792839424
+   "size": 126006,
+   "sha256": "28ca501a7b01f0e96d5620f39dab1047724050795a405add1613695f2da8bdd5",
+   "mtime": 1793197317
   },
   {
    "claim_id": "C-006",
