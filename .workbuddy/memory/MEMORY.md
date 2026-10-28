@@ -9,7 +9,7 @@
 - **发现不一致写 `CONFLICT.md`**（3 选项 + 证据 + 建议），不许边做边修。已证伪路线不许重做（prompt v3/v3b，C-035）。
 
 ## 环境铁律
-- 🚨 **Abaqus 在 agent 内必失败** = WorkBuddy 沙箱注入 `tsbx.dll`（pre.exe `__fastfail`：~19 s 延迟 + Input File Processor 报错 + .dat 无错 + ODB 空骨架）。`dangerouslyDisableSandbox` 无效 ⇒ 只能 **WorkBuddy 外普通 cmd 跑 bat**。
+- 🚨 **Abaqus 在 agent 内必失败** = WorkBuddy 沙箱注入 `tsbx.dll`（pre.exe `__fastfail`，~19 s 延迟后挂、.dat 无错、ODB 空骨架；`dangerouslyDisableSandbox` 无效） ⇒ 只能 **WorkBuddy 外普通 cmd 跑 bat**。
 - venv = `C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe`（系统 python 无 numpy/gmsh）。**负控也要 venv**（NC-52 真跑求解）⇒ 文档「两道文本闸可用系统 python」已过期。
 - **不许并行跑 ccx/abaqus** ⇒ 已升级为机制 `feagpt/solver.py` `run()` 全局锁 `.solve.lock`（R61/S-47/NC-52）。手工 bat 里 `resummarize.py` 必须先于 `make_dataset`。
 
@@ -22,13 +22,11 @@
 - **★★「跑不完」≠「跑通了」**：`check_forms` 被记「未完成」数月，串行跑完才暴露真 FAIL。**一直没跑完的检查等于没检查**，它同时掩盖「跑通了会红」。
 - **★★ 汇总/明细都会骗人，判据永远是产物**：`batch_summary.json` 会**漏写**（9 条只写 1 条）；d36 明细**有 rows 但键名不符**（`case` vs `case_id`）⇒ 39 条翼盒从未被逐条读，`None` 被当正常值放行。**接入任何明细先打印「命中数/总条数」，命中 0 必须报错，不许静默降级**。
 - **★★ 等级高于证据 = R2 的镜像**：无读数不得计入 field-level；**继承来的 PASS 与实测的 PASS 必须分开标**。
-- **★ 同族≠同判据**：套错判据（拿 1% 判翼盒）能自我验证成「通过」——**结论碰巧相同不等于口径对**。
-- **★ claim 的数字无闸就会漂**：`check_claims` 只核 sha 不核计数 ⇒ C-003 从 34/15/6 漂到 39/18/7 全程绿灯（N-10）。
 - **★ 验证工具的口径参数漏传 ⇒ 假 FAIL**：`verify_solvers` 漏 `--spec` 退回全节点求和，ccx 是 total force（施加+反力抵消）⇒ 印 `residual 99.99999%`。**先怀疑参数再怀疑模型**。
 - **★ 负控变异锚点现取，不写死**（写死 `NC-23..48` 在区间变 `..49` 时误判）；锚点缺失判红不得 skip。新闸上线必须同时测「自比 A==B」（可比性闸曾把 `comparability(x,x)` 也拒了）。
 - **★ 判据只认结构化字段 + 自指标记**，别用自然语言表述（曾把被测条自己过滤掉）；同一文件「当前」二字只能出现一处。
 - **★ 无工具读的文件 = 无闸（R58）**：只管数据类 SOT；AGENTS/CLAUDE 是协议文本，别用闸校验它自己所属的规约。
-- 其余零散坑（铺层符号配对、翼盒坐标轴序、峰值是离散选择、MAPE 带 CI、`_wingbox_planar_shape` 返回序）见归档。
+- **★★ sha256 只证「文件没被换」，不证「数是对的」（R62）**：claim 正文的计数必须有闸与 artifact 逐项比对，否则漂了也全绿（C-003 从 34/15/6 漂到 39/18/7，48 项语义检查全程绿）。**判据解析不出来一律判红、不得 skip**；**建完闸第一件事是检查自己刚写的东西有没有绕开它**（我曾把同一组数字抄进闸不覆盖的另一个文件）。「上一代」也只许留一份，旧的进 `reports/archive/`。
 
 ## 数字与口径
 - headline 只有一条标在 status 列，第二模型一律 `supporting`；数字不引用 `eval_runs/`（gitignore）。
