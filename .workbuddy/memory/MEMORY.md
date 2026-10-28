@@ -41,6 +41,9 @@
 - **补覆盖点 ≫ 补同质样本**；**标准化系数不是幂指数**（指数 = `w / sd(log x_f)`）；**交互项必须用实测单轴响应相乘**。
 - **厚度维退化取决于载荷口径不是轴的属性**：载荷随 t 缩放则与膜刚度精确抵消；载荷固定则 `u∝1/t`。
 - **只打印不参与判定的检查不是检查**（`verify_dataset` pairing MISMATCH 而 `all_ok` 不含它 ⇒ 仍 PASS）。
+- **★★ 汇总文件会漏写 ⇒ 产物条数必须与汇总条数对账**：`run_v11_abaqus.bat` 9 条全跑通（9 个目录的 `.truth.json`/`.odb.json` 齐全且读数非零），但 `batch_summary.json` **只写了 1 条**（barrel）。此前「不能只信 summary 的 `ok:true`」防的是它**说谎**，这次它**漏写**。判据永远是产物本身，且**要数目录数与 summary 条目数**是否一致。
+- **★★ 等级高于证据 = 红线 R2 的镜像**：R2 说「reported-only 不得计入 PASS」，反过来「无读数也不得计入 field-level」。`gate3_all55.py` 翼盒分支在 d36 明细里找不到新增 case 时 `idx=None` ⇒ `pass` 继承整体、`disp_gap_pct=None`，却仍印 `field-level (displacement nodes + vM median)`，直接进了 `n_gated_pass`。**继承来的 PASS 与实测的 PASS 必须分开标**。
+- **★ 验证工具的口径参数漏传 ⇒ 假 FAIL**：`verify_solvers.py` 不传 `--spec` 会退回全节点求和，而 ccx 的 `*NODE FILE, F` 是 **total external force**（施加 + 反力自相抵消）、abaqus 的 `RF` 只在约束点非零 ⇒ 印 `equilibrium residual 99.99999%`。补 `--spec`（走 `geometry.clamp_nodes()`，51 个节点）后 residual 2.5e-5%。**判据不对等于结果不可读，先怀疑参数再怀疑模型。**
 - **★★ 「工具跑不完」≠「工具跑通了」**：`check_forms` 长期被记成「未完成」（每次 10 min 无输出被 kill），串行跑完才暴露 `DEFAULT_REFERENCE` 指向不存在的 `outputs_str/…` ⇒ T5 恒 FAIL、整份 VERDICT: FAIL。**一直没跑完的检查，等于没检查**——它同时掩盖「跑通了会红」。
 - **★★ 没有闸的纪律会被反复违反 ⇒ 升级成机制**：「绝不并行跑 ccx」写过两次仍犯，因为并行时 **rc 仍为 0**、结果为空，「返回 0 就算成功」的判读看不见。解法不是再写一遍纪律，而是 `feagpt/solver.py` `run()` 加**全局求解锁** `.solve.lock`（第二个求解直接抛错；1 h 过期自动接管）⇒ **并行变得不可能**（R61/S-47/NC-52）。
 - **★ 收口顺序（R59）**：`negative_controls` → `check_claims`；反了官方 JSON 记的 artifact `mtime` 会过期（内容/sha 全对，只有元数据旧）。S-45 查的是**磁盘上现有**的那个 JSON，所以修复那一次会先红、写完即绿——**收口必须跑到 S-45 绿为止**。F-1（负控内容不变不重写）是它稳定的前提。
@@ -84,6 +87,7 @@
 - **代理模型线（M7/M14/D01–D37）冻结**（D37 拍板）；对外 KPI = TSR/FPR/修复/拒答/澄清。
 - **headline / 支撑 / 历史**：见 `CLAIMS.md`；入口 `reports/INDEX.md`（官方 vs 诊断）。
 - **数据集 v1.1 = 64 条**（train 25 / val 17 / test 22），**考卷仍是 v6c 的 55 条任务** —— **数据集 ≠ 考卷**，两个数不要混说；v7 待建（一落地旧成绩不可比）。
-- **卡点①**：v1.1 新增 9 条只有 ccx，`verify_dataset` 报 `9 modeling-only ⇒ MISMATCH`；deck 已备，须在 **WorkBuddy 外**跑 `_v11/run_v11_abaqus.bat`。
+- **卡点① ✅ 已解**（2026-10-28）：v1.1 的 9 条 Abaqus 双码已在 WorkBuddy 外跑完，`verify_dataset` = **64 paired / 0 modeling-only / VERDICT: PASS**；双码物理一致性 9/9（8 gated + 1 柱壳 reported-only），证据 `reports/diagnostics/xval_v11_9cases.json`。
 - **卡点②**：prompt 已到顶（C-035），剩余失败属模型行为；要动只能改 harness 口径（语义回填闸，待老王拍板），或靠 v1.1 扩样本收窄 CI。
-- **待拍板**：`CONFLICT.md` 第二轮 N-1..N-5（INDEX 两个「当前 headline」等）。
+- **待拍板**：`CONFLICT.md` **N-6 / N-7 / N-8**（gate3 把新增 5 条翼盒标 field-level 但无场级读数 + 脚本 print 硬编码 34/15/6 + 文件名 all55 装 64 条）。推荐全 A，N-6+N-7 同一次提交。
+- **下一主任务 = v7**：9 条接进任务层（exam 25 → 34）；一落地 C-032 的 23/25 不再可比（R30/R39），必须转 historical。
