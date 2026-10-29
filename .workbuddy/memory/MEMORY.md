@@ -36,7 +36,9 @@
 
 ## 当前状态
 > 只记「在哪、卡在哪」，数字实读。
-- 代理模型线冻结（D37），KPI = TSR/FPR/修复/拒答/澄清。**三层口径别混**：数据集 v1.1 = 64 条案例 ／ **考卷 v7 = 64 条任务（C-037）** ／ **headline 仍是 C-032（v6c 55 条、exam 25）**——v7 candidates 没跑。
-- ✅ 协议侧 R1–R66 / RUBRIC v5.8 / 负控 58/58 / `check_claims` 30-60-54 全绿；✅ 数据层 **C-036 GATED**。
+- 代理模型线冻结（D37），KPI = TSR/FPR/修复/拒答/澄清。**三层口径别混**：数据集 v1.1 = 64 条案例 ／ **考卷 v7 = 64 条任务（C-037）** ／ **headline 仍是 C-032（v6c 55 条、exam 25）**——**v7 candidates 已跑（C-040，supporting，2026-10-29）**，但 headline 未切（R48，属 `v7-status`）。
+- ✅ 协议侧 R1–R68 / RUBRIC v6.0 / 负控 60/60 / `check_claims` 32-65-55 全绿；✅ 数据层 **C-036 GATED**。
+- **v7 双模型成绩（C-040，实读）**：legacy exam glm TSR 23/25·SFR 20/22·MSR 20/22、ds 22/25·20/21·19/21；exam_v11 两模型全对（9/9）；exam_full glm 32/34 (94.1%)、ds 31/34 (91.2%)。**exam_full 高于 legacy 是换分母的抬升，不是变强**。2×2 与 C-033 逐条一致。
 - **两处双分母**：exam `legacy 25`（与 C-032 同卷可比）／`full 34`；L2 clarify `all 64`／`informative 45`（invalid 19，`status=not_run` 如实）。都只禁相减、不禁并列。
-- 下一主任务 = **v7 candidates**；跑完才轮到 `v7-status` 切 headline。
+- 下一主任务 = **`v7-status`（切 headline，需老王拍板）**；之后 L2 双口径才轮到跑模型。
+- **环境级坑（会长回来）**：单次调用累计删除 ≥50 个文件会被沙箱拒绝 ⇒ 一趟 59 条 msr 必在第 ~53 条处锁删不掉（N-22）⇒ 一律分批（`--only`），单批 ≤40；硬杀进程必留 `.solve.lock`（finally 不执行）。
