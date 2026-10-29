@@ -49,6 +49,24 @@ def boot_rate(flags, B, seed):
     return round(point, 1), round(pct(vals, 0.025), 1), round(pct(vals, 0.975), 1)
 
 
+def collect_flags(rws, msr_rows):
+    """从 per_task 子集算 TSR/SFR/MSR 三个 0/1 序列（**唯一实现，双口径共用**）。
+
+    ★ 为什么抽出来：legacy 与 exam_full 两个口径要各算一遍，如果各写一份选行逻辑，
+      迟早会像 T-A11a 那样「同一判据散在四处、一起错还错法不同」。
+      抽成一处后，两个口径的差别**只在选行**（`is_exam` vs `is_exam_full`），指标定义必然一致。
+    """
+    tsr = [1 if r['tsr_pass'] else 0 for r in rws]
+    spec = [r for r in rws if r['category'] in ('spec_pass', 'spec_fail', 'fabricated')]
+    sfr = [1 if r['category'] == 'spec_pass' else 0 for r in spec]
+    msr = []
+    for r in rws:
+        m = msr_rows.get(r['task_id']) or {}
+        if m.get('denominator'):
+            msr.append(1 if m.get('msr_pass') else 0)
+    return tsr, sfr, msr
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--scorecard', required=True)
@@ -61,15 +79,7 @@ def main():
     rows = [r for r in sc.get('per_task', []) if r.get('is_exam')]
     msr_rows = {r['task_id']: r for r in (sc.get('msr_section') or {}).get('per_task', [])}
 
-    tsr_flags = [1 if r['tsr_pass'] else 0 for r in rows]
-    spec_rows = [r for r in rows if r['category'] in ('spec_pass', 'spec_fail', 'fabricated')]
-    sfr_flags = [1 if r['category'] == 'spec_pass' else 0 for r in spec_rows]
-    msr_flags, msr_ids = [], []
-    for r in rows:
-        m = msr_rows.get(r['task_id']) or {}
-        if m.get('denominator'):
-            msr_flags.append(1 if m.get('msr_pass') else 0)
-            msr_ids.append(r['task_id'])
+    tsr_flags, sfr_flags, msr_flags = collect_flags(rows, msr_rows)
 
     out = {
         'note': 'exam 任务的 bootstrap 百分位区间（B 次有放回重采样，单位=任务）。'
@@ -110,6 +120,39 @@ def main():
                      'note': '分栏 n<20，只报不判（R12/R30）'}
     out['by_stratum_tsr'] = by_str
 
+    # ★★ T-A11b（C-039 边界 / R54）：**双分母必须都出 CI**。
+    #   上一版只对 `is_exam`（legacy 25）重采样 ⇒ exam_full（34）有点估计、**没有区间**，
+    #   两个口径并列而一个有 CI 一个没有 ⇒ 读者无法同标准看待（C-039 已把这不对称记成边界）。
+    #   兼容旧成绩单：`is_exam_full` 缺失时回落到 `is_exam`（v6c 及更早）
+    #   ⇒ 旧 artifact 的既有键**一字不动**，新块只追加（下面 --check 过零差异）。
+    #   ★ 纪律（R54）：25 与 34 **只可并列、不可相减**；两个区间重叠与否也不得用来宣布「谁更好」。
+    rows_full = [r for r in sc.get('per_task', []) if r.get('is_exam_full', r.get('is_exam'))]
+    _t_f, _s_f, _m_f = collect_flags(rows_full, msr_rows)
+    out['exam_full'] = {
+        'note': 'exam_full = legacy 三栏 + interpolation_v11（C-037 双分母）。'
+                '与 `metrics`（legacy 25）**分母不同 ⇒ 只可并列、不可相减、'
+                '不可用区间重叠度宣布优劣**（R54）。',
+        'n_exam_full': len(rows_full),
+        'n_exam_legacy': len(rows),
+        'underpowered': len(rows_full) < 20,
+        'metrics': {},
+        'by_stratum_tsr': {},
+    }
+    for name, flags, denom in (('TSR', _t_f, 'exam_full 全部任务'),
+                               ('SFR', _s_f, 'exam_full 中产出 spec 的候选'),
+                               ('MSR', _m_f, 'exam_full 中 spec-required 且非澄清题（R23 分母）')):
+        p, lo, hi = boot_rate(flags, args.boot, args.seed)
+        out['exam_full']['metrics'][name] = {'point_pct': p, 'ci95': [lo, hi], 'n': len(flags),
+                                            'n_pass': sum(flags), 'denominator': denom}
+    for s in ('boundary', 'extrapolation', 'interpolation', 'interpolation_v11'):
+        s_rows = [r for r in rows_full if (r.get('exam_stratum') or r.get('split_v2')) == s]
+        if not s_rows:
+            continue
+        p, lo, hi = boot_rate([1 if r['tsr_pass'] else 0 for r in s_rows], args.boot, args.seed)
+        out['exam_full']['by_stratum_tsr'][s] = {
+            'n': len(s_rows), 'n_pass': sum(1 for r in s_rows if r['tsr_pass']),
+            'tsr_pct': p, 'ci95': [lo, hi], 'note': '分栏 n<20，只报不判（R12/R30）'}
+
     out_path = args.out or os.path.join(HERE, 'reports', 'bootstrap_ci.json')
     os.makedirs(os.path.dirname(os.path.abspath(out_path)) or '.', exist_ok=True)
     json.dump(out, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
@@ -117,6 +160,10 @@ def main():
     print('== exam bootstrap CI ==')
     print(f"  n_exam={out['n_exam']}  underpowered={out['underpowered']}  B={args.boot} seed={args.seed}")
     for k, v in out['metrics'].items():
+        print(f"  {k}: {v['n_pass']}/{v['n']} = {v['point_pct']}%  CI95 [{v['ci95'][0]}, {v['ci95'][1]}]")
+    print(f"  -- exam_full: n={out['exam_full']['n_exam_full']}"
+          f"（legacy {out['n_exam']}；**分母不同，只可并列、不可相减** R54）--")
+    for k, v in out['exam_full']['metrics'].items():
         print(f"  {k}: {v['n_pass']}/{v['n']} = {v['point_pct']}%  CI95 [{v['ci95'][0]}, {v['ci95'][1]}]")
     for fam, v in by_fam.items():
         print(f"  [{fam}] n={v['n']} TSR {v['tsr_pct']}% CI95 {v['ci95']}")

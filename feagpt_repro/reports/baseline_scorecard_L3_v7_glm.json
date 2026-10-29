@@ -1,0 +1,2786 @@
+{
+ "note": "W5c L3 主基线（考卷 v7 × 候选 candidates_l3_v7_glm，文案由考卷自动生成）：headline = exam 25 条（exam_stratum 三栏 boundary 6 / extrapolation 13 / interpolation 6）；dev（非 exam）30 条只作开发诊断。TSR=行为正确性（完备题答对+澄清题字段级问对 R17）；SFR=字段保真（R20：编造一律不计 PASS）；FPR 双向；MSR 全链见 msr 节（R14/R16/R35：solver 失败单列，不进 exam MSR）。★ v1.1 双分母（C-037 / R66）：另有 exam_v11 9 条（interpolation_v11），exam_full = 34 条；本 note 与顶层 `exam` 一律是 legacy 25 条（与 C-032 同分母，R53/R54 只禁跨分母相减、不禁并列）。",
+ "model": "glm-5.3-flash",
+ "model_source": "candidate files (per-task field `model`), 单一值；非默认、非命令行声称",
+ "decode": "json_object + schema_task.json 校验 + 错误反馈修复循环（<=3 轮；SDK 无 logits 级 json_schema）",
+ "exam_definition": "exam(legacy) = exam_stratum ∈ {boundary, extrapolation, interpolation} = boundary 6 + extrapolation 13 + interpolation 6 = 25（RUBRIC §1.1；exam_full = exam(legacy) + interpolation_v11 9 = 34，C-037 双分母、R54 只禁相减；dev = 既非 exam 也非 exam_v11 30 条 = train 13 + val 17）（R15/R36）",
+ "exam_task_ids_sha256": "53210d8db63991cfdc6a7f62553b55bcbcc53007c17faab6dfd7687551e85ca9",
+ "exam_by_family": {
+  "fuselage_barrel": 2,
+  "wingbox": 18,
+  "open_hole_panel": 4,
+  "stiffened_panel": 1
+ },
+ "turns_histogram": {
+  "1": 5,
+  "2": 57,
+  "3": 2
+ },
+ "first_pass_valid": 5,
+ "n_unresolved": 0,
+ "provenance": {
+  "label": "T-A11b v7 x glm prompt-v2 (paper v7 64, candidates_l3_v7_glm)",
+  "tasks_path": "reports/papers/tasks_v7.jsonl",
+  "tasks_sha256": "caf0f6c3be8131c5b817a0bacfcca8ad3893fcfb95e29d8d9b525866a63e195a",
+  "candidates_dir": "candidates_l3_v7_glm",
+  "model": "glm-5.3-flash",
+  "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+  "prompt_sha256_note": "读自候选文件（生成时对 SYS prompt 取的 sha256）。UNKNOWN = 该批候选生成时未记录 ⇒ 与任何批次都不可比（R53）",
+  "n_candidates": 64,
+  "generated_by": "score_baseline.py"
+ },
+ "n_tasks": 64,
+ "n_tasks_in_paper": 64,
+ "candidates_missing": [],
+ "n_tasks_exam_expected": 25,
+ "n_tasks_exam_full_expected": 34,
+ "partial": false,
+ "partial_full": false,
+ "partial_candidates": false,
+ "underpowered": false,
+ "tsr": {
+  "pass": 53,
+  "total": 64,
+  "pct": 82.8
+ },
+ "exam": {
+  "n": 25,
+  "tsr": {
+   "pass": 23,
+   "total": 25,
+   "pct": 92.0
+  },
+  "sfr": {
+   "pass": 20,
+   "of_spec_candidates": 22,
+   "pct": 90.9
+  },
+  "categories": {
+   "clarify_ok": 3,
+   "spec_pass": 20,
+   "spec_fail": 2
+  },
+  "msr": "20/22"
+ },
+ "exam_v11": {
+  "n": 9,
+  "tsr": {
+   "pass": 9,
+   "total": 9,
+   "pct": 100.0
+  },
+  "sfr": {
+   "pass": 8,
+   "of_spec_candidates": 8,
+   "pct": 100.0
+  },
+  "categories": {
+   "spec_pass": 8,
+   "clarify_ok": 1
+  },
+  "note": "v1.1 新增内插（interpolation_v11）单独成桶：既不是 legacy exam、也不是 dev。不单列会污染另一侧（折进 exam ⇒ 换分母，折进 dev ⇒ 30→39）。",
+  "msr": "8/8"
+ },
+ "exam_full": {
+  "n": 34,
+  "tsr": {
+   "pass": 32,
+   "total": 34,
+   "pct": 94.1
+  },
+  "sfr": {
+   "pass": 28,
+   "of_spec_candidates": 30,
+   "pct": 93.3
+  },
+  "categories": {
+   "clarify_ok": 4,
+   "spec_pass": 28,
+   "spec_fail": 2
+  },
+  "note": "exam_full = exam(legacy) + exam_v11（C-037 双分母）。与 C-032 的 exam 25 条**不可相减**（R54），只可并列陈述。",
+  "msr": "28/30"
+ },
+ "exam_denominator_closure": {
+  "exam_legacy": 25,
+  "exam_v11": 9,
+  "exam_full": 34,
+  "dev": 30,
+  "n_tasks": 64,
+  "closure_sum": 64,
+  "ok": true
+ },
+ "dev": {
+  "n": 30,
+  "tsr": {
+   "pass": 21,
+   "total": 30,
+   "pct": 70.0
+  },
+  "sfr": {
+   "pass": 20,
+   "of_spec_candidates": 29,
+   "pct": 69.0
+  },
+  "categories": {
+   "spec_fail": 9,
+   "spec_pass": 20,
+   "clarify_ok": 1
+  },
+  "note": "开发集，不进对外（R15）",
+  "msr": "20/29"
+ },
+ "sfr_all": {
+  "pass": 48,
+  "of_spec_candidates": 59,
+  "pct": 81.4
+ },
+ "fpr": {
+  "fabricated_on_clarify_tasks": 0,
+  "n_clarify_tasks": 5,
+  "fabrication_rate_pct": 0.0,
+  "overclarify": 0,
+  "clarify_wrong_field": 0
+ },
+ "by_split": {
+  "train": {
+   "n": 13,
+   "tsr": {
+    "pass": 11,
+    "total": 13,
+    "pct": 84.6
+   },
+   "sfr": {
+    "pass": 10,
+    "of_spec_candidates": 12,
+    "pct": 83.3
+   },
+   "categories": {
+    "spec_pass": 10,
+    "spec_fail": 2,
+    "clarify_ok": 1
+   }
+  },
+  "val": {
+   "n": 17,
+   "tsr": {
+    "pass": 10,
+    "total": 17,
+    "pct": 58.8
+   },
+   "sfr": {
+    "pass": 10,
+    "of_spec_candidates": 17,
+    "pct": 58.8
+   },
+   "categories": {
+    "spec_fail": 7,
+    "spec_pass": 10
+   }
+  }
+ },
+ "by_split_note": "by_split 仅含非 exam 行（R36）；exam 25 条另见 exam_by_stratum。纯 train = 13 条。",
+ "exam_by_stratum": {
+  "boundary": {
+   "n": 6,
+   "tsr": {
+    "pass": 6,
+    "total": 6,
+    "pct": 100.0
+   },
+   "sfr": {
+    "pass": 6,
+    "of_spec_candidates": 6,
+    "pct": 100.0
+   },
+   "categories": {
+    "spec_pass": 6
+   }
+  },
+  "extrapolation": {
+   "n": 13,
+   "tsr": {
+    "pass": 11,
+    "total": 13,
+    "pct": 84.6
+   },
+   "sfr": {
+    "pass": 9,
+    "of_spec_candidates": 11,
+    "pct": 81.8
+   },
+   "categories": {
+    "clarify_ok": 2,
+    "spec_pass": 9,
+    "spec_fail": 2
+   }
+  },
+  "interpolation": {
+   "n": 6,
+   "tsr": {
+    "pass": 6,
+    "total": 6,
+    "pct": 100.0
+   },
+   "sfr": {
+    "pass": 5,
+    "of_spec_candidates": 5,
+    "pct": 100.0
+   },
+   "categories": {
+    "clarify_ok": 1,
+    "spec_pass": 5
+   }
+  },
+  "interpolation_v11": {
+   "n": 9,
+   "tsr": {
+    "pass": 9,
+    "total": 9,
+    "pct": 100.0
+   },
+   "sfr": {
+    "pass": 8,
+    "of_spec_candidates": 8,
+    "pct": 100.0
+   },
+   "categories": {
+    "spec_pass": 8,
+    "clarify_ok": 1
+   }
+  }
+ },
+ "exam_by_stratum_note": "按 exam_full 遍历 STRATA_ALL 分栏；v7 起含 interpolation_v11 一栏。四栏之和 == exam_full.n（R-A5 闭合）",
+ "per_task": [
+  {
+   "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+   "split_v2": "extrapolation_test",
+   "family": "fuselage_barrel",
+   "category": "clarify_ok",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": true,
+   "turns_used": 1,
+   "text": "[\"普通框的具体数量（n_frames）是多少？\"]",
+   "expected": [
+    "n_frames"
+   ],
+   "alias_hits": {
+    "n_frames": [
+     "n_frames",
+     "普通框"
+    ]
+   }
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d1800_l2000_str8_frm3",
+   "split_v2": "val",
+   "family": "fuselage_barrel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 17,
+   "n_fail": 1,
+   "n_fields_gated": 15,
+   "failed_fields": [
+    "extra.end_moment"
+   ],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l1600_str8_frm3",
+   "split_v2": "val",
+   "family": "fuselage_barrel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 17,
+   "n_fail": 0,
+   "n_fields_gated": 15,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l1800_str8_frm3",
+   "split_v2": "extrapolation_test",
+   "family": "fuselage_barrel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation_v11",
+   "is_exam": false,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 17,
+   "n_fail": 0,
+   "n_fields_gated": 15,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+   "split_v2": "extrapolation_test",
+   "family": "fuselage_barrel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 17,
+   "n_fail": 0,
+   "n_fields_gated": 15,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
+   "split_v2": "train",
+   "family": "fuselage_barrel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 17,
+   "n_fail": 0,
+   "n_fields_gated": 15,
+   "failed_fields": [],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+   "split_v2": "val",
+   "family": "fuselage_barrel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 17,
+   "n_fail": 1,
+   "n_fields_gated": 15,
+   "failed_fields": [
+    "extra.end_moment"
+   ],
+   "exec_config_mismatch": 1,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_naca4412_wingbox",
+   "split_v2": "interpolation_test",
+   "family": "wingbox",
+   "category": "clarify_ok",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": true,
+   "turns_used": 1,
+   "text": "[\"翼肋数量 n_ribs 未给出（题面仅说明若干翼肋等距布置），请提供具体肋数\"]",
+   "expected": [
+    "n_ribs"
+   ],
+   "alias_hits": {
+    "n_ribs": [
+     "n_ribs",
+     "翼肋",
+     "肋数"
+    ]
+   }
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs3_chord1000",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "boundary",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs3_chord800",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "boundary",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs5_chord800",
+   "split_v2": "interpolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs6_chord1000",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation_v11",
+   "is_exam": false,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs7_chord1000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs7_chord800",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_n_ribs9_chord1000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_recombination_algorithm3",
+   "split_v2": "interpolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_chord900",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation_v11",
+   "is_exam": false,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin1p5",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin2",
+   "split_v2": "interpolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin2p5",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation_v11",
+   "is_exam": false,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_skin4",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "boundary",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span1600",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "boundary",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span2400",
+   "split_v2": "interpolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span2400_skin2",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span3000",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_size_span3000_skin1p5",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_str3",
+   "split_v2": "interpolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 27,
+   "n_fail": 0,
+   "n_fields_gated": 25,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 1
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_str3_T",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 28,
+   "n_fail": 0,
+   "n_fields_gated": 26,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_str4",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation_v11",
+   "is_exam": false,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 27,
+   "n_fail": 0,
+   "n_fields_gated": 25,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 1
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_str5",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "boundary",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 27,
+   "n_fail": 0,
+   "n_fields_gated": 25,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 1
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep10",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep20",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep20_taper060",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep30",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep30_taper080",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep35",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep40",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_sweep40_taper040",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_taper040",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_taper060",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_taper070",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation_v11",
+   "is_exam": false,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_taper080",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_taper090",
+   "split_v2": "boundary_holdout",
+   "family": "wingbox",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "boundary",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 24,
+   "n_fail": 0,
+   "n_fields_gated": 22,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_web1",
+   "split_v2": "train",
+   "family": "wingbox",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 26,
+   "n_fail": 2,
+   "n_fields_gated": 24,
+   "failed_fields": [
+    "extra.end_torque",
+    "extra.torque_axis_dof"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_web1_offcentre",
+   "split_v2": "extrapolation_test",
+   "family": "wingbox",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 26,
+   "n_fail": 2,
+   "n_fields_gated": 24,
+   "failed_fields": [
+    "extra.end_torque",
+    "extra.torque_axis_dof"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_naca4412_wingbox_web2",
+   "split_v2": "val",
+   "family": "wingbox",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 26,
+   "n_fail": 2,
+   "n_fields_gated": 24,
+   "failed_fields": [
+    "extra.end_torque",
+    "extra.torque_axis_dof"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 4
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20",
+   "split_v2": "train",
+   "family": "open_hole_panel",
+   "category": "clarify_ok",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": true,
+   "turns_used": 1,
+   "text": "[\"孔直径 hole_d 是多少？\",\"孔心位置：是中心孔还是偏心孔？若偏心，请给出孔心坐标 hole_x、hole_y。\"]",
+   "expected": [
+    "hole_d"
+   ],
+   "alias_hits": {
+    "hole_d": [
+     "hole_d",
+     "孔直径"
+    ]
+   }
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp090s",
+   "split_v2": "train",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 18,
+   "n_fail": 1,
+   "n_fields_gated": 16,
+   "failed_fields": [
+    "params.layup"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 18,
+   "n_fail": 1,
+   "n_fields_gated": 16,
+   "failed_fields": [
+    "params.layup"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 18,
+   "n_fail": 1,
+   "n_fields_gated": 16,
+   "failed_fields": [
+    "params.layup"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_cfrpqi",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 3,
+   "n_fields": 18,
+   "n_fail": 1,
+   "n_fields_gated": 16,
+   "failed_fields": [
+    "params.layup"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d20_offcentre",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 18,
+   "n_fail": 0,
+   "n_fields_gated": 16,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d30",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation_v11",
+   "is_exam": false,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 18,
+   "n_fail": 0,
+   "n_fields_gated": 16,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d40",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 18,
+   "n_fail": 0,
+   "n_fields_gated": 16,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d40_offcentre",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 18,
+   "n_fail": 0,
+   "n_fields_gated": 16,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_400x200_d50",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 18,
+   "n_fail": 0,
+   "n_fields_gated": 16,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_500x250_d45",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation_v11",
+   "is_exam": false,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 18,
+   "n_fail": 0,
+   "n_fields_gated": 16,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_600x300_d30",
+   "split_v2": "val",
+   "family": "open_hole_panel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 18,
+   "n_fail": 0,
+   "n_fields_gated": 16,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_open_hole_panel_600x300_d60",
+   "split_v2": "extrapolation_test",
+   "family": "open_hole_panel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 18,
+   "n_fail": 0,
+   "n_fields_gated": 16,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_stiffened_panel_600x600",
+   "split_v2": "train",
+   "family": "stiffened_panel",
+   "category": "spec_pass",
+   "tsr_pass": true,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 14,
+   "n_fail": 0,
+   "n_fields_gated": 12,
+   "failed_fields": [],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_stiffened_panel_600x600_str3",
+   "split_v2": "extrapolation_test",
+   "family": "stiffened_panel",
+   "category": "clarify_ok",
+   "tsr_pass": true,
+   "exam_stratum": "extrapolation",
+   "is_exam": true,
+   "is_exam_full": true,
+   "ec": true,
+   "turns_used": 1,
+   "text": "[\"长桁根数 n_stringers 未给出（题面仅说\\\"若干根长桁\\\"），请明确长桁数量\",\"若长桁有具体剖面尺寸（如高度、厚度、剖面形式 blade/T），请一并提供；未提供则按族默认值处理\"]",
+   "expected": [
+    "n_stringers"
+   ],
+   "alias_hits": {
+    "n_stringers": [
+     "n_stringers",
+     "长桁根数",
+     "长桁数量"
+    ]
+   }
+  },
+  {
+   "task_id": "L3_stiffened_panel_700x600_str4",
+   "split_v2": "extrapolation_test",
+   "family": "stiffened_panel",
+   "category": "clarify_ok",
+   "tsr_pass": true,
+   "exam_stratum": "interpolation_v11",
+   "is_exam": false,
+   "is_exam_full": true,
+   "ec": true,
+   "turns_used": 1,
+   "text": "[\"长桁数量未给出：题面提到「若干根长桁」但未给具体根数，请明确 n_stringers（长桁根数）。\"]",
+   "expected": [
+    "n_stringers"
+   ],
+   "alias_hits": {
+    "n_stringers": [
+     "n_stringers",
+     "长桁根数",
+     "长桁数量"
+    ]
+   }
+  },
+  {
+   "task_id": "L3_stiffened_panel_800x600",
+   "split_v2": "val",
+   "family": "stiffened_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 14,
+   "n_fail": 2,
+   "n_fields_gated": 12,
+   "failed_fields": [
+    "params.length",
+    "params.width"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  },
+  {
+   "task_id": "L3_stiffened_panel_800x600_str3",
+   "split_v2": "val",
+   "family": "stiffened_panel",
+   "category": "spec_fail",
+   "tsr_pass": false,
+   "exam_stratum": null,
+   "is_exam": false,
+   "is_exam_full": false,
+   "ec": false,
+   "turns_used": 2,
+   "n_fields": 14,
+   "n_fail": 2,
+   "n_fields_gated": 12,
+   "failed_fields": [
+    "params.length",
+    "params.width"
+   ],
+   "exec_config_mismatch": 0,
+   "dead_fields_skipped": 0
+  }
+ ],
+ "value_added": {
+  "basis": "exam 三栏 25 条 TSR（地板取 T1 与 T1+ 的高者；T1/T1+ 均 leave-one-out，R40/R44）。★ TSR 地板恒 0 是全或无判分的必然（族内参数逐条唯一，族内 oracle 0/25）⇒ 另报字段级命中率作为连续尺度对照",
+  "TSR_floor_used": "T1_retrieval",
+  "TSR_T1_exam_pct": 0.0,
+  "TSR_T1plus_exam_pct": 0.0,
+  "TSR_LLM_exam_pct": 92.0,
+  "delta_pp": 92.0,
+  "field_level": {
+   "floor_hit_rate": 0.8593,
+   "llm_hit_rate": 0.9934,
+   "delta_pp": 13.4,
+   "floor_n_fields_gated_avg": 21.5,
+   "floor_n_fail_exam": {
+    "min": 1,
+    "median": 3,
+    "max": 5,
+    "n_with_0_fail(T1+ 通过)": 0
+   },
+   "n_exam_counted": 22,
+   "n_excluded_clarify_ok": 3,
+   "n_zero_non_spec": 0,
+   "note": "地板 = 逐字段族级众数（不读输入的最强策略）；n_fail_exam 是地板「差几个受判字段才过」的分布。分母构成：n_exam_counted = 计入题数（含记 0 的编造题），n_excluded_clarify_ok = 合法澄清（无 spec 可判，排除），n_zero_non_spec = 编造/答非所问（**记 0，不排除**）。",
+   "verdict": "PASS"
+  },
+  "criterion": ">= 10 pp 才算 LLM 真有增量（专家 6.3.1）；n_exam<20 ⇒ underpowered 不得判 PASS（R12）",
+  "verdict": "PASS",
+  "verdict_split": null
+ },
+ "msr_section": {
+  "note": "全链 MSR（R14/R16/R23，W5a 修正）：契约闸+ccx 求解+关1+关4+fidelity+spec_fidelity 全 PASS；分母 = spec-required 且非澄清题（R23：澄清/未收敛候选不计，编造归 FPR）；依赖预检不过即环境退出；失败分层 env/contract/model/solver，env 不计模型失败。",
+  "provenance": {
+   "tasks_path": "reports/papers/tasks_v7.jsonl",
+   "tasks_sha256": "caf0f6c3be8131c5b817a0bacfcca8ad3893fcfb95e29d8d9b525866a63e195a",
+   "candidates_dir": "candidates_l3_v7_glm",
+   "reuse_source": "self(recompute-only, no re-solve — 统计段由同一成绩单的 per_task 重算，须与实跑逐数一致)"
+  },
+  "n_not_run": 0,
+  "msr": "48/59",
+  "msr_pct": 81.4,
+  "exam_msr": "20/22",
+  "exam_msr_pct": 90.9,
+  "exam_v11_msr": "8/8",
+  "exam_v11_msr_pct": 100.0,
+  "exam_full_msr": "28/30",
+  "exam_full_msr_pct": 93.3,
+  "exam_full_denominator_audit": {
+   "n_tasks_total": 30,
+   "n_counted": 30,
+   "n_clarify_excluded": 0,
+   "n_unresolved_excluded": 0,
+   "n_notrun_excluded": 0,
+   "n_env_excluded": 0,
+   "n_unknown_excluded": 0,
+   "n_solver_excluded": 0,
+   "n_counted_excl_solver": 30,
+   "unresolved_task_ids": [],
+   "clarify_task_ids": [],
+   "closure_ok": true,
+   "closure_solver_ok": true,
+   "closure": "30 = counted 30 + clarify 0 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 30 = solver 0 + counted_excl_solver 30"
+  },
+  "exam_full_closure": {
+   "exam_legacy": 22,
+   "exam_v11": 8,
+   "exam_full": 30,
+   "dev": 29,
+   "closure_sum": 59,
+   "ok": true
+  },
+  "exam_by_family": {
+   "fuselage_barrel": {
+    "msr": "1/1",
+    "pass": 1,
+    "n": 1,
+    "pct": 100.0
+   },
+   "open_hole_panel": {
+    "msr": "3/4",
+    "pass": 3,
+    "n": 4,
+    "pct": 75.0
+   },
+   "wingbox": {
+    "msr": "16/17",
+    "pass": 16,
+    "n": 17,
+    "pct": 94.1
+   }
+  },
+  "exam_by_stratum": {
+   "boundary": {
+    "msr": "6/6",
+    "pass": 6,
+    "n": 6,
+    "pct": 100.0
+   },
+   "extrapolation": {
+    "msr": "9/11",
+    "pass": 9,
+    "n": 11,
+    "pct": 81.8
+   },
+   "interpolation": {
+    "msr": "5/5",
+    "pass": 5,
+    "n": 5,
+    "pct": 100.0
+   },
+   "interpolation_v11": {
+    "msr": "8/8",
+    "pass": 8,
+    "n": 8,
+    "pct": 100.0
+   }
+  },
+  "n_solver_excluded": 0,
+  "solver_task_ids": [],
+  "solver_in_exam": [],
+  "solver_in_dev": [],
+  "exam_msr_excl_solver": "20/22",
+  "exam_msr_excl_solver_pct": 90.9,
+  "dev_msr_excl_solver": "20/29",
+  "dev_msr_excl_solver_pct": 69.0,
+  "msr_excl_solver": "48/59",
+  "msr_excl_solver_pct": 81.4,
+  "full_msr_excl_solver": "48/59",
+  "full_msr_excl_solver_pct": 81.4,
+  "dev_msr": "20/29",
+  "dev_msr_pct": 69.0,
+  "by_split": {
+   "boundary_holdout": {
+    "msr": "6/6",
+    "pass": 6,
+    "n": 6
+   },
+   "extrapolation_test": {
+    "msr": "17/19",
+    "pass": 17,
+    "n": 19
+   },
+   "interpolation_test": {
+    "msr": "5/5",
+    "pass": 5,
+    "n": 5
+   },
+   "train": {
+    "msr": "10/12",
+    "pass": 10,
+    "n": 12
+   },
+   "val": {
+    "msr": "10/17",
+    "pass": 10,
+    "n": 17
+   }
+  },
+  "denominator_audit": {
+   "n_tasks_total": 64,
+   "n_counted": 59,
+   "n_clarify_excluded": 5,
+   "n_unresolved_excluded": 0,
+   "n_notrun_excluded": 0,
+   "n_env_excluded": 0,
+   "n_unknown_excluded": 0,
+   "n_solver_excluded": 0,
+   "n_counted_excl_solver": 59,
+   "unresolved_task_ids": [],
+   "clarify_task_ids": [
+    "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+    "L3_naca4412_wingbox",
+    "L3_open_hole_panel_400x200_d20",
+    "L3_stiffened_panel_600x600_str3",
+    "L3_stiffened_panel_700x600_str4"
+   ],
+   "closure_ok": true,
+   "closure_solver_ok": true,
+   "closure": "64 = counted 59 + clarify 5 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 59 = solver 0 + counted_excl_solver 59"
+  },
+  "exam_denominator_audit": {
+   "n_tasks_total": 25,
+   "n_counted": 22,
+   "n_clarify_excluded": 3,
+   "n_unresolved_excluded": 0,
+   "n_notrun_excluded": 0,
+   "n_env_excluded": 0,
+   "n_unknown_excluded": 0,
+   "n_solver_excluded": 0,
+   "n_counted_excl_solver": 22,
+   "unresolved_task_ids": [],
+   "clarify_task_ids": [
+    "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+    "L3_naca4412_wingbox",
+    "L3_stiffened_panel_600x600_str3"
+   ],
+   "closure_ok": true,
+   "closure_solver_ok": true,
+   "closure": "25 = counted 22 + clarify 3 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 22 = solver 0 + counted_excl_solver 22"
+  },
+  "n_denominator": 59,
+  "n_clarify_excluded": 5,
+  "n_unresolved": 0,
+  "n_unresolved_excluded": 0,
+  "n_notrun_excluded": 0,
+  "n_env_excluded": 0,
+  "n_tasks_total": 64,
+  "denominator_note": "R52：n_counted + clarify + unresolved + notrun + env + unknown = n_tasks_total（层A）；n_counted = n_solver_excluded + n_counted_excl_solver（层B，solver 仍在原始分母内）。n_clarify_excluded 只含 expected_clarifications 题，**不得**混入未收敛/no_output。",
+  "msr_definition": "conditional：分母 = 产出了 spec 且非 expected_clarifications 的题；模型侧无输出记 TSR fail / FPR，不计入 MSR（W5a 原设计，避免双记）。⇒ **跨成绩单比 MSR 前必须先对齐分母与 SFR（R54）**，分母不同时 pct 不得直减、不得据此排名。",
+  "n_no_spec_excluded_ids": [],
+  "failure_class_counts": {
+   "model": 11
+  },
+  "gate_fail_counts": {
+   "fidelity_disp": 6,
+   "spec_fidelity": 7,
+   "pipeline": 4
+  },
+  "per_task": [
+   {
+    "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+    "msr_pass": null,
+    "denominator": false,
+    "reason": "clarify task (expected_clarifications) — R23: 编造归 FPR，不入 MSR"
+   },
+   {
+    "task_id": "L3_fuselage_barrel_d1800_l2000_str8_frm3",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": false,
+     "spec_fidelity": false
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 263.6,
+    "fidelity_dev_pct": 48.2107,
+    "failure_class": "model",
+    "failure_gates": {
+     "fidelity_disp": {
+      "field": "scalars.max_disp",
+      "expected": "2.801588 ±1.0%",
+      "actual": "1.450924"
+     },
+     "spec_fidelity": {
+      "field": "spec_fidelity (field-level, mandatory)",
+      "expected": "all graded fields equal (float tol 1e-6)",
+      "actual": "16/17 fields",
+      "n_fail": 1,
+      "n_fields": 17,
+      "failed": [
+       {
+        "field": "extra.end_moment",
+        "expected": 50000000.0,
+        "actual": 5000000,
+        "pass": false
+       }
+      ],
+      "exec_config_mismatch": [
+       {
+        "field": "load.direction (pressure)",
+        "expected": [
+         0.0,
+         0.0,
+         1.0
+        ],
+        "actual": [
+         0,
+         1,
+         0
+        ]
+       }
+      ]
+     }
+    },
+    "failure_detail": "scalars.max_disp 2.801588 ±1.0% 1.450924 spec_fidelity (field-level, mandatory) all graded fields equal (float tol 1e-6) 16/17 fields [{\"field\": \"extra.end_moment\", \"expected\": 50000000.0, \"actual\": 5000000, \"pass\": false}]"
+   },
+   {
+    "task_id": "L3_fuselage_barrel_d2000_l1600_str8_frm3",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 259.4,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_fuselage_barrel_d2000_l1800_str8_frm3",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 255.8,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 526.4,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 509.3,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": false,
+     "spec_fidelity": false
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 342.9,
+    "fidelity_dev_pct": 54.9011,
+    "failure_class": "model",
+    "failure_gates": {
+     "fidelity_disp": {
+      "field": "scalars.max_disp",
+      "expected": "4.678703 ±1.0%",
+      "actual": "2.110043"
+     },
+     "spec_fidelity": {
+      "field": "spec_fidelity (field-level, mandatory)",
+      "expected": "all graded fields equal (float tol 1e-6)",
+      "actual": "16/17 fields",
+      "n_fail": 1,
+      "n_fields": 17,
+      "failed": [
+       {
+        "field": "extra.end_moment",
+        "expected": 50000000.0,
+        "actual": 5000000,
+        "pass": false
+       }
+      ],
+      "exec_config_mismatch": [
+       {
+        "field": "load.direction (pressure)",
+        "expected": [
+         0.0,
+         0.0,
+         1.0
+        ],
+        "actual": [
+         0,
+         1,
+         0
+        ]
+       }
+      ]
+     }
+    },
+    "failure_detail": "scalars.max_disp 4.678703 ±1.0% 2.110043 spec_fidelity (field-level, mandatory) all graded fields equal (float tol 1e-6) 16/17 fields [{\"field\": \"extra.end_moment\", \"expected\": 50000000.0, \"actual\": 5000000, \"pass\": false}]"
+   },
+   {
+    "task_id": "L3_naca4412_wingbox",
+    "msr_pass": null,
+    "denominator": false,
+    "reason": "clarify task (expected_clarifications) — R23: 编造归 FPR，不入 MSR"
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_n_ribs3_chord1000",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.5,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_n_ribs3_chord800",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 5.6,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_n_ribs5_chord800",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 5.4,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_n_ribs6_chord1000",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.6,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_n_ribs7_chord1000",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.2,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_n_ribs7_chord800",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 5.9,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_n_ribs9_chord1000",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.3,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_recombination_algorithm3",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.1,
+    "fidelity_dev_pct": 0.0242
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_chord900",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 5.5,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_skin1p5",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.0,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_skin2",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.3,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_skin2p5",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.7,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_skin4",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.7,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_span1600",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 5.4,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_span2400",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.2,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_span2400_skin2",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.7,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_span3000",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.9,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_span3000_skin1p5",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.1,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_str3",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.8,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_str3_T",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 32.4,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_str4",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.9,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_str5",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 10.5,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep10",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.5,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep20",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.4,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep20_taper060",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.7,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep30",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.6,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep30_taper080",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.9,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep35",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.7,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep40",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.2,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep40_taper040",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 16.1,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_taper040",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 15.8,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_taper060",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 9.0,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_taper070",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.4,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_taper080",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.4,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_taper090",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.1,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_web1",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": false,
+     "spec_fidelity": false
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.9,
+    "fidelity_dev_pct": 25.896,
+    "failure_class": "model",
+    "failure_gates": {
+     "fidelity_disp": {
+      "field": "scalars.max_disp",
+      "expected": "2.964576 ±1.0%",
+      "actual": "2.196869"
+     },
+     "spec_fidelity": {
+      "field": "spec_fidelity (field-level, mandatory)",
+      "expected": "all graded fields equal (float tol 1e-6)",
+      "actual": "24/26 fields",
+      "n_fail": 2,
+      "n_fields": 26,
+      "failed": [
+       {
+        "field": "extra.end_torque",
+        "expected": 1000000.0,
+        "actual": "<missing>",
+        "pass": false
+       },
+       {
+        "field": "extra.torque_axis_dof",
+        "expected": 3,
+        "actual": "<missing>",
+        "pass": false
+       }
+      ]
+     }
+    },
+    "failure_detail": "scalars.max_disp 2.964576 ±1.0% 2.196869 spec_fidelity (field-level, mandatory) all graded fields equal (float tol 1e-6) 24/26 fields [{\"field\": \"extra.end_torque\", \"expected\": 1000000.0, \"actual\": \"<missing>\", \"pass\": false}, {\"field\": \"extra.torque_axis_dof\", \"expected\": 3, \"actual\": \"<missing>\", \"pass\": false}]"
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_web1_offcentre",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": false,
+     "spec_fidelity": false
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.8,
+    "fidelity_dev_pct": 28.197,
+    "failure_class": "model",
+    "failure_gates": {
+     "fidelity_disp": {
+      "field": "scalars.max_disp",
+      "expected": "3.060804 ±1.0%",
+      "actual": "2.197748"
+     },
+     "spec_fidelity": {
+      "field": "spec_fidelity (field-level, mandatory)",
+      "expected": "all graded fields equal (float tol 1e-6)",
+      "actual": "24/26 fields",
+      "n_fail": 2,
+      "n_fields": 26,
+      "failed": [
+       {
+        "field": "extra.end_torque",
+        "expected": 1000000.0,
+        "actual": "<missing>",
+        "pass": false
+       },
+       {
+        "field": "extra.torque_axis_dof",
+        "expected": 3,
+        "actual": "<missing>",
+        "pass": false
+       }
+      ]
+     }
+    },
+    "failure_detail": "scalars.max_disp 3.060804 ±1.0% 2.197748 spec_fidelity (field-level, mandatory) all graded fields equal (float tol 1e-6) 24/26 fields [{\"field\": \"extra.end_torque\", \"expected\": 1000000.0, \"actual\": \"<missing>\", \"pass\": false}, {\"field\": \"extra.torque_axis_dof\", \"expected\": 3, \"actual\": \"<missing>\", \"pass\": false}]"
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_web2",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": false,
+     "spec_fidelity": false
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.2,
+    "fidelity_dev_pct": 26.4441,
+    "failure_class": "model",
+    "failure_gates": {
+     "fidelity_disp": {
+      "field": "scalars.max_disp",
+      "expected": "2.855791 ±1.0%",
+      "actual": "2.100603"
+     },
+     "spec_fidelity": {
+      "field": "spec_fidelity (field-level, mandatory)",
+      "expected": "all graded fields equal (float tol 1e-6)",
+      "actual": "24/26 fields",
+      "n_fail": 2,
+      "n_fields": 26,
+      "failed": [
+       {
+        "field": "extra.end_torque",
+        "expected": 1000000.0,
+        "actual": "<missing>",
+        "pass": false
+       },
+       {
+        "field": "extra.torque_axis_dof",
+        "expected": 3,
+        "actual": "<missing>",
+        "pass": false
+       }
+      ]
+     }
+    },
+    "failure_detail": "scalars.max_disp 2.855791 ±1.0% 2.100603 spec_fidelity (field-level, mandatory) all graded fields equal (float tol 1e-6) 24/26 fields [{\"field\": \"extra.end_torque\", \"expected\": 1000000.0, \"actual\": \"<missing>\", \"pass\": false}, {\"field\": \"extra.torque_axis_dof\", \"expected\": 3, \"actual\": \"<missing>\", \"pass\": false}]"
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d20",
+    "msr_pass": null,
+    "denominator": false,
+    "reason": "clarify task (expected_clarifications) — R23: 编造归 FPR，不入 MSR"
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d20_cfrp090s",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "pipeline": false
+    },
+    "pipeline_rc": 1,
+    "wall_seconds": 1.7,
+    "fidelity_dev_pct": null,
+    "failure_class": "model",
+    "failure_gates": {
+     "pipeline": {
+      "field": "run_pipeline",
+      "expected": "rc=0",
+      "actual": "rc=1",
+      "detail": "  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp090s\\open_hole_tension_400x200\\open_hole_tension_400x200.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp090s\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+     }
+    },
+    "failure_detail": "run_pipeline rc=0 rc=1   As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp090s\\open_hole_tension_400x200\\open_hole_tension_400x200.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp090s\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "pipeline": false
+    },
+    "pipeline_rc": 1,
+    "wall_seconds": 1.6,
+    "fidelity_dev_pct": null,
+    "failure_class": "model",
+    "failure_gates": {
+     "pipeline": {
+      "field": "run_pipeline",
+      "expected": "rc=0",
+      "actual": "rc=1",
+      "detail": "    ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s\\open_hole_tension_plate_400x200\\open_hole_tension_plate_400x200.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+     }
+    },
+    "failure_detail": "run_pipeline rc=0 rc=1     ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s\\open_hole_tension_plate_400x200\\open_hole_tension_plate_400x200.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "pipeline": false
+    },
+    "pipeline_rc": 1,
+    "wall_seconds": 1.6,
+    "fidelity_dev_pct": null,
+    "failure_class": "model",
+    "failure_gates": {
+     "pipeline": {
+      "field": "run_pipeline",
+      "expected": "rc=0",
+      "actual": "rc=1",
+      "detail": "As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s_d40\\open_hole_tension_plate\\open_hole_tension_plate.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s_d40\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+     }
+    },
+    "failure_detail": "run_pipeline rc=0 rc=1 As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s_d40\\open_hole_tension_plate\\open_hole_tension_plate.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s_d40\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d20_cfrpqi",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "pipeline": false
+    },
+    "pipeline_rc": 1,
+    "wall_seconds": 1.6,
+    "fidelity_dev_pct": null,
+    "failure_class": "model",
+    "failure_gates": {
+     "pipeline": {
+      "field": "run_pipeline",
+      "expected": "rc=0",
+      "actual": "rc=1",
+      "detail": " 0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrpqi\\open_hole_tension_layup\\open_hole_tension_layup.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrpqi\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+     }
+    },
+    "failure_detail": "run_pipeline rc=0 rc=1  0  I.E.  As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrpqi\\open_hole_tension_layup\\open_hole_tension_layup.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrpqi\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d20_offcentre",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.9,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d30",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.7,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d40",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.5,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d40_offcentre",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.2,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d50",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.2,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_open_hole_panel_500x250_d45",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 20.8,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_open_hole_panel_600x300_d30",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 32.5,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_open_hole_panel_600x300_d60",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 28.0,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_stiffened_panel_600x600",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 465.4,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_stiffened_panel_600x600_str3",
+    "msr_pass": null,
+    "denominator": false,
+    "reason": "clarify task (expected_clarifications) — R23: 编造归 FPR，不入 MSR"
+   },
+   {
+    "task_id": "L3_stiffened_panel_700x600_str4",
+    "msr_pass": null,
+    "denominator": false,
+    "reason": "clarify task (expected_clarifications) — R23: 编造归 FPR，不入 MSR"
+   },
+   {
+    "task_id": "L3_stiffened_panel_800x600",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": false
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 132.1,
+    "fidelity_dev_pct": 0.0269,
+    "failure_class": "model",
+    "failure_gates": {
+     "spec_fidelity": {
+      "field": "spec_fidelity (field-level, mandatory)",
+      "expected": "all graded fields equal (float tol 1e-6)",
+      "actual": "12/14 fields",
+      "n_fail": 2,
+      "n_fields": 14,
+      "failed": [
+       {
+        "field": "params.length",
+        "expected": 800.0,
+        "actual": 600,
+        "pass": false
+       },
+       {
+        "field": "params.width",
+        "expected": 600.0,
+        "actual": 800,
+        "pass": false
+       }
+      ]
+     }
+    },
+    "failure_detail": "spec_fidelity (field-level, mandatory) all graded fields equal (float tol 1e-6) 12/14 fields [{\"field\": \"params.length\", \"expected\": 800.0, \"actual\": 600, \"pass\": false}, {\"field\": \"params.width\", \"expected\": 600.0, \"actual\": 800, \"pass\": false}]"
+   },
+   {
+    "task_id": "L3_stiffened_panel_800x600_str3",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": false,
+     "spec_fidelity": false
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 67.3,
+    "fidelity_dev_pct": 47.5179,
+    "failure_class": "model",
+    "failure_gates": {
+     "fidelity_disp": {
+      "field": "scalars.max_disp",
+      "expected": "0.028976 ±1.0%",
+      "actual": "0.042745"
+     },
+     "spec_fidelity": {
+      "field": "spec_fidelity (field-level, mandatory)",
+      "expected": "all graded fields equal (float tol 1e-6)",
+      "actual": "12/14 fields",
+      "n_fail": 2,
+      "n_fields": 14,
+      "failed": [
+       {
+        "field": "params.length",
+        "expected": 800.0,
+        "actual": 600,
+        "pass": false
+       },
+       {
+        "field": "params.width",
+        "expected": 600.0,
+        "actual": 800,
+        "pass": false
+       }
+      ]
+     }
+    },
+    "failure_detail": "scalars.max_disp 0.028976 ±1.0% 0.042745 spec_fidelity (field-level, mandatory) all graded fields equal (float tol 1e-6) 12/14 fields [{\"field\": \"params.length\", \"expected\": 800.0, \"actual\": 600, \"pass\": false}, {\"field\": \"params.width\", \"expected\": 600.0, \"actual\": 800, \"pass\": false}]"
+   }
+  ]
+ },
+ "msr": "48/59",
+ "msr_pct": 81.4
+}

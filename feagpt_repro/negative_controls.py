@@ -365,10 +365,31 @@ def main():
                 continue
             bad.append(f"{r.get('task_id')}(split={sv},stratum={st})")
         for r in all19:
-            if not r.get('is_exam') and r.get('split_v2') in holdout:
-                bad.append(f"{r.get('task_id')}(非 exam 却是留出 split)")
+            # ★ T-A11b（C-037 双分母）：判据必须用 **exam_full**，不能用 legacy `is_exam`。
+            #   v7 多了 9 条 `interpolation_v11`，它们 `is_exam=False` 但**属于** exam_full、
+            #   `split_v2` 是留出 ⇒ 用 legacy 判就一次性报 9 条「非 exam 却是留出」（本轮实际撞到）。
+            #   这不是数据错了，是「留出 ⇒ 必须是 exam」这条不变式的 exam 定义没跟上双分母。
+            _full = r.get('is_exam_full', r.get('is_exam'))   # 旧成绩单没有该键 ⇒ 回落
+            if not _full and r.get('split_v2') in holdout:
+                bad.append(f"{r.get('task_id')}(非 exam_full 却是留出 split)")
+        # ★ 另一半不变式（v11 专用）：进了 exam_full 的 v11 行**必须**是留出，
+        #   否则就是「dev 题混进考卷」——那会让 headline 的分母掺进开发集；
+        #   同时把「v11 的 split_v2 与 stratum 不同名」显式计数（v7 实测 9 条全是
+        #   stratum=interpolation_v11 / split_v2=extrapolation_test），计数进 artifact
+        #   而不是写死常数（R63）：条数一变就该被看见。
+        n_v11 = n_v11_holdout = 0
+        for r in all19:
+            if r.get('exam_stratum') != 'interpolation_v11':
+                continue
+            n_v11 += 1
+            if r.get('split_v2') in holdout:
+                n_v11_holdout += 1
+            else:
+                bad.append(f"{r.get('task_id')}(v11 却不是留出 split={r.get('split_v2')})")
         ok = not bad
         extra = f' / 旧卷豁免 {legacy_exempt}' if legacy_exempt else ''
+        if n_v11:
+            extra += f' / v11 {n_v11_holdout}/{n_v11} 为留出（split_v2 与 stratum 不同名，属已知口径）'
         results.append({'id': 'NC-19', 'desc': 'exam 集与 split 语义一致（R15/R36）',
                         'expect': 'empty', 'actual': (str(sorted(bad)[:3]) or 'empty') + extra,
                         'ok': ok})
@@ -1589,6 +1610,79 @@ def main():
                     'actual': det57, 'ok': ok57})
     print(f"  [{'ok ' if ok57 else 'BAD!'}] NC-57 回归工具五向（自比/改值/删键/越界新增/前缀不放行）  "
           f"actual={det57}")
+
+    # NC-58（T-A11b）：**S-54（v7 双分母结构性闸）自己必须能被证伪**。
+    #   为什么要测它：S-54 是给「两份 v7 成绩单」盖章的闸，而这两份成绩单是**我这一轮生成的** ——
+    #   闸和数据出自同一双手，最容易出现「闸照着数据写、永远绿」。四向，每向只造一个错，
+    #   并断言红的原因对（不只是红了）：
+    #    (a) 正向：真成绩单必须过（先证明不误报）
+    #    (b) 四桶不闭合（把 dev 改小 1）⇒ 红，原因含「四桶」
+    #    (c) 手改 exam_full_msr 分母（30→34）⇒ 红，原因含「exam_full_msr 分母」
+    #    (d) 判 FAIL 的条目清空 failure_detail ⇒ 红，原因含 N-21
+    #    (e) 把一条 env 失败塞回分母 ⇒ 红，原因含 R16
+    #   为什么这五向值得写：N-20/N-21/N-23 三条 bug 全都**不会让任何既有闸变红**，
+    #   它们只是让分数看起来正常。S-54 若不能被证伪，就又是一枚只会印 PASS 的章。
+    ok58, det58 = False, 'no artifact'
+    _v7_glm = os.path.join(HERE, 'reports', 'baseline_scorecard_L3_v7_glm.json')
+    if os.path.exists(_v7_glm):
+        from check_claims import v7_dual_denominator_audit as _aud58
+        import tempfile as _tf58
+        _RAW58 = json.load(open(_v7_glm, encoding='utf-8'))
+        _NAMES58 = (('t', 'baseline_scorecard_L3_v7_glm.json'),)
+
+        def _root58(mut=None):
+            """造一个只有 feagpt_repro/reports/<file> 的临时 root，喂给闸函数。"""
+            o = json.loads(json.dumps(_RAW58))
+            if mut:
+                mut(o)
+            d = _tf58.mkdtemp(prefix='nc58_')
+            os.makedirs(os.path.join(d, 'feagpt_repro', 'reports'), exist_ok=True)
+            json.dump(o, open(os.path.join(d, 'feagpt_repro', 'reports',
+                                           'baseline_scorecard_L3_v7_glm.json'),
+                              'w', encoding='utf-8'), ensure_ascii=False)
+            return d
+
+        def _bucket(o):
+            o['exam_denominator_closure']['dev'] -= 1
+
+        def _denom(o):
+            o['msr_section']['exam_full_msr'] = '28/34'
+
+        def _noreason(o):
+            for r in o['msr_section']['per_task']:
+                if r.get('msr_pass') is False:
+                    r['failure_detail'] = ''
+                    break
+
+        def _envden(o):
+            r = next(x for x in o['msr_section']['per_task'] if x.get('msr_pass') is False)
+            r['failure_class'] = 'env'
+            r['denominator'] = True
+
+        _r58 = {}
+        _r58['fwd'] = _aud58(_root58(), _NAMES58)
+        _r58['bkt'] = _aud58(_root58(_bucket), _NAMES58)
+        _r58['den'] = _aud58(_root58(_denom), _NAMES58)
+        _r58['nrs'] = _aud58(_root58(_noreason), _NAMES58)
+        _r58['env'] = _aud58(_root58(_envden), _NAMES58)
+        _chk58 = [
+            ('fwd', _r58['fwd'][0] is True, '正向必须过（不误报）'),
+            ('bkt', _r58['bkt'][0] is False and '四桶' in _r58['bkt'][1], '四桶不闭合应红'),
+            ('den', _r58['den'][0] is False and 'exam_full_msr 分母' in _r58['den'][1],
+             '手改分母应红'),
+            ('nrs', _r58['nrs'][0] is False and 'N-21' in _r58['nrs'][1], '判失败无原因应红'),
+            ('env', _r58['env'][0] is False and 'R16' in _r58['env'][1], 'env 回分母应红'),
+        ]
+        _bad58 = [f'({t}){why}' for t, good, why in _chk58 if not good]
+        ok58 = not _bad58
+        det58 = ('五向全中（正向过 / 四桶 / 分母 / 无原因 / env 回分母）'
+                 if ok58 else '未命中: ' + '; '.join(_bad58))
+    results.append({'id': 'NC-58',
+                    'desc': 'T-A11b S-54 闸五向：正向不误报 / 四桶不闭合 / 手改分母 / 判失败无原因 / env 回分母',
+                    'expect': 'fwd=过 且四向各自因「正确原因」变红',
+                    'actual': det58, 'ok': ok58})
+    print(f"  [{'ok ' if ok58 else 'BAD!'}] NC-58 v7 双分母闸五向（正向/四桶/分母/无原因/env）  "
+          f"actual={det58}")
 
     # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，    # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；

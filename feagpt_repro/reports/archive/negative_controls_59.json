@@ -216,7 +216,7 @@
    "id": "NC-19",
    "desc": "exam 集与 split 语义一致（R15/R36）",
    "expect": "empty",
-   "actual": "[]",
+   "actual": "[] / v11 9/9 为留出（split_v2 与 stratum 不同名，属已知口径）",
    "ok": true
   },
   {
@@ -228,7 +228,7 @@
   },
   {
    "id": "NC-21",
-   "desc": "MSR 分母不含澄清题（R23；核对卷=tasks_v6c.jsonl）",
+   "desc": "MSR 分母不含澄清题（R23；核对卷=tasks_v7.jsonl）",
    "expect": "empty",
    "actual": "[]",
    "ok": true
@@ -237,7 +237,7 @@
    "id": "NC-22",
    "desc": "成绩单 exam.msr 汇总字段（P1-1）",
    "expect": "present",
-   "actual": "20/21",
+   "actual": "19/21",
    "ok": true
   },
   {

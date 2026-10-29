@@ -7,7 +7,7 @@
 
 这个坑的复发史（**教训不是「修一下」，是「别只修撞到的那一处」**）：
   · 2026-10-28 在 `check_claims.py` / `report_l2_clarify.py` 撞到 ⇒ 各补了一个 `_rel`；
-  · 2026-10-29 跑 `bootstrap_ci.py`（scorecard 在 C:\Temp）⇒ 又炸，因为它没有兜底。
+  · 2026-10-29 跑 `bootstrap_ci.py`（scorecard 在 C:/Temp）⇒ 又炸，因为它没有兜底。
   这说明「点修」必然长回来。收敛到一处，才能真正消掉这个漂移面。
 
 用法：

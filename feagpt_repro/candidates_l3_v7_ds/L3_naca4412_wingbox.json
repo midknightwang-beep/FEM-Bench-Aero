@@ -1,0 +1,31 @@
+{
+ "task_id": "L3_naca4412_wingbox",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+ "clarify": "[\"题面提到若干翼肋等距布置，但未给出具体翼肋数量 n_ribs，请提供肋的数量。\",\"题面未明确蒙皮长桁数量 n_stringers_per_skin，请提供每侧蒙皮长桁数；若确实无长桁，请明确说明为 0。\"]",
+ "spec": null,
+ "turns_used": 3,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/airfoil must have required property 'n_ribs'",
+    "/airfoil must have required property 'n_stringers_per_skin'",
+    "/ must match \"then\" schema",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'yield_strength'"
+   ]
+  },
+  {
+   "turn": 2,
+   "errors": [
+    "/airfoil/n_ribs must be number",
+    "/airfoil/n_stringers_per_skin must be number",
+    "/ must match \"then\" schema"
+   ]
+  }
+ ],
+ "raw_len": 136
+}

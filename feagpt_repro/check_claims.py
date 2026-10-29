@@ -281,6 +281,91 @@ def model_label_consistent(sc, label=''):
     return True, f'{label} model={top}（顶层 == provenance）'
 
 
+# ★★ S-54（T-A11b；C-039 里留的 follow-up「待 v7 成绩单落地后再加」）：
+#   v7 双分母成绩单的**结构性闸**。分四条，每条都对应一个已经踩过的错：
+#     (a) 四桶闭合：exam_legacy + exam_v11 + dev == n_tasks —— 防「三栏加 25 却把 n 报成 34」
+#         （T-A11a 之前 `exam_by_stratum` 只遍历 STRATA，就出过这个静默不闭合）；
+#     (b) msr 侧 exam_full 闭合：三桶加和 == counted —— 防 MSR 分母与 TSR 分母各说各话；
+#     (c) `exam_full_msr` 的**分母必须等于** closure 里的 exam_full —— 防手改分子分母；
+#     (d) 判 FAIL 的条目必须有 `failure_detail`（N-21）且 env 不得留在分母（R16）、
+#         solver 的诊断里不得出现锁冲突（S-55）。**没有 (d)，前三条都在给一个原因不可审计的分数盖章。**
+#
+#   为什么单开一条而不并进 S-36/S-37：那几条遍历的是 v6c 四份成绩单（`_sc_paths`），
+#   口径是「一个 claim 对应一份成绩单」；C-040 是「一个 claim 两份成绩单（两模型）」，
+#   硬塞进去会把 claim→scorecard 的映射搞乱，反而让 S-34/S-43 之类的查找失准。
+V7_SCORECARDS = (('C-040 glm', 'baseline_scorecard_L3_v7_glm.json'),
+                 ('C-040 ds', 'baseline_scorecard_L3_v7_ds.json'))
+_LOCK_MARKS = ('.solve.lock', '检测到另一个求解正在进行')
+
+
+def _split_rate(s):
+    """'28/30' -> (28, 30)；解析不出返回 (None, None)。"""
+    try:
+        a, b = str(s).split('/')
+        return int(a), int(b)
+    except Exception:
+        return None, None
+
+
+def v7_dual_denominator_audit(root, names=None):
+    ok, det = True, []
+    for lab, fn in (names or V7_SCORECARDS):
+        p = os.path.join(root, 'feagpt_repro', 'reports', fn)
+        if not os.path.exists(p):
+            det.append(f'{lab}: 缺成绩单 {fn}')
+            ok = False
+            continue
+        sc = json.load(open(p, encoding='utf-8'))
+        m = sc.get('msr_section') or {}
+        c = sc.get('exam_denominator_closure') or {}
+        fc = m.get('exam_full_closure') or {}
+        aud = m.get('denominator_audit') or {}
+        probs = []
+        # (a)
+        if c.get('ok') is not True:
+            probs.append('四桶未闭合(ok!=True)')
+        elif c.get('exam_legacy', 0) + c.get('exam_v11', 0) + c.get('dev', 0) != c.get('n_tasks', -1):
+            probs.append(f"四桶加和 {c.get('exam_legacy',0)}+{c.get('exam_v11',0)}+{c.get('dev',0)}"
+                         f" != n_tasks {c.get('n_tasks')}")
+        # (b)
+        if fc.get('ok') is not True:
+            probs.append('msr exam_full 未闭合(ok!=True)')
+        elif fc.get('exam_legacy', 0) + fc.get('exam_v11', 0) + fc.get('dev', 0) != fc.get('closure_sum', -1):
+            probs.append(f"msr 三桶加和 != closure_sum {fc.get('closure_sum')}")
+        elif fc.get('closure_sum') != aud.get('n_counted'):
+            probs.append(f"closure_sum {fc.get('closure_sum')} != counted {aud.get('n_counted')}")
+        # (c)
+        n_full, d_full = _split_rate(m.get('exam_full_msr'))
+        if n_full is None:
+            probs.append('exam_full_msr 解析失败')
+        elif d_full != fc.get('exam_full'):
+            probs.append(f"exam_full_msr 分母 {d_full} != closure.exam_full {fc.get('exam_full')}")
+        n_v11, d_v11 = _split_rate(m.get('exam_v11_msr'))
+        if d_v11 is not None and d_v11 != fc.get('exam_v11'):
+            probs.append(f"exam_v11_msr 分母 {d_v11} != closure.exam_v11 {fc.get('exam_v11')}")
+        # (d)
+        for r in m.get('per_task', []):
+            tid = r.get('task_id')
+            if r.get('denominator') and r.get('failure_class') == 'env':
+                probs.append(f'{tid}: env 留在分母（R16）')
+            if r.get('msr_pass') is False and r.get('denominator'):
+                fd = (r.get('failure_detail') or '').strip()
+                if not fd or fd == 'NO_DIAGNOSTIC_CAPTURED':
+                    probs.append(f'{tid}: 判 FAIL 但没有 failure_detail（N-21）')
+            if r.get('failure_class') == 'solver':
+                blob = json.dumps(r.get('failure_gates') or {}, ensure_ascii=False) + (r.get('failure_detail') or '')
+                if any(x in blob for x in _LOCK_MARKS):
+                    probs.append(f'{tid}: solver 却含锁冲突（S-55）')
+        if probs:
+            ok = False
+            det.append(f"{lab}({fn}): " + '；'.join(probs[:4]) + (f' …共 {len(probs)}' if len(probs) > 4 else ''))
+        else:
+            det.append(f"{lab}: 四桶 {c.get('exam_legacy')}+{c.get('exam_v11')}+{c.get('dev')}"
+                       f"={c.get('n_tasks')}；msr counted {aud.get('n_counted')}；"
+                       f"exam_full_msr {m.get('exam_full_msr')}；失败条目均有原因")
+    return ok, '；'.join(det)
+
+
 def msr_denominator_closure(sc, label=''):
     """R52（专家第十轮 §3.3）：MSR 分母必须**四类拆开**且加和闭合。
 
@@ -1940,6 +2025,18 @@ def semantic_checks(root, rows):
     add('S-45', '收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）',
         'C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime',
         _det45, _ok45)
+
+    # S-54（T-A11b；C-039 留的 follow-up）：v7 双分母成绩单的结构性闸（四桶闭合 / msr 闭合 /
+    # 分母一致 / 失败必须带原因 + env 不留在分母 + solver 不含锁冲突）。反向 **NC-58 四向**。
+    _ok54, _det54 = v7_dual_denominator_audit(root)
+    add('S-54', 'v7 双分母成绩单：四桶闭合、exam_full 分母一致、判失败必须带原因（R66/R52/R16）',
+        'exam_legacy + exam_v11 + dev == n_tasks；msr 三桶加和 == closure_sum == counted；'
+        'exam_full_msr 分母 == closure.exam_full；msr_pass False 必有 failure_detail；'
+        'env 不得留在分母；solver 诊断不得含 .solve.lock',
+        _det54, _ok54)
+
+    # 注：S-55（solver 不得含锁冲突）在 `msr_l3.audit_solver_lock_conflict()` 内实现并在出单时硬断言，
+    #     不在这里重复登记第二条 —— 同一判据写两遍，迟早不一致（T-A11a 的教训）。
 
     # S-46（R60，第十二轮 §3.5/D6）：dataset/求解类脚本必须走项目 venv（系统 python 缺 numpy/gmsh）。
     _ok46, _det46 = dataset_cmds_use_venv(

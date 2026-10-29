@@ -39,14 +39,105 @@ def sha256_file(p):
     return h.hexdigest()
 
 
+# ★★ T-A11b（N-20 的真正根因）：**失败原因必须整条落盘**。
+#   旧实现两个错叠在一起，任何一个单独都不致命、合起来让 artifact 不可审计：
+#     ① `gates = {k: bool(v.get('pass'))}` 把每个 gate 压成布尔 —— 结构化诊断全丢；
+#     ② `failure_detail` 只取 `gates['pipeline'].detail or .actual`；
+#        而 `spec_fidelity` 失败时 pipeline **是 pass**、它的 detail 是 None
+#        ⇒ detail 落成 **空字符串**。实测 v7 glm 首跑里 `L3_stiffened_panel_800x600_str3`
+#        的 failure_detail 就是 ''，只看得见 `class=model`
+#        （事后靠单条探针重算才知道是 `params.length/width` 800↔600 采样反了）。
+#   ⇒ 任何闸（含 S-55）都无法从 artifact 复核失败原因，等于**闸建立在空字段上**（R58）。
+_DIAG_KEYS = ('field', 'expected', 'actual', 'detail', 'n_fail', 'n_fields',
+              'failed', 'exec_config_mismatch', 'metadata_extra',
+              'n_tri3', 'n_nodes', 'min_quality', 'label_error_type')
+
+
+def _gate_diag(result):
+    """收集**失败 gate** 的原始诊断字段（pass 的 gate 不收，避免体积膨胀）。"""
+    out = {}
+    for name, g in (result.get('gates') or {}).items():
+        if g.get('pass'):
+            continue
+        d = {k: g[k] for k in _DIAG_KEYS if k in g and g[k] not in (None, '', [], {})}
+        if isinstance(d.get('detail'), str):
+            d['detail'] = d['detail'][-1200:]      # 只留尾部（报错总在尾）
+        out[name] = d
+    return out
+
+
+def _diag_text(result):
+    """把**全部**失败 gate 的诊断摊成一段文本，供关键词归类。
+
+    以前只看 pipeline 一个 gate 的 detail —— 但 `spec_fidelity` / `mesh_quality` /
+    `semantics` / `fidelity_disp` 失败时 pipeline 是 pass，detail 是 None
+    ⇒ 归类函数实际只对「pipeline 挂掉」这一种情况有输入，其余全靠 `return 'model'` 兜底。
+    """
+    g = result.get('gates') or {}
+    parts = []
+    for name, gg in g.items():
+        if gg.get('pass'):
+            continue
+        for k in ('field', 'expected', 'actual', 'detail'):
+            v = gg.get(k)
+            if isinstance(v, str) and v:
+                parts.append(v)
+            elif v is not None and k in ('field', 'expected', 'actual'):
+                parts.append(str(v))
+        if gg.get('failed'):
+            try:
+                parts.append(json.dumps(gg['failed'][:5], ensure_ascii=False))
+            except Exception:
+                pass
+    return ' '.join(parts)
+
+
+LOCK_MARKS = ('.solve.lock', '检测到另一个求解正在进行')
+
+
+def audit_solver_lock_conflict(rows):
+    """S-55：返回「被判成 solver、但诊断里其实写着求解锁冲突」的 task_id 列表。
+
+    为什么这条闸必须存在：N-20 的错法是「先把并发事故归成 solver，再当算力不足剔出分母」，
+    于是**模型被替它掩盖了真失败**（R16）。而当时没有任何东西会红 —— 因为 detail 根本没落盘（N-21）。
+    现在 detail 落了，闸才有对象可查；不装这条，下次 classify 写错照样静默。
+
+    抽成函数而不是内联：内联断言负控**调不到**，而「工具自己不会红等于没判据」是本仓库
+    踩过两次的坑（NC-57 的由来）。抽出后 negative_controls 可以直接喂合成 row 看它点不点得出来。
+    """
+    bad = []
+    for r in rows:
+        if r.get('failure_class') != 'solver':
+            continue
+        blob = (json.dumps(r.get('failure_gates') or {}, ensure_ascii=False)
+                + (r.get('failure_detail') or ''))
+        if any(m in blob for m in LOCK_MARKS):
+            bad.append(r['task_id'])
+    return bad
+
+
 def classify_failure(result):
-    """失败分层（专家 P0-2：env / contract / model / solver）。"""
+    """失败分层（专家 P0-2：env / contract / model / solver）。
+
+    注：`contract` 分支**故意只认 pipeline 一个 gate**（`contract_ok` / `contract_buildable`
+    是 pipeline 的 field）。把它扩到全 gate 会把历史上归 `model` 的条目翻成 `contract`，
+    改变跨版本 failure_breakdown 口径 —— 与本轮「只加诊断、不改判分」相冲突。
+    """
     g = result.get('gates', {})
     pipe = g.get('pipeline', {})
-    detail = (pipe.get('detail') or '') + ' ' + (pipe.get('actual') or '')
-    if 'contract' in pipe.get('field', '') or 'contract' in detail[:120]:
+    pipe_text = (pipe.get('detail') or '') + ' ' + (pipe.get('actual') or '')
+    detail = _diag_text(result) or pipe_text        # 全 gate 文本（契约分支仍只看 pipe）
+    if 'contract' in pipe.get('field', '') or 'contract' in pipe_text[:120]:
         return 'contract'
     if 'ModuleNotFoundError' in detail or 'ImportError' in detail:
+        return 'env'
+    # ★ T-A11b（R16）：求解锁冲突是**环境/并发**问题，不是算力不足，更不是模型错。
+    #   实测（v7 glm 首跑）：msr 跑到尾部 6 条时，前一条的锁没被释放（持有 pid 已死），
+    #   后续每条都抛 `RuntimeError: 检测到另一个求解正在进行…R61 禁止并行`；
+    #   而下面 `actual.startswith('rc=')` 把它一并归成 `solver` ⇒ **6 条假 solver 失败**，
+    #   等于把环境事故记成「模型能力不足」再剔出分母（R16 明令禁止）。
+    #   必须先判锁冲突，再判 rc。
+    if '.solve.lock' in detail or '检测到另一个求解正在进行' in detail:
         return 'env'
     if 'TypeError' in detail or 'ValueError' in detail or 'FEASpec' in detail \
             or 'must be' in detail:
@@ -68,7 +159,21 @@ def main():
     ap.add_argument('--reuse', default=None,
                     help='W5a\'：复用某份既有成绩单的 per_task 求解结果，只按新考卷**重算分母**'
                          '（求解与考卷无关；用于 v4 分母口径复现，不起求解器）')
+    ap.add_argument('--force', default=None,
+                    help='T-A11b：逗号分隔的 task_id 列表，**即使 --reuse 里已有结果也重跑这几条**。\n'
+                         '用途：一次 msr 里若有个别条目因环境失败被废，不必整卷重跑 50 分钟，\n'
+                         '用 `--reuse 本成绩单 --force 这几条` 定点补齐（其余逐字节复用）。\n'
+                         '★ 为什么必须定点而不是整卷重跑：环境注入的批量删除保护在「单次调用累计删除 50 个文件」\n'
+                         '处会拒绝 unlink，而每条任务释放锁就是一次删除 ⇒ 59 条必然在 ~53 条处炸（N-22）。\n'
+                         '分母与闭合仍按**全卷**重算（rows 覆盖全部任务），不会因为只跑 6 条而变小。')
+    ap.add_argument('--only', default=None,
+                    help='T-A11b（N-22 环境约束）：逗号分隔的 task_id 列表，**本批只跑这些**。\n'
+                         '与 --reuse 合用时，其余任务从复用源照抄；没有复用源就记 not_run 待补齐。\n'
+                         '为什么要分批：环境注入的批量删除保护在「单次调用累计删除 50 个文件」处拒绝\n'
+                         '`unlink()`，而每条任务释放求解锁就是一次删除 ⇒ 一次跑 59 条必然在 ~第 53 条处\n'
+                         '把锁删不掉、后续全被锁挡住。分两批（各 ≤40 条）可完全绕开。')
     args = ap.parse_args()
+    only_ids = {s.strip() for s in (getattr(args, 'only', None) or '').split(',') if s.strip()}
     err = require_dataset()          # W5a'：缺 gold 数据集必须硬报错（否则全链会集体假 FAIL）
     if err:
         print('[dataset] ' + err)
@@ -101,6 +206,10 @@ def main():
             cands[c['task_id']] = c
 
     reuse_map = {}
+    force_ids = {s.strip() for s in (args.force or '').split(',') if s.strip()}
+    if force_ids and not args.reuse:
+        print('[msr_l3] --force 必须与 --reuse 同时使用（--force 的含义是「从复用源里挑几条重跑」）')
+        return 2
     if args.reuse:
         prev = json.load(open(args.reuse, encoding='utf-8')).get('msr_section', {})
         reuse_map = {r['task_id']: r for r in prev.get('per_task', [])}
@@ -123,7 +232,16 @@ def main():
                          'reason': 'no spec (unresolved/no-output)'})
             print(f"  [--] {tid}: no spec -> 不进分母")
             continue
-        if reuse_map:
+        if only_ids and tid not in only_ids:
+            # ★ T-A11b（N-22 环境约束）：本批不跑。复用源里有结果就照抄（下面 reuse 分支处理），
+            #   没有就记 not_run —— **不能**让它落到 evaluate_one，否则「分批」等于没分。
+            _pr = (reuse_map.get(tid) or {}) if reuse_map else {}
+            if _pr.get('msr_pass') is None:
+                rows.append({'task_id': tid, 'msr_pass': None, 'denominator': False,
+                             'reason': 'not-run: not in --only batch（本批未跑，待后续批次补齐）'})
+                print(f"  [--] {tid}: 不在本批 --only 内 -> 待补齐")
+                continue
+        if reuse_map and tid not in force_ids:
             pr = reuse_map.get(tid)
             if not pr or pr.get('msr_pass') is None:
                 rows.append({'task_id': tid, 'msr_pass': None, 'denominator': False,
@@ -131,7 +249,8 @@ def main():
                 print(f"  [--] {tid}: reuse 源里无求解结果 -> 不进分母")
                 continue
             row = dict(pr)
-            row['denominator'] = True
+            # ★ 复用不能把 env 条目「洗」回分母：源里是 env 排除的就保持排除（R16）。
+            row['denominator'] = False if row.get('failure_class') == 'env' else True
             rows.append(row)
             print(f"  [{'ok' if row['msr_pass'] else 'FAIL'}] {tid}: (reuse) msr_pass={row['msr_pass']}")
             continue
@@ -156,8 +275,24 @@ def main():
                'fidelity_dev_pct': r.get('fidelity_disp_dev_pct')}
         if not ok:
             row['failure_class'] = classify_failure(r)
-            row['failure_detail'] = (r['gates'].get('pipeline', {}).get('detail')
-                                     or r['gates'].get('pipeline', {}).get('actual') or '')[:300]
+            # ★ T-A11b：`failure_gates` 存**结构化**诊断（哪个 gate、field、expected/actual），
+            #   `failure_detail` 存摊平文本。两者都必须非空 —— 空 = 这条失败不可审计，
+            #   事后只能靠重跑探针猜（N-20 已经这样浪费过一轮 40 min）。
+            fg = _gate_diag(r)
+            row['failure_gates'] = fg
+            row['failure_detail'] = (_diag_text(r) or 'NO_DIAGNOSTIC_CAPTURED')[:2000]
+            if not fg:
+                print(f"  [!!] {tid}: 判 FAIL 却无任何失败 gate 诊断 —— artifact 不可审计")
+            # ★★ T-A11b（R16 落到**分母**上，而不是只写在注释里）：
+            #   旧实现只有「evaluate_one 直接抛异常」那条路径设了 denominator=False；
+            #   而 `pipeline` rc≠0 这条路径是**先 append(denominator=True) 再 classify**
+            #   ⇒ env 条目留在分母里，于是同一次运行里印出两句自相矛盾的话：
+            #     「环境失败 6 条——不进 MSR 分母（R16）」 与 「counted 59 + … + env 0」
+            #   （v7 glm run2 实测就这样：env 被判成 6 条，闭合式里却是 0，MSR 报 44/59）。
+            #   R16 是红线，不是注释 ⇒ env 必须退出分母。
+            if row['failure_class'] == 'env':
+                row['denominator'] = False
+                row['excluded_reason'] = 'env failure（R16：环境事故不计模型失败，退出分母）'
         rows.append(row)
         bad = [k for k, v in gates.items() if not v]
         print(f"  [{'ok' if ok else 'FAIL'}] {tid}: gates={gates} "
@@ -166,6 +301,17 @@ def main():
 
     den_rows = [r for r in rows if r.get('denominator')]
     n, p = len(den_rows), sum(1 for r in den_rows if r['msr_pass'])
+
+    # ★★ S-55（N-20 的闸）：`failure_class == 'solver'` 的条目，诊断里**不得**出现求解锁冲突。
+    #   ★ 抽成独立函数（`audit_solver_lock_conflict`）而不是内联 if：
+    #     内联断言**没法被负控调用**，而「工具自己不会红等于没判据」是本仓库踩过两次的坑
+    #     （NC-57 的由来）。抽出来后 negative_controls 可以直接喂一条合成 row 看它是否点得出来。
+    bad_solver = audit_solver_lock_conflict(rows)
+    if bad_solver:
+        print('[FATAL] S-55：以下条目 class=solver 但诊断含求解锁冲突 —— '
+              '并发事故不得记成算力失败（R16）：' + ', '.join(bad_solver))
+        return 5
+
     env_fails = [r for r in rows if r.get('failure_class') == 'env']
     if env_fails:
         print(f'环境失败 {len(env_fails)} 条——不进 MSR 分母（R16），请检查解释器后重跑。')

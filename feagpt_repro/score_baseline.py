@@ -83,6 +83,23 @@ def stratum_of(task):
         return 'interpolation'
     return None
 
+
+def is_exam_legacy(task):
+    """**主口径** exam 谓词（三栏 25 条）—— C-032 同分母，对外一切 `exam` 都指这个。
+
+    ★ T-A11a：这个函数是**唯一**的 legacy 判据。改之前，判 exam 的写法散在四处
+      （scorecard 的 `st is not None`、msr_l3 的 `bool(exam_stratum)`、
+       trivial_baselines 的 `stratum_of is not None`、bootstrap 读 `is_exam` 字段），
+      v7 一来四处一起错、错法还不一样（有的把 9 条算进 exam，有的塞进 dev）。
+      **判据散着写 = 迟早不一致**（与 relpath 那个坑同型）。
+    """
+    return stratum_of(task) in STRATA
+
+
+def is_exam_full(task):
+    """**并列口径** exam_full = legacy + v11（C-037 双分母）。与 legacy 只可并列、**不可相减**（R54）。"""
+    return stratum_of(task) in STRATA_ALL
+
 # R25：官方 artifact 一律写 reports/（被 git 追踪），eval_runs/ 只作工作目录
 REPORT_DIR = os.path.join(HERE, 'reports')
 
@@ -359,7 +376,8 @@ def main():
              ) +
             (f'dev = 既非 exam 也非 exam_v11 {len(dev_rows)} 条 = ' if n_exam_v11
              else f'dev = 非 exam {len(dev_rows)} 条 = ') +
-            ' + '.join(f'{k} {v}' for k, v in sorted(dev_split.items())) + '）（R15/R36）'),
+            # `or '无'`：冒烟（只跑几条）时 dev 桶可能为空，否则会印出「= ）」
+            (' + '.join(f'{k} {v}' for k, v in sorted(dev_split.items())) or '无') + '）（R15/R36）'),
         # W5c（R39）：跨卷比较按 task-id 集，不按条数——条数相同也可能换了一批题
         'exam_task_ids_sha256': hashlib.sha256(
             json.dumps(exam_ids, ensure_ascii=False).encode('utf-8')).hexdigest(),

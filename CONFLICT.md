@@ -532,6 +532,194 @@ headline 结构判定：仅 C-032 的 status 列带「（对外 headline）」�
 
 ---
 
+
+### N-20（高，**已定论** + 已处置）求解锁残留 ⇒ 6 条**假 solver 失败**，且 `classify_failure` 把它归成「算力不足」
+
+- **现象**：v7 × glm 首跑全链 MSR 报 `44/59 (74.6%)`、失败分层 `{'model': 9, 'solver': 6}`。
+  而 **C-032 的 solver 是 0 条**（`baseline_scorecard_L3_v6c_p2.json` 实读 `n_solver_excluded=0`）
+  ⇒ 「v7 的题突然更吃算力」这个解释站不住。
+- **★ 我在这条上写错过一次，记下来防复发**：中途我曾「自我更正」说「C-032 其实有 4 条 solver」，
+  理由是实读 `baseline_scorecard_L3_v6c.json` 得到 `n_solver_excluded=4`。
+  **读错文件了** —— 那个是 **C-029**（prompt v1 代），不是 C-032。
+  C-032 的成绩单是 `baseline_scorecard_L3_v6c_p2.json`（prompt v2 代，`n_solver_excluded=0`），
+  `reports/INDEX.md` 第 12 行写得很清楚。**教训：比对基线要去 INDEX 认人，不能凭文件名里的 `v6c` 前缀认。**
+  原判断（C-032 solver 0）成立，改回来。
+- **真正站得住的证据是成因**：这 6 条的 detail 明确写着锁冲突
+  `RuntimeError: 检测到另一个求解正在进行…R61 禁止并行`（见 N-22），与求解规模无关。
+  而 C-029 那 4 条 solver 的 `failure_detail` 已被截断成 stdout 尾巴（只剩 "deck written …"），
+  **成因永远无法复核** —— 这正是 N-21 的代价，不是可以含糊过去的地方。
+- **根因（两层，都不在模型侧）**：
+  1. `.solve.lock` **残留**（持有者 `pid 1044` 已不存在、机器上无任何 ccx 进程），
+     从该时刻起每条求解都抛
+     `RuntimeError: 检测到另一个求解正在进行：锁 …R61 禁止并行 ccx/abaqus`；
+  2. `msr_l3.classify_failure()` 只看 `pipeline.actual.startswith('rc=')` ⇒ 把这类异常
+     **一并归成 `solver`**。而 R16 明写「env 不计模型失败」⇒ 这是**把环境事故记成算力不足**，
+     再按「剔除 solver」把它从分母拿掉，等于替模型掩盖了 6 条真失败。
+- **证据（独立复算，不靠推理）**：
+  - 单条探针复跑 `L3_open_hole_panel_500x250_d45`（清锁后）：
+    `overall_pass = True`，四关全 True —— 它在首跑里被记成 solver 失败。
+  - 该条 ccx 自己的 `.sta` 显示 `1 step 1 inc` 正常收敛、`.dat` 无错误。
+  - 复跑 `L3_stiffened_panel_800x600`：`spec_fidelity pass=False`（`params.length` 800↔600 反）
+    ⇒ 它本来就是 **model** 失败，只是在首跑里被锁冲突挡在前面、误记成 solver。
+- **处置（已做）**：
+  - `classify_failure()` 增加锁冲突分支 ⇒ `env`（判在 `rc=` 之前）；
+  - 清锁、重跑 glm 全链；首跑的 44/59 **作废**，不进任何 claim。
+- **★ 根因已定论（第三次复现把它钉死了）**：`try/finally` 在**进程被硬杀时根本不执行** ——
+  Windows 上 `TerminateProcess` 不会跑 `finally`，Python 的 `KeyboardInterrupt` 路径才会。
+  本轮第三次撞到时拿到了确证：锁里写着 `pid 16568`，而 `Get-CimInstance` 查 python/ccx
+  **一个进程都没有**，锁的 mtime 正是我强杀那次 msr 的时刻。
+  ⇒ 三次事故同一个成因：**长任务被我杀掉 ⇒ finally 没跑 ⇒ 锁留下 ⇒ 下一条全被判 solver 失败**。
+  这不是「偶发」，是「我杀进程就必然复现」。已如实登记，不写成环境玄学。
+- **★ 为什么不加「pid 探活自动接管」**（看起来更聪明的做法）：代价不对称。
+  - 假接管（把**正在跑**的求解当成残留）⇒ 两个 ccx 并行 ⇒ **静默空转、返回码仍 0**（R61 原话），
+    结果是空结果被当成功，且**没有任何闸能事后发现**；
+  - 假不接管（把残留当成在跑）⇒ 只是浪费 1 小时或手工删一次锁，**立刻报错、看得见**。
+  ⇒ 保持现有「按 age 超时（1h）接管 + 其余一律拒绝」，宁可多删一次锁，不赌 pid 不重用。
+- **闸的盲区（已补）**：S-47 只查「锁机制在场 + 当前无残留锁」，查不出「这次跑出来的失败原因里
+  有没有锁冲突」。已加 **S-55 = `msr_l3.py` 出口硬断言**：凡 `failure_class == 'solver'` 的条目，
+  其 `failure_gates` + `failure_detail` 不得含 `.solve.lock` / `检测到另一个求解正在进行`，
+  命中即 `return 5` 拒出单（不是警告 —— 出了单就会被引成数字）。
+  注：**这条闸能立起来的前提是 N-21 的修复**。修之前 detail 是空字符串，S-55 查空气必绿。
+
+### N-21（**高，本轮新发现**）失败的「原因」从来没落过盘 —— 所有非 pipeline 环节的失败在 artifact 里都是**空字符串**
+
+- **现象**：`failure_detail` 在 v6c/v7 所有成绩单里，凡 `failure_class == 'model'` 的条目**全是 `''`**。
+  实测 `eval_runs/L3_stiffened_panel_800x600_str3/evaluation.json`：`overall_pass=False`，
+  唯一失败闸是 `spec_fidelity`（14 个字段里 12 个对、`params.length` 期望 800 实得 600、
+  `params.width` 期望 600 实得 800），但成绩单上只看得见 `class=model`，**原因一个字没有**。
+- **根因**（两处叠加，单独任一都不致命）：
+  1. `gates = {k: bool(v.get('pass')) for k, v in r['gates'].items()}` —— 把每个闸**压成布尔**，
+     `field/expected/actual/detail/failed` 结构化诊断全部丢弃；
+  2. `failure_detail` 只取 `gates['pipeline'].detail or .actual`。
+     而 pipeline **只有在 rc≠0 时才有 detail**；`spec_fidelity` / `mesh_quality` / `semantics` /
+     `fidelity_disp` 失败时 pipeline 是 **pass**、detail 是 `None`
+     ⇒ `or` 链一路落到 `''`。
+- **为什么这比「少一个字段」严重得多**：
+  - 任何闸都**没有对象可查**。S-55（锁冲突不得记成 solver）在修之前必然绿 —— 它查的是空串（R58：无工具读的=无闸）；
+  - N-20 就是这么被漏掉的：我事后只能**重跑单条探针**才还原出「本来该是 model 失败」；
+  - **历史数字的失败分层不可复核**：C-032 的 9 条 model 失败、C-033 的同类，原因从未落盘，
+    只能说「当时归成 model」，无法再验证那个归类对不对。
+- **处置（已做，本轮）**：
+  - 新增 `_gate_diag()`：收集**每个失败闸**的 `field/expected/actual/detail/failed[...]` 等结构化字段，
+    落成 `per_task[].failure_gates`；`detail` 只留尾部 1200 字（报错总在尾）。
+  - 新增 `_diag_text()`：把所有失败闸的诊断摊成文本，供 `classify_failure()` 归类 ——
+    此前它实际只对「pipeline 挂掉」这一种情况有输入，其余全靠 `return 'model'` 兜底。
+  - `failure_detail` 改从 `_diag_text()` 取，**兜底写 `NO_DIAGNOSTIC_CAPTURED` 而不是空串**
+    （空串会被下游 `or` / `if` 静默吃掉）；判 FAIL 却无任何失败闸诊断时**当场打印告警**。
+  - `contract` 分支**故意不收窄也不放宽**：仍只认 pipeline 的 `contract_ok/contract_buildable`。
+    扩到全闸会把历史归 `model` 的条目翻成 `contract`，改变 `failure_breakdown` 的跨版本口径 ——
+    那是「改判分」，与本轮「只加诊断」冲突（R-A1 单变量）。
+- **代价与边界（如实写）**：
+  - 这是**报告层**改动，不动任何 `pass/fail` 判定 ⇒ 不影响 TSR/SFR/MSR 任一数字；
+    但 `failure_breakdown` 的**可比性**在改动点前后需要说明：v6c 旧成绩单没有 `failure_gates`，
+    v7 有。**跨版本比 failure_breakdown 时不得假装同口径。**
+  - 未回填历史：v6c/v7 首轮 artifact 的 `failure_detail` 仍是 `''`，**不回填、不修补**，
+    只在 v7 正式跑（run2）起才有完整原因。
+- **闸的补法（下一步）**：S-55 已随本条目落地（依赖 detail 非空才有效）；
+  另建议 S-56：`msr_section.per_task` 里凡 `msr_pass == False` 且 `denominator == True` 的条目，
+  `failure_detail` 不得为空且不得为 `NO_DIAGNOSTIC_CAPTURED` —— 即「判失败必须说得出为什么」。
+
+### N-22（**高，环境级，会必然复发**）沙箱的批量删除保护会拦下 `unlink()` ⇒ 求解锁释放失败 ⇒ 一次 msr 跑到 ~53 条必炸
+
+- **现象（两轮一模一样，不是巧合）**：v7 × glm 两条独立的全链 MSR（run1 与 run2）都在**尾部 6 条**失败：
+  `open_hole_panel_500x250_d45`、`600x300_d30`、`600x300_d60`、`stiffened_panel_600x600`、
+  `800x600`、`800x600_str3`。run1 把它们记成 `solver`，run2 记成 `env` —— 归类变了，**失败位置一条不差**。
+- **真因（这次有 detail 才看得见，靠 N-21 的修复）**：第一条的 `failure_gates.pipeline.detail` 里写着
+  ```
+  [safe-delete][SAFE_DELETE_BULK_CONFIRM_REQUIRED]
+  {"count":50,"threshold":50,"scope":"turn","targets":["…\.solve.lock"],"targetCount":1}
+  ```
+  即：**环境注入的批量删除保护在「单次调用累计第 50 次删除」处拒绝这次 `unlink()`**。
+  而这次删除恰好是 `_release_solve_lock()` 释放求解锁 —— 删除被拒 ⇒ 该步抛异常 ⇒
+  `run_pipeline` rc=1 **且锁留在原地**。
+  紧接着的 5 条，`RuntimeError: 检测到另一个求解正在进行…持有者 {"pid": 29356, …}`，
+  锁年龄 31s → 38s → 551s → 655s → 665s：**同一个已死的持有者**，一条条把后面全挡死。
+- **为什么正好在第 50 次**：每条任务释放一次锁 = 一次 `unlink`。59 条里第 50 次落在第 53 条附近
+  ⇒ **任何 ≥50 条的单次 msr 在 agent 内都必然在这里断**，与模型、与题面完全无关。
+  这也解释了 run1 我误判成「求解锁残留」：现象相同，成因不同（那次确实是残留，这次是**被拦着不让删**）。
+- **处置（已做）**：
+  - `msr_l3.py` 增 `--force <id列表>`：与 `--reuse 本成绩单` 合用，只重跑指定几条，
+    其余逐字节复用；分母与闭合仍按**全卷**重算（rows 覆盖全部任务，不会因只跑 6 条而变小）。
+  - 长跑分批原则：**单次调用内任务数 < 50**（保守取 ≤40）。
+  - 若要一次跑完整卷，只能在 WorkBuddy 外 `cmd` 里跑 bat —— 与「Abaqus 在 agent 内必失败」
+    同一条环境铁律（沙箱注入层会干预进程行为），不是代码问题。
+- **教训（比修法重要）**：我上一轮把它写成「求解锁残留（我自己造成的）」，**只对了表层**。
+  真因是环境拦删除；而当时 detail 没落盘（N-21），所以只能看见「锁在、持有者已死」，
+  于是一次次手工删锁、删完下次照炸。**「现象能用手工绕过」不等于「根因已找到」。**
+- **闸的盲区**：目前没有任何闸能发现「环境拒绝了 unlink」。可行方向：跑完后若同时出现
+  `failure_class=env` 与锁冲突标记，就**直接 FATAL 并提示用 `--force` 补齐**，
+  而不是把 `44/59` 印成一份看起来正常的成绩（本轮就是差点这么用了）。
+
+### N-23（高，逻辑不一致）`env` 失败仍留在 MSR 分母里，而同一份输出印着「不进分母」
+
+- **现象**：v7 glm run2 的日志里两句话互相矛盾：
+  ```
+  环境失败 6 条——不进 MSR 分母（R16），请检查解释器后重跑。
+  [msr_l3] 分母闭合 全卷: 64 = counted 59 + clarify 5 + … + env 0 + unknown 0
+  ```
+  「6 条不进分母」和「env 0」不可能同时成立。
+- **根因**：`msr_l3.py` 有**两条**记录失败的行路径，只有一条遵守了 R16：
+  - `evaluate_one` **抛异常**那条：`'denominator': cat != 'env'` ✅；
+  - `pipeline` **rc≠0** 那条：先 `rows.append(denominator=True)`，再看 gates 判失败、
+    才 `classify_failure()` 得出 `env` ❌ —— 此时分母已经定死了。
+  于是 env 条目既被计进 `counted`，又被 `_excl_class` 认成 `env`（后者只在
+  `not denominator` 的池子里统计），两边都"没看见"它。
+- **为什么必须修**：R16 是红线（环境事故不计模型失败）。留在分母里等于**把环境事故算成模型分数低**，
+  这正是 N-20 那条要防的错，只是这次方向相反（不是剔出去掩盖失败，而是算进来压低分数）。
+- **处置（已做）**：`if row['failure_class'] == 'env': row['denominator'] = False` +
+  `excluded_reason` 落盘。此后 `counted` 与 `env` 两侧数字才互斥且闭合。
+- **口径影响（如实写）**：修后若仍有 env 条目，MSR 分母会从 59 变 53、点估计随之变
+  ⇒ **与 C-032 的 51 分母不可直接相减**（R53/R54）。本轮的正确做法是**把它跑成功**
+  （`--force` 定点重跑），而不是把它排除掉让数字好看；排除只是兜底。
+
+### N-24（中，已定性 + 判据已跟上，**数据集标签未动**）9 条 v11 的 `split_v2` 是 `extrapolation_test`，与 `exam_stratum=interpolation_v11` 不同名
+
+- **现象**：跑负控时 NC-19（「exam 集与 split 语义一致」）由绿转红，报 9 条「非 exam 却是留出 split」，
+  其中打印出来的 3 条是 `L3_fuselage_barrel_d2000_l1800_str8_frm3`、
+  `L3_naca4412_wingbox_n_ribs6_chord1000`、`L3_naca4412_wingbox_size_chord900`。
+- **实测（全卷 9 条 v11 逐条看）**：`exam_stratum` 全是 `interpolation_v11`，
+  `split_v2` **全是 `extrapolation_test`**（9/9）。交叉表：
+  `('interpolation_v11','extrapolation_test')->9`，而 legacy 三栏分别是
+  `boundary↔boundary_holdout`、`extrapolation↔extrapolation_test`、`interpolation↔interpolation_test` 一一对应。
+  ⇒ v11 这一桶**借用了 extrapolation 的 split 标签**，与自己的 stratum 不同名。
+- **为什么 NC-19 会红（而且是假红）**：它的不变式②写的是「**非 exam** 行 split 不得是留出」，
+  用的是 legacy `is_exam`。v7 按 C-037 把 9 条 v11 定成 `exam_full` 但**不是** legacy exam
+  ⇒ 9 条合法行被一次全判红。**判据没跟上双分母口径**，不是数据错了。
+- **处置（已做）**：不变式②改用 `is_exam_full`（旧成绩单无该键时回落 `is_exam`）；
+  另加 v11 专用不变式：**进了 exam_full 的 v11 行必须是留出**（否则等于 dev 题混进考卷、稀释 headline）；
+  并把「v11 的 split_v2 与 stratum 不同名」的条数**计数进 NC-19 的 actual**
+  （`v11 9/9 为留出（split_v2 与 stratum 不同名，属已知口径）`），条数一变就会被看见 ——
+  不写死常数（R63），也不静默放过。
+- **★ 没有做的事（需要老王拍板，不擅自改）**：**没有**去改数据集里这 9 条的 `split_v2`。
+  因为 `split_v2` 是**考卷定义**的一部分，改了它等于改卷面（R65/S-52 冻结纪律）；
+  而且从哪边改都说得通（是 v11 该改叫 `interpolation_test`，还是它本来就是从 extrapolation 池里挑的）。
+  这条先如实挂着，等拍板。
+- **判据可证伪的证据（不是「我改完就绿了」）**：这轮 NC-19 **确实是先红了**，
+  红在真实的 9 条身上；改完后再绿。红的原因被逐条核对过（上面实测），不是靠调判据把红色抹掉。
+
+### N-25（**高**）同一条柱壳在**同一套物理参数**下两次运行结果不同 ⇒ legacy exam MSR 的 ±1 不可解读
+
+- **现象**：`L3_fuselage_barrel_d2000_l2000_str12_frm4`（2.5M 自由度的最大柱壳）在 ds 上翻了一次：
+  C-033（`baseline_scorecard_L3_v6c_ds_p2.json`）记**通过** → v7 `solver` 失败（rc=1、236s，"solver failed"、
+  `N: 2528201 / nnz: 140660073`）。这是 **legacy exam MSR 从 20/21 变 19/21 的唯一来源**（其余 20 条零变化）。
+  **glm 侧同一条没有翻转**：C-032 与 v7 都是通过（C-032 exam MSR 20/22 == v7 20/22，TSR/MSR 逐条零变化）。
+  （注意：更早的 C-029 时代这条是 solver 失败，但那是 prompt v1 代、候选不同，**不能拿来当复现性证据**。）
+- **关键证据（排除了「候选不同」这个解释）**：把两次候选逐叶子比 ——
+  **物理参数完全一致**，差异只有 4 个叶子且全是命名/元数据：
+  `spec.name`、`spec.description`、`raw_len`、`validation_history[0].errors[k]`（已修正的校验历史）。
+  ⇒ 网格、载荷、材料、几何一模一样，**同一条`.inp` 级别的输入，两次跑出不同结论**。
+- **为什么这条必须记**：它是「legacy exam MSR 19/22 → 20/22」这类 ±1 变化的**唯一来源**。
+  如果不记，下一轮很容易把「exam MSR +1」读成模型变强 —— 那是拿一次求解抖动当结论。
+  **TSR/SFR（spec 层）是确定性的**：两模型 legacy exam 逐条零变化，跨版本可比；
+  **MSR（solve 层）在这一条上不是**。
+- **可能成因（未验证，不写成结论）**：2.5M 自由度、`N: 2528201 / nnz: 140660073` 的稀疏系统已接近
+  该机内存/迭代上限；ccx 的 `solver failed` 通常是迭代不收敛或内存不足。**没有做**进一步定位
+  （要单独重跑几次同一 `.inp` 才谈得上结论），因此只如实登记「结果不可复现」，不猜原因。
+- **处置**：
+  - C-040 正文把它点名为「±1 不可解读」的原因，不给任何「模型进步」的表述；
+  - 跨版本比 MSR 时**先看这条**；报告里凡出现 exam MSR 的差值，必须附「含 1 条求解不可复现题」；
+  - 未改题、未剔题（剔掉它就是挑数据，R54 的同类问题）。
+
 ## 3. 门禁与工作区实况（本轮 pre-flight 原始结果）
 
 ```

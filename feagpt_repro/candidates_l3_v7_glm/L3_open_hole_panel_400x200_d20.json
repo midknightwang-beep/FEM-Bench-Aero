@@ -1,0 +1,11 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+ "clarify": "[\"孔直径 hole_d 是多少？\",\"孔心位置：是中心孔还是偏心孔？若偏心，请给出孔心坐标 hole_x、hole_y。\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 75
+}

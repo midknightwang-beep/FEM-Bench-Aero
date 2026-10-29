@@ -1,0 +1,11 @@
+{
+ "task_id": "L3_stiffened_panel_600x600_str3",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+ "clarify": "[\"长桁根数 n_stringers 未给出（题面仅说\\\"若干根长桁\\\"），请明确长桁数量\",\"若长桁有具体剖面尺寸（如高度、厚度、剖面形式 blade/T），请一并提供；未提供则按族默认值处理\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 111
+}

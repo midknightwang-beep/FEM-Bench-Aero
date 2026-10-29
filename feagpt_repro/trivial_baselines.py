@@ -22,7 +22,7 @@ import json, os, sys, collections, math
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from evaluate import evaluate_one, spec_fidelity, load_tasks, FEA, RUNS
-from score_baseline import stratum_of
+from score_baseline import stratum_of, is_exam_legacy, is_exam_full
 from _paths import rel   # T-A11a：跨盘符安全（见 _paths.py）
 
 def spec_vec(spec, family):
@@ -82,7 +82,10 @@ def main():
 
     tasks = [t for t in load_tasks(tasks_path) if t['input_level'] in levels]
     # ★ W5b-3b：考卷任务即使 split_v2=='train'（内插留出）也不得进检索库/众数池
-    exam_flags = [stratum_of(t) is not None for t in tasks]
+    # ★ T-A11a：exam 判据改用共享函数。原写法 `stratum_of(t) is not None` 在 v7 上
+    #   会把 9 条 `interpolation_v11` 当成 legacy exam（地板分母 25→34，与 C-032 不同分母）。
+    exam_flags = [is_exam_legacy(t) for t in tasks]
+    exam_flags_full = [is_exam_full(t) for t in tasks]
     train = [t for t in tasks if t['split_v2'] == 'train' and stratum_of(t) is None]
     test = [t for t in tasks if t['split_v2'] in ('boundary_holdout', 'extrapolation_test',
                                                    'interpolation_test')]
@@ -190,14 +193,21 @@ def main():
         t2_pass.append(sf['pass'])
 
     # ---- 汇总（考卷 = exam_stratum 非空；老考卷回退 boundary+extrap；train 池单列）----
-    exam_idx = [i for i, f in enumerate(exam_flags) if f]
-    train_idx = [i for i, t in enumerate(tasks) if t['split_v2'] == 'train' and stratum_of(t) is None]
+    exam_idx = [i for i, f in enumerate(exam_flags) if f]            # legacy 三栏（主口径）
+    # ★ T-A11a：分栏必须按 **full** 遍历，否则 `interpolation_v11` 栏永远为空、
+    #   四栏加起来 25 而 exam_full 是 34（静默漏 9 条）。
+    exam_idx_full = [i for i, f in enumerate(exam_flags_full) if f]
+    # 检索库/众数池：既非 legacy 也非 v11（等价于老写法，但语义直说）
+    train_idx = [i for i, t in enumerate(tasks)
+                 if t['split_v2'] == 'train' and not is_exam_full(t)]
 
     def rate(passes, idx):
         return (sum(passes[i] for i in idx), len(idx))
 
-    report = {'note': f'平凡基线地板（levels={levels}, eng_layer={eng_layer}）。考卷 = exam_stratum 非空'
-                      '（v6 三栏；老考卷无该字段则 boundary_holdout+extrapolation_test）。'
+    report = {'note': f'平凡基线地板（levels={levels}, eng_layer={eng_layer}）。'
+                      '考卷 = exam_stratum ∈ 三栏（legacy，与 C-032 同分母；'
+                      '老考卷无该字段则 boundary_holdout+extrapolation_test）；'
+                      'v7 起另有 interpolation_v11 一栏并列（exam_full，C-037 双分母、R54 只禁相减）。'
                       '检索库/众数池已排除考卷任务（W5b-3b：内插题 split_v2 仍是 train，不排除会检索到自己）。'
                       '★ W5c-5/R40：T1 已 leave-one-out（检索库剔除目标自身）——旧版 train 12/13 全是自命中。'
                       '★ W5c-5b/R44：新增 T1plus_family（逐字段族级众数，不读输入，可用于 value_added 判据）'
@@ -216,8 +226,10 @@ def main():
         rec = {'exam_tsr': f'{ep}/{en}', 'exam_pct': round(100*ep/max(1, en), 1),
                'train_tsr': f'{tp}/{tn}', 'all_pct': round(100*sum(passes)/max(1, len(passes)), 1),
                'by_stratum': {}, 'train_by_family': {}}
-        for s in ('boundary', 'extrapolation', 'interpolation'):
-            si = [i for i in exam_idx if stratum_of(tasks[i]) == s]
+        # ★ T-A11a：遍历四栏（含 interpolation_v11）。若只遍历三栏，v7 会
+        #   「四栏明细加起来 25 而 exam 报 34」——静默漏 9 条（R-A5）。
+        for s in ('boundary', 'extrapolation', 'interpolation', 'interpolation_v11'):
+            si = [i for i in exam_idx_full if stratum_of(tasks[i]) == s]
             p_, n_ = rate(passes, si)
             if n_:
                 rec['by_stratum'][s] = {'tsr': f'{p_}/{n_}', 'pct': round(100*p_/n_, 1),
@@ -261,6 +273,7 @@ def main():
     for i, t in enumerate(tasks):
         report['per_task'].append({'task_id': t['task_id'], 'split_v2': t['split_v2'],
                                    'exam_stratum': stratum_of(t), 'is_exam': exam_flags[i],
+                                   'is_exam_full': exam_flags_full[i],
                                    'family': t['family'],
                                    'T0': t0_pass[i], 'T1': t1_pass[i],
                                    'T1_nn': (t1_hits[i] or {}).get('nn') if t1_hits[i] else None,

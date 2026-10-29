@@ -1,0 +1,11 @@
+{
+ "task_id": "L3_naca4412_wingbox",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+ "clarify": "[\"n_ribs：题面提到'若干翼肋等距布置'但未给出翼肋具体数量，请明确肋数（以及如有需要，肋间距或布置范围）\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 70
+}
