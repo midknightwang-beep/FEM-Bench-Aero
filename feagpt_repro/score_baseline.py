@@ -25,11 +25,22 @@ import json, os, sys, hashlib, collections
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from evaluate import evaluate_one, load_tasks, RUNS, require_dataset
+from _paths import rel   # T-A11a：跨盘符安全（见 _paths.py）
 
 EXAM_SPLITS = ('boundary_holdout', 'extrapolation_test')
 # W5b（RUBRIC §1.1，老王拍板）：exam 三栏——boundary / extrapolation 来自 dataset split，
 # interpolation 是任务层内插留出（split_v2 仍为 train）。headline = 合并 25，三栏明细必须并列。
 STRATA = ('boundary', 'extrapolation', 'interpolation')
+# ★ T-A11a（v7 / C-037 双分母，R66）：v1.1 新增 9 条内插考卷的 stratum 是 `interpolation_v11`。
+#   它**必须自成一个桶**，三条错路都试过、都不自洽：
+#   · 混进 STRATA ⇒ `exam` 变 34，与 C-032 的 25 不同分母 ⇒ R53/R54 禁止并列、禁止相减；
+#   · 折进 dev ⇒ dev 从 30 变 39，dev 数字跨版本不可比（R-A6），且「dev 只作开发诊断」被污染；
+#   · `is_exam` 改判 `st is not None` 而 `exam_by_stratum` 仍只遍历三栏 ⇒
+#     三栏加起来 25 却把 n 报成 34，`exam_definition` 印出「= 34」而明细只有 25 ⇒ 分母不闭合（R-A5）。
+#   ⇒ 唯一自洽的记法是四桶互斥且穷尽：
+#     exam(legacy) + exam_v11 + dev == n_tasks，且 exam_full == exam + exam_v11。
+STRATA_V11 = ('interpolation_v11',)   # v1.1 新增内插（C-037 双分母的 v11 一侧）
+STRATA_ALL = STRATA + STRATA_V11
 
 
 def scorecard_coverage_problems(sc):
@@ -259,7 +270,10 @@ def main():
     tasks = {t['task_id']: t for t in load_tasks(tasks_path)
              if t['input_level'] == 'L3'}
     # W5b：exam 期望条数从考卷自动推（硬编码 11 在扩到 25 条后会让 partial 判断失真）
-    n_tasks_exam = n_tasks_exam_arg or sum(1 for t in tasks.values() if stratum_of(t) is not None)
+    # ★ T-A11a：必须按 `in STRATA` 数，不能按 `is not None`——v7 里 v11 也非空，
+    #   若数成 34 则 `partial = (25 < 34) = True`，成绩单会被自己判成「半张」，误报。
+    n_tasks_exam = n_tasks_exam_arg or sum(1 for t in tasks.values() if stratum_of(t) in STRATA)
+    n_tasks_exam_full = sum(1 for t in tasks.values() if stratum_of(t) in STRATA_ALL)
     rows = []
     for fn in sorted(os.listdir(cand_dir)):
         if not fn.endswith('.json'):
@@ -274,19 +288,39 @@ def main():
         st = stratum_of(t)
         rows.append({'task_id': tid, 'split_v2': t['split_v2'], 'family': t['family'],
                      'category': cat, 'tsr_pass': ok,
-                     'exam_stratum': st, 'is_exam': st is not None,
+                     'exam_stratum': st,
+                     # R66：`is_exam` 保持 **legacy 语义**（三栏 25 条）——它是历史成绩单的口径，
+                     # 也是 bootstrap_ci.py 唯一的输入谓词（`r.get('is_exam')`）。v11 另开
+                     # `is_exam_full`，使 bootstrap 零改动即自动只对 legacy 做 CI（不会静默换分母）。
+                     'is_exam': st in STRATA,
+                     'is_exam_full': st in STRATA_ALL,
                      'ec': bool(t.get('expected_clarifications')),
                      'turns_used': cand.get('turns_used'), **detail})
 
-    exam_rows = [r for r in rows if r['is_exam']]
-    dev_rows = [r for r in rows if not r['is_exam']]
+    exam_rows = [r for r in rows if r['is_exam']]               # legacy 三栏（v6c/v7 都是 25，与 C-032 同口径）
+    exam_v11_rows = [r for r in rows if r['exam_stratum'] in STRATA_V11]
+    exam_full_rows = [r for r in rows if r['is_exam_full']]      # = legacy + v11
+    # ★ 只认 None 才进 dev：v11 绝不能折进 dev（否则 dev 30→39，跨版本不可比，R-A6）
+    dev_rows = [r for r in rows if r['exam_stratum'] is None]
     n_exam = len(exam_rows)
+    n_exam_v11 = len(exam_v11_rows)
+    n_exam_full = len(exam_full_rows)
+    # R-A5 / R52：四桶必须互斥且穷尽（`exam_stratum` 只可能是 STRATA / STRATA_V11 / None 之一）
+    _buckets = n_exam + n_exam_v11 + len(dev_rows)
+    if _buckets != len(rows):
+        print(f'[FATAL] exam/dev 桶不闭合：exam {n_exam} + v11 {n_exam_v11} + dev {len(dev_rows)}'
+              f' = {_buckets} ≠ 候选 {len(rows)} 条（R-A5/R52）——拒绝出成绩单')
+        return 4
+    if n_exam_full != n_exam + n_exam_v11:
+        print(f'[FATAL] exam_full {n_exam_full} ≠ exam {n_exam} + v11 {n_exam_v11}（R66 双分母不闭合）')
+        return 4
 
     fab = [r for r in rows if r['category'] == 'fabricated']
     clar_wrong = [r for r in rows if r['category'] == 'clarify_wrong']
     n_ec = sum(1 for r in rows if r['ec'])
 
     stratum_counts = collections.Counter(r['exam_stratum'] for r in exam_rows)
+    v11_counts = collections.Counter(r['exam_stratum'] for r in exam_v11_rows)
     fam_counts = collections.Counter(r['family'] for r in exam_rows)
     dev_split = collections.Counter(r['split_v2'] for r in dev_rows)
     turns_hist = collections.Counter(r['turns_used'] for r in rows if r.get('turns_used'))
@@ -302,15 +336,30 @@ def main():
                  f'{stratum_counts.get("extrapolation", 0)} / interpolation '
                  f'{stratum_counts.get("interpolation", 0)}）；dev（非 exam）{len(dev_rows)} 条只作开发诊断。'
                  f'TSR=行为正确性（完备题答对+澄清题字段级问对 R17）；SFR=字段保真（R20：编造一律不计 PASS）；'
-                 f'FPR 双向；MSR 全链见 msr 节（R14/R16/R35：solver 失败单列，不进 exam MSR）。'),
+                 f'FPR 双向；MSR 全链见 msr 节（R14/R16/R35：solver 失败单列，不进 exam MSR）。')
+                 + (f'★ v1.1 双分母（C-037 / R66）：另有 exam_v11 {n_exam_v11} 条（interpolation_v11），'
+                    f'exam_full = {n_exam_full} 条；本 note 与顶层 `exam` 一律是 legacy {n_exam} 条'
+                    f'（与 C-032 同分母，R53/R54 只禁跨分母相减、不禁并列）。' if n_exam_v11 else ''),
         'model': model_measured,   # R51：实测自候选文件，不再是硬编码默认值
         'model_source': 'candidate files (per-task field `model`), 单一值；非默认、非命令行声称',
         'decode': 'json_object + schema_task.json 校验 + 错误反馈修复循环（<=3 轮；SDK 无 logits 级 json_schema）',
-        'exam_definition': (f'exam = exam_stratum 非空 = boundary {stratum_counts.get("boundary", 0)} '
-                            f'+ extrapolation {stratum_counts.get("extrapolation", 0)} '
-                            f'+ interpolation {stratum_counts.get("interpolation", 0)} = {n_exam}（RUBRIC §1.1；'
-                            f'dev = 非 exam {len(dev_rows)} 条 = ' +
-                            ' + '.join(f'{k} {v}' for k, v in sorted(dev_split.items())) + '）（R15/R36）'),
+        # ★ T-A11a：老卷（无 v11）**逐字保留原文案**，只在有 v11 时改用修正表述——
+        #   否则「exam = exam_stratum 非空」这句在 v7 上就是**错的**（v11 非空但不进 exam）。
+        'exam_definition': (
+            (f'exam = exam_stratum 非空 = boundary {stratum_counts.get("boundary", 0)} '
+             f'+ extrapolation {stratum_counts.get("extrapolation", 0)} '
+             f'+ interpolation {stratum_counts.get("interpolation", 0)} = {n_exam}（RUBRIC §1.1；'
+             if not n_exam_v11 else
+             f'exam(legacy) = exam_stratum ∈ {{boundary, extrapolation, interpolation}} = '
+             f'boundary {stratum_counts.get("boundary", 0)} '
+             f'+ extrapolation {stratum_counts.get("extrapolation", 0)} '
+             f'+ interpolation {stratum_counts.get("interpolation", 0)} = {n_exam}'
+             f'（RUBRIC §1.1；exam_full = exam(legacy) + interpolation_v11 '
+             f'{v11_counts.get("interpolation_v11", 0)} = {n_exam_full}，C-037 双分母、R54 只禁相减；'
+             ) +
+            (f'dev = 既非 exam 也非 exam_v11 {len(dev_rows)} 条 = ' if n_exam_v11
+             else f'dev = 非 exam {len(dev_rows)} 条 = ') +
+            ' + '.join(f'{k} {v}' for k, v in sorted(dev_split.items())) + '）（R15/R36）'),
         # W5c（R39）：跨卷比较按 task-id 集，不按条数——条数相同也可能换了一批题
         'exam_task_ids_sha256': hashlib.sha256(
             json.dumps(exam_ids, ensure_ascii=False).encode('utf-8')).hexdigest(),
@@ -320,9 +369,9 @@ def main():
         'n_unresolved': n_unresolved,
         'provenance': {   # W5a'（R25/R27）：成绩单自带溯源，替代「靠人记当时跑了什么」
             'label': label,
-            'tasks_path': os.path.relpath(os.path.abspath(tasks_path), HERE).replace('\\', '/'),
+            'tasks_path': rel(os.path.abspath(tasks_path)),
             'tasks_sha256': sha256_file(tasks_path),
-            'candidates_dir': os.path.relpath(os.path.abspath(cand_dir), HERE).replace('\\', '/'),
+            'candidates_dir': rel(os.path.abspath(cand_dir)),
             # ★ W5c-6c（R48）：跨模型对比必须能从成绩单**直接看出是哪个模型**。
             # 旧版不记 model ⇒ C-031 的「第二模型」要翻候选目录才能验证，等于不可溯源。
             # 取候选文件里声明的 model；若一批里不一致（混模型）就显式标 MIXED，不猜。
@@ -341,11 +390,29 @@ def main():
         'n_tasks_in_paper': len(tasks),
         'candidates_missing': sorted(set(tasks) - {r['task_id'] for r in rows}),
         'n_tasks_exam_expected': n_tasks_exam,
+        'n_tasks_exam_full_expected': n_tasks_exam_full,
         'partial': n_exam < n_tasks_exam,
+        'partial_full': n_exam_full < n_tasks_exam_full,
         'partial_candidates': len(rows) < len(tasks),
         'underpowered': n_exam < 20,
         'tsr': agg(rows, 'tsr')['tsr'],
         'exam': agg(exam_rows, 'exam'),
+        # ★ T-A11a（C-037 / R66）：v1.1 双分母。`exam` 恒为 legacy（与 C-032 同分母），
+        #   `exam_full` = exam + exam_v11。两者**并列可读、禁止相减**（R54：34 ≠ 25）。
+        'exam_v11': ({**agg(exam_v11_rows, 'exam_v11'),
+                      'note': 'v1.1 新增内插（interpolation_v11）单独成桶：既不是 legacy exam、'
+                              '也不是 dev。不单列会污染另一侧（折进 exam ⇒ 换分母，折进 dev ⇒ 30→39）。'}),
+        'exam_full': {**agg(exam_full_rows, 'exam_full'),
+                      'note': 'exam_full = exam(legacy) + exam_v11（C-037 双分母）。'
+                              '与 C-032 的 exam 25 条**不可相减**（R54），只可并列陈述。'},
+        # R-A5 闭合：四桶互斥穷尽，且 exam_full == exam + v11
+        'exam_denominator_closure': {
+            'exam_legacy': n_exam, 'exam_v11': n_exam_v11, 'exam_full': n_exam_full,
+            'dev': len(dev_rows), 'n_tasks': len(rows),
+            'closure_sum': n_exam + n_exam_v11 + len(dev_rows),
+            'ok': (n_exam + n_exam_v11 + len(dev_rows) == len(rows)
+                   and n_exam_full == n_exam + n_exam_v11),
+        },
         'dev': {**agg(dev_rows, 'dev'), 'note': '开发集，不进对外（R15）'},
         'sfr_all': agg(rows, 'all')['sfr'],
         'fpr': {'fabricated_on_clarify_tasks': len(fab), 'n_clarify_tasks': n_ec,
@@ -360,8 +427,13 @@ def main():
         'by_split_note': (f'by_split 仅含非 exam 行（R36）；exam {n_exam} 条另见 exam_by_stratum。'
                           f'纯 train = {dev_split.get("train", 0)} 条。'),
         # W5b：exam 三栏明细（RUBRIC §1.1——合并报会虚高，必须拆开看难度）
-        'exam_by_stratum': {s: agg([r for r in exam_rows if r['exam_stratum'] == s], s)
-                            for s in STRATA if any(r['exam_stratum'] == s for r in exam_rows)},
+        # ★ T-A11a：改成按 **exam_full** 遍历 `STRATA_ALL`（v6c 上等价于三栏 ⇒ 逐字不变），
+        #   这样 v7 会多出 `interpolation_v11` 一栏，四栏相加 == exam_full.n ⇒ 明细与总数闭合。
+        #   若仍只遍历三栏，会出现「四栏明细加起来 25、exam_full 报 34」的静默漏 9 条。
+        'exam_by_stratum': {s: agg([r for r in exam_full_rows if r['exam_stratum'] == s], s)
+                            for s in STRATA_ALL if any(r['exam_stratum'] == s for r in exam_full_rows)},
+        'exam_by_stratum_note': ('按 exam_full 遍历 STRATA_ALL 分栏；v7 起含 interpolation_v11 一栏。'
+                                 '四栏之和 == exam_full.n（R-A5 闭合）'),
         'per_task': rows,
     }
 

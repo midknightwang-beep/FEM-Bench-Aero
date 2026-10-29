@@ -23,6 +23,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from evaluate import evaluate_one, spec_fidelity, load_tasks, FEA, RUNS
 from score_baseline import stratum_of
+from _paths import rel   # T-A11a：跨盘符安全（见 _paths.py）
 
 def spec_vec(spec, family):
     """参数向量（数值型，用于 T1 最近邻距离）。"""
@@ -202,7 +203,7 @@ def main():
                       '★ W5c-5b/R44：新增 T1plus_family（逐字段族级众数，不读输入，可用于 value_added 判据）'
                       ' 与 T1plus_family_oracle（族内 train 池覆盖力**上界**，不可实现 ⇒ 只报不判）。'
                       'value_added = TSR_LLM − TSR_T1* ≥ 10 pp 才算 LLM 真有增量（T1* = T1 与 T1+ 取高者，最保守）。',
-              'tasks_path': os.path.relpath(os.path.abspath(tasks_path), HERE).replace('\\', '/'),
+              'tasks_path': rel(os.path.abspath(tasks_path)),
               'n_tasks': len(tasks), 'n_exam': len(exam_idx), 'n_train_pool': len(train),
               't0_families_missing': fam_missing, 't1_leave_one_out': True,
               'T0_constant': {}, 'T1_retrieval': {}, 'T1plus_family': {},

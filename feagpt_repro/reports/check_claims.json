@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
- "n_active_claims": 30,
- "n_artifacts": 60,
+ "n_active_claims": 31,
+ "n_artifacts": 61,
  "n_fail": 0,
  "n_fail_structural": 0,
  "n_fail_semantic": 0,
@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_58.json）",
-   "expect": "58/58",
-   "actual": "58/58",
+   "desc": "C-019 负控通过数（源 negative_controls_59.json）",
+   "expect": "59/59",
+   "actual": "59/59",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "58",
-   "actual": "58",
+   "expect": "59",
+   "actual": "59",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 5.8",
-   "actual": "5.8",
+   "expect": "全部 = 5.9",
+   "actual": "5.9",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "58/58",
-   "actual": "58/58",
+   "expect": "59/59",
+   "actual": "59/59",
    "ok": true,
    "skip": false
   },
@@ -366,7 +366,7 @@
    "id": "S-44",
    "desc": "官方导航文件 INDEX 的 headline 指向与负控编号必须与 artifact 一致（R58）",
    "expect": "含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致",
-   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L24 主区间 NC-23..56 / 总数 58；artifact 最大 NC-56、共 58 条",
+   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L24 主区间 NC-23..57 / 总数 59；artifact 最大 NC-57、共 59 条",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793200986/1793200986；check 1793201072 vs 负控 1793200986",
+   "actual": "C-019 mtime 记录/实际 = 1793279235/1793279235；check 1793279325 vs 负控 1793279235",
    "ok": true,
    "skip": false
   },
@@ -656,9 +656,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 37889,
-   "sha256": "c02195ea883ddf1138c8236e7e1fafed84ce67c5abc8083957ff83cb90e002fa",
-   "mtime": 1793200949
+   "size": 38654,
+   "sha256": "9eddd9d739ec5cf85bf935c1bb7f7cc2b9a4a36dbf3c9f72d93195dd7f94a18b",
+   "mtime": 1793279367
   },
   {
    "claim_id": "C-027",
@@ -985,6 +985,18 @@
    "mtime": 1793201078
   },
   {
+   "claim_id": "C-039",
+   "artifact": "feagpt_repro/reports/diagnostics/task_a11a_regression.md",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 3293,
+   "sha256": "61a3df8da73a14b969ee05a97bef7af4fc6b2dd77b4816dff1806145a3d3444a",
+   "mtime": 1793279271
+  },
+  {
    "claim_id": "C-035",
    "artifact": "feagpt_repro/reports/diagnostics/prompt_v3_ablation.json",
    "exists": true,
@@ -1154,15 +1166,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_58.json",
+   "artifact": "feagpt_repro/reports/negative_controls_59.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 12619,
-   "sha256": "71553389043077b27f056bf8d78c56dbb432031c7baac7fd1b4d86b87c796205",
-   "mtime": 1793200986
+   "size": 12974,
+   "sha256": "2e54366ab8f5cf5eb95e747ae0b777b9891abb1e490e2cb471d9a9d1ad8b6699",
+   "mtime": 1793279235
   }
  ]
 }

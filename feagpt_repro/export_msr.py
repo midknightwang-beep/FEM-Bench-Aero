@@ -9,6 +9,7 @@ export_msr.py — 从成绩单里把 msr_section 单独导出（W5a'，R25 版�
   python export_msr.py --scorecard reports/baseline_scorecard_L3_v4.json --out reports/msr_l3_v4.json
 """
 import argparse, json, os, sys
+from _paths import rel   # T-A11a：跨盘符安全（见 _paths.py）
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -23,7 +24,7 @@ def main():
     if not msr:
         print(f'[export_msr] {args.scorecard} 里没有 msr_section —— 先跑 msr_l3.py')
         return 2
-    payload = {'source_scorecard': os.path.relpath(os.path.abspath(args.scorecard), HERE).replace('\\', '/'),
+    payload = {'source_scorecard': rel(os.path.abspath(args.scorecard)),
                'scorecard_sha256_note': '源码成绩单重打分后会变，本文件冻结当时的 MSR 结果',
                'msr': msr.get('msr'), 'msr_pct': msr.get('msr_pct'),
                'exam_msr': msr.get('exam_msr'), 'dev_msr': msr.get('dev_msr'),

@@ -20,6 +20,7 @@ import argparse
 import json
 import os
 import sys
+from _paths import rel   # T-A11a：跨盘符安全（见 _paths.py）
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -94,7 +95,7 @@ def main():
         'note': 'W5c 契约试建闸（专家第八轮 §3.2）：把 gold spec 过同一道 R19 试建闸，'
                 '用来区分「模型 spec 质量问题」与「builder 不支持这个合法组合」。'
                 'gold 建不出来 ⇒ 该任务属 harness 缺陷，不应计入模型失败。不起求解器。',
-        'tasks_path': os.path.relpath(os.path.abspath(tasks_path), HERE).replace('\\', '/'),
+        'tasks_path': rel(os.path.abspath(tasks_path)),
         'n_tasks': len(results), 'n_ok': n_ok, 'n_bad': len(bad),
         'n_bad_exam': len(exam_bad),
         'all_gold_buildable': n_ok == len(results),

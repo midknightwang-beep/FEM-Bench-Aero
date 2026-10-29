@@ -23,6 +23,7 @@ import json, os, sys, hashlib, collections, argparse
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from evaluate import evaluate_one, load_tasks, RUNS, require_dataset
+from _paths import rel   # T-A11a：跨盘符安全（见 _paths.py）
 
 REPORT_DIR = os.path.join(HERE, 'reports')
 REPORT = os.path.join(REPORT_DIR, 'baseline_scorecard_L3.json')
@@ -247,15 +248,41 @@ def main():
     # 原实现硬编码 exam_sp 会把内插 6 条算进 dev，导致 exam_msr 报成 x/17（错）而不是 x/21。
     has_stratum = any(t.get('exam_stratum') for t in tasks.values())
 
+    # ★ T-A11a（v7 / C-037 双分母，R66）：`interpolation_v11` 必须自成桶。
+    #   旧实现 `_is_exam = bool(t.get('exam_stratum'))` 在 v7 上会**两头都错**：
+    #   ① exam_ids 变 34（与 C-032 的 25 不同分母）；② 更隐蔽的是 `dev_ids = not _is_exam`
+    #   本来会把 v11 折进 dev，dev 分母 30→39 ⇒ dev MSR 跨版本不可比（R-A6）。
+    #   ⇒ 显式三分：legacy 三栏 / v11 / dev，三桶互斥穷尽。
+    LEGACY_STRATA = ('boundary', 'extrapolation', 'interpolation')
+    V11_STRATA = ('interpolation_v11',)
+    OTHER_SPLIT_STRATUM = {'boundary_holdout': 'boundary', 'extrapolation_test': 'extrapolation',
+                           'interpolation_test': 'interpolation'}
+
+    def _stratum_of(t):
+        s = t.get('exam_stratum')
+        if s:
+            return s
+        return OTHER_SPLIT_STRATUM.get(t.get('split_v2'))
+
     def _is_exam(t):
+        """legacy exam 谓词（三栏 25 条）。v11 不许并进这一侧。"""
         if has_stratum:
-            return bool(t.get('exam_stratum'))
+            return _stratum_of(t) in LEGACY_STRATA
         return t.get('split_v2') in ('boundary_holdout', 'extrapolation_test')
+
+    def _is_v11(t):
+        return has_stratum and _stratum_of(t) in V11_STRATA
 
     exam_ids = [r['task_id'] for r in den_rows if _is_exam(tasks[r['task_id']])]
     exam_p = sum(1 for tid in exam_ids if next(r for r in den_rows if r['task_id'] == tid)['msr_pass'])
-    dev_ids = [r['task_id'] for r in den_rows if not _is_exam(tasks[r['task_id']])]
+    # ★ dev 必须两边都排除：只写 `not _is_exam` 会把 v11 吞进 dev（30→39）
+    dev_ids = [r['task_id'] for r in den_rows
+               if not _is_exam(tasks[r['task_id']]) and not _is_v11(tasks[r['task_id']])]
     dev_p = sum(1 for tid in dev_ids if next(r for r in den_rows if r['task_id'] == tid)['msr_pass'])
+    v11_ids = [r['task_id'] for r in den_rows if _is_v11(tasks[r['task_id']])]
+    v11_p = sum(1 for tid in v11_ids if next(r for r in den_rows if r['task_id'] == tid)['msr_pass'])
+    exam_full_ids = exam_ids + v11_ids
+    exam_full_p = exam_p + v11_p
 
     # W5c（专家第八轮 §3.2/§3.3 / R35）：exam MSR 必须能按族/栏拆开看——
     # 「族级 TSR 100%」可能全靠澄清题，MSR 分母为 0；不分列就会被读成「该族全链可用」。
@@ -267,14 +294,12 @@ def main():
     exam_by_family = {fam: _msr_of([tid for tid in exam_ids if tasks[tid]['family'] == fam])
                       for fam in sorted({tasks[tid]['family'] for tid in exam_ids})}
     def _stratum(tid):
-        t = tasks[tid]
-        if t.get('exam_stratum'):
-            return t['exam_stratum']
-        return {'boundary_holdout': 'boundary', 'extrapolation_test': 'extrapolation',
-                'interpolation_test': 'interpolation'}.get(t.get('split_v2'))
-    exam_by_stratum = {s: _msr_of([tid for tid in exam_ids if _stratum(tid) == s])
-                       for s in ('boundary', 'extrapolation', 'interpolation')
-                       if any(_stratum(tid) == s for tid in exam_ids)}
+        return _stratum_of(tasks[tid])
+    # ★ T-A11a：分栏按 **exam_full** 遍历四栏（v6c 上等价于三栏 ⇒ 数字逐字不变）；
+    #   若仍只遍历三栏，v7 会出现「四栏明细加起来 25 而 exam_msr 报 x/34」——静默漏 9 条（R-A5）。
+    exam_by_stratum = {s: _msr_of([tid for tid in exam_full_ids if _stratum(tid) == s])
+                       for s in (LEGACY_STRATA + V11_STRATA)
+                       if any(_stratum(tid) == s for tid in exam_full_ids)}
     # R35：solver/算力失败必须单列。
     # ★ W5c 修（2026-10-25，审计发现「注释与实现相反」）：原注释写「exam MSR **不含** solver」，
     #   但实现里 exam_msr / dev_msr 都是**原始口径（含 solver）** —— 求解失败对模型确实是失败，
@@ -307,10 +332,14 @@ def main():
     # ★ W5c-6g（R52）：分母构成审计——全卷 + exam 各一份，闭合不成立直接退出（不静默出单）
     _DAUDIT = _denom_audit()
     _EAUDIT = _denom_audit([r['task_id'] for r in rows if _is_exam(tasks[r['task_id']])])
-    if not (_DAUDIT['closure_ok'] and _DAUDIT['closure_solver_ok'] and _EAUDIT['closure_ok']):
+    _FAUDIT = _denom_audit(exam_full_ids) if v11_ids else None
+    if not (_DAUDIT['closure_ok'] and _DAUDIT['closure_solver_ok'] and _EAUDIT['closure_ok']
+            and (_FAUDIT is None or _FAUDIT['closure_ok'])):
         print('[FATAL] 分母不闭合（R52）——拒绝出 MSR：')
         print('  全卷:', _DAUDIT['closure'])
         print('  exam:', _EAUDIT['closure'])
+        if _FAUDIT:
+            print('  exam_full:', _FAUDIT['closure'])
         return 4
     print(f"[msr_l3] 分母闭合 全卷: {_DAUDIT['closure']}")
     print(f"[msr_l3] 分母闭合 exam: {_EAUDIT['closure']}")
@@ -318,19 +347,33 @@ def main():
     msr = {'note': '全链 MSR（R14/R16/R23，W5a 修正）：契约闸+ccx 求解+关1+关4+fidelity+spec_fidelity 全 PASS；'
                    '分母 = spec-required 且非澄清题（R23：澄清/未收敛候选不计，编造归 FPR）；'
                    '依赖预检不过即环境退出；失败分层 env/contract/model/solver，env 不计模型失败。',
-           'provenance': {'tasks_path': os.path.relpath(os.path.abspath(tasks_path), HERE).replace('\\', '/'),
+           'provenance': {'tasks_path': rel(os.path.abspath(tasks_path)),
                           'tasks_sha256': sha256_file(tasks_path),
-                          'candidates_dir': os.path.relpath(os.path.abspath(cand_dir), HERE).replace('\\', '/'),
+                          'candidates_dir': rel(os.path.abspath(cand_dir)),
                           'reuse_source': (
                               'self(recompute-only, no re-solve — 统计段由同一成绩单的 per_task 重算，须与实跑逐数一致)'
                               if args.reuse and os.path.abspath(args.reuse) == os.path.abspath(report_path)
-                              else (os.path.relpath(os.path.abspath(args.reuse), HERE).replace('\\', '/')
+                              else (rel(os.path.abspath(args.reuse))
                                     if args.reuse else None))},
            'n_not_run': sum(1 for r in rows if not r.get('denominator')
                             and 'not-run' in (r.get('reason') or '')),
            'msr': f'{p}/{n}', 'msr_pct': round(100 * p / max(1, n), 1),
            'exam_msr': f'{exam_p}/{len(exam_ids)}',
            'exam_msr_pct': round(100 * exam_p / max(1, len(exam_ids)), 1),
+           # ★ T-A11a（C-037 / R66）：v1.1 双分母。`exam_msr` 恒为 legacy（与 C-032 同分母），
+           #   `exam_full_msr` = legacy + interpolation_v11。二者并列、**禁止相减**（R54）。
+           'exam_v11_msr': f'{v11_p}/{len(v11_ids)}',
+           'exam_v11_msr_pct': (round(100 * v11_p / len(v11_ids), 1) if v11_ids else None),
+           'exam_full_msr': f'{exam_full_p}/{len(exam_full_ids)}',
+           'exam_full_msr_pct': round(100 * exam_full_p / max(1, len(exam_full_ids)), 1),
+           'exam_full_denominator_audit': _FAUDIT,
+           'exam_full_closure': {
+               'exam_legacy': len(exam_ids), 'exam_v11': len(v11_ids),
+               'exam_full': len(exam_full_ids), 'dev': len(dev_ids),
+               'closure_sum': len(exam_ids) + len(v11_ids) + len(dev_ids),
+               'ok': (len(exam_ids) + len(v11_ids) + len(dev_ids) == len(den_rows)
+                      and len(exam_full_ids) == len(exam_ids) + len(v11_ids)),
+           },
            'exam_by_family': exam_by_family,
            'exam_by_stratum': exam_by_stratum,
            'n_solver_excluded': n_solver,
@@ -381,6 +424,10 @@ def main():
     sc['msr_section'] = msr
     # 顶层同步（NC-22 检查点：成绩单必须含 exam.msr）
     sc.setdefault('exam', {})['msr'] = msr['exam_msr']
+    # ★ T-A11a：v1.1 双分母同步到顶层（老卷 v11 为空 ⇒ exam_full.msr == exam.msr，不新增读数）
+    if msr.get('exam_full_closure', {}).get('exam_v11'):
+        sc.setdefault('exam_full', {})['msr'] = msr['exam_full_msr']
+        sc.setdefault('exam_v11', {})['msr'] = msr['exam_v11_msr']
     sc.setdefault('dev', {})['msr'] = msr['dev_msr']
     # ★ W5c 修（NC-36 抓到）：顶层 `msr` 键此前一直是 **null** —— score_baseline 从不写它，
     #   msr_l3 也只写 msr_section/exam/dev。任何按 `scorecard['msr']` 读的消费者都会拿到

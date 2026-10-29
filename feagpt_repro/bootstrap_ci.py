@@ -16,6 +16,7 @@ bootstrap_ci.py — 给成绩单的 exam 指标加 bootstrap 置信区间（W5b 
       --out reports/bootstrap_ci_L3_v4.json --boot 4000 --seed 20261025
 """
 import argparse, json, os, random, sys
+from _paths import rel   # T-A11a：跨盘符安全（见 _paths.py）
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 EXAM_SPLITS = ('boundary_holdout', 'extrapolation_test')
@@ -73,7 +74,7 @@ def main():
     out = {
         'note': 'exam 任务的 bootstrap 百分位区间（B 次有放回重采样，单位=任务）。'
                 'CI 只描述抽样波动，**不放宽 n≥20 门槛**；n<20 时任何 CI 都不得用于宣布 PASS（R12/R24）。',
-        'source_scorecard': os.path.relpath(os.path.abspath(args.scorecard), HERE).replace('\\', '/'),
+        'source_scorecard': rel(os.path.abspath(args.scorecard)),
         'boot': args.boot, 'seed': args.seed,
         'n_exam': len(rows),
         'underpowered': len(rows) < 20,

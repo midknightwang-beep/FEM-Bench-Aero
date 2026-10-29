@@ -30,6 +30,7 @@
     python check_l2_leak.py                      # 只打印
 """
 import json, os, re, sys, argparse, collections
+from _paths import rel   # T-A11a：跨盘符安全（见 _paths.py）
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TASKS = os.path.join(HERE, 'tasks', 'tasks.jsonl')
@@ -113,7 +114,7 @@ def main():
         obj = {
             '_note': ('L2 澄清题的 name 泄漏诊断（CONFLICT N-17）。判据见 check_l2_leak.py '
                       'docstring；撞车不算泄漏。可用 check_l2_leak.py 复跑复现。'),
-            'tasks': os.path.relpath(args.tasks, HERE).replace('\\', '/'),
+            'tasks': rel(args.tasks),
             'n_l2': n_l2, 'n_leak': len(hits), 'n_clean': n_clean,
             'informative_pct': round(100.0 * n_clean / max(1, n_l2), 1),
             'by_family': dict(by_fam),

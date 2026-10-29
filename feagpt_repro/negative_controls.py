@@ -1523,6 +1523,73 @@ def main():
     print(f"  [{'ok ' if ok56 else 'BAD!'}] NC-56 L2 双口径缺块/过期/相减/单侧必须被 S-53 分向拒  "
           f"expect=fwd T/4向 F actual={det56}")
 
+    # NC-57（T-A11a）：**`_regress_scorecard.py` 自己必须能被证伪**。
+    #   它是本轮新增的「改了判分、老数不能动」的判据工具。不测它 ⇒ 它只是个会印 PASS 的印章
+    #   （R58 的反面：判据没有工具读等于没有；工具自己不会红等于没判据）。
+    #   五向，每向**只造一个差异**，并断言「红的原因对不对」而不只是「红了」：
+    #    (a) 自比 A==A 必须 PASS —— 新闸第一条纪律（先证明自己不误报）
+    #    (b) 改一个既有叶子的值 ⇒ 红，且原因必须是 CHANGED
+    #    (c) 删一个既有键 ⇒ 红，原因 REMOVED（删键=悄悄改口径，比改值更隐蔽）
+    #    (d) 新增一个不在 allowlist 的键 ⇒ 红，原因 ADDED·越界（否则「新增键」成了后门）
+    #    (e) `--allow-changed` 只认精确路径：只给前缀（exam.tsr）不得放行 exam.tsr.pct
+    #        —— 否则「逐条声明」会退化成「一次声明放行一片」，这正是 R58 要防的
+    ok57, det57 = False, 'no artifact'
+    _sc57 = os.path.join(HERE, 'reports', 'baseline_scorecard_L3_v6c_p2.json')
+    if os.path.exists(_sc57):
+        import subprocess as _sub57
+        import tempfile as _tf57
+        _RAW57 = json.load(open(_sc57, encoding='utf-8'))
+
+        def _mk57(mut=None):
+            o = json.loads(json.dumps(_RAW57))          # 深拷贝，原文件不动
+            if mut:
+                mut(o)
+            f = _tf57.NamedTemporaryFile('w', suffix='.json', delete=False, encoding='utf-8')
+            json.dump(o, f, ensure_ascii=False, indent=1)
+            f.close()
+            return f.name
+
+        def _reg57(new, *extra):
+            p = _sub57.run([sys.executable, os.path.join(HERE, '_regress_scorecard.py'),
+                            _sc57, new] + list(extra),
+                           cwd=HERE, capture_output=True, text=True, encoding='utf-8')
+            return p.returncode, (p.stdout or '')
+
+        def _bump(o):
+            o['exam']['tsr']['pct'] = round(o['exam']['tsr']['pct'] + 1.0, 1)
+        def _drop(o):
+            o['provenance'].pop('label', None)
+        def _add(o):
+            o['_nc57_backdoor'] = 'added without declaration'
+
+        _r57 = {}
+        _r57['fwd'] = _reg57(_sc57)                                  # A==A
+        _r57['chg'] = _reg57(_mk57(_bump))                           # 改值
+        _r57['del'] = _reg57(_mk57(_drop))                           # 删键
+        _r57['add'] = _reg57(_mk57(_add))                            # 越界新增
+        _r57['pfx'] = _reg57(_mk57(_bump), '--allow-changed', 'exam.tsr')   # 只给前缀
+
+        _chk57 = [
+            ('a', _r57['fwd'][0] == 0 and 'RESULT: PASS' in _r57['fwd'][1], '自比 A==A 应 PASS'),
+            ('b', _r57['chg'][0] != 0 and '[CHANGED·越界] exam.tsr.pct' in _r57['chg'][1],
+             '改值应报 CHANGED·越界 exam.tsr.pct'),
+            ('c', _r57['del'][0] != 0 and '[REMOVED] provenance.label' in _r57['del'][1],
+             '删键应报 REMOVED provenance.label'),
+            ('d', _r57['add'][0] != 0 and '[ADDED·越界] _nc57_backdoor' in _r57['add'][1],
+             '越界新增应报 ADDED·越界 _nc57_backdoor'),
+            ('e', _r57['pfx'][0] != 0, '--allow-changed 只给前缀时不得放行（必须仍红）'),
+        ]
+        _bad57 = [f'({t}){why}' for t, good, why in _chk57 if not good]
+        ok57 = not _bad57
+        det57 = ('五向全中（fwd PASS / 改值 CHANGED / 删键 REMOVED / 越界新增 ADDED / 前缀不放行）'
+                 if ok57 else '未命中: ' + '; '.join(_bad57))
+    results.append({'id': 'NC-57',
+                    'desc': 'T-A11a 回归判据工具五向：自比 PASS / 改值 / 删键 / 越界新增 / 前缀不放行',
+                    'expect': 'fwd=PASS 且四向各自因「正确原因」变红',
+                    'actual': det57, 'ok': ok57})
+    print(f"  [{'ok ' if ok57 else 'BAD!'}] NC-57 回归工具五向（自比/改值/删键/越界新增/前缀不放行）  "
+          f"actual={det57}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，    # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；
     #           ③ 源码里必须存在 else 分支（缺 msr ⇒ 加一条 ok=False），防被改回去。

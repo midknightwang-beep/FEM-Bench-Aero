@@ -33,6 +33,7 @@ sys.path.insert(0, HERE)
 from evaluate import (GRADED_FIELDS, GRADED_MATERIAL, EXEC_CONFIG_KEYS,
                       DEAD_STRINGER_KEYS, FEA, load_tasks, require_dataset)
 from score_baseline import stratum_of
+from _paths import rel   # T-A11a：跨盘符安全（见 _paths.py）
 
 # ---- 契约登记表（RUBRIC §7 / SYS prompt 逐条对应；改这里必须同步改文档与 NC-31）----
 MATERIAL_CARD = {
@@ -346,7 +347,7 @@ def main():
                 '★ 两处已知局限：①数值判据是「题面出现过该数（含单位换算）」，必要不充分——本脚本是筛查器不是证明器；'
                 '②R41 单列「字段角色可判」：length/width 同时判分且值不等时，题面书写顺序须与角色一致或显式标注，'
                 '否则模型按惯例读反了会被误判错（实证 stiffened_panel_800x600 旧模板「{width} × {length}」）。',
-        'paper': os.path.relpath(os.path.abspath(tasks_path), os.path.dirname(HERE)).replace('\\', '/'),
+        'paper': rel(tasks_path, os.path.dirname(HERE)),
         'scope': scope, 'n_tasks': scope_tasks, 'n_fields': n_fields,
         'counts': dict(counts),
         'n_violations': len(viol),
