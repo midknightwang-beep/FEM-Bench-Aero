@@ -1,6 +1,7 @@
 {
  "note": "R32/R41 审计（W5c-0）：每个判分字段是否可从题面(NL)或已登记契约推出。derivable_nl/derivable_contract/exempt:* 合规；VIOLATION = 任务不可解，不得进 exam（R33）。★ 两处已知局限：①数值判据是「题面出现过该数（含单位换算）」，必要不充分——本脚本是筛查器不是证明器；②R41 单列「字段角色可判」：length/width 同时判分且值不等时，题面书写顺序须与角色一致或显式标注，否则模型按惯例读反了会被误判错（实证 stiffened_panel_800x600 旧模板「{width} × {length}」）。",
- "paper": "feagpt_repro/reports/papers/tasks_v7.jsonl",
+ "paper": "feagpt_repro/tasks/tasks.jsonl",
+ "paper_sha256": "caf0f6c3be8131c5b817a0bacfcca8ad3893fcfb95e29d8d9b525866a63e195a",
  "scope": "all",
  "n_tasks": 64,
  "n_fields": 2133,
@@ -14,6 +15,10 @@
   "VIOLATION": 4
  },
  "n_violations": 4,
+ "n_exam_violations": 0,
+ "n_dev_violations": 4,
+ "dev_violation_policy": "dev 违规不阻塞 exit code，但必须每条带 reason、必须被点名；这些题**不得进入任何对外 claim**（R15：dev 只作开发诊断）",
+ "gate_ok": true,
  "violations_by_task": [
   "L3_stiffened_panel_800x600",
   "L3_stiffened_panel_800x600_str3"

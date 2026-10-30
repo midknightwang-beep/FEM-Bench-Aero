@@ -10,7 +10,8 @@
 判据（R-A2 / R66）：
   ① `changed == 0` —— old 里存在的每个叶子路径，new 的值必须逐字相等；
   ② `added` 只允许是**预先声明**的新增键（默认前缀 allowlist）；
-  ③ `removed` 必须为空（删键 = 悄悄改口径）。
+  ③ `removed` 必须为空（删键 = 悄悄改口径）；唯一例外是**空列表 → 非空列表**造成的
+     展平形态变化（`k=[]` 叶子消失、换成 `k[0]..k[n]`），必须用 `--allow-removed k` 精确声明。
 
 用法：
   python _regress_scorecard.py OLD.json NEW.json [--allow-prefix exam_v11 --allow-prefix ...]
@@ -50,6 +51,11 @@ def main():
                     help='允许**值发生变化**的精确路径（可多次给）。'
                          '★ 只接受精确路径、不接受前缀：改值是最危险的一类差异，'
                          '必须逐条声明「我知道这条会变、原因是 X」，不能批量放行')
+    ap.add_argument('--allow-removed', action='append', default=[],
+                    help='允许**被删除**的精确路径（可多次给）。★ 与 --allow-changed 同纪律：'
+                         '只接受精确路径。正当用法只有一种：**空列表变成非空列表**时，'
+                         '展平会把 `k=[]` 这个叶子丢掉、换成 `k[0]..k[n]` —— 那是形态变化，不是丢字段。'
+                         '真丢字段不得用这个参数放行（R67：删键 = 悄悄改口径）')
     ap.add_argument('--max-print', type=int, default=40)
     args = ap.parse_args()
 
@@ -76,25 +82,30 @@ def main():
     # `--allow-changed` 只接受**精确路径**：改值必须逐条声明，不做前缀批量放行
     allowed_chg = [c for c in changed if c[0] in set(args.allow_changed)]
     bad_changed = [c for c in changed if c[0] not in set(args.allow_changed)]
+    # 同理，删除也只接受精确路径（「空列表 → 非空」是唯一正当用法）
+    ok_removed = [p for p in removed if p in set(args.allow_removed)]
+    bad_removed = [p for p in removed if p not in set(args.allow_removed)]
 
     print(f'old 叶子 {len(old)} 条 ／ new 叶子 {len(new)} 条')
     print(f'  changed = {len(changed)}（声明放行 {len(allowed_chg)}，未声明 {len(bad_changed)}）'
-          f'    removed = {len(removed)}    '
+          f'    removed = {len(removed)}（声明放行 {len(ok_removed)}，未声明 {len(bad_removed)}）    '
           f'added = {len(added)}（allowlist 内 {len(added) - len(bad_added)}，越界 {len(bad_added)}）')
 
     for path, ov, nv in allowed_chg[:args.max_print]:
         print(f'  [CHANGED·已声明] {path}: {ov!r} -> {nv!r}')
     for path, ov, nv in bad_changed[:args.max_print]:
         print(f'  [CHANGED·越界] {path}: {ov!r} -> {nv!r}')
-    for path in removed[:args.max_print]:
-        print(f'  [REMOVED] {path}')
+    for path in ok_removed:
+        print(f'  [REMOVED·已声明] {path}')
+    for path in bad_removed[:args.max_print]:
+        print(f'  [REMOVED·越界] {path}')
     for path in bad_added[:args.max_print]:
         print(f'  [ADDED·越界] {path}')
     if len(added) - len(bad_added) <= args.max_print:
         for path in [p for p in added if _allowed(p)]:
             print(f'  [ADDED·允许] {path} = {new[path]!r}')
 
-    ok = not bad_changed and not removed and not bad_added
+    ok = not bad_changed and not bad_removed and not bad_added
     print()
     print('RESULT:', 'PASS —— 除显式声明的变更与 allowlist 内新增键外零差异' if ok else 'FAIL')
     return 0 if ok else 1

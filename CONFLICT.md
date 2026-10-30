@@ -720,6 +720,45 @@ headline 结构判定：仅 C-032 的 status 列带「（对外 headline）」�
   - 跨版本比 MSR 时**先看这条**；报告里凡出现 exam MSR 的差值，必须附「含 1 条求解不可复现题」；
   - 未改题、未剔题（剔掉它就是挑数据，R54 的同类问题）。
 
+### N-26（**高，已处置**）`exam_full` 的分母闭合断言是**代数恒真式** ⇒ `[FATAL] 分母不闭合` 对这条路径**从未生效**
+
+- **发现途径**：第十四轮专家意见把它列为 P1-4，但描述是「**审计展示与字段命名**问题」
+  （「`n_tasks_total=29` 会被误读成 exam_full 只有 29 条」）。我去核成因，发现**不是展示问题**。
+- **现象（v7 改前，实读）**：
+
+  ```text
+  glm  exam_full_denominator_audit:  n_tasks_total 30 = counted 30, clarify 0, unresolved 0
+  ds   exam_full_denominator_audit:  n_tasks_total 29 = counted 29, clarify 0, unresolved 0
+  ```
+
+  `n_tasks_total` **恒等于** `n_counted`，`clarify`/`unresolved` 恒为 0。真值应为
+  glm `34 = 30 + 4 + 0`、ds `34 = 29 + 4 + 1`。
+- **根因（`msr_l3.py:481`）**：`_FAUDIT = _denom_audit(exam_full_ids)`，而
+  `exam_full_ids = exam_ids + v11_ids`，**两者都取自 `den_rows`（已剔除 clarify/unresolved）**。
+  `_denom_audit` 的 pool 因此只含 `denominator=True` 的行 ⇒
+  `closure_ok` 的判据 `n_tasks_total == n_counted + clarify + unres + …` 左右两边恒等 ⇒ **恒真**。
+  同一个函数、另一处调用 `_EAUDIT` 传的是 `[r['task_id'] for r in rows …]`（**全量**）⇒ legacy 那份是真闭合。
+  **一处真、一处假，写在同一段代码里。**
+- **后果不是「少个字段」**：`_FAUDIT['closure_ok']` 被写进 `:483` 的 `if not (…)` 判据，
+  也就是那句 `[FATAL] 分母不闭合（R52）——拒绝出 MSR`。**exam_full 这一路的闭合从未被真正检查过**，
+  而它输出的「闭合」文本一直在对外宣告一个同义反复。
+- **为什么没有任何闸发现**：NC-58 的「四桶不闭合须红」测的是 **`exam_full_closure.ok`**
+  （`:516`，那条是真算术：`len(exam_ids)+len(v11_ids)+len(dev_ids) == len(den_rows)`）——
+  **两条路径互不覆盖**。这是「新闸测了 A==B，但 A 和 B 都不是目标」的变体。
+- **处置（T-A12b）**：
+  1. 传参源改 `den_rows` → 全量 `rows`（新增 `exam_full_all_ids`，**counted 集 `exam_full_ids` 不动，MSR 分母零变化**）；
+  2. `_FAUDIT` 加 `units` 字段写明是全量口径；`exam_full_closure` 加 `units` 写明是 counted 口径
+     （两个 `exam_full` 同名不同义：顶层 34 / msr 内 30）；
+  3. **S-54(e) 用 `per_task` 独立复算**：`n_tasks_total` 必须等于 `per_task` 里 `exam_stratum is not None`
+     的条数 —— **不看 audit 自己怎么说**，这是唯一的真判据；
+  4. 加「总账 == counted 且 per_task 更多」的死循环断言（N-26 复发即红）；**NC-61 四向**守。
+- **★ 教训（比这条 bug 更重要）**：专家把它归成「展示问题」、我第一遍也只写成「字段命名有歧义」。
+  **恒真式在外观上与正常闭合一模一样**（都印 `ok=True`、都印一行 `A = B + C + …`），
+  只有把式子代进去看才发现左右恒等。⇒ **判闭合时必须问「这个等式有没有可能不成立」**，
+  而不是「它是不是 True」。R68 那条「建闸前先看字段在真实 artifact 里是否非空」是同一个方向。
+
+---
+
 ## 3. 门禁与工作区实况（本轮 pre-flight 原始结果）
 
 ```

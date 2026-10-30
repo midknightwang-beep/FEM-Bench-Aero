@@ -627,14 +627,21 @@ def main():
         p30 = subprocess.run([sys.executable, os.path.join(HERE, 'r32_audit.py'),
                               '--tasks', tmp30, '--scope', 'all'],
                              capture_output=True, text=True, encoding='utf-8', errors='replace')
-        ok30 = (rc_good == 0) and hit30 == 1 and p30.returncode != 0 and 'web_chordwise' in p30.stdout
+        ok30 = ((rc_good == 0) and hit30 == 1 and 'web_chordwise' in p30.stdout
+                # ★ T-A12b（第十四轮 P1-3，老王拍板 (b)）：`--scope all` **不再因 dev 违规变红**，
+                #   所以这里不能再断言「整体 rc != 0」。能力断言改成两条、比原来更硬：
+                #   ① 审计器**确实抓到了**这条违规（web_chordwise 出现在 stdout）；
+                #   ② 它被**正确归到 dev**（`[dev]` 前缀）—— 若被误归进 exam，exam 硬闸就失效了，
+                #      而那条正是「不可解的任务不得进 exam」（R33）的全部意义。
+                and '[dev] L3_naca4412_wingbox_web1' in p30.stdout)
         results.append({'id': 'NC-30', 'desc': 'R32/R41 审计闸：exam 0 违规 + 非 exam 白名单逐字相等 + 反向验证（R33）',
-                        'expect': 'exam_rc=0 / viol==白名单 / mutated=1+web_chordwise',
+                        'expect': 'exam_rc=0 / viol==白名单 / mutated=1 + 抓到 web_chordwise 且归 [dev]',
                         'actual': f'exam_rc={rc_exam} all_rc={p_all.returncode} '
                                   f'viol={sorted(non_exam_viol)} hit={hit30} mut_rc={p30.returncode}',
                         'ok': ok30})
         print(f"  [{'ok ' if ok30 else 'BAD!'}] NC-30 审计闸（exam 0 + 白名单 + 反向）              "
-              f"expect=exam0/viol=白名单/mut>0 actual=exam{rc_exam}/viol{len(non_exam_viol)}/mut{p30.returncode}")
+              f"expect=exam0/viol=白名单/mut=抓到且归dev actual=exam{rc_exam}/viol{len(non_exam_viol)}/"
+              f"hit{hit30}/mut_rc{p30.returncode}")
     else:
         results.append({'id': 'NC-30', 'desc': 'R32 审计闸（考卷缺失，跳过）', 'expect': 'skip',
                         'actual': 'no paper', 'ok': True})
@@ -1594,8 +1601,8 @@ def main():
             ('a', _r57['fwd'][0] == 0 and 'RESULT: PASS' in _r57['fwd'][1], '自比 A==A 应 PASS'),
             ('b', _r57['chg'][0] != 0 and '[CHANGED·越界] exam.tsr.pct' in _r57['chg'][1],
              '改值应报 CHANGED·越界 exam.tsr.pct'),
-            ('c', _r57['del'][0] != 0 and '[REMOVED] provenance.label' in _r57['del'][1],
-             '删键应报 REMOVED provenance.label'),
+            ('c', _r57['del'][0] != 0 and '[REMOVED·越界] provenance.label' in _r57['del'][1],
+             '删键应报 REMOVED·越界 provenance.label'),
             ('d', _r57['add'][0] != 0 and '[ADDED·越界] _nc57_backdoor' in _r57['add'][1],
              '越界新增应报 ADDED·越界 _nc57_backdoor'),
             ('e', _r57['pfx'][0] != 0, '--allow-changed 只给前缀时不得放行（必须仍红）'),
@@ -1751,6 +1758,149 @@ def main():
                     'actual': det59, 'ok': ok59})
     print(f"  [{'ok ' if ok59 else 'BAD!'}] NC-59 协议 SOT 闸六向（正向/版本/范围/CLAIMS/裸解释器/卷名）  "
           f"actual={det59}")
+
+    # NC-60（T-A12b）：**S-57（R32 两 scope 口径）自己必须能被证伪**。
+    #   为什么必须测：S-57 守的是「exam 违规只能为 0、dev 违规允许但要带 reason」——
+    #   而「允许 dev 违规」是一条**放宽**，放宽类判据最容易退化成「什么都放」。
+    #   五向，每向只造一个错，并断言红的原因对：
+    #    (fwd)   正向：真 artifact 必须过
+    #    (ex)    exam artifact 报 1 条违规 ⇒ 红（R33）
+    #    (fake)  all artifact 报 1 条 exam 违规 ⇒ 红（(b)）
+    #    (nors)  把一条 dev 违规的 reason 清空 ⇒ 红（(c)）
+    #    (stale) 把一份 artifact 的 sha 改成别的 ⇒ 红（"当前卷没有该 scope 的 artifact"）
+    ok60, det60 = False, 'no artifact'
+    try:
+        from check_claims import r32_scope_policy as _s57
+        import tempfile as _tf60, hashlib as _h60
+        _pEX = os.path.join(HERE, 'reports', 'r32_audit_v7_exam.json')
+        _pAL = os.path.join(HERE, 'reports', 'r32_audit_v7.json')
+        if os.path.exists(_pEX) and os.path.exists(_pAL):
+            _REX = json.load(open(_pEX, encoding='utf-8'))
+            _RAL = json.load(open(_pAL, encoding='utf-8'))
+
+            def _mk60(mex=None, mal=None, bad_sha=None):
+                d = _tf60.mkdtemp(prefix='nc60_')
+                os.makedirs(os.path.join(d, 'feagpt_repro', 'reports'), exist_ok=True)
+                os.makedirs(os.path.join(d, 'feagpt_repro', 'tasks'), exist_ok=True)
+                cur = os.path.join(d, 'feagpt_repro', 'tasks', 'tasks.jsonl')
+                open(cur, 'w', encoding='utf-8').write('{}\n')
+                sha = _h60.sha256(open(cur, 'rb').read()).hexdigest()
+                for nm, base, mut, brk in (('r32_audit_x_exam.json', _REX, mex, bad_sha == 'exam'),
+                                           ('r32_audit_x_all.json', _RAL, mal, bad_sha == 'all')):
+                    o = json.loads(json.dumps(base))
+                    o['paper_sha256'] = 'deadbeef' if brk else sha
+                    if mut:
+                        mut(o)
+                    json.dump(o, open(os.path.join(d, 'feagpt_repro', 'reports', nm), 'w',
+                                      encoding='utf-8'), ensure_ascii=False)
+                return d
+
+            def _ex_viol(o):
+                o['n_violations'] = 1
+
+            def _fake_exam(o):
+                o['n_exam_violations'] = 1
+
+            def _no_reason(o):
+                for v in o.get('violations') or []:
+                    if v.get('exam_stratum') is None:
+                        v['reason'] = ''
+                        break
+
+            _r60 = {
+                'fwd': _s57(_mk60()),
+                'ex': _s57(_mk60(mex=_ex_viol)),
+                'fake': _s57(_mk60(mal=_fake_exam)),
+                'nors': _s57(_mk60(mal=_no_reason)),
+                'stale': _s57(_mk60(bad_sha='all')),
+            }
+            _chk60 = [
+                ('fwd', _r60['fwd'][0] is True, '正向必须过（不误报）'),
+                ('ex', _r60['ex'][0] is False and 'exam' in _r60['ex'][1], 'exam 有违规应红'),
+                ('fake', _r60['fake'][0] is False and 'exam 违规' in _r60['fake'][1],
+                 'all 里混 exam 违规应红'),
+                ('nors', _r60['nors'][0] is False and 'reason' in _r60['nors'][1],
+                 'dev 违规无 reason 应红'),
+                ('stale', _r60['stale'][0] is False and 'artifact' in _r60['stale'][1],
+                 'sha 过期应红'),
+            ]
+            _bad60 = [f'({t}){why}' for t, good, why in _chk60 if not good]
+            ok60 = not _bad60
+            det60 = ('五向全中（正向 / exam 违规 / 伪造 exam 违规 / dev 无 reason / sha 过期）'
+                     if ok60 else '未命中: ' + '; '.join(_bad60))
+    except Exception as _e60:
+        det60 = f'异常: {type(_e60).__name__}: {_e60}'
+    results.append({'id': 'NC-60',
+                    'desc': 'T-A12b S-57 闸五向：正向不误报 / exam 有违规 / all 混 exam 违规 / '
+                            'dev 违规无 reason / artifact sha 过期',
+                    'expect': 'fwd=过 且四向各自因「正确原因」变红',
+                    'actual': det60, 'ok': ok60})
+    print(f"  [{'ok ' if ok60 else 'BAD!'}] NC-60 R32 scope 闸五向（正向/exam违规/伪造/无reason/sha过期）  "
+          f"actual={det60}")
+
+    # NC-61（T-A12b）：**S-54 本轮新增的三条断言必须能被证伪**。
+    #   为什么必须测：这三条全是「补一个曾经失效的判据」，而**旧的失效恰恰是没人测它**：
+    #    (a) N-26：`exam_full_denominator_audit` 的 pool 取 counted 集 ⇒ 总账 ≡ counted
+    #        ⇒ `closure_ok` 恒真 ⇒ `[FATAL] 分母不闭合` 对 exam_full 这一路**从未生效**。
+    #        这一向把总账改回 counted（复刻旧 bug），必须红、且原因含 N-26。
+    #    (b) R52：`exam_full_msr_excl_solver` 缺失 ⇒ 红，原因含 R52。
+    #    (c) 同名不同义：ds 的 `n_unresolved` 顶层 0 / msr 1，删掉说明必须红。
+    ok61, det61 = False, 'no artifact'
+    try:
+        from check_claims import v7_dual_denominator_audit as _s54, V7_SCORECARDS as _V7
+        import tempfile as _tf61
+        _pg = os.path.join(HERE, 'reports', 'baseline_scorecard_L3_v7_glm.json')
+        _pd = os.path.join(HERE, 'reports', 'baseline_scorecard_L3_v7_ds.json')
+        if os.path.exists(_pg) and os.path.exists(_pd):
+            _RG61 = json.load(open(_pg, encoding='utf-8'))
+            _RD61 = json.load(open(_pd, encoding='utf-8'))
+
+            def _mk61(mg=None, md=None):
+                d = _tf61.mkdtemp(prefix='nc61_')
+                rep = os.path.join(d, 'feagpt_repro', 'reports')
+                os.makedirs(rep, exist_ok=True)
+                for nm, base, mut in ((_V7[0][1], _RG61, mg), (_V7[1][1], _RD61, md)):
+                    o = json.loads(json.dumps(base))
+                    if mut:
+                        mut(o)
+                    json.dump(o, open(os.path.join(rep, nm), 'w', encoding='utf-8'),
+                              ensure_ascii=False)
+                return d
+
+            def _n26(o):
+                a = o['msr_section']['exam_full_denominator_audit']
+                a['n_tasks_total'] = a['n_counted']      # 复刻 N-26：pool 取 counted 集
+
+            def _noex(o):
+                o['msr_section'].pop('exam_full_msr_excl_solver', None)
+
+            def _nonote(o):
+                o['msr_section'].pop('n_unresolved_note', None)
+
+            _r61 = {'fwd': _s54(_mk61()), 'n26': _s54(_mk61(mg=_n26)),
+                    'ex': _s54(_mk61(mg=_noex)), 'note': _s54(_mk61(md=_nonote))}
+            _chk61 = [
+                ('fwd', _r61['fwd'][0] is True, '正向必须过（不误报）'),
+                ('n26', _r61['n26'][0] is False and 'N-26' in _r61['n26'][1],
+                 '总账退回 counted 应红（N-26）'),
+                ('ex', _r61['ex'][0] is False and 'R52' in _r61['ex'][1],
+                 '缺 exam_full_msr_excl_solver 应红'),
+                ('note', _r61['note'][0] is False and '同名不同义' in _r61['note'][1],
+                 '缺 n_unresolved 说明应红'),
+            ]
+            _bad61 = [f'({t}){why}' for t, good, why in _chk61 if not good]
+            ok61 = not _bad61
+            det61 = ('四向全中（正向 / N-26 总账 / R52 excl_solver / 同名不同义）'
+                     if ok61 else '未命中: ' + '; '.join(_bad61))
+    except Exception as _e61:
+        det61 = f'异常: {type(_e61).__name__}: {_e61}'
+    results.append({'id': 'NC-61',
+                    'desc': 'T-A12b S-54 新增三断言：N-26 总账不得退回 counted / '
+                            'exam_full 必须有 excl_solver / n_unresolved 同名不同义须有说明',
+                    'expect': 'fwd=过 且三向各自因「正确原因」变红',
+                    'actual': det61, 'ok': ok61})
+    print(f"  [{'ok ' if ok61 else 'BAD!'}] NC-61 S-54 新断言四向（正向/N-26/R52/同名不同义）  "
+          f"actual={det61}")
 
     # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，    # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；

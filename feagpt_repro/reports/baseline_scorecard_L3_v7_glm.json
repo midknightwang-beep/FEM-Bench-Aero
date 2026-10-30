@@ -1501,9 +1501,9 @@
   "exam_full_msr": "28/30",
   "exam_full_msr_pct": 93.3,
   "exam_full_denominator_audit": {
-   "n_tasks_total": 30,
+   "n_tasks_total": 34,
    "n_counted": 30,
-   "n_clarify_excluded": 0,
+   "n_clarify_excluded": 4,
    "n_unresolved_excluded": 0,
    "n_notrun_excluded": 0,
    "n_env_excluded": 0,
@@ -1511,12 +1511,19 @@
    "n_solver_excluded": 0,
    "n_counted_excl_solver": 30,
    "unresolved_task_ids": [],
-   "clarify_task_ids": [],
+   "clarify_task_ids": [
+    "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+    "L3_naca4412_wingbox",
+    "L3_stiffened_panel_600x600_str3",
+    "L3_stiffened_panel_700x600_str4"
+   ],
    "closure_ok": true,
    "closure_solver_ok": true,
-   "closure": "30 = counted 30 + clarify 0 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 30 = solver 0 + counted_excl_solver 30"
+   "closure": "34 = counted 30 + clarify 4 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 30 = solver 0 + counted_excl_solver 30",
+   "units": "tasks（全量 34 条，含 clarify/unresolved；与顶层 exam_denominator_closure.exam_full 同口径。MSR 分母用的 counted 集见 exam_full_closure，单位不同、不可互抄）"
   },
   "exam_full_closure": {
+   "units": "counted（MSR 可计分子集；任务语境的 34 见顶层 exam_denominator_closure）",
    "exam_legacy": 22,
    "exam_v11": 8,
    "exam_full": 30,
@@ -1576,6 +1583,8 @@
   "solver_in_dev": [],
   "exam_msr_excl_solver": "20/22",
   "exam_msr_excl_solver_pct": 90.9,
+  "exam_full_msr_excl_solver": "28/30",
+  "exam_full_msr_excl_solver_pct": 93.3,
   "dev_msr_excl_solver": "20/29",
   "dev_msr_excl_solver_pct": 69.0,
   "msr_excl_solver": "48/59",
@@ -1656,6 +1665,7 @@
   "n_denominator": 59,
   "n_clarify_excluded": 5,
   "n_unresolved": 0,
+  "n_unresolved_note": "本字段是**任务层**（spec-required 但未产出 spec，含「澄清判错」）；顶层 scorecard.n_unresolved 是**候选层**（category=no_output）。同名不同义，引用时必须写清是哪一层。",
   "n_unresolved_excluded": 0,
   "n_notrun_excluded": 0,
   "n_env_excluded": 0,

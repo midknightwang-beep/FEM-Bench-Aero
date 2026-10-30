@@ -473,12 +473,32 @@ def main():
     #   别名字段必须与主字段逐字相等（S-31 / NC-40 守）。
     ex_excl = _msr_excl(exam_ids)
     dv_excl = _msr_excl(dev_ids)
+    # ★ T-A12b（第十四轮 P1-4 / R52）：exam_full 也要有剔除 solver 的口径。
+    #   此前只有 legacy exam（`exam_msr_excl_solver`）、dev、全卷有，exam_full 缺 ⇒
+    #   两层分母在每个尺度都可见（R52）这条在 exam_full 上是断的。
+    #   用 counted 集 `exam_full_ids`（`_msr_excl` 要在 den_rows 里查，不能传全量）。
+    ef_excl = _msr_excl(exam_full_ids)
     full_excl = (f'{p}/{n - n_solver}', round(100 * p / max(1, n - n_solver), 1))
 
     # ★ W5c-6g（R52）：分母构成审计——全卷 + exam 各一份，闭合不成立直接退出（不静默出单）
     _DAUDIT = _denom_audit()
     _EAUDIT = _denom_audit([r['task_id'] for r in rows if _is_exam(tasks[r['task_id']])])
-    _FAUDIT = _denom_audit(exam_full_ids) if v11_ids else None
+    # ★★ N-26（T-A12b）：分母审计必须用**全量任务集**，不能用 counted 集。
+    #   旧写法传 `exam_full_ids`（= exam_ids + v11_ids，两者都取自 `den_rows`）⇒ pool 里
+    #   每一行都是 denominator=True ⇒ `n_tasks_total ≡ n_counted`、clarify/unresolved 恒 0
+    #   ⇒ **`closure_ok` 是代数恒真式**，而下面那句 `[FATAL] 分母不闭合` 正是靠它把关
+    #   ⇒ exam_full 这一路的分母闭合**从未真正被检查过**。
+    #   NC-58 也抓不到：它测的是 `exam_full_closure.ok`（另一条真算术路径），两者互不覆盖。
+    #   实测（v7 改前）：glm 印 `30 = counted 30 + clarify 0`、ds 印 `29 = counted 29 + clarify 0`；
+    #   真值是 glm `34 = 30 + 4 + 0`、ds `34 = 29 + 4 + 1`。
+    #   ⇒ 改传全量。**counted 集 `exam_full_ids` 仍专用于 MSR 分母，分数一个数字都不动。**
+    exam_full_all_ids = [r['task_id'] for r in rows
+                         if _is_exam(tasks[r['task_id']]) or _is_v11(tasks[r['task_id']])]
+    _FAUDIT = _denom_audit(exam_full_all_ids) if v11_ids else None
+    if _FAUDIT is not None:
+        _FAUDIT['units'] = (f'tasks（全量 {len(exam_full_all_ids)} 条，含 clarify/unresolved；'
+                            f'与顶层 exam_denominator_closure.exam_full 同口径。'
+                            f'MSR 分母用的 counted 集见 exam_full_closure，单位不同、不可互抄）')
     if not (_DAUDIT['closure_ok'] and _DAUDIT['closure_solver_ok'] and _EAUDIT['closure_ok']
             and (_FAUDIT is None or _FAUDIT['closure_ok'])):
         print('[FATAL] 分母不闭合（R52）——拒绝出 MSR：')
@@ -514,6 +534,10 @@ def main():
            'exam_full_msr_pct': round(100 * exam_full_p / max(1, len(exam_full_ids)), 1),
            'exam_full_denominator_audit': _FAUDIT,
            'exam_full_closure': {
+               # ★ T-A12b：这个块是 **counted 语境**（MSR 只在可计分子集上算），
+               #   里面的 `exam_full` = 30/29 与顶层的 34 **同名不同义**。
+               #   不写这行，读者会把 29 当成「exam_full 只有 29 条」——正是 P1-4 的读法。
+               'units': 'counted（MSR 可计分子集；任务语境的 34 见顶层 exam_denominator_closure）',
                'exam_legacy': len(exam_ids), 'exam_v11': len(v11_ids),
                'exam_full': len(exam_full_ids), 'dev': len(dev_ids),
                'closure_sum': len(exam_ids) + len(v11_ids) + len(dev_ids),
@@ -528,6 +552,8 @@ def main():
            'solver_in_dev': dev_sol,
            'exam_msr_excl_solver': ex_excl[0],
            'exam_msr_excl_solver_pct': ex_excl[1],
+           'exam_full_msr_excl_solver': ef_excl[0],
+           'exam_full_msr_excl_solver_pct': ef_excl[1],
            'dev_msr_excl_solver': dv_excl[0],
            'dev_msr_excl_solver_pct': dv_excl[1],
            'msr_excl_solver': full_excl[0],
@@ -541,6 +567,15 @@ def main():
            'exam_denominator_audit': _EAUDIT,
            'n_denominator': n, 'n_clarify_excluded': _DAUDIT['n_clarify_excluded'],
            'n_unresolved': n_unresolved,
+           # ★ T-A12b（第十四轮 P1-4）：**同名不同义**必须显式标注。
+           #   顶层 `scorecard.n_unresolved` 是**候选层**（`score_baseline.py` 数 `category=='no_output'`），
+           #   这里是**任务层**（spec-required 但没产出 spec，含「澄清判错」这种情况）。
+           #   v7×ds 实测：顶层 0、本字段 1（`L3_open_hole_panel_400x200_d20_cfrp45s_d40`，
+           #   category=clarify_wrong ⇒ 有输出、没 spec）—— 只读顶层的人会得出「ds 没有未收敛」，
+           #   与 `denominator_audit.unresolved_task_ids` 直接矛盾。S-54 现在会强制这条说明在场。
+           'n_unresolved_note': ('本字段是**任务层**（spec-required 但未产出 spec，含「澄清判错」）；'
+                                 '顶层 scorecard.n_unresolved 是**候选层**（category=no_output）。'
+                                 '同名不同义，引用时必须写清是哪一层。'),
            'n_unresolved_excluded': _DAUDIT['n_unresolved_excluded'],
            'n_notrun_excluded': _DAUDIT['n_notrun_excluded'],
            'n_env_excluded': _DAUDIT['n_env_excluded'],

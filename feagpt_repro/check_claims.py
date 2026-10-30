@@ -356,6 +356,35 @@ def v7_dual_denominator_audit(root, names=None):
                 blob = json.dumps(r.get('failure_gates') or {}, ensure_ascii=False) + (r.get('failure_detail') or '')
                 if any(x in blob for x in _LOCK_MARKS):
                     probs.append(f'{tid}: solver 却含锁冲突（S-55）')
+        # (e) ★★ T-A12b（N-26）：exam_full 的**任务级**总账必须独立闭合。
+        #   旧 bug：`_FAUDIT` 的 pool 取自 counted 集（`den_rows`）⇒ `n_tasks_total ≡ n_counted`
+        #   ⇒ `closure_ok` 是**代数恒真式**，而 msr_l3 里 `[FATAL] 分母不闭合` 正是靠它把关
+        #   ⇒ exam_full 这一路的闭合**从未真正生效**（v7 改前：glm 30≡30、ds 29≡29，
+        #   clarify/unresolved 恒 0；真值 34 = 30+4 / 29+4+1）。
+        #   这里**不看 audit 自己怎么说**，用 per_task 独立复算 —— 这是唯一的真判据。
+        _n_full_tasks = sum(1 for r in (sc.get('per_task') or [])
+                            if r.get('exam_stratum') is not None)
+        fa = m.get('exam_full_denominator_audit') or {}
+        if not fa:
+            probs.append('缺 exam_full_denominator_audit（任务级总账不可缺）')
+        else:
+            if fa.get('n_tasks_total') != _n_full_tasks:
+                probs.append(f"exam_full 总账 {fa.get('n_tasks_total')} != per_task 实数的 "
+                             f"{_n_full_tasks}（N-26：审计 pool 不得取 counted 集）")
+            if fa.get('closure_ok') is not True:
+                probs.append('exam_full 任务级闭合不成立')
+            if (fa.get('n_tasks_total') == fa.get('n_counted')
+                    and _n_full_tasks > (fa.get('n_counted') or 0)):
+                probs.append('exam_full 总账 == counted（恒真闭合，N-26 复发）')
+        # (f) R52：两层分母在每个尺度都要可见 —— exam_full 也要有剔除 solver 的口径
+        if not m.get('exam_full_msr_excl_solver'):
+            probs.append('缺 exam_full_msr_excl_solver（R52）')
+        # (g) ★ T-A12b：`n_unresolved` 顶层（候选层）与 msr（任务层）**同名不同义**，
+        #   两者不一致时必须自带说明，否则只读顶层的人会得出「ds 没有未收敛」，
+        #   与 denominator_audit.unresolved_task_ids 直接矛盾。
+        if ((m.get('n_unresolved') or 0) > 0 and (sc.get('n_unresolved') or 0) == 0
+                and not (m.get('n_unresolved_note') or '').strip()):
+            probs.append('n_unresolved 顶层 0 / msr >0 却没有说明（同名不同义）')
         if probs:
             ok = False
             det.append(f"{lab}({fn}): " + '；'.join(probs[:4]) + (f' …共 {len(probs)}' if len(probs) > 4 else ''))
@@ -364,6 +393,83 @@ def v7_dual_denominator_audit(root, names=None):
                        f"={c.get('n_tasks')}；msr counted {aud.get('n_counted')}；"
                        f"exam_full_msr {m.get('exam_full_msr')}；失败条目均有原因")
     return ok, '；'.join(det)
+
+
+def r32_scope_policy(root, cur_sha=None):
+    """S-57（T-A12b，第十四轮 P1-3）：**R32 两个 scope 的口径必须可分、可判、不过期**。
+
+    为什么必须有这条闸：`README` 原文写「`--scope all` **必须 rc=0**」，而 v7 实测
+    `--scope exam` 34 条 × 1177 字段 **0 违规**、`--scope all` 64 条 × 2133 字段
+    **4 违规且全落在 dev**（2 道 `stiffened_panel_800x600` 的 `length`/`width` 同时判分
+    且值不等、题面未标角色 ⇒ 字段角色不可判，R41）。
+    「all 必须 0」是**字面为假**的口径：照做的 Agent 要么阻塞，要么把 4 条当「已知噪声」
+    忽略 —— 后者没有任何东西约束它，而且恰好是最容易被外部读者一击命中的地方
+    （「你全卷审计 rc=0 吗？」答案是「不是」）。
+    老王 2026-10-30 拍板方案 (b)：**动态判据**，不建 allowlist 文件
+    （allowlist 会把题面真缺陷固化成「合规例外」，还得人工维护 —— 又一个会漂的副本）。
+
+    五条断言：
+      (a) `scope=exam` 的 artifact：`n_violations == 0`（R33 硬闸：不可解的任务不得进 exam）
+      (b) `scope=all` 的 artifact：`n_exam_violations == 0`（exam 违规一条都不许有）
+      (c) `scope=all`：每条 dev 违规的 `reason` 非空（不许空口说「已知」）
+      (d) `scope=all`：`n_tasks == n_exam + dev 条数`，且 `n_violations == exam_viol + dev_viol`
+      (e) **两份 artifact 的 `paper_sha256` 必须等于当前卷**（`tasks/tasks.jsonl`）——
+          防「过期 artifact 冒充当前结论」，这是 S-54/S-48 同一个坑的形态
+
+    ★ 不写死 artifact 文件名（`r32_audit_v7*.json`）：那样每换一版卷都要改闸，改漏就静默
+      变成「查旧卷」。这里按 **sha 匹配当前卷** 去找，v8 时自动换目标、找不到就红。
+    """
+    root = root or ROOT
+    rep = os.path.join(root, 'feagpt_repro', 'reports')
+    cur_p = os.path.join(root, 'feagpt_repro', 'tasks', 'tasks.jsonl')
+    if not os.path.exists(cur_p):
+        return False, '当前卷 tasks/tasks.jsonl 不存在（锚点缺失不得 skip）'
+    if cur_sha is None:
+        cur_sha = hashlib.sha256(open(cur_p, 'rb').read()).hexdigest()
+    probs, picked = [], {}
+    for p in sorted(glob.glob(os.path.join(rep, 'r32_audit_*.json'))):
+        try:
+            d = json.load(open(p, encoding='utf-8'))
+        except Exception:
+            continue
+        if d.get('paper_sha256') != cur_sha:
+            continue
+        sc = d.get('scope')
+        if sc in ('exam', 'all'):
+            prev = picked.get(sc)
+            # 同 scope 同 sha 有多份时取最新（防手工跑出多份后比到旧的那份）
+            if prev is None or os.path.getmtime(p) > os.path.getmtime(prev[1]):
+                picked[sc] = (d, p)
+    for sc in ('exam', 'all'):
+        if sc not in picked:
+            probs.append(f'当前卷（sha {cur_sha[:12]}）没有 scope={sc} 的 R32 审计 artifact')
+    if not probs:
+        ex, ex_p = picked['exam']
+        al, al_p = picked['all']
+        # (a)
+        if ex.get('n_violations') != 0:
+            probs.append(f'{os.path.basename(ex_p)}: exam 有 {ex.get("n_violations")} 条违规（R33：一条都不许）')
+        # (b)
+        if al.get('n_exam_violations') != 0:
+            probs.append(f'{os.path.basename(al_p)}: all 里有 {al.get("n_exam_violations")} 条 exam 违规')
+        # (c)
+        bad = [v for v in (al.get('violations') or [])
+               if v.get('exam_stratum') is None and not (v.get('reason') or '').strip()]
+        if bad:
+            probs.append(f'{os.path.basename(al_p)}: {len(bad)} 条 dev 违规没有 reason（不许空口「已知」）')
+        # (d)
+        n_dev = sum(1 for r in (al.get('per_task') or []) if r.get('exam_stratum') is None)
+        if al.get('n_tasks') != ex.get('n_tasks') + n_dev:
+            probs.append(f'all.n_tasks {al.get("n_tasks")} != exam {ex.get("n_tasks")} + dev {n_dev}')
+        if al.get('n_violations') != (al.get('n_exam_violations', 0) + al.get('n_dev_violations', 0)):
+            probs.append(f'all 的违规分解不闭合：{al.get("n_violations")} != '
+                         f'{al.get("n_exam_violations", 0)} + {al.get("n_dev_violations", 0)}')
+        # (e) 已在筛选阶段强制（sha 不匹配的 artifact 直接不入选）
+        if not probs:
+            return True, (f'exam {ex.get("n_tasks")} 条/0 违规；all {al.get("n_tasks")} 条/'
+                          f'{al.get("n_violations")} 违规（exam 0 ／ dev {al.get("n_dev_violations")}，'
+                          f'均有 reason）；两份 sha == 当前卷 {cur_sha[:12]}')
+    return False, '；'.join(probs[:5])
 
 
 def msr_denominator_closure(sc, label=''):
@@ -2198,6 +2304,17 @@ def semantic_checks(root, rows):
         'CLAIMS「红线条」标题不得带范围；venv-required 脚本不得用裸 `python` 调用'
         '（`check_claims.py` 除外，R60）；三份协议文件缺一即红（锚点不得 skip）',
         _det56, _ok56)
+
+    # S-57（T-A12b，第十四轮 P1-3）：R32 的 exam / all 两个 scope 必须**口径可分且不过期**。
+    # 起因：README 写「`--scope all` 必须 rc=0」，v7 实测 rc=1（4 条全 dev）—— 一句字面为假的
+    # 闸门口径，照做的 Agent 只能阻塞或静默忽略。拍板改成动态判据后，必须有闸守住
+    # 「违规只能落在 dev」这条不变式，否则「忽略 dev 违规」就退化成无约束。
+    _ok57, _det57 = r32_scope_policy(root)
+    add('S-57', 'R32 两个 scope 口径可分且不过期：exam 0 违规；all 的 exam 违规 0、dev 违规须带 reason（R33/R41）',
+        'scope=exam 的 artifact 违规必须为 0；scope=all 的 `n_exam_violations` 必须为 0；'
+        '每条 dev 违规 reason 非空；all.n_tasks == exam + dev 且违规分解闭合；'
+        '两份 artifact 的 `paper_sha256` 必须等于当前卷 `tasks/tasks.jsonl`（按 sha 找，不写死文件名）',
+        _det57, _ok57)
 
     return out
 

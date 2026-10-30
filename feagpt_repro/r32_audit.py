@@ -26,7 +26,7 @@ R32（RUBRIC v4.3）：**每条 exam 任务里，gold 有值的每个判分字�
       --out reports/r32_audit_v6c.json
   # 退出码：0 = 无 VIOLATION；1 = 有（NC-30 用它做闸）；2 = 数据缺失
 """
-import json, os, re, sys, collections
+import json, os, re, sys, collections, hashlib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -341,6 +341,21 @@ def main():
         rows.append(rec)
 
     scope_tasks = len(rows)
+    # ★★ T-A12b（第十四轮 P1-3）：`--scope all` 的退出码不能是「有违规就 1」。
+    #   v7 实测：`--scope exam` 34 条 × 1177 字段 **0 违规**；`--scope all` 64 条 × 2133 字段
+    #   **4 违规，全部落在 dev**（2 道 `stiffened_panel_800x600` 的 `length`/`width`
+    #   同时判分且值不等、题面未标角色 ⇒ 字段角色不可判，R41）。
+    #   而 README 原文写「`--scope all` **必须 rc=0**」—— 字面为假。照做的 Agent 只有两条路：
+    #   阻塞（正确但卡死），或把 4 条当「已知噪声」忽略（危险，且没有任何东西约束它）。
+    #   老王 2026-10-30 拍板方案 (b)：**动态判据**，不建 allowlist 文件 ——
+    #     · **exam 违规集必须为空**（硬闸，R33：不可解的任务不得进 exam）；
+    #     · **非 exam（dev）违规允许存在**，但①每条必须带 reason（不许空），②必须被点名打印，
+    #       ③这些题**不得进入任何对外 claim**（R15：dev 只作开发诊断）。
+    #   为什么不用 allowlist：allowlist 会把「题面真缺陷」固化成「合规例外」，还要人工维护
+    #   （又一个会漂的副本）；而「违规只能落在 dev」这条不变式本身可判，加卷/改题都不会让它过期。
+    exam_viol = [r for r in viol if r['exam_stratum'] is not None]
+    dev_viol = [r for r in viol if r['exam_stratum'] is None]
+    bad_reason = [r for r in dev_viol if not (r.get('reason') or '').strip()]
     report = {
         'note': 'R32/R41 审计（W5c-0）：每个判分字段是否可从题面(NL)或已登记契约推出。'
                 'derivable_nl/derivable_contract/exempt:* 合规；VIOLATION = 任务不可解，不得进 exam（R33）。'
@@ -348,9 +363,17 @@ def main():
                 '②R41 单列「字段角色可判」：length/width 同时判分且值不等时，题面书写顺序须与角色一致或显式标注，'
                 '否则模型按惯例读反了会被误判错（实证 stiffened_panel_800x600 旧模板「{width} × {length}」）。',
         'paper': rel(tasks_path, os.path.dirname(HERE)),
+        # ★ T-A12b：带上卷 sha，闸才能判「这份 artifact 是不是当前卷的」（防过期 artifact
+        #   冒充当前结论 —— S-54/S-48 同一个坑的形态）。
+        'paper_sha256': hashlib.sha256(open(tasks_path, 'rb').read()).hexdigest(),
         'scope': scope, 'n_tasks': scope_tasks, 'n_fields': n_fields,
         'counts': dict(counts),
         'n_violations': len(viol),
+        'n_exam_violations': len(exam_viol),
+        'n_dev_violations': len(dev_viol),
+        'dev_violation_policy': ('dev 违规不阻塞 exit code，但必须每条带 reason、必须被点名；'
+                                 '这些题**不得进入任何对外 claim**（R15：dev 只作开发诊断）'),
+        'gate_ok': (not exam_viol) and (not bad_reason),
         'violations_by_task': sorted({r['task_id'] for r in viol}),
         'violations': viol,
         'per_task': rows,
@@ -362,15 +385,21 @@ def main():
     print(f'== R32 审计（{scope}，{scope_tasks} 条 × {n_fields} 个判分字段）==')
     for k, v in sorted(counts.items(), key=lambda x: -x[1]):
         print(f'  {k:<22} {v}')
-    print(f'  VIOLATION 合计 {len(viol)}')
+    print(f'  VIOLATION 合计 {len(viol)}（exam {len(exam_viol)} ／ dev {len(dev_viol)}）')
+    print(f'  gate_ok = {report["gate_ok"]}'
+          f'（exam 必须 0 违规；dev 违规允许但必须带 reason）')
     if viol:
         print('\n  违规清单：')
         for r in viol:
-            print(f"    [{r['exam_stratum'] or 'dev'}] {r['task_id']:<44} {r['field']:<36} "
+            tag = 'exam' if r['exam_stratum'] is not None else 'dev'
+            print(f"    [{tag}] {r['task_id']:<44} {r['field']:<36} "
                   f"gold={json.dumps(r['gold'], ensure_ascii=False)[:40]} :: {r['reason']}")
+        if dev_viol:
+            print(f'\n  ★ dev 违规 {len(dev_viol)} 条：**不进 exam、不得进入任何对外 claim**（R15）。')
+            print('    若要消除，只能做 v8 新卷 + 重冻结 + bridge —— R65 禁止改 v7 老行。')
     if out_path:
         print('\nreport ->', out_path)
-    return 1 if viol else 0
+    return 0 if report['gate_ok'] else 1
 
 
 if __name__ == '__main__':
