@@ -133,8 +133,8 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 6.8",
-   "actual": "6.8",
+   "expect": "全部 = 6.9",
+   "actual": "6.9",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793369197/1793369197；check 1793369897 vs 负控 1793369197",
+   "actual": "C-019 mtime 记录/实际 = 1793369197/1793369197；check 1793371148 vs 负控 1793369197",
    "ok": true,
    "skip": false
   },
@@ -487,6 +487,14 @@
    "desc": "L2 澄清题族分层必须落盘且闭合：Σ族==总数、按族可加、两层不得同名换义（R72）",
    "expect": "每个 scored 模型块三桶都须有 by_family；Σ族 n / passed == 总数；每族 inf + inv == all（任务数与通过数两侧）；顶层 by_family 必须是**分母构成**（int）。族级实读：glm-5.3-flash: wingbox 24/39 fuselage_barrel 7/7 open_hole_panel 13/13 stiffened_panel 5/5 ‖ deepseek-v4-pro: wingbox 15/39 fuselage_barrel 5/7 open_hole_panel 11/13 stiffened_panel 5/5",
    "actual": "已跑分模型块 2 个；顶层 by_family 为分母构成",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-61",
+   "desc": "提交闸的触发器（pre-commit hook）必须真实存在且指向当前脚本（R74）",
+   "expect": "生效 hooks 目录（跟随 core.hooksPath，用 `git rev-parse --git-path hooks` 取，不写死 .git/hooks）下 `pre-commit` 存在；内容含 `check_commit.py`；其调用的脚本路径可解析且**等于当前脚本**；可执行位仅在 POSIX 且 core.filemode!=false 时判（其余平台 not_run，不假装验证过）。非 git 工作副本 ⇒ not_applicable（无对象，不是失败）",
+   "actual": "生效目录=F:\\AI FEA Modeling DataSets\\.git\\hooks；H1=ok H2=ok H3=ok H4=skip",
    "ok": true,
    "skip": false
   }

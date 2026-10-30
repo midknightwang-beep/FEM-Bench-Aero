@@ -1909,7 +1909,40 @@ def second_model_not_headline(rows):
     return True, f'唯一 headline = {heads}；supporting = {sorted(supp)}（均未自称 headline）'
 
 
-def semantic_checks(root, rows):
+def hook_guard_state(root):
+    """S-61（T-D5b / R74）：调 `hook_guard.inspect()`，把结果转成 (ok, detail)。
+
+    设计约束：
+      - **缺判据即红**：`hook_guard.py` 导入失败 / 抛异常都不 skip（R58：无工具读的 = 无闸）；
+      - **无对象才 not_applicable**：非 git 工作副本（解压包 / 只拿数据）返回 True 并在
+        detail 里写明「不等于已验证」—— 这类环境本来就不能提交，判红只会逼人绕过；
+      - detail 必须带**生效 hooks 目录与 core.hooksPath**：`git rev-parse --git-path hooks`
+        会跟随 `core.hooksPath`（实测：设 `.husky` 即返回 `.husky`），不写出来就无法判断
+        「红」是因为真的没装、还是因为被改道到了别处。
+    """
+    try:
+        if HERE not in sys.path:
+            sys.path.insert(0, HERE)
+        import hook_guard
+    except Exception as e:  # noqa: BLE001
+        return False, f'无法导入 hook_guard.py: {e}（缺判据即红，不 skip）'
+    try:
+        res = hook_guard.inspect(root)
+    except Exception as e:  # noqa: BLE001
+        return False, f'hook_guard.inspect 抛异常: {e}'
+    if not res.get('applicable'):
+        return True, f"not_applicable：{res.get('reason')}（无对象，不是失败；也不等于已验证）"
+    ok, red = hook_guard.ok_of(res)
+    hp = res.get('hooks_path')
+    head = f"生效目录={res.get('hook_dir')}" + (f"（core.hooksPath={hp}）" if hp else '')
+    parts = ' '.join(
+        "%s=%s" % (c['id'], 'ok' if c['ok'] else ('skip' if c['ok'] is None else 'BAD'))
+        for c in res['checks'])
+    tail = '' if ok else f"；红={','.join(red)} ⇒ **提交闸当前不会运行**（跑 `check_commit.py --install-hook`）"
+    return ok, f"{head}；{parts}{tail}"
+
+
+def semantic_checks(root, rows, skip_hook_guard=False):
     """逐条核对：账本文本里声称的数字 vs artifact 实读的数字（R29）。"""
     out, m = [], _measures(root)
     by = {}
@@ -2553,6 +2586,29 @@ def semantic_checks(root, rows):
         f'族级实读：{_fam60}',
         _det60, _ok60)
 
+    # S-61（T-D5b / R74）：**自监督的闸必须有不依赖自身的检查入口**。
+    #   T-D5 的 check_commit.py 靠 `.git/hooks/pre-commit` 触发，而 hook **不入库**
+    #   （.git/ 不被追踪）⇒ 新 clone / 换机 / 重建仓库后，那道闸**静默消失**：
+    #   它不运行，所以不会有任何东西报错 —— 与「压根没装这道闸」完全等价（R58 的触发器形态）。
+    #   判据实现独立在 hook_guard.py（可单独 --self-test 八向，每向断言「红的是哪一条」），
+    #   本条只做接线：调用 -> 转判定。**不重复实现**（T-A11a：同一判据写两遍，迟早不一致）。
+    _S61_EXPECT = ('生效 hooks 目录（跟随 core.hooksPath，用 `git rev-parse --git-path hooks` 取，'
+                   '不写死 .git/hooks）下 `pre-commit` 存在；内容含 `check_commit.py`；'
+                   '其调用的脚本路径可解析且**等于当前脚本**；可执行位仅在 POSIX 且 '
+                   'core.filemode!=false 时判（其余平台 not_run，不假装验证过）。'
+                   '非 git 工作副本 ⇒ not_applicable（无对象，不是失败）')
+    if skip_hook_guard:
+        out.append({'id': 'S-61',
+                    'desc': '提交闸的触发器（pre-commit hook）必须真实存在且指向当前脚本（R74）',
+                    'expect': _S61_EXPECT,
+                    'actual': 'skip（--skip-hook-guard：调用方显式声明跳过；'
+                              '按 R69 必须在当次报告里写明原因，且不得进入对外数字）',
+                    'ok': True, 'skip': True})
+    else:
+        _ok61, _det61 = hook_guard_state(root)
+        add('S-61', '提交闸的触发器（pre-commit hook）必须真实存在且指向当前脚本（R74）',
+            _S61_EXPECT, _det61, _ok61)
+
     return out
 
 
@@ -2672,6 +2728,9 @@ def main():
                     help='同时核对文本数字 vs artifact 实读（R29，默认开）')
     ap.add_argument('--no-semantic', dest='semantic', action='store_false',
                     help='只做结构检查（旧行为）')
+    ap.add_argument('--skip-hook-guard', action='store_true',
+                    help='显式跳过 S-61（pre-commit hook 存活判据）。仅在 CI / 第三方只跑复现时用；'
+                         '按 R69 必须在当次报告里写明原因，且 S-61 会标 skip 而不是通过')
     args = ap.parse_args()
     root = os.path.abspath(args.root)
 
@@ -2739,7 +2798,7 @@ def main():
                 fails.append(f"{cid}: {rel} -> {'; '.join(problems)}")
 
     # ---- 语义计数（R29）：文本数字必须等于 artifact 实读 ----
-    sem = semantic_checks(root, rows) if args.semantic else []
+    sem = semantic_checks(root, rows, skip_hook_guard=args.skip_hook_guard) if args.semantic else []
     sem_fails = [f"{s['id']}: {s['desc']} -> 声称 {s['actual']} / 实测 {s['expect']}"
                  for s in sem if not s['ok']]
     fails_all = fails + sem_fails

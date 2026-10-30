@@ -31,6 +31,7 @@ git status --short              # 先看清工作区；有别人未提交的改�
 > **⚠ 提交闸（D5）：`check_commit.py` + pre-commit hook**
 > 本仓库已装 `.git/hooks/pre-commit`，`git commit` 时会自动跑 `check_commit.py`。它守的判据是**「暂存区 == 工作区全部非白名单改动」**——堵的是 T-C1 那次「只 `add` 了新增文件、12 个改动全漏在工作区」的事故（当时 `git status` 是绿的、所有门禁也是绿的，因为门禁跑的是**工作区**，不是**提交**）。
 > **★ hook 不入库**（`.git/` 不被追踪）⇒ **新 clone / 换机后必须跑一次 `"$PY" check_commit.py --install-hook`，否则这道闸等于不存在。**
+> **这件事现在有闸守（D5b / R74）**：`check_claims.py` 的 **S-61** 会在每次 §0 自检里查「生效 hooks 目录下有没有 pre-commit、内容是不是 `check_commit.py`、它指向的脚本是不是**当前**这一份、有没有被 `core.hooksPath` 改道」—— 任一条不成立就红，**不再依赖「人记得装」**。判据本身在 `hook_guard.py`，可用 `"$PY" hook_guard.py --self-test` 单独验它自己会不会红。CI 或第三方只跑复现时可用 `check_claims.py --skip-hook-guard` 显式跳过（会标 `skip` 而非通过，按 R69 须在当次报告写明原因，且不得进入对外数字）。
 > 白名单是例外，规则写在 `feagpt_repro/commit_allowlist.json` 自己身上（每条必须带 `reason`；文件一旦入库、或磁盘上已消失，闸即判红强制清理；名单内文件不得进入任何对外数字）。
 > `--no-verify` 能绕过，但**等于主动放弃这条闸**，只在确认「就是要提交半截」时才用，并须在报告里写明原因。
 
