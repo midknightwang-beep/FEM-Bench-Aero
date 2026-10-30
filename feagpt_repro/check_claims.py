@@ -2536,7 +2536,129 @@ def semantic_checks(root, rows):
         '(e) 成绩单 provenance.judge_overrides 的 sha256 须等于磁盘表、applied_to 须与命中集相等',
         _det59, _ok59)
 
+    # S-60（T-A14 / R72）：**L2 族分层**必须落盘、闭合、两层不得同名换义。
+    #   为什么单独立一条闸：N-27 的结论整体建立在族级数字上，而族级数字此前**只在手写 md 里**
+    #   （R-A3 禁止手抄数字）。S-53 守的是「all == inf + inv」，与本条不重叠（T-A11a 的教训：
+    #   同一判据写两遍，迟早不一致）。
+    _ok60, _det60 = l2_family_closure(root)
+    try:
+        _d60 = json.load(open(os.path.join(root, 'feagpt_repro', 'reports',
+                                           'l2_clarify_dual.json'), encoding='utf-8'))
+        _fam60 = _family_text(_d60)
+    except Exception as _e60:                                    # noqa: F841
+        _fam60 = '（artifact 读不动 ⇒ 必然红）'
+    add('S-60', 'L2 澄清题族分层必须落盘且闭合：Σ族==总数、按族可加、两层不得同名换义（R72）',
+        '每个 scored 模型块三桶都须有 by_family；Σ族 n / passed == 总数；'
+        '每族 inf + inv == all（任务数与通过数两侧）；顶层 by_family 必须是**分母构成**（int）。'
+        f'族级实读：{_fam60}',
+        _det60, _ok60)
+
     return out
+
+
+def l2_family_closure(root, path=None):
+    """T-A14（R72）：**L2 澄清题的族分层必须落盘、闭合、且两层不得同名换义**。
+
+    动机：N-27 的结论（「`clarify_all` 64 与 `clarify_informative` 45 的差主要是**族构成差**、
+    不是泄漏净效应」）**整体建立在族级数字上**，但这些数字此前只活在一份**手写**诊断 md
+    （`task_a13c_ds_report.md`，无生成器）⇒ 违反 R-A3「禁止手抄数字」。
+    **结论比它引用的证据更「官方」**是本项目最忌的错位：数字对的时候没人发现它没有 artifact，
+    数字错的时候也一样没人发现。
+
+    判据（只守**族级**，不重复 S-53 的「all == inf + inv」）：
+      (a) 每个 `status=scored` 的模型块，三个桶都必须有非空 `by_family`（缺失 ⇒ 红，不 skip）；
+      (b) 每桶 `Σ族 n == n`、`Σ族 passed == passed`、每族 `pct == round(100*passed/n,1)`；
+      (c) **按族可加**：每族 `informative.n + invalid.n == all.n`，通过数同；
+      (d) 三桶的族集合必须一致（不得只在某桶出现/消失）；
+      (e) **两层不得同名换义**：顶层 `by_family` 是**分母构成**（值必须是 int），
+          模型块的 `by_family` 是**统计块**（值必须是带 n/passed 的 dict）—— 写反即红（N-26 形态）；
+      (f) 没有任何 `scored` 块 ⇒ 红（「无可判对象」不得静默放行，R29）。
+    """
+    p = path or os.path.join(root, 'feagpt_repro', 'reports', 'l2_clarify_dual.json')
+    if not os.path.exists(p):
+        return False, f'L2 双口径 artifact 不存在：{os.path.basename(p)}'
+    try:
+        d = json.load(open(p, encoding='utf-8'))
+    except Exception as e:
+        return False, f'l2_clarify_dual.json 读不动：{e}'
+    BUCKETS = ('clarify_all', 'clarify_informative', 'invalid')
+    probs, n_scored = [], 0
+
+    def _pct(p_, n_):
+        return None if not n_ else round(100.0 * p_ / n_, 1)
+
+    by_model = d.get('by_model') or {}
+    if not isinstance(by_model, dict) or not by_model:
+        return False, '没有 by_model 块 ⇒ 族分层无对象'
+    for name, blk in by_model.items():
+        if blk.get('status') != 'scored':
+            continue
+        n_scored += 1
+        for bk in BUCKETS:
+            b = blk.get(bk) or {}
+            fam = b.get('by_family')
+            if not isinstance(fam, dict) or not fam:
+                probs.append(f'{name}/{bk} 缺 by_family（R72：族级不得缺失）')
+                continue
+            for f, v in fam.items():
+                if not isinstance(v, dict) or not {'n', 'passed', 'pct'} <= set(v):
+                    probs.append(f'{name}/{bk}/{f} 结构不对（需 n/passed/pct）')
+            _ok = [v for v in fam.values() if isinstance(v, dict) and 'n' in v]
+            sn = sum(v['n'] for v in _ok)
+            sp = sum(v['passed'] for v in _ok)
+            if sn != b.get('n'):
+                probs.append(f'{name}/{bk} Σ族 n {sn} ≠ n {b.get("n")}')
+            if sp != b.get('passed'):
+                probs.append(f'{name}/{bk} Σ族 passed {sp} ≠ passed {b.get("passed")}')
+            for f, v in fam.items():
+                if isinstance(v, dict) and 'n' in v and v.get('pct') != _pct(v['passed'], v['n']):
+                    probs.append(f'{name}/{bk}/{f} pct 与 passed/n 不符')
+        # (c) 按族可加 + (d) 族集合一致
+        fa = (blk.get('clarify_all') or {}).get('by_family') or {}
+        fi = (blk.get('clarify_informative') or {}).get('by_family') or {}
+        fv = (blk.get('invalid') or {}).get('by_family') or {}
+        if isinstance(fa, dict) and isinstance(fi, dict) and isinstance(fv, dict) and fa:
+            for f, a in fa.items():
+                if not isinstance(a, dict):
+                    continue
+                i = fi.get(f) or {'n': 0, 'passed': 0}
+                v = fv.get(f) or {'n': 0, 'passed': 0}
+                if i.get('n', 0) + v.get('n', 0) != a.get('n') or \
+                        i.get('passed', 0) + v.get('passed', 0) != a.get('passed'):
+                    probs.append(f'{name}/{f} 族级不可加：inf {i.get("passed")}/{i.get("n")} + '
+                                 f'inv {v.get("passed")}/{v.get("n")} ≠ all '
+                                 f'{a.get("passed")}/{a.get("n")}')
+            if (set(fi) | set(fv)) != set(fa):
+                probs.append(f'{name} 三桶族集合不一致：all {sorted(fa)} / '
+                             f'inf∪inv {sorted(set(fi) | set(fv))}')
+
+    if n_scored == 0:
+        probs.append('没有任何 scored 的模型块 ⇒ 族分层无对象（不得静默放行）')
+
+    # (e) 顶层 by_family = 分母构成（int）；模型块 = 统计块（dict）
+    for bk in BUCKETS:
+        fam = (d.get(bk) or {}).get('by_family')
+        if not isinstance(fam, dict):
+            probs.append(f'顶层 {bk}.by_family 缺失或不是 dict')
+        elif any(not isinstance(v, int) for v in fam.values()):
+            probs.append(f'顶层 {bk}.by_family 必须是**分母构成**（int），实际含非整数 ⇒ '
+                         f'两层同名换义（N-26）')
+    det = (f'已跑分模型块 {n_scored} 个；顶层 by_family 为分母构成'
+           + ('' if not probs else ' ⇒ ' + '；'.join(probs)))
+    return (not probs), det
+
+
+def _family_text(d):
+    """族级摘要（给 S-60 的「声称」段用，避免把数字手抄进 check_claims 的文案）。"""
+    out = []
+    for name, blk in (d.get('by_model') or {}).items():
+        if blk.get('status') != 'scored':
+            continue
+        fam = ((blk.get('clarify_all') or {}).get('by_family')) or {}
+        cells = ' '.join(f'{f} {v.get("passed")}/{v.get("n")}'
+                         for f, v in sorted(fam.items(), key=lambda kv: kv[1].get('pct') or 0))
+        out.append(f'{name}: {cells}')
+    return ' ‖ '.join(out) if out else '（无 scored 块）'
 
 
 def main():

@@ -47,6 +47,11 @@ import check_l2_leak  # noqa: E402  （判据只有一处，避免两套实现�
 
 TASKS = os.path.join(HERE, 'tasks', 'tasks.jsonl')
 
+# T-A14（R72）：同一个键 `by_family` 在本文件里有**两种含义**，必须写死，否则就是 N-26 同名不同义。
+_FAM_NOTE = ('**本层是分母构成**（每族多少题，与模型无关）。'
+             '**每族的 n/passed/pct 不在这里**，在 `by_model.<model>.<bucket>.by_family`。'
+             'S-60 断言：本层值必须是 int、模型块值必须是 dict。')
+
 
 def _sha256(path):
     h = hashlib.sha256()
@@ -109,17 +114,20 @@ def dual_clarify(tasks_path=TASKS, paper=None, scores=None):
             'n': n_l2, 'passed': None, 'pct': None,
             'denominator': '全卷 L2 澄清题（含 name 泄漏的无效子集）',
             'by_family': dict(sorted(fam_all.items())),
+            'by_family_note': _FAM_NOTE,
         },
         'clarify_informative': {
             'n': len(informative_ids), 'passed': None, 'pct': None,
             'denominator': 'name 未泄漏被省略值的可判子集（真的在考「会不会追问」）',
             'by_family': dict(sorted(fam_inf.items())),
+            'by_family_note': _FAM_NOTE,
             'task_ids': informative_ids,
         },
         'invalid': {
             'n': len(invalid_ids),
             'reason': 'spec.name 直接写出被省略值 ⇒ clarify 判据无效（N-17）',
             'by_family': dict(sorted(fam_bad.items())),
+            'by_family_note': _FAM_NOTE,
             'task_ids': invalid_ids,
             'detail': [{k: h[k] for k in ('case_id', 'family', 'omitted_field',
                                           'name', 'name_evidence')} for h in hits],
@@ -155,21 +163,39 @@ def _score_block(rep, sc):
         'presentation': sc.get('presentation'),
         'category_counts': sc.get('category_counts'),
         'status': 'scored' if complete else 'not_run',
-        'clarify_all': {'n': n_l2, 'passed': None, 'pct': None},
+        'clarify_all': {'n': n_l2, 'passed': None, 'pct': None, 'by_family': None},
         'clarify_informative': {'n': rep['clarify_informative']['n'],
-                                'passed': None, 'pct': None},
-        'invalid': {'n': rep['invalid']['n'], 'passed': None, 'pct': None},
+                                'passed': None, 'pct': None, 'by_family': None},
+        'invalid': {'n': rep['invalid']['n'], 'passed': None, 'pct': None,
+                    'by_family': None},
     }
+    # T-A14（R72）：族级（每族 n/passed/pct）从 score_l2 透传。**未跑满就不透传** ——
+    #   半批候选算出来的族级数字比合计更容易误导（族小、两条就能翻倍）。
+    _SRC = (('clarify_all', 'clarify_all'), ('clarify_informative', 'clarify_informative'),
+            ('invalid', 'invalid_subset'))
     if complete:
-        blk['clarify_all'].update(
-            passed=sc['clarify_all']['passed'], pct=sc['clarify_all']['pct'])
-        blk['clarify_informative'].update(
-            passed=sc['clarify_informative']['passed'], pct=sc['clarify_informative']['pct'])
-        blk['invalid'].update(
-            passed=sc['invalid_subset']['passed'], pct=sc['invalid_subset']['pct'])
+        for _dst, _src in _SRC:
+            _b = sc[_src]
+            blk[_dst].update(passed=_b['passed'], pct=_b['pct'],
+                             by_family=_b.get('by_family'))
         assert (blk['clarify_all']['passed'] ==
                 blk['clarify_informative']['passed'] + blk['invalid']['passed']), \
             '双口径通过数不闭合（R-A5）：%s' % blk['model']
+        # ★ 族级闭合：Σ族 == 本块总数；且每族 inf + inv == all（两桶按族可加）
+        for _dst, _ in _SRC:
+            _s = blk[_dst]
+            assert _s['by_family'], '缺 by_family（S-60/R72 守）：%s / %s' % (blk['model'], _dst)
+            assert sum(v['n'] for v in _s['by_family'].values()) == _s['n'], \
+                '族级任务数不闭合：%s / %s' % (blk['model'], _dst)
+            assert sum(v['passed'] for v in _s['by_family'].values()) == _s['passed'], \
+                '族级通过数不闭合：%s / %s' % (blk['model'], _dst)
+        for _f in blk['clarify_all']['by_family']:
+            _a = blk['clarify_all']['by_family'][_f]
+            _i = blk['clarify_informative']['by_family'].get(_f, {'n': 0, 'passed': 0})
+            _v = blk['invalid']['by_family'].get(_f, {'n': 0, 'passed': 0})
+            assert _i['n'] + _v['n'] == _a['n'], '族 %s 任务数不可加：%s' % (_f, blk['model'])
+            assert _i['passed'] + _v['passed'] == _a['passed'], \
+                '族 %s 通过数不可加：%s' % (_f, blk['model'])
     else:
         blk['partial'] = {
             'n_candidates': n_cand, 'n_tasks': n_l2, 'n_missing': sc.get('n_missing'),
@@ -204,6 +230,10 @@ def _apply_scores(rep, sc_list):
         rep[k] = prim[k]
     for side in ('clarify_all', 'clarify_informative', 'invalid'):
         rep[side].update(passed=prim[side]['passed'], pct=prim[side]['pct'])
+    # ★ 顶层的 `by_family` 是**分母构成**（每族多少题，模型无关），**不覆写**；
+    #   每族的 n/passed/pct 只放在 `by_model.<model>.<bucket>.by_family`（T-A14/R72）。
+    #   同一个键在两层含义不同 —— 由 S-60 断言「顶层值必须是 int、模型块值必须是 dict」兜住，
+    #   这正是 N-26「同名不同义」的防复发点。
     if 'partial' in prim:
         rep['partial'] = prim['partial']
     else:
@@ -290,11 +320,49 @@ def main():
                          f"`{str(b.get('prompt_sha256'))[:12]}…` | {_f(b['clarify_all'])} | "
                          f"{_f(b['clarify_informative'])} | {_f(b['invalid'])} | "
                          f"{b.get('category_counts')} |")
+            # ---- T-A14（R72）：按族分层。表里的每个数都来自 artifact，不再手抄 ----
+            L += ['', '## 按族分层（R72：族级数字由 artifact 提供，不得手抄）', '',
+                  '| 模型 | 族 | `clarify_all` | `clarify_informative` | `invalid`(泄漏) |',
+                  '|---|---|---|---|---|']
+            _worst, _rest = {}, {}
+            for name, b in rep['by_model'].items():
+                _ba = b.get('clarify_all') or {}
+                _bf = _ba.get('by_family')
+                if not _bf:
+                    L.append(f"| `{name}` | — | —（未跑满，族级不适用） | — | — |")
+                    continue
+                _fam_sorted = sorted(_bf.items(), key=lambda kv: (kv[1]['pct'] or 0, kv[0]))
+                for f, v in _fam_sorted:
+                    def _cell(_bk, _f):
+                        _x = ((b.get(_bk) or {}).get('by_family') or {}).get(_f)
+                        return '—' if not _x else f"{_x['passed']}/{_x['n']}"
+                    L.append(f"| `{name}` | `{f}` | **{v['passed']}/{v['n']} = {v['pct']}%** | "
+                             f"{_cell('clarify_informative', f)} | {_cell('invalid', f)} |")
+                _w, _wv = _fam_sorted[0]
+                _worst[name] = (_w, _wv['passed'], _wv['n'])
+                _rn = sum(v['n'] for f, v in _bf.items() if f != _w)
+                _rp = sum(v['passed'] for f, v in _bf.items() if f != _w)
+                _rest[name] = (_rn, _rp)
+            L.append('')
+            # 下面这句在改之前是**写死在模板里的数字**（15 条失败、16 条、36 条）——
+            # 模板里写死的数和 hand-typed claim 是同一种病，只是藏得更深。改为从数据现算。
+            for name, b in rep['by_model'].items():
+                if name not in _worst:
+                    continue
+                _w, _wp, _wn = _worst[name]
+                _rn, _rp = _rest[name]
+                L.append(f"> **`{name}`**：最差族 `{_w}` **{_wp}/{_wn}**，其余各族合计 **{_rp}/{_rn}**。")
+            _inv_fam = (rep['invalid'].get('by_family') or {})
+            if _inv_fam:
+                _w0 = _worst.get(next(iter(rep['by_model'])))                # noqa: F841
+                _worst_name = _w0[0] if _w0 else None
+                _n_out = sum(v for f, v in _inv_fam.items() if f != _worst_name)
+                L.append(f"> 泄漏无效子集 {rep['invalid']['n']} 条里，**{_n_out} 条**不在最差族 "
+                         f"`{_worst_name}` 内。")
             L += ['', '> **★ 两个分母的差主要是族构成差，不是泄漏净效应（N-27）**：'
-                      '实测 15 条失败全部落在 `wingbox`，非翼盒三族（`open_hole_panel` / '
-                      '`fuselage_barrel` / `stiffened_panel`）全对；而泄漏 19 条里有 16 条正属这三族、'
-                      '干净 45 条里 36 条是翼盒 ⇒ **不得把 `clarify_informative` 当「L2 真信号」单独引用**。'
-                      '（N-27 已拍板：只如实标注、不动口径。）', '']
+                      '族级数字见上表（源自 `by_model.<model>.*.by_family`，S-60 守）；'
+                      '⇒ **不得把 `clarify_informative` 当「L2 真信号」单独引用**，'
+                      '**两模型也不得据此排名**（R54）。（N-27 已拍板：只如实标注、不动口径。）', '']
         L += ['## 无效子集明细（19 条）', '',
               '| family | case_id | 省略字段 | name 里的证据 |', '|---|---|---|---|']
         for d in inv['detail']:

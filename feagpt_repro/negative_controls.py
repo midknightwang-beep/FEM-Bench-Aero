@@ -2207,6 +2207,83 @@ def main():
     print(f"  [{'ok ' if ok65 else 'BAD!'}] NC-65 元数据修正表五向（正向×2/过期/新错/未覆盖/未留痕）  "
           f"actual={det65}")
 
+    # NC-66（T-A14 / R72）：**S-60（L2 族分层闭合）必须能被证伪**。
+    #   为什么要有它：族级数字此前只活在手写 md 里（R-A3 禁止手抄），刚落盘就必须证明
+    #   「删掉/改错/换义会有闸响」——否则又是一条「接了但永远是绿的」。
+    #   六向：正向 / 删一桶的 by_family / Σ族 n 不符 / Σ族 passed 不符 / 按族不可加 / 顶层同名换义。
+    from check_claims import l2_family_closure
+    import copy as _copy66
+    import tempfile as _tf66
+    ok66, det66 = False, 'no artifact'
+    _p66 = os.path.join(HERE, 'reports', 'l2_clarify_dual.json')
+    if os.path.exists(_p66):
+        _td66 = _tf66.mkdtemp()
+        try:
+            _base66 = json.load(open(_p66, encoding='utf-8'))
+        except Exception as _e66:                                 # noqa: BLE001
+            _base66 = None
+        if _base66:
+            _first66 = next(iter(_base66.get('by_model') or {}), None)
+
+            def _w66(tag, fn):
+                o = _copy66.deepcopy(_base66)
+                fn(o)
+                fp = os.path.join(_td66, 'dual_%s.json' % tag)
+                json.dump(o, open(fp, 'w', encoding='utf-8'), ensure_ascii=False)
+                return fp
+
+            _r66 = {'fwd_real': l2_family_closure(os.path.dirname(HERE), _p66)}
+
+            def _m_drop(o):
+                del o['by_model'][_first66]['clarify_all']['by_family']
+
+            def _m_n(o):
+                _f = next(iter(o['by_model'][_first66]['clarify_all']['by_family']))
+                o['by_model'][_first66]['clarify_all']['by_family'][_f]['n'] += 1
+
+            def _m_passed(o):
+                _f = next(iter(o['by_model'][_first66]['clarify_all']['by_family']))
+                o['by_model'][_first66]['clarify_all']['by_family'][_f]['passed'] += 1
+
+            def _m_add(o):
+                _f = next(iter(o['by_model'][_first66]['invalid']['by_family']))
+                o['by_model'][_first66]['invalid']['by_family'][_f]['n'] += 1
+
+            def _m_swap(o):
+                _f = next(iter(o['clarify_all']['by_family']))
+                o['clarify_all']['by_family'][_f] = {'n': 1, 'passed': 1, 'pct': 100.0}
+
+            def _m_notrun(o):
+                for _b in (o.get('by_model') or {}).values():
+                    _b['status'] = 'not_run'
+
+            for _tag, _fn in (('drop', _m_drop), ('sumn', _m_n), ('sump', _m_passed),
+                              ('add', _m_add), ('swap', _m_swap), ('notrun', _m_notrun)):
+                _r66[_tag] = l2_family_closure(os.path.dirname(HERE), _w66(_tag, _fn))
+            _why66 = {'fwd_real': '不得误报', 'drop': '缺 by_family', 'sumn': 'Σ族 n',
+                      'sump': 'Σ族 passed', 'add': '不可加', 'swap': '同名换义',
+                      'notrun': '无对象'}
+            _mis66 = []
+            for k, (ok_, det_) in _r66.items():
+                if k == 'fwd_real':
+                    if not ok_:
+                        _mis66.append(f'[正向] 却判红：{str(det_)[:60]}')
+                    continue
+                if ok_:
+                    _mis66.append(f'[{k}] 该红却绿')
+                elif _why66[k] not in str(det_):
+                    _mis66.append(f'[{k}] 红了但原因不对：{str(det_)[:70]}')
+            ok66 = not _mis66
+            det66 = ('六向全中（正向不误报 / 删族级必红 / Σn 不符 / Σpassed 不符 / '
+                     '按族不可加 / 顶层同名换义 / 全 not_run 无对象）'
+                     if ok66 else '；'.join(_mis66))
+    results.append({'id': 'NC-66',
+                    'desc': 'T-A14 L2 族分层闭合闸（R72/S-60）：族级必须落盘、闭合、按族可加、两层不换义',
+                    'expect': '正向不误报；删族级/Σn/Σpassed/不可加/同名换义/无对象 六向各自因正确原因变红',
+                    'actual': det66, 'ok': ok66})
+    print(f"  [{'ok ' if ok66 else 'BAD!'}] NC-66 L2 族分层闭合六向（正向/删族级/Σn/Σpassed/不可加/换义/无对象）  "
+          f"actual={det66}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，    # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；
     #           ③ 源码里必须存在 else 分支（缺 msr ⇒ 加一条 ok=False），防被改回去。

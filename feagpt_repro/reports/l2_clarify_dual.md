@@ -22,7 +22,24 @@
 | `glm-5.3-flash` | `spec_json_raw_name` | `03129c56d83b…` | **49/64 = 76.6%** | **30/45 = 66.7%** | **19/19 = 100.0%** | {'clarify_ok': 49, 'fabricated': 13, 'clarify_wrong': 2} |
 | `deepseek-v4-pro` | `spec_json_raw_name` | `03129c56d83b…` | **36/64 = 56.2%** | **21/45 = 46.7%** | **15/19 = 78.9%** | {'clarify_ok': 36, 'fabricated': 20, 'clarify_wrong': 8} |
 
-> **★ 两个分母的差主要是族构成差，不是泄漏净效应（N-27）**：实测 15 条失败全部落在 `wingbox`，非翼盒三族（`open_hole_panel` / `fuselage_barrel` / `stiffened_panel`）全对；而泄漏 19 条里有 16 条正属这三族、干净 45 条里 36 条是翼盒 ⇒ **不得把 `clarify_informative` 当「L2 真信号」单独引用**。（N-27 已拍板：只如实标注、不动口径。）
+## 按族分层（R72：族级数字由 artifact 提供，不得手抄）
+
+| 模型 | 族 | `clarify_all` | `clarify_informative` | `invalid`(泄漏) |
+|---|---|---|---|---|
+| `glm-5.3-flash` | `wingbox` | **24/39 = 61.5%** | 21/36 | 3/3 |
+| `glm-5.3-flash` | `fuselage_barrel` | **7/7 = 100.0%** | 2/2 | 5/5 |
+| `glm-5.3-flash` | `open_hole_panel` | **13/13 = 100.0%** | 3/3 | 10/10 |
+| `glm-5.3-flash` | `stiffened_panel` | **5/5 = 100.0%** | 4/4 | 1/1 |
+| `deepseek-v4-pro` | `wingbox` | **15/39 = 38.5%** | 13/36 | 2/3 |
+| `deepseek-v4-pro` | `fuselage_barrel` | **5/7 = 71.4%** | 2/2 | 3/5 |
+| `deepseek-v4-pro` | `open_hole_panel` | **11/13 = 84.6%** | 2/3 | 9/10 |
+| `deepseek-v4-pro` | `stiffened_panel` | **5/5 = 100.0%** | 4/4 | 1/1 |
+
+> **`glm-5.3-flash`**：最差族 `wingbox` **24/39**，其余各族合计 **25/25**。
+> **`deepseek-v4-pro`**：最差族 `wingbox` **15/39**，其余各族合计 **21/25**。
+> 泄漏无效子集 19 条里，**16 条**不在最差族 `wingbox` 内。
+
+> **★ 两个分母的差主要是族构成差，不是泄漏净效应（N-27）**：族级数字见上表（源自 `by_model.<model>.*.by_family`，S-60 守）；⇒ **不得把 `clarify_informative` 当「L2 真信号」单独引用**，**两模型也不得据此排名**（R54）。（N-27 已拍板：只如实标注、不动口径。）
 
 ## 无效子集明细（19 条）
 

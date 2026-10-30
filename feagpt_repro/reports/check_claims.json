@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_67.json）",
-   "expect": "67/67",
-   "actual": "67/67",
+   "desc": "C-019 负控通过数（源 negative_controls_68.json）",
+   "expect": "68/68",
+   "actual": "68/68",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "67",
-   "actual": "67",
+   "expect": "68",
+   "actual": "68",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 6.6",
-   "actual": "6.6",
+   "expect": "全部 = 6.7",
+   "actual": "6.7",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "67/67",
-   "actual": "67/67",
+   "expect": "68/68",
+   "actual": "68/68",
    "ok": true,
    "skip": false
   },
@@ -366,7 +366,7 @@
    "id": "S-44",
    "desc": "官方导航文件 INDEX 的 headline 指向与负控编号必须与 artifact 一致（R58）",
    "expect": "含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致",
-   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L26 主区间 NC-23..65 / 总数 67；artifact 最大 NC-65、共 67 条",
+   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L26 主区间 NC-23..66 / 总数 68；artifact 最大 NC-66、共 68 条",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793366602/1793366602；check 1793366716 vs 负控 1793366602",
+   "actual": "C-019 mtime 记录/实际 = 1793367582/1793367582；check 1793367749 vs 负控 1793367582",
    "ok": true,
    "skip": false
   },
@@ -479,6 +479,14 @@
    "desc": "判分元数据修正表必须自洽、不过期、不制造新错，且必须记进成绩单 provenance（R71）",
    "expect": "fixes 每条须有 task_id/field/from/to/reason；(b) from 必须逐字等于当前卷现值；(c) to 不得含该族 R34 正确键；(d) 卷内凡「本族正确键被登记为错族键」的题必须被覆盖；(e) 成绩单 provenance.judge_overrides 的 sha256 须等于磁盘表、applied_to 须与命中集相等",
    "actual": "修正表 1 条、from 均等于卷现值、to 不含本族正确键、卷内无未覆盖矛盾；两份成绩单 provenance 的 sha 与 applied_to 均一致。明细：L3_naca4412_wingbox:clarify_wrong_keys ['n_stringers_per_skin']→['n_stringers']；v7 glm 留痕一致（applied_to=['L3_naca4412_wingbox']）；v7 ds 留痕一致（applied_to=['L3_naca4412_wingbox']）",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-60",
+   "desc": "L2 澄清题族分层必须落盘且闭合：Σ族==总数、按族可加、两层不得同名换义（R72）",
+   "expect": "每个 scored 模型块三桶都须有 by_family；Σ族 n / passed == 总数；每族 inf + inv == all（任务数与通过数两侧）；顶层 by_family 必须是**分母构成**（int）。族级实读：glm-5.3-flash: wingbox 24/39 fuselage_barrel 7/7 open_hole_panel 13/13 stiffened_panel 5/5 ‖ deepseek-v4-pro: wingbox 15/39 fuselage_barrel 5/7 open_hole_panel 11/13 stiffened_panel 5/5",
+   "actual": "已跑分模型块 2 个；顶层 by_family 为分母构成",
    "ok": true,
    "skip": false
   }
@@ -696,9 +704,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 45923,
-   "sha256": "e044dd2ac9778da4749304c8a0550a314f0c8f1d6e0b5dc51b31874c756658b7",
-   "mtime": 1793366564
+   "size": 46693,
+   "sha256": "bfed58e1aa74cef5f1a99ae47e8271b4b87226ce2f1b4b1c17a7fedf80170640",
+   "mtime": 1793367662
   },
   {
    "claim_id": "C-027",
@@ -1008,9 +1016,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 39773,
-   "sha256": "2b76b78841814929319b70af7281787997e10920de5901e939343c5725ecf579",
-   "mtime": 1793364069
+   "size": 41015,
+   "sha256": "695f2f777ef75c8a6b2dc012c234bf5d7b51f9f73e8e54c553f1d8ac7eeabb4e",
+   "mtime": 1793367392
   },
   {
    "claim_id": "C-041",
@@ -1020,9 +1028,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 33113,
-   "sha256": "d2385c92a6eee8af21c5ef5a89a25a3cf34e7d6e56b98231a0cc607d209b39dd",
-   "mtime": 1793364070
+   "size": 34348,
+   "sha256": "34a5a8d83ebd04fdbb43ea49b2e4fa284a6f2b27327097250cb7970f6800e201",
+   "mtime": 1793367392
   },
   {
    "claim_id": "C-041",
@@ -1032,9 +1040,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 11301,
-   "sha256": "162b3208f2166fb14577a53c934c317eb549feee5339c3b5c876fa4e16e3bdba",
-   "mtime": 1793363119
+   "size": 15068,
+   "sha256": "1571fba64dd150b6797d392e040cad2b44315db1971cd9a0567352810b8c1204",
+   "mtime": 1793367463
   },
   {
    "claim_id": "C-038",
@@ -1044,9 +1052,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 11301,
-   "sha256": "162b3208f2166fb14577a53c934c317eb549feee5339c3b5c876fa4e16e3bdba",
-   "mtime": 1793363119
+   "size": 15068,
+   "sha256": "1571fba64dd150b6797d392e040cad2b44315db1971cd9a0567352810b8c1204",
+   "mtime": 1793367463
   },
   {
    "claim_id": "C-038",
@@ -1056,9 +1064,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 3721,
-   "sha256": "2acd01c42fc1e998d532c41d66ac275f99b79a4455f5d556778ab3907c5aa97f",
-   "mtime": 1793363119
+   "size": 4652,
+   "sha256": "0b8739b34b48222bc11f2512ad244ba09e155870bcc1185c42ebca5f78d9336e",
+   "mtime": 1793367463
   },
   {
    "claim_id": "C-039",
@@ -1290,15 +1298,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_67.json",
+   "artifact": "feagpt_repro/reports/negative_controls_68.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 16087,
-   "sha256": "96bebcc6e88fad2dbe2bac72f25668845a0d1b67b8323871b515dbc5c3d452d9",
-   "mtime": 1793366602
+   "size": 16552,
+   "sha256": "327e425c37b42d71ddd2db0229c85a9b566f1f23ffc872aff6b36d6100f5feaf",
+   "mtime": 1793367582
   }
  ]
 }

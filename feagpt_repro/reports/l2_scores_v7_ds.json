@@ -1,5 +1,5 @@
 {
- "_note": "L2 澄清题首次跑分（T-A13a/T-A13b）。判据 import 自 score_baseline.judge_clarify_field_level（R17）；双口径掩码 import 自 check_l2_leak.scan（R66）。两个分母不同 ⇒ 禁相减、禁据此排名（R54）。",
+ "_note": "L2 澄清题首次跑分（T-A13a/T-A13b）。判据 import 自 score_baseline.judge_clarify_field_level（R17）；双口径掩码 import 自 check_l2_leak.scan（R66）。两个分母不同 ⇒ 禁相减、禁据此排名（R54）。★ 三块里的 `by_family` 是**每族的 n/passed/pct**（T-A14/R72）；它与 `l2_clarify_dual.json` 顶层 `clarify_all.by_family`（**分母构成**，每族多少题）**同名不同义**，不得互相引用。",
  "paper": "tasks.jsonl",
  "tasks_sha256": "caf0f6c3be8131c5b817a0bacfcca8ad3893fcfb95e29d8d9b525866a63e195a",
  "candidates": "candidates_l2_v7_ds",
@@ -20,18 +20,84 @@
   "n": 64,
   "passed": 36,
   "pct": 56.2,
+  "by_family": {
+   "fuselage_barrel": {
+    "n": 7,
+    "passed": 5,
+    "pct": 71.4
+   },
+   "open_hole_panel": {
+    "n": 13,
+    "passed": 11,
+    "pct": 84.6
+   },
+   "stiffened_panel": {
+    "n": 5,
+    "passed": 5,
+    "pct": 100.0
+   },
+   "wingbox": {
+    "n": 39,
+    "passed": 15,
+    "pct": 38.5
+   }
+  },
   "denominator": "全卷 L2（含 name 泄漏的无效子集）"
  },
  "clarify_informative": {
   "n": 45,
   "passed": 21,
   "pct": 46.7,
+  "by_family": {
+   "fuselage_barrel": {
+    "n": 2,
+    "passed": 2,
+    "pct": 100.0
+   },
+   "open_hole_panel": {
+    "n": 3,
+    "passed": 2,
+    "pct": 66.7
+   },
+   "stiffened_panel": {
+    "n": 4,
+    "passed": 4,
+    "pct": 100.0
+   },
+   "wingbox": {
+    "n": 36,
+    "passed": 13,
+    "pct": 36.1
+   }
+  },
   "denominator": "name 未泄漏的可判子集"
  },
  "invalid_subset": {
   "n": 19,
   "passed": 15,
   "pct": 78.9,
+  "by_family": {
+   "fuselage_barrel": {
+    "n": 5,
+    "passed": 3,
+    "pct": 60.0
+   },
+   "open_hole_panel": {
+    "n": 10,
+    "passed": 9,
+    "pct": 90.0
+   },
+   "stiffened_panel": {
+    "n": 1,
+    "passed": 1,
+    "pct": 100.0
+   },
+   "wingbox": {
+    "n": 3,
+    "passed": 2,
+    "pct": 66.7
+   }
+  },
   "denominator": "name 泄漏 ⇒ 判据失效（R66 隔离，不得单独对外）"
  },
  "closure": {

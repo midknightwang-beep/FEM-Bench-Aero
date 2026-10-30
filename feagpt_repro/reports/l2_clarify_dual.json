@@ -15,7 +15,8 @@
       "open_hole_panel": 13,
       "stiffened_panel": 5,
       "wingbox": 39
-    }
+    },
+    "by_family_note": "**本层是分母构成**（每族多少题，与模型无关）。**每族的 n/passed/pct 不在这里**，在 `by_model.<model>.<bucket>.by_family`。S-60 断言：本层值必须是 int、模型块值必须是 dict。"
   },
   "clarify_informative": {
     "n": 45,
@@ -28,6 +29,7 @@
       "stiffened_panel": 4,
       "wingbox": 36
     },
+    "by_family_note": "**本层是分母构成**（每族多少题，与模型无关）。**每族的 n/passed/pct 不在这里**，在 `by_model.<model>.<bucket>.by_family`。S-60 断言：本层值必须是 int、模型块值必须是 dict。",
     "task_ids": [
       "L2_fuselage_barrel_d1800_l2000_str8_frm3",
       "L2_fuselage_barrel_d2000_l2000_str8_frm3",
@@ -85,6 +87,7 @@
       "stiffened_panel": 1,
       "wingbox": 3
     },
+    "by_family_note": "**本层是分母构成**（每族多少题，与模型无关）。**每族的 n/passed/pct 不在这里**，在 `by_model.<model>.<bucket>.by_family`。S-60 断言：本层值必须是 int、模型块值必须是 dict。",
     "task_ids": [
       "L2_fuselage_barrel_d1600_l1600_str8_frm3",
       "L2_fuselage_barrel_d2000_l1600_str8_frm3",
@@ -300,17 +303,83 @@
       "clarify_all": {
         "n": 64,
         "passed": 49,
-        "pct": 76.6
+        "pct": 76.6,
+        "by_family": {
+          "fuselage_barrel": {
+            "n": 7,
+            "passed": 7,
+            "pct": 100.0
+          },
+          "open_hole_panel": {
+            "n": 13,
+            "passed": 13,
+            "pct": 100.0
+          },
+          "stiffened_panel": {
+            "n": 5,
+            "passed": 5,
+            "pct": 100.0
+          },
+          "wingbox": {
+            "n": 39,
+            "passed": 24,
+            "pct": 61.5
+          }
+        }
       },
       "clarify_informative": {
         "n": 45,
         "passed": 30,
-        "pct": 66.7
+        "pct": 66.7,
+        "by_family": {
+          "fuselage_barrel": {
+            "n": 2,
+            "passed": 2,
+            "pct": 100.0
+          },
+          "open_hole_panel": {
+            "n": 3,
+            "passed": 3,
+            "pct": 100.0
+          },
+          "stiffened_panel": {
+            "n": 4,
+            "passed": 4,
+            "pct": 100.0
+          },
+          "wingbox": {
+            "n": 36,
+            "passed": 21,
+            "pct": 58.3
+          }
+        }
       },
       "invalid": {
         "n": 19,
         "passed": 19,
-        "pct": 100.0
+        "pct": 100.0,
+        "by_family": {
+          "fuselage_barrel": {
+            "n": 5,
+            "passed": 5,
+            "pct": 100.0
+          },
+          "open_hole_panel": {
+            "n": 10,
+            "passed": 10,
+            "pct": 100.0
+          },
+          "stiffened_panel": {
+            "n": 1,
+            "passed": 1,
+            "pct": 100.0
+          },
+          "wingbox": {
+            "n": 3,
+            "passed": 3,
+            "pct": 100.0
+          }
+        }
       }
     },
     "deepseek-v4-pro": {
@@ -327,17 +396,83 @@
       "clarify_all": {
         "n": 64,
         "passed": 36,
-        "pct": 56.2
+        "pct": 56.2,
+        "by_family": {
+          "fuselage_barrel": {
+            "n": 7,
+            "passed": 5,
+            "pct": 71.4
+          },
+          "open_hole_panel": {
+            "n": 13,
+            "passed": 11,
+            "pct": 84.6
+          },
+          "stiffened_panel": {
+            "n": 5,
+            "passed": 5,
+            "pct": 100.0
+          },
+          "wingbox": {
+            "n": 39,
+            "passed": 15,
+            "pct": 38.5
+          }
+        }
       },
       "clarify_informative": {
         "n": 45,
         "passed": 21,
-        "pct": 46.7
+        "pct": 46.7,
+        "by_family": {
+          "fuselage_barrel": {
+            "n": 2,
+            "passed": 2,
+            "pct": 100.0
+          },
+          "open_hole_panel": {
+            "n": 3,
+            "passed": 2,
+            "pct": 66.7
+          },
+          "stiffened_panel": {
+            "n": 4,
+            "passed": 4,
+            "pct": 100.0
+          },
+          "wingbox": {
+            "n": 36,
+            "passed": 13,
+            "pct": 36.1
+          }
+        }
       },
       "invalid": {
         "n": 19,
         "passed": 15,
-        "pct": 78.9
+        "pct": 78.9,
+        "by_family": {
+          "fuselage_barrel": {
+            "n": 5,
+            "passed": 3,
+            "pct": 60.0
+          },
+          "open_hole_panel": {
+            "n": 10,
+            "passed": 9,
+            "pct": 90.0
+          },
+          "stiffened_panel": {
+            "n": 1,
+            "passed": 1,
+            "pct": 100.0
+          },
+          "wingbox": {
+            "n": 3,
+            "passed": 2,
+            "pct": 66.7
+          }
+        }
       }
     }
   },

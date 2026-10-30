@@ -89,10 +89,34 @@ def _pct(p, n):
     return None if not n else round(100.0 * p / n, 1)
 
 
+def _by_family(rows, key='pass'):
+    """T-A14（R72）：**按族分层**——每族 `n` / `passed` / `pct`。
+
+    为什么必须落盘：N-27 的结论（「64 与 45 的差是族构成差、不是泄漏净效应」）**整体建立在
+    族级数字上**，而这些数字此前只活在一份**手写**诊断 md 里（`task_a13c_ds_report.md`，
+    无生成器）⇒ 违反 R-A3「禁止手抄数字」。结论比它引用的证据更「官方」是本项目最忌的错位。
+
+    ★ 与顶层 `clarify_all.by_family` **同名不同义**，别混：顶层那份是**分母构成**（每族多少题，
+      模型无关）；本函数的输出是**每族的 n/passed/pct**。已在 `_note` 里写死这句。
+    ★ 族名取 `family`；缺字段**直接报错**，不得塞进 '?'（锚点缺失必须红，R29）。
+    """
+    fam = {}
+    for r in rows:
+        f = r.get('family')
+        if not f:
+            raise KeyError('per_task 行缺 family 字段（R29：锚点缺失不得静默归并）')
+        d = fam.setdefault(f, {'n': 0, 'passed': 0})
+        d['n'] += 1
+        if r[key]:
+            d['passed'] += 1
+    return {f: {'n': d['n'], 'passed': d['passed'], 'pct': _pct(d['passed'], d['n'])}
+            for f, d in sorted(fam.items())}
+
+
 def _block(rows, key='pass'):
     n = len(rows)
     p = sum(1 for r in rows if r[key])
-    return {'n': n, 'passed': p, 'pct': _pct(p, n)}
+    return {'n': n, 'passed': p, 'pct': _pct(p, n), 'by_family': _by_family(rows, key)}
 
 
 def score(cand_dir, tasks_path=TASKS, label=None):
@@ -143,6 +167,15 @@ def score(cand_dir, tasks_path=TASKS, label=None):
     if b_all['passed'] != b_inf['passed'] + b_inv['passed']:
         print(f"[FATAL] 双口径通过数不闭合：all {b_all['passed']} ≠ inf {b_inf['passed']} + inv {b_inv['passed']}")
         return None, 4
+    # T-A14（R72）：**族级也必须闭合** —— Σ族 == 总数（任务数与通过数两侧）。
+    #   不闭合就说明分族时丢了/重了题，而族级数字正是 N-27 结论的唯一证据。
+    for _nm, _b in (('clarify_all', b_all), ('clarify_informative', b_inf), ('invalid', b_inv)):
+        _sn = sum(x['n'] for x in _b['by_family'].values())
+        _sp = sum(x['passed'] for x in _b['by_family'].values())
+        if _sn != _b['n'] or _sp != _b['passed']:
+            print(f"[FATAL] 族级不闭合（{_nm}）：Σ族 n {_sn} ≠ n {_b['n']} 或 "
+                  f"Σ族 passed {_sp} ≠ passed {_b['passed']}")
+            return None, 5
 
     cats = collections.Counter(r['category'] for r in rows)
     n_cand = b_all['n'] - cats.get('missing', 0)
@@ -151,7 +184,10 @@ def score(cand_dir, tasks_path=TASKS, label=None):
     return {
         '_note': ('L2 澄清题首次跑分（T-A13a/T-A13b）。判据 import 自 score_baseline.'
                   'judge_clarify_field_level（R17）；双口径掩码 import 自 check_l2_leak.scan（R66）。'
-                  '两个分母不同 ⇒ 禁相减、禁据此排名（R54）。'),
+                  '两个分母不同 ⇒ 禁相减、禁据此排名（R54）。'
+                  '★ 三块里的 `by_family` 是**每族的 n/passed/pct**（T-A14/R72）；'
+                  '它与 `l2_clarify_dual.json` 顶层 `clarify_all.by_family`（**分母构成**，每族多少题）'
+                  '**同名不同义**，不得互相引用。'),
         'paper': os.path.basename(tasks_path),
         'tasks_sha256': _sha256(tasks_path),
         'candidates': os.path.basename(os.path.normpath(cand_dir)),
