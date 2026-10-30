@@ -1684,6 +1684,74 @@ def main():
     print(f"  [{'ok ' if ok58 else 'BAD!'}] NC-58 v7 双分母闸五向（正向/四桶/分母/无原因/env）  "
           f"actual={det58}")
 
+    # NC-59（T-A12a）：**S-56（协议不得硬编码版本/范围/解释器）自己必须能被证伪**。
+    #   为什么必须测：S-56 守的是「协议文件里的副本」，而**协议文件就是我自己上一轮改的** ——
+    #   闸与被检查对象出自同一双手，最容易写成「照着现状写正则、永远绿」。
+    #   六向，每向只造一个错，并断言**红的原因对**（不只是红了）：
+    #    (fwd)  正向：合规协议必须过（先证明不误报）
+    #    (ver)  AGENTS 写回 `v9.9` ⇒ 红，且原因含 (a)
+    #    (rng)  AGENTS 写回 `R1–R64` ⇒ 红，且原因含 (b)
+    #    (clm)  CLAIMS「红线条」标题写回范围 ⇒ 红，且原因含 (c)
+    #    (bare) CLAUDE 写回 `python negative_controls.py` ⇒ 红，且原因含 (d)
+    #    (pap)  AGENTS 写回 `tasks_v6c.jsonl` ⇒ 红，且原因含 (e)
+    #   注意：这五向**必须在临时目录里造文件**，不能在真仓库上改 —— 否则负控会把工作区弄脏。
+    ok59, det59 = False, 'no artifact'
+    try:
+        from check_claims import protocol_version_scope_consistency as _s56
+        import tempfile as _tf59
+
+        _B59 = {
+            'AGENTS.md': ('# AGENTS\n当前 rubric 版本与规则范围以 `RUBRIC.md` 顶部为准。\n'
+                          '```bash\ncd feagpt_repro\n"$PY" negative_controls.py\n'
+                          '"$PY" check_claims.py --json "$TEMP/x.json"\n```\n'),
+            'CLAUDE.md': '# CLAUDE\n遵守 AGENTS.md；两道闸都用项目 venv。\n',
+            'CLAIMS.md': '# CLAIMS\n## 红线条（挂账常设；范围以 `RUBRIC.md` 为准）\nR1 示例\n',
+        }
+
+        def _mk59(patch):
+            d = _tf59.mkdtemp(prefix='nc59_')
+            os.makedirs(os.path.join(d, 'FEM-Bench-Aero'), exist_ok=True)
+            texts = dict(_B59)
+            texts.update(patch)
+            for name, txt in texts.items():
+                sub = 'FEM-Bench-Aero' if name == 'CLAIMS.md' else ''
+                open(os.path.join(d, sub, name), 'w', encoding='utf-8').write(txt)
+            return d
+
+        def _c59(d):
+            return _s56(d, os.path.join(d, 'AGENTS.md'), os.path.join(d, 'CLAUDE.md'),
+                        os.path.join(d, 'FEM-Bench-Aero', 'CLAIMS.md'))
+
+        _r59 = {
+            'fwd': _c59(_mk59({})),
+            'ver': _c59(_mk59({'AGENTS.md': _B59['AGENTS.md'] + '\n当前 rubric v9.9。\n'})),
+            'rng': _c59(_mk59({'AGENTS.md': _B59['AGENTS.md'] + '\n红线 R1–R64 挂账。\n'})),
+            'clm': _c59(_mk59({'CLAIMS.md': '# CLAIMS\n## 红线条（R1–R64，挂账常设）\nR1\n'})),
+            'bare': _c59(_mk59({'CLAUDE.md': _B59['CLAUDE.md'] + '\npython negative_controls.py\n'})),
+            'pap': _c59(_mk59({'AGENTS.md': _B59['AGENTS.md'] + '\n当前卷 tasks_v6c.jsonl。\n'})),
+        }
+        _chk59 = [
+            ('fwd', _r59['fwd'][0] is True, '正向必须过（不误报）'),
+            ('ver', _r59['ver'][0] is False and '(a)' in _r59['ver'][1], '硬编码版本应红'),
+            ('rng', _r59['rng'][0] is False and '(b)' in _r59['rng'][1], '硬编码范围应红'),
+            ('clm', _r59['clm'][0] is False and '(c)' in _r59['clm'][1], 'CLAIMS 标题带范围应红'),
+            ('bare', _r59['bare'][0] is False and '(d)' in _r59['bare'][1], '裸解释器应红'),
+            ('pap', _r59['pap'][0] is False and '(e)' in _r59['pap'][1], '写死卷名应红'),
+        ]
+        _bad59 = [f'({t}){why}' for t, good, why in _chk59 if not good]
+        ok59 = not _bad59
+        det59 = ('六向全中（正向过 / 版本 / 范围 / CLAIMS 标题 / 裸解释器 / 卷名）'
+                 if ok59 else '未命中: ' + '; '.join(_bad59))
+    except Exception as _e59:
+        det59 = f'异常: {type(_e59).__name__}: {_e59}'
+    results.append({'id': 'NC-59',
+                    'desc': 'T-A12a S-56 闸六向：正向不误报 / 硬编码版本 / 硬编码范围 / '
+                            'CLAIMS 标题带范围 / 裸解释器 / 写死当前卷名',
+                    'expect': 'fwd=过 且五向各自因「正确原因」变红',
+                    'actual': det59, 'ok': ok59})
+    print(f"  [{'ok ' if ok59 else 'BAD!'}] NC-59 协议 SOT 闸六向（正向/版本/范围/CLAIMS/裸解释器/卷名）  "
+          f"actual={det59}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，    # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；
     #           ③ 源码里必须存在 else 分支（缺 msr ⇒ 加一条 ok=False），防被改回去。

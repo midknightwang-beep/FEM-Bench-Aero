@@ -1284,6 +1284,78 @@ def protocol_no_hardcoded_counts(paths):
     return (not probs), ('协议文件无写死计数' if not probs else '；'.join(probs[:6]))
 
 
+def protocol_version_scope_consistency(root, agents=None, claude=None, claims=None):
+    """S-56（T-A12a，第十四轮 P1-1）：**协议不得硬编码 rubric 版本与规则范围/解释器**。
+
+    为什么不是「写死 + 校验」：版本号与规则范围都是**可推导**的（`RUBRIC` 顶部版本行、
+    红线判定表里 R 编号的 max），抄进 `AGENTS.md`/`CLAIMS.md` 就是第二数据源 ⇒ 必漂，
+    而且**没有任何闸会响**：
+      · 2026-10-30 实测：`AGENTS:14` 写 `R42–R64`/`R1–R64`、`AGENTS:262` 写旧版 rubric、
+        `CLAIMS:68` 标题写 `R1–R64`，而 live 已是 RUBRIC v6.0 / R1–R68；
+      · 同一份 `AGENTS` 的 §0 命令块用裸 `python` 跑负控，紧跟的 ⚠ 又说「负控必须用 venv」
+        ⇒ **同一节自相矛盾**，而 `CLAUDE.md` 只是照抄了它的命令块。
+    **S-51 两条都抓不到**：它的三条正则都要求数字模式（`N claims/N artifacts/N semantic` 等），
+    而且输入路径只有 `AGENTS.md`/`CLAUDE.md` —— **`CLAIMS.md` 根本没进闸**。
+    所以这里**不校验副本对不对，而是禁止产生副本**（R63 的同一课，对象从「条数」换成「版本/范围」）。
+
+    四条判据，任一命中即红：
+      (a) `AGENTS`/`CLAUDE` 出现 `v<数>.<数>`            —— rubric 版本必须只写指针
+      (b) `AGENTS`/`CLAUDE` 出现 `R<数>[–-]R<数>`        —— 规则范围必须只写指针
+      (c) `CLAIMS` 的「红线条」二级标题出现 `R<数>[–-]R<数>`
+      (d) `AGENTS`/`CLAUDE` 里调 **venv-required** 脚本的行以裸 `python`/`python3` 开头
+          （`check_claims.py` 例外：它是唯一允许系统 python 的脚本，R60）
+      (e) `AGENTS`/`CLAUDE` 里写死具体卷名 `tasks_v<数>.jsonl`
+          —— 这一格实际漂过：v7 冻结（C-037）之后 `AGENTS` §0 第 5 行还写着 `tasks_v6c.jsonl`，
+          而没有任何闸会响（S-52 只查「冻结件本身没被改」，不查「协议有没有指向它」）。
+
+    参数可传（负控要在临时文件上构造变异，否则闸无法被证伪）。
+    """
+    root = root or ROOT
+    agents = agents or os.path.join(root, 'AGENTS.md')
+    claude = claude or os.path.join(root, 'CLAUDE.md')
+    claims = claims or os.path.join(root, 'FEM-Bench-Aero', 'CLAIMS.md')
+    RE_VER = re.compile(r'v\d+\.\d+')
+    RE_RANGE = re.compile(r'R\d{1,3}\s*[–\-—]\s*R\d{1,3}')
+    RE_PAPER = re.compile(r'tasks_v[0-9a-z]+\.jsonl')
+    # 只有 check_claims.py 能裸跑（R60 原文：纯文本/JSON 解析）；其余必须 venv
+    RE_BARE = re.compile(
+        r'^\s*(?:[>$\-*]\s*)*python3?\s+(?:\.\./)*(?:feagpt_repro/)?'
+        r'(negative_controls|msr_l3|score_baseline|eval_dataset|verify_dataset|check_forms|'
+        r'dedup_dataset|run_pipeline|trivial_baselines|bootstrap_ci|r32_audit|export_msr)\.py\b')
+
+    probs, seen = [], 0
+    for p in (agents, claude):
+        if not os.path.exists(p):
+            probs.append(f'{os.path.basename(p)} 不存在（锚点缺失不得 skip）')
+            continue
+        seen += 1
+        for i, ln in enumerate(open(p, encoding='utf-8').read().split('\n'), 1):
+            if RE_VER.search(ln):
+                probs.append(f'{os.path.basename(p)}:{i} 硬编码 rubric 版本 '
+                             f'`{RE_VER.search(ln).group(0)}`（(a) 版本必须只写指针）')
+            if RE_RANGE.search(ln):
+                probs.append(f'{os.path.basename(p)}:{i} 硬编码规则范围 '
+                             f'`{RE_RANGE.search(ln).group(0)}`（(b) 范围必须只写指针）')
+            if RE_BARE.search(ln):
+                probs.append(f'{os.path.basename(p)}:{i} 用裸解释器调 venv-required 脚本 '
+                             f'（(d) R60：必须 `"$PY"` 或 venv 绝对路径）')
+            if RE_PAPER.search(ln):
+                probs.append(f'{os.path.basename(p)}:{i} 写死当前卷名 '
+                             f'`{RE_PAPER.search(ln).group(0)}`（(e) 卷名必须只写指针，从 INDEX 取）')
+    if os.path.exists(claims):
+        seen += 1
+        for i, ln in enumerate(open(claims, encoding='utf-8').read().split('\n'), 1):
+            if ln.startswith('## ') and '红线条' in ln and RE_RANGE.search(ln):
+                probs.append(f'CLAIMS.md:{i} 「红线条」标题硬编码范围 '
+                             f'`{RE_RANGE.search(ln).group(0)}`（(c)）')
+    else:
+        probs.append('CLAIMS.md 不存在（锚点缺失不得 skip）')
+
+    if seen < 3:
+        return False, f'只读到 {seen}/3 份协议文件（锚点缺失不得 skip）'
+    return (not probs), ('协议无硬编码版本/范围/解释器/卷名' if not probs else '；'.join(probs[:6]))
+
+
 def l2_clarify_dual(base=None, report=None):
     """R66（T-A10c；来自 N-17 / 老王拍板 C'）：**无效子集必须隔离并双报**。
 
@@ -2115,6 +2187,17 @@ def semantic_checks(root, rows):
         'informative 掩码必须与现算一致（防过期）；delta_allowed 必须 False（R54）；'
         'status=scored 时两侧都必须有整数 passed',
         _det53, _ok53)
+
+    # S-56（T-A12a，第十四轮 P1-1）：**协议不得硬编码 rubric 版本 / 规则范围 / 解释器**。
+    # 与 S-51 的分工：S-51 禁「可推导的计数」且只读 AGENTS/CLAUDE；S-56 禁「可推导的版本/范围」
+    # 并把 **CLAIMS.md 也纳入输入**（实测 CLAIMS:68 的 `R1–R64` 从来没进过任何闸）。
+    # 两条都属于 R63「不产生副本」，只是对象不同：条数 / 版本。
+    _ok56, _det56 = protocol_version_scope_consistency(root)
+    add('S-56', '协议不得硬编码 rubric 版本/规则范围/解释器/当前卷：一律只写指针（R63）',
+        'AGENTS/CLAUDE 不得出现 `v<数>.<数>`、`R<数>–R<数>`、`tasks_v<数>.jsonl`；'
+        'CLAIMS「红线条」标题不得带范围；venv-required 脚本不得用裸 `python` 调用'
+        '（`check_claims.py` 除外，R60）；三份协议文件缺一即红（锚点不得 skip）',
+        _det56, _ok56)
 
     return out
 

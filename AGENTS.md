@@ -11,21 +11,25 @@
 | # | 文件 | 你要从中确认什么 |
 |---|---|---|
 | 1 | `FEM-Bench-Aero/CLAIMS.md` | 当前唯一 **headline** 是哪条 claim；哪些是 supporting / historical / diagnostic |
-| 2 | `FEM-Bench-Aero/RUBRIC.md` | 当前 rubric 版本；**R42–R64 红线判定表** + 分母/判分口径（**R1–R41 不在此文件**，见 `CLAIMS.md` 的「红线条（R1–R64，挂账常设）」） |
+| 2 | `FEM-Bench-Aero/RUBRIC.md` | **当前 rubric 版本 + 红线判定表**（版本号与规则范围**一律以该文件顶部版本行与判定表为准，本文件不写死** —— R63/S-56：写死必漂）；分母/判分口径；更早的挂账规则见 `CLAIMS.md` 的「红线条（挂账常设）」 |
 | 3 | `feagpt_repro/reports/INDEX.md` | 官方 artifact vs 诊断；当前成绩单路径；当前考卷 sha |
 | 4 | 当前成绩单（INDEX 指向的那份 `reports/baseline_scorecard_*.json`） | `model` / `prompt_sha` / `tasks_sha256` / 分母构成 / headline 数字 |
-| 5 | 当前考卷 + prompt | `reports/papers/tasks_v6c.jsonl` 的 sha；`gen_candidates_v2.js` 的 prompt sha |
+| 5 | 当前卷 + prompt | **哪份是当前卷、sha 是多少，一律从 `reports/INDEX.md` 取**（本文件不写死卷名/候选目录 —— 这一格已经漂过一次：v7 冻结后这里还写着 v6c） |
 
 ```bash
 cd "F:/AI FEA Modeling DataSets/feagpt_repro"
-python check_claims.py --json "$TEMP/check_claims_preflight.json"   # 必须 all_ok=True；条数以本次输出为准（R63：不写死，写死必漂）
-python negative_controls.py     # 必须全绿；条数以本次输出为准（R63）
+# 两道闸都用项目 venv（本机路径；换机请改这一行 —— 只有 check_claims 能用系统 python，负控不行）
+PY="C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+"$PY" negative_controls.py      # 必须全绿；条数以本次输出为准（R63）—— **必须先跑**（R59）
+"$PY" check_claims.py --json "$TEMP/check_claims_preflight.json"   # 必须 all_ok=True；条数以本次输出为准（R63）
 git status --short              # 先看清工作区；有别人未提交的改动时不要覆盖
 ```
 
+> **⚠ 为什么命令块里写成 `"$PY"` 而不是 `python`**（T-A12a）：旧版这里写裸 `python`，紧跟的下一条 ⚠ 又说「负控必须用 venv」—— **同一节自相矛盾**，而 CLAUDE.md 只是照抄了它的命令块。任何一个 Agent 按字面执行都会在负控上 `ModuleNotFoundError: numpy`，然后把它记成环境/数据失败（R16 红线）。**修的是根，不是抄本。**
+
 > **⚠ dataset / 求解类脚本必须用项目 venv**（R60）：`verify_dataset` / `check_forms` / `score_baseline` / `msr_l3` / `eval_dataset` / `dedup_dataset` / `run_pipeline` 一律用 `…/envs/default/Scripts/python.exe`；**系统 python 缺 numpy/gmsh**，报 `ModuleNotFoundError` 是**环境问题、不得记成数据失败**（R16）。
 >
-> **⚠ `negative_controls.py` 也必须用 venv**（T-A10 实测：系统 python 直接 `ModuleNotFoundError: numpy`）：NC-52 会真的跑一次求解冒烟，链路 import 到 `feagpt.geometry`。**只有 `check_claims.py` 可以用系统 python**（纯文本/JSON 解析）。旧版这句写的是「两道文本闸可用系统 python」，已证伪。
+> **⚠ `check_claims.py` 是唯一能用系统 python 的脚本**（纯文本/JSON 解析）；其余一律 venv。旧版这条写的是「两道文本闸可用系统 python」，已被 T-A10 实测证伪。
 
 > **⚠ 绝不并行跑 ccx/abaqus（R61）**：`feagpt/solver.py` 的 `run()` 已加**全局求解锁** `feagpt_repro/.solve.lock`——第二个求解会直接抛错而不是静默空转（并行时返回码仍可能是 0，结果却是空的）。锁超过 1 h 视为崩溃残留，自动接管并警告。**手工跑 bat / 外部 abaqus 时也要确认没有别的求解在跑。**
 
@@ -249,22 +253,21 @@ git status --short              # 先看清工作区；有别人未提交的改�
 
 ---
 
-## 7. 当前 SOT 快照（2026-10-28，仅供定位；以 live 文件为准）
+## 7. SOT 去哪读（本文件**不存**任何会漂的值 —— R63 / S-56）
 
-| 项 | 当前值 |
-|---|---|
-| 唯一 headline | **C-032**（`reports/baseline_scorecard_L3_v6c_p2.json`，glm-5.3-flash，prompt v2） |
-| supporting | **C-033**（`reports/baseline_scorecard_L3_v6c_ds_p2.json`，deepseek-v4-pro） |
-| 历史 | C-029/C-031（prompt v1）、C-028（v6b）、C-021（v4） |
-| W5d 产物 | C-034 `reports/w5d_leaderboard.{json,md}`；C-035 prompt v3/v3b 消融否决、回退 v2 |
-| 当前 paper | `reports/papers/tasks_v6c.jsonl`，sha `9c1faa3a…` |
-| 当前 prompt | `gen_candidates_v2.js`，sha `ce225186…` |
-| 当前 rubric | v5.6（**R42–R64 判定表在 RUBRIC**；**R1–R41 在 `CLAIMS.md` 红线条**） |
-| 门禁 | 负控全绿、`check_claims` 全过 —— **条数以 §0 实读为准**（R63：本表不写死计数） |
-| 已知 P2 | C-032 dev 22/30 已由 W5d-0 定位（`reports/diagnostics/dev_reversal_v6c_p2.md`，+1/−2）；C-033 1 编造 + 1 问错（W5d-1 prompt v3/v3b 消融否决，回退 v2，C-035）；C-033 字段级 +5.0pp BELOW |
-| 下一步 | ① **T-A10 已完成**（S-49/S-50/S-51 + C-036 + NC-54 + RUBRIC v5.6）；② **v7 paper**（9 条 v1.1 案例接进任务层，exam 25→34）→ **v7 candidates**（两模型重生成 + MSR + CI/榜单）→ C-032/C-033 转 historical |
+> 旧版本这里是一张「当前值」快照表（headline 路径、paper sha、prompt sha、rubric 版本、下一步）。
+> **那张表本身就是漂移源**：到 2026-10-30 时它还写着**早已过期的 rubric 版本**、下一步还写着「v7 paper → v7 candidates」，
+> 而这两件事都已做完（C-037 冻结、C-040 跑完）。R63 的结论是「不产生副本」，所以本节改成**读法指引**。
 
-> **不要相信这张表本身**：每次开工前用 §0 的 5 个文件 + 2 个命令重新确认；表只是“你可能在哪”的路标。
+| 你要确认的 | 读哪里 | 谁在守 |
+|---|---|---|
+| 当前唯一 **headline** | `FEM-Bench-Aero/CLAIMS.md`：状态列带「（对外 headline）」的那条 | **S-29**（恰好一条） |
+| **rubric 版本 / 规则范围** | `RUBRIC.md` **顶部版本行** + 红线判定表 | **S-56**（协议里出现版本号或规则范围即红） |
+| **考卷 / prompt 及其 sha** | `feagpt_repro/reports/INDEX.md` + `reports/papers/` | **S-52**（冻结件不得漂移） |
+| **headline 数字 / 分母构成** | INDEX 指向的那份 `reports/baseline_scorecard_*.json` | **S-19 / S-20 / S-54** |
+| **下一步该干什么** | `feagpt_repro/reports/INDEX.md` 导航表 + `CONFLICT.md` 未决项 + 最新一轮复评文档 | 本文件**不写** |
+
+> **这张表也不是答案，只是索引**：任何一项都必须回原文件实读才能引用。§0 的 2 个命令会把不一致变成红灯。
 
 ---
 

@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_60.json）",
-   "expect": "60/60",
-   "actual": "60/60",
+   "desc": "C-019 负控通过数（源 negative_controls_61.json）",
+   "expect": "61/61",
+   "actual": "61/61",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "60",
-   "actual": "60",
+   "expect": "61",
+   "actual": "61",
    "ok": true,
    "skip": false
   },
@@ -141,8 +141,8 @@
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "60/60",
-   "actual": "60/60",
+   "expect": "61/61",
+   "actual": "61/61",
    "ok": true,
    "skip": false
   },
@@ -366,7 +366,7 @@
    "id": "S-44",
    "desc": "官方导航文件 INDEX 的 headline 指向与负控编号必须与 artifact 一致（R58）",
    "expect": "含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致",
-   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L25 主区间 NC-23..58 / 总数 60；artifact 最大 NC-58、共 60 条",
+   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L25 主区间 NC-23..59 / 总数 61；artifact 最大 NC-59、共 61 条",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793290348/1793290348；check 1793290376 vs 负控 1793290348",
+   "actual": "C-019 mtime 记录/实际 = 1793359847/1793359847；check 1793359865 vs 负控 1793359847",
    "ok": true,
    "skip": false
   },
@@ -447,6 +447,14 @@
    "desc": "L2 clarify 无效子集必须隔离并双报：clarify_all(64) 与 clarify_informative(45) 并列（R66）",
    "expect": "reports/l2_clarify_dual.json 必须同时含两块且闭合（all−inf==invalid）；informative 掩码必须与现算一致（防过期）；delta_allowed 必须 False（R54）；status=scored 时两侧都必须有整数 passed",
    "actual": "掩码与现算一致（invalid 19 / informative 45）；all n=64 ／ informative n=45（status=not_run）",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-56",
+   "desc": "协议不得硬编码 rubric 版本/规则范围/解释器/当前卷：一律只写指针（R63）",
+   "expect": "AGENTS/CLAUDE 不得出现 `v<数>.<数>`、`R<数>–R<数>`、`tasks_v<数>.jsonl`；CLAIMS「红线条」标题不得带范围；venv-required 脚本不得用裸 `python` 调用（`check_claims.py` 除外，R60）；三份协议文件缺一即红（锚点不得 skip）",
+   "actual": "协议无硬编码版本/范围/解释器/卷名",
    "ok": true,
    "skip": false
   }
@@ -664,9 +672,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 40663,
-   "sha256": "157f00ef471fe1a74c94966df733b26ed9cd61a644b0ea5bc7bf2a25fe931817",
-   "mtime": 1793290385
+   "size": 40910,
+   "sha256": "05844197821b96e6683c455ea5829dad7aefff35742ada148e103ab460acb64d",
+   "mtime": 1793359855
   },
   {
    "claim_id": "C-027",
@@ -1222,15 +1230,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_60.json",
+   "artifact": "feagpt_repro/reports/negative_controls_61.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 13388,
-   "sha256": "3f56fa9b08767d98e5af4814868599a5a376a9d2b329cdd36748204abdf2b35f",
-   "mtime": 1793290348
+   "size": 13768,
+   "sha256": "02c91a883366bae328ffe28eb2f4b4f174f8113f7ed73465c35d9d596bd05464",
+   "mtime": 1793359847
   }
  ]
 }
