@@ -1,0 +1,113 @@
+{
+ "note": "T-A13d 构造性零差异证据（N-28 / R70）。oracle = 旧判据逐字副本；composed = 用真实 _alias_hit 组合；actual = 真实 judge_clarify_field_level。★ 三路的意义：oracle vs actual 在改前是自比，不算证据；必须先用 composed 证明「新匹配方式确实会分歧」，再用 actual == composed 证明最终实现就是被测的那个。",
+ "phase": "B（调用点已改）",
+ "probes": [
+  {
+   "id": "P1",
+   "kind": "fake_pass",
+   "why": "省略 n_stringers，模型只写 n_stringers_per_skin ⇒ 旧判据假通过",
+   "text": "请给出 n_stringers_per_skin 的值",
+   "alias": "n_stringers",
+   "oracle": true,
+   "composed": false,
+   "actual": false,
+   "expect_new": false,
+   "same": false
+  },
+  {
+   "id": "P2",
+   "kind": "fake_pass",
+   "why": "前面是点 ⇒ 必须仍命中（边界不得过严）",
+   "text": "structure.params.n_stringers 缺失",
+   "alias": "n_stringers",
+   "oracle": true,
+   "composed": true,
+   "actual": true,
+   "expect_new": true,
+   "same": true
+  },
+  {
+   "id": "P3",
+   "kind": "fake_pass",
+   "why": "后面是中文括号 ⇒ 必须仍命中（边界只约束标识符字符）",
+   "text": "请给出 n_stringers（根数）",
+   "alias": "n_stringers",
+   "oracle": true,
+   "composed": true,
+   "actual": true,
+   "expect_new": true,
+   "same": true
+  },
+  {
+   "id": "P4",
+   "kind": "fake_pass",
+   "why": "省略笼统 thickness，模型只写 rib_thickness ⇒ 旧判据假通过",
+   "text": "请给出 rib_thickness 的值",
+   "alias": "thickness",
+   "oracle": true,
+   "composed": false,
+   "actual": false,
+   "expect_new": false,
+   "same": false
+  },
+  {
+   "id": "P5",
+   "kind": "fake_pass",
+   "why": "省略 width，模型只写 stringer_flange_width ⇒ 旧判据假通过",
+   "text": "stringer_flange_width 是多少",
+   "alias": "width",
+   "oracle": true,
+   "composed": false,
+   "actual": false,
+   "expect_new": false,
+   "same": false
+  },
+  {
+   "id": "P6",
+   "kind": "fake_red",
+   "why": "错族键 n_stringers 被 n_stringers_per_skin 吃掉 ⇒ 旧判据假红",
+   "text": "请给出 n_stringers_per_skin 的值",
+   "alias": "n_stringers_per_skin",
+   "oracle": false,
+   "composed": true,
+   "actual": true,
+   "expect_new": true,
+   "same": false
+  },
+  {
+   "id": "P7",
+   "kind": "cjk",
+   "why": "中文别名「翼肋」在「翼肋数量」里 ⇒ 必须仍命中（不得被边界改坏）",
+   "text": "翼肋数量是多少",
+   "alias": "翼肋",
+   "oracle": true,
+   "composed": true,
+   "actual": true,
+   "expect_new": true,
+   "same": true
+  },
+  {
+   "id": "P8",
+   "kind": "cjk",
+   "why": "中文短语别名含 ASCII 之外字符 ⇒ 走子串分支，行为不变",
+   "text": "要多少根长桁？",
+   "alias": "多少根长桁",
+   "oracle": true,
+   "composed": true,
+   "actual": true,
+   "expect_new": true,
+   "same": true
+  }
+ ],
+ "probe_problems": [],
+ "n_probes_expected_diverge": 4,
+ "n_probes_observed_diverge": 4,
+ "real": {
+  "n_texts": 104,
+  "n_changed": 0,
+  "n_changed_alias_side": 0,
+  "n_changed_wrong_side": 0
+ },
+ "real_problems": [],
+ "verdict": "PASS"
+}

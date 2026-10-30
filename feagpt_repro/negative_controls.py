@@ -2067,6 +2067,66 @@ def main():
     print(f"  [{'ok ' if ok63 else 'BAD!'}] NC-63 L2 多模型并列五向（正常/一侧缺失/块内不闭合/顶层不同源/顶层不一致）  "
           f"actual={det63}")
 
+    # NC-64（T-A13d / N-28 / R70）：**澄清判据的字符串匹配必须有边界**。
+    #   旧实现 `a in text` 在「键名是另一个键名的前缀/后缀」时是**静默假通过**
+    #   （`n_stringers` ⊂ `n_stringers_per_skin`、`thickness` ⊂ `rib_thickness`/`skin_thickness`、
+    #    `width` ⊂ `stringer_flange_width`）—— 它**不留「本该过没过」的痕迹**，只让数字**偏高**；
+    #   与 N-26（恒真式）、N-17（name 泄漏）同族：**错的方向都是「看起来更好」**。
+    #   ★ 同一处改动是**双向**的：它同时修假红（wrong_keys 侧的短键被长键吃掉，W5c-6d 已记那一半）。
+    #   ★ 六向，每向**不只断言 ok**，还断言 detail 里的 alias_hits / wrong_keys_hit
+    #     （R69 / 负控第一条：不只断言「是否红」，还要断言「红的原因对不对」）：
+    #    (a) 假通过通道已关：省略 `n_stringers`、文本只写 `n_stringers_per_skin` ⇒ FAIL，
+    #        且 `alias_hits['n_stringers']==[]`（证明是「没命中」，不是别的原因红的）
+    #    (b) 不得过严：`structure.params.n_stringers`（前面是点）⇒ PASS
+    #    (c) 不得过严：`n_stringers（根数）`（后面是中文括号）⇒ PASS —— 边界只约束标识符字符
+    #    (d) 假红已修：`wrong_keys=['n_stringers']`、`ec=['n_stringers_per_skin']`、
+    #        文本写 `n_stringers_per_skin` ⇒ PASS 且 detail 里**无** wrong_keys_hit
+    #    (e) 中文别名零变化：`翼肋数量` 命中别名 `翼肋` ⇒ PASS（中文没有词边界，加边界就是把判据改坏）
+    #    (f) `thickness` 通道也关：只写 `rib_thickness` ⇒ FAIL
+    try:
+        from score_baseline import judge_clarify_field_level as _j64
+
+        def _tk64(ec, al=None, wk=None):
+            return {'task_id': 'NC64', 'expected_clarifications': ec,
+                    'clarify_aliases': al, 'clarify_wrong_keys': wk or []}
+
+        _a64 = _j64('请给出 n_stringers_per_skin 的值', _tk64(['n_stringers']))
+        _b64 = _j64('structure.params.n_stringers 缺失', _tk64(['n_stringers']))
+        _c64 = _j64('请给出 n_stringers（根数）', _tk64(['n_stringers']))
+        _d64 = _j64('请给出 n_stringers_per_skin 的值',
+                    _tk64(['n_stringers_per_skin'],
+                          {'n_stringers_per_skin': ['n_stringers_per_skin']},
+                          ['n_stringers']))
+        _e64 = _j64('翼肋数量是多少',
+                    _tk64(['n_ribs'], {'n_ribs': ['n_ribs', '翼肋', '肋数']}))
+        _f64 = _j64('请给出 rib_thickness 的值', _tk64(['thickness']))
+
+        _chk64 = [
+            ('a', _a64[0] is False and (_a64[1].get('alias_hits') or {}).get('n_stringers') == [],
+             '只写 n_stringers_per_skin 须 FAIL，且原因必须是「n_stringers 未命中」'),
+            ('b', _b64[0] is True, 'structure.params.n_stringers 须 PASS（边界不得过严）'),
+            ('c', _c64[0] is True, 'n_stringers（根数）须 PASS（边界只约束标识符字符）'),
+            ('d', _d64[0] is True and 'wrong_keys_hit' not in _d64[1],
+             '错族键 n_stringers 不得吃掉 n_stringers_per_skin（假红须已修）'),
+            ('e', _e64[0] is True, '中文别名「翼肋」在「翼肋数量」里须 PASS'),
+            ('f', _f64[0] is False, '只写 rib_thickness 须 FAIL（thickness 通道）'),
+        ]
+        _bad64 = [f'({t}){why}' for t, good, why in _chk64 if not good]
+        ok64 = not _bad64
+        det64 = ('六向全中（假通过已关/两向不过严/假红已修/中文不变/thickness 已关）'
+                 if ok64 else '未命中: ' + '; '.join(_bad64)
+                 + '｜实际: a=%r b=%r c=%r d=%r e=%r f=%r' % (
+                     _a64[0], _b64[0], _c64[0], _d64[0], _e64[0], _f64[0]))
+    except Exception as _e64:
+        ok64 = False
+        det64 = f'异常: {type(_e64).__name__}: {_e64}'
+    results.append({'id': 'NC-64',
+                    'desc': 'T-A13d 澄清判据边界（N-28/R70）：ASCII 标识符按 token 边界，中文按子串',
+                    'expect': '假通过与假红两条通道都关；两向不得过严；中文零变化',
+                    'actual': det64, 'ok': ok64})
+    print(f"  [{'ok ' if ok64 else 'BAD!'}] NC-64 判据边界六向（假通过已关/不过严×2/假红已修/中文不变/thickness 已关）  "
+          f"actual={det64}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，    # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；
     #           ③ 源码里必须存在 else 分支（缺 msr ⇒ 加一条 ok=False），防被改回去。

@@ -20,7 +20,7 @@ W5a'（专家第六轮 P0-1/P0-2/P1-8，红线 R25/R27）：
   - --paper 记录考卷 provenance（tasks 路径 + sha256），成绩单自带溯源；
   - --candidates 默认 candidates_l3_v3，并在输出里显式记录实际目录（不再静默 v2）。
 """
-import json, os, sys, hashlib, collections
+import json, os, sys, re, hashlib, collections
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -166,6 +166,31 @@ def _candidate_prompt_sha(cand_dir):
     return ids.pop()
 
 
+def _alias_hit(alias, text):
+    """别名命中判定（T-A13d / R70）：**纯 ASCII 标识符按 token 边界，其余按子串**。
+
+    为什么需要边界（N-28，旧账见 `_audit_clarify_meta.py` W5c-6d）：
+      裸子串 `a in text` 在「键名是另一个键名的前缀/后缀」时会**静默假通过** ——
+      `n_stringers` 被 `n_stringers_per_skin` 命中、`thickness` 被
+      `skin_thickness`/`rib_thickness`/`stringer_thickness` 命中、
+      `width` 被 `stringer_flange_width` 命中。
+      **它不留「本该过没过」的痕迹，只让数字偏高**（与 N-26 恒真式、N-17 name 泄漏同族）。
+
+    为什么只约束 ASCII（R69 边界）：
+      中文没有词边界概念，且本项目 25 个 alias 里 21 个是中文短语
+      （`翼肋`/`孔径`/`多少根长桁`…）。对中文加边界会把「翼肋数量」判成不命中
+      —— 那是**把判据改坏**，不是加固。真正的子串风险只在 4 个纯 ASCII 标识符上。
+
+    ★ 仍必须允许的写法（本例就是它们的自证）：`structure.params.n_stringers`（前面是点）、
+      `n_stringers（根数）`（后面是中文括号）、`"n_stringers"`（JSON 引号）——
+      边界只约束**标识符字符** `[A-Za-z0-9_]`，不约束其它分隔符。
+    """
+    if re.fullmatch(r'[A-Za-z0-9_]+', alias):
+        return re.search(r'(?<![A-Za-z0-9_])' + re.escape(alias) + r'(?![A-Za-z0-9_])',
+                         text) is not None
+    return alias in text
+
+
 def judge_clarify_field_level(text, task):
     """字段级澄清判分（R17）。返回 (ok, detail)。
 
@@ -179,8 +204,13 @@ def judge_clarify_field_level(text, task):
     if not fields:
         return False, {'note': '任务未登记 expected_clarifications'}
     # 任务层两种形态兼容：dict(field→aliases) 或 list（与 expected_clarifications 逐位对齐）
-    hit_wrong = [k for k in wrong if k in text] if isinstance(wrong, list) else \
-        [k for k in (wrong if isinstance(wrong, list) else []) if k in text]
+    # ★ T-A13d / R70：命中判定统一走 `_alias_hit`（ASCII 标识符按 token 边界）。
+    #   原式 `[k for k in wrong if k in text] if isinstance(wrong, list) else \
+    #          [k for k in (wrong if isinstance(wrong, list) else []) if k in text]`
+    #   两个分支**完全等价**（else 分支里 isinstance 必为 False ⇒ 恒空列表）⇒ 是死代码。
+    #   这里保留 `isinstance` 守卫：`wrong` 若不是 list（如误写成 str），
+    #   必须仍取空列表，**不能**逐字符迭代 —— 否则与旧行为不等价。
+    hit_wrong = [k for k in (wrong if isinstance(wrong, list) else []) if _alias_hit(k, text)]
     detail = {'text': text[:200], 'expected': fields}
     if hit_wrong:
         detail['wrong_keys_hit'] = hit_wrong
@@ -194,7 +224,7 @@ def judge_clarify_field_level(text, task):
         else:
             # list 形态 = 该题别名全集（扁平 str 数组；单/多字段题共用一个池）
             al = aliases or [f]
-        hit = [a for a in al if a in text]
+        hit = [a for a in al if _alias_hit(a, text)]
         per_field[f] = hit
         if not hit:
             ok_all = False

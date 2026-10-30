@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_65.json）",
-   "expect": "65/65",
-   "actual": "65/65",
+   "desc": "C-019 负控通过数（源 negative_controls_66.json）",
+   "expect": "66/66",
+   "actual": "66/66",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "65",
-   "actual": "65",
+   "expect": "66",
+   "actual": "66",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 6.4",
-   "actual": "6.4",
+   "expect": "全部 = 6.5",
+   "actual": "6.5",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "65/65",
-   "actual": "65/65",
+   "expect": "66/66",
+   "actual": "66/66",
    "ok": true,
    "skip": false
   },
@@ -366,7 +366,7 @@
    "id": "S-44",
    "desc": "官方导航文件 INDEX 的 headline 指向与负控编号必须与 artifact 一致（R58）",
    "expect": "含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致",
-   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L26 主区间 NC-23..63 / 总数 65；artifact 最大 NC-63、共 65 条",
+   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L26 主区间 NC-23..64 / 总数 66；artifact 最大 NC-64、共 66 条",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793363017/1793363017；check 1793363279 vs 负控 1793363017",
+   "actual": "C-019 mtime 记录/实际 = 1793364186/1793364186；check 1793364411 vs 负控 1793364186",
    "ok": true,
    "skip": false
   },
@@ -463,6 +463,14 @@
    "desc": "R32 两个 scope 口径可分且不过期：exam 0 违规；all 的 exam 违规 0、dev 违规须带 reason（R33/R41）",
    "expect": "scope=exam 的 artifact 违规必须为 0；scope=all 的 `n_exam_violations` 必须为 0；每条 dev 违规 reason 非空；all.n_tasks == exam + dev 且违规分解闭合；两份 artifact 的 `paper_sha256` 必须等于当前卷 `tasks/tasks.jsonl`（按 sha 找，不写死文件名）",
    "actual": "exam 34 条/0 违规；all 64 条/4 违规（exam 0 ／ dev 4，均有 reason）；两份 sha == 当前卷 caf0f6c3be81",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-58",
+   "desc": "判据的字符串匹配必须有边界（R70）：ASCII 标识符按 token 边界，中文按子串",
+   "expect": "`_alias_hit` 存在且 ASCII 分支含 `(?<!…)`/`(?!…)`/`re.escape`/`fullmatch` 分流；`judge_clarify_field_level` 函数体（去注释后）零 `x in text` 且两处都调 `_alias_hit`；行为两向：只写超串须 FAIL、`structure.params.x` 须 PASS",
+   "actual": "静态：`_alias_hit` 有 re.escape + 两侧边界 + ASCII/非 ASCII 分流；判分函数零裸子串、两处都走 `_alias_hit`。行为：假通过已关、点前缀不过严",
    "ok": true,
    "skip": false
   }
@@ -680,9 +688,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 44239,
-   "sha256": "1fa128db154f429d1587d9da4afcd055f1a777cff2bad0f03b1ca723045c3c63",
-   "mtime": 1793363218
+   "size": 44864,
+   "sha256": "52011f285b55c2ccccab4a6383f19c250bb8e6eb05123495ddea24069bde18db",
+   "mtime": 1793364322
   },
   {
    "claim_id": "C-027",
@@ -994,7 +1002,7 @@
    "problems": [],
    "size": 39773,
    "sha256": "2b76b78841814929319b70af7281787997e10920de5901e939343c5725ecf579",
-   "mtime": 1793362268
+   "mtime": 1793364069
   },
   {
    "claim_id": "C-041",
@@ -1006,7 +1014,7 @@
    "problems": [],
    "size": 33113,
    "sha256": "d2385c92a6eee8af21c5ef5a89a25a3cf34e7d6e56b98231a0cc607d209b39dd",
-   "mtime": 1793363059
+   "mtime": 1793364070
   },
   {
    "claim_id": "C-041",
@@ -1066,7 +1074,7 @@
    "problems": [],
    "size": 81980,
    "sha256": "2e625af29757b1dacef89e3d7d74c5f02195255fd08dbef15b0fcc4e2aac0448",
-   "mtime": 1793359980
+   "mtime": 1793364102
   },
   {
    "claim_id": "C-040",
@@ -1078,7 +1086,7 @@
    "problems": [],
    "size": 79049,
    "sha256": "c086fa2e54709e166a06a86e235d8483ba7da3b9cfc143a6a5a26045cee717bb",
-   "mtime": 1793359992
+   "mtime": 1793364107
   },
   {
    "claim_id": "C-040",
@@ -1274,15 +1282,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_65.json",
+   "artifact": "feagpt_repro/reports/negative_controls_66.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 15321,
-   "sha256": "ac2cbc5b1a13db82713f73583aada6ac8c8e25a024041e573e3164efd23247b9",
-   "mtime": 1793363017
+   "size": 15688,
+   "sha256": "c266aceb3689d3bcb03276814d752e54083d1c7d12cf96fda198884f505e975c",
+   "mtime": 1793364186
   }
  ]
 }

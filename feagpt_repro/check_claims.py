@@ -2366,6 +2366,69 @@ def semantic_checks(root, rows):
         '两份 artifact 的 `paper_sha256` 必须等于当前卷 `tasks/tasks.jsonl`（按 sha 找，不写死文件名）',
         _det57, _ok57)
 
+    # S-58（T-A13d / N-28 / R70）：**判据的字符串匹配必须有边界**。
+    #   ★ 为什么要有静态这一层（NC-64 已经测行为了）：NC-64 只覆盖它列举的那几条路径；
+    #     把 `hit = [a for a in al if _alias_hit(a, text)]` 改回 `... if a in text`，
+    #     NC-64 的 (a) 确实会红 —— 但如果有人**只改 hit_wrong 那一处**、或改的是别的
+    #     澄清判据，NC-64 的用例未必覆盖。静态层查的是「这个函数里还有没有裸子串」，
+    #     它不依赖我事先想到哪几个字段名。
+    #   三层：① `_alias_hit` 必须存在且 ASCII 分支有两侧边界；② `judge_clarify_field_level`
+    #         里不得再出现裸 `x in text`、且必须调用 `_alias_hit`；③ 行为两向（不得失效）。
+    def _check58():
+        probs = []
+        try:
+            src = open(os.path.join(HERE, 'score_baseline.py'), encoding='utf-8').read()
+        except OSError as e:
+            return False, f'读不到 score_baseline.py：{e}'
+        # ① _alias_hit 存在 + ASCII 分支必须有前后两侧边界
+        if 'def _alias_hit(' not in src:
+            probs.append('`_alias_hit` 不存在（R70 的实现被删了）')
+        else:
+            b = re.search(r'def _alias_hit\(.*?\n(?=def |\Z)', src, re.S)
+            body = b.group(0) if b else ''
+            if '(?<!' not in body or '(?!' not in body:
+                probs.append('`_alias_hit` 的 ASCII 分支缺 token 边界 `(?<!…)` / `(?!…)`')
+            if 're.escape' not in body:
+                probs.append('`_alias_hit` 没对别名做 `re.escape`（正则元字符会被当模式解释）')
+            if 'fullmatch' not in body:
+                probs.append('`_alias_hit` 没有区分 ASCII/非 ASCII（中文别名会被一起收紧）')
+        # ② 判分函数体里不得有裸子串，且必须走 _alias_hit
+        m = re.search(r'def judge_clarify_field_level\(.*?\n(?=def |\Z)', src, re.S)
+        if not m:
+            probs.append('找不到 `judge_clarify_field_level` 函数体')
+        else:
+            code = '\n'.join(l for l in m.group(0).split('\n')
+                             if not l.strip().startswith('#'))
+            bare = re.findall(r'\b(?:a|k|alias)\s+in\s+text\b', code)
+            if bare:
+                probs.append(f'函数体里仍有裸子串 `x in text`（{len(bare)} 处，R70）')
+            if code.count('_alias_hit(') < 2:
+                probs.append('`hit_wrong` 与 `hit` 两处都必须调用 `_alias_hit`'
+                             f'（实测调用 {code.count("_alias_hit(")} 次）')
+        # ③ 行为两向：假通过必须已关、点前缀不得过严
+        try:
+            from score_baseline import judge_clarify_field_level as _j58
+            _t = lambda ec: {'task_id': 'S58', 'expected_clarifications': ec,  # noqa: E731
+                             'clarify_aliases': None, 'clarify_wrong_keys': []}
+            if _j58('请给出 n_stringers_per_skin 的值', _t(['n_stringers']))[0] is not False:
+                probs.append('「省略 n_stringers、只写 n_stringers_per_skin」没被判 FAIL'
+                             '（假通过通道又开了，R70）')
+            if _j58('structure.params.n_stringers 缺失', _t(['n_stringers']))[0] is not True:
+                probs.append('「structure.params.n_stringers」被判 FAIL（边界过严，R70 的允许项）')
+        except Exception as e:                                    # noqa: BLE001
+            probs.append(f'行为自检异常：{type(e).__name__}: {e}')
+        if probs:
+            return False, '；'.join(probs)
+        return True, ('静态：`_alias_hit` 有 re.escape + 两侧边界 + ASCII/非 ASCII 分流；'
+                      '判分函数零裸子串、两处都走 `_alias_hit`。行为：假通过已关、点前缀不过严')
+
+    _ok58, _det58 = _check58()
+    add('S-58', '判据的字符串匹配必须有边界（R70）：ASCII 标识符按 token 边界，中文按子串',
+        '`_alias_hit` 存在且 ASCII 分支含 `(?<!…)`/`(?!…)`/`re.escape`/`fullmatch` 分流；'
+        '`judge_clarify_field_level` 函数体（去注释后）零 `x in text` 且两处都调 `_alias_hit`；'
+        '行为两向：只写超串须 FAIL、`structure.params.x` 须 PASS',
+        _det58, _ok58)
+
     return out
 
 
