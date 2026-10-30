@@ -143,8 +143,13 @@ export FEAGPT_CCX=/path/to/ccx          # Windows Git Bash: export FEAGPT_CCX="C
 |---|---|---|
 | 本仓库没有公开远端地址 | 尚未发布 | **你需要向维护者索取 bundle / 包 / 地址** |
 | 数据包没有公开下载地址 | 同上 | 见 [DATA.md](DATA.md) |
-| `check_claims.py` 在 clone 里会红几项 | 需要 `node_modules`（`npm install`）+ 数据包版本差异 | 已知，见 `reports/diagnostics/task_b1_report.md` |
-| `fetch_data.py` 对不上 sha256 | Windows 行尾（CRLF）转换 | 已知；**请用 git clone / bundle，不要用 ZIP 下载** |
+| `check_claims.py` 在 clone 里红几项，sha 值对不上 | **行尾**：仓库无 `.gitattributes`，工作区是**逐文件混合态**（老文件 CRLF、新文件 LF）⇒ **没有任何单一配置能让全部锚点同时对上** | 已知，**详见 [DATA.md](DATA.md) §6.1**（那里写了「你该在意哪一项、可以忽略哪一项」） |
+| `check_claims.py` 的 `S-39`/`S-43` 红 | 缺 `node_modules`（有一项要 `node --print-prompt-sha`，依赖 `ajv`） | `npm install` 即可 |
+| `fetch_data.py` 对不上 sha256 | 同上（Windows 行尾） | 手工 `sha256sum` 比对，见 [DATA.md](DATA.md) §3.1 |
+
+> **别把行尾问题当成「数字不可信」**：判分只读内容、不校验 sha ——
+> §4 那条命令在任何平台上都能跑出 `23/25 (92.0%)`。sha 类红项影响的是**证据的可移植性**，不是**结论的正确性**。
+
 
 ---
 

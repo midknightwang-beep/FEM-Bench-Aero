@@ -165,6 +165,34 @@ cd <REPO>/feagpt_repro
 | 现象 | 原因 | 规避 |
 |---|---|---|
 | `SHA256SUMS.txt` 用 `sha256sum -c` 失败 | 里面记的是打包机的绝对路径 | 手工 `sha256sum <file>` 比对（§3.1） |
-| 从 Windows「下载 ZIP」解压后 sha256 对不上 | 行尾 CRLF 转换；本仓无 `.gitattributes` | **用 `git clone` 或 bundle**，不要用 ZIP |
-| `check_claims.py` 在 clone 里红几项 | 需要 `npm install`（`ajv`）+ 数据包版本差异 | 已知，详见 `reports/diagnostics/task_b1_report.md` |
+| **`check_claims.py` 在 clone 里红几项，sha 值对不上** | **行尾**：仓库无 `.gitattributes`，`core.autocrlf` 在 checkout 时把 LF 转 CRLF，而本仓工作区是**逐文件混合态** | 见 §6.1 —— **这不是你的环境问题，且暂无单一配置能全绿** |
+| 缺 `node_modules` ⇒ `S-39`/`S-43` 红 | 自检里有一项要 `node --print-prompt-sha`，依赖 `ajv` | `npm install`（见 §6.1） |
 | 空目录能骗过前置闸 | **已修**（2026-10-30）：`require_dataset` 现在查 `spec.json` 实存与覆盖 | 升级到含该修的版本 |
+
+### 6.1 ★ 关于行尾与 sha256（务必先读，能省你几小时）
+
+这个项目的一部分证据是 **sha256 锚定**的（成绩单 `provenance.*_sha256`、`check_claims` 的声称值、`S-57` 的卷指纹）。
+而**仓库里没有 `.gitattributes`**，`core.autocrlf` 会在 checkout 时把 LF 转成 CRLF。实测（T-B1）：
+
+```
+入库文件总数 : 1511
+两侧 sha 相同: 580      ← 本机本来就是 CRLF 的那批
+两侧 sha 不同: 931      ← 本机是 LF 的那批，clone 后被转成 CRLF
+```
+
+⇒ **本仓工作区是逐文件混合态**：老文件多为 CRLF，后来用脚本新写的多为 LF。
+**因此不存在一种统一的 `core.autocrlf` 设置能让全部锚点同时对上** ——
+关掉它（得到全 LF）会弄坏 CRLF 那一批（实测：卷指纹 `caf0f6c3…` 立刻变 `6e7437b1…`，`S-57` 转红）；
+打开它（得到全 CRLF）会弄坏 LF 那一批（实测：`S-59` 的修正表 sha 对不上）。
+
+**给你的建议（按目的选）**：
+
+| 你想做什么 | 该怎么做 |
+|---|---|
+| **验证 headline 数字能不能复现**（最重要、也是唯一稳的） | 什么都不用管 —— 直接按 [QUICKSTART.md](QUICKSTART.md) §4 跑。判分**只读内容、不校验 sha**，实测 `23/25 (92.0%)` 逐字可复现 |
+| **跑 `check_claims` 全套自检** | 先 `npm install`（解 `S-39`/`S-43`）；**其余 sha 类红项目前无法在非维护者环境全绿**，请把这些红项当**已知限制**读，不要据此判断"仓库坏了"或"数字不可信" |
+| **要一个能全绿的干净环境** | 等**档 2**（加 `.gitattributes` 固定行尾 + 重算全部 sha 锚点）—— 这是一次"全链重新封存"，维护者尚未排期 |
+
+> **一句判断**：行尾问题影响的是**证据的可移植性**，不是**数字的正确性**。
+> 不要因为 sha 对不上就怀疑成绩 —— 复现数字那条路是通的、而且已经逐字验过。
+
