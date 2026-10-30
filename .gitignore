@@ -68,3 +68,6 @@ feagpt_repro/_v11/recheck/
 
 # 求解串行锁（R61）：运行时生成，不入库
 feagpt_repro/.solve.lock
+
+# 交接包（zip 大二进制，不入库；HANDOFF/*.md 文档仍入库）
+_handoff/
