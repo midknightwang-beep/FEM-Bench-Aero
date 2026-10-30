@@ -25,6 +25,7 @@
 - **★★ 负控五条**：①不只断言「是否红」，还要断言**「红的原因对不对」**（强判据吃弱判据⇒弱判据永假绿）；②变异锚点**现取不写死**（复发两次：NC-49/NC-27）；③锚点缺失判红不 skip；④新闸测「自比 A==B」；⑤消掉漂移面要配闸防它长回来。
 - **★★★ 变异锚点写死的不是数字，是「基线长什么样」**（NC-56 d 第三次复发）：那一向的变异是「status 设 scored + 只给 all 的 passed」，靠的是**另一侧原本为 None**；artifact 一升到 `scored`（两侧都是整数）这向就**退化成空操作**、当场红。⇒ 做变异时问「**这个差异是不是由基线状态供给的**」，是的话必须**显式构造差异**（删掉另一侧），不能靠「原本没有」。
 - **★★ sha256 只证「文件没被换」不证「数对」**（R62）：claim 计数必须有闸比对 artifact；**建完闸先查自己刚写的东西有没有绕开它**。无工具读的=无闸（R58）；协议不写死计数（R63）；旧版进 `reports/archive/`。
+- **★★ 子串匹配的假通过是「静默偏高」（N-28）**：`a in text` 在「键名是另一个键的前缀/后缀」时判对 —— `n_stringers` 被 `n_stringers_per_skin` 命中、`thickness` 被三个 `*_thickness` 命中、`width` 被 `stringer_flange_width` 命中。它**不留「本该过没过」的痕迹**，只让数字偏高；与 N-26（恒真式）、N-17（name 泄漏）同族：**错的方向都是「看起来更好」**。判据写 `in` 之前先问「这个串会不会是别人的子串」。**跑完之后发现判据问题 ⇒ 记 N、另立项，不当场改**（R-A2 post-hoc）。
 - **★ 口径参数漏传⇒假 FAIL**（漏 `--spec` 印 `residual 99.99999%`）⇒ **先怀疑参数再怀疑模型**。
 - **★ markdown 表格的裸竖线会切单元格**：C-038 正文引正则 `(?:^|_)` ⇒ 该行变 9 格、status 被读成 coverage、**claim 总数少 1 而闸一声不响**。含正则竖线一律写 `&#124;`。
 - **★★★ 恒真式在外观上与正常闭合一模一样**（N-26）：都印 `ok=True`、都印一行 `A = B + C + …`，只有把式子代进去看才发现左右恒等。`_denom_audit(exam_full_ids)` 的 pool 取自已剔除 clarify/unresolved 的 `den_rows` ⇒ `n_tasks_total ≡ n_counted` ⇒ 那条 `[FATAL] 不闭合` **从未生效过**。⇒ **判闭合问「这个等式有没有可能不成立」，不是「它是不是 True」**；且同文件里 `_EAUDIT` 是真闭合、`_FAUDIT` 是假闭合 —— **一处真一处假可以写在同一段代码里**。
@@ -40,11 +41,11 @@
 ## 当前状态
 > 只记「在哪、卡在哪」，数字实读。
 - 代理模型线冻结（D37），KPI = TSR/FPR/修复/拒答/澄清。**三层口径别混**：数据集 v1.1 = 64 条案例 ／ **考卷 v7 = 64 条任务（C-037）** ／ **headline 仍是 C-032（v6c 55 条、exam 25）**——**v7 candidates 已跑（C-040，supporting，2026-10-29）**，但 headline 未切（R48，属 `v7-status`）。
-- ✅ 协议侧 R1–R69 / RUBRIC v6.3 / 负控 64/64 / `check_claims` 33-67-57 全绿；✅ 数据层 **C-036 GATED**。
+- ✅ 协议侧 R1–R69 / RUBRIC **v6.4** / 负控 **65/65** / `check_claims` **33-68-57** 全绿；✅ 数据层 **C-036 GATED**。
 - **v7 双模型成绩（C-040，实读）**：legacy exam glm TSR 23/25·SFR 20/22·MSR 20/22、ds 22/25·20/21·19/21；exam_v11 两模型全对（9/9）；exam_full glm 32/34 (94.1%)、ds 31/34 (91.2%)。**exam_full 高于 legacy 是换分母的抬升，不是变强**。2×2 与 C-033 在 **pass/fail 层**逐条一致（cfrp45s_d40 的类别由 `no_output` 变 `clarify_wrong`，失败形态变了、成败没变）。
-- **两处双分母**：exam `legacy 25`（与 C-032 同卷可比）／`full 34`；L2 clarify `all 64`／`informative 45`（invalid 19，`status=not_run` 如实）。都只禁相减、不禁并列。
+- **两处双分母**：exam `legacy 25`（与 C-032 同卷可比）／`full 34`；L2 clarify `all 64`／`informative 45`（invalid 19，**已跑两模型**）。都只禁相减、不禁并列。
 - **headline 已拍板不切（2026-10-30，方案 A）**：C-032 保持唯一 headline、C-040 维持 `supporting`、**T-A12c 取消**；`v7-status` 关闭。
-- **L2 澄清层已首次跑分（C-041，supporting，2026-10-30）**：glm `clarify_all` **49/64 (76.6%)** ／ `clarify_informative` **30/45 (66.7%)** ／ `invalid` **19/19**；`clarify_ok` 49 ／ `fabricated` 13 ／ `clarify_wrong` 2。**★ 64 与 45 的差不是泄漏，是族构成（N-27）**：15 条失败**全在翼盒**（24/39），非翼盒三族全对（13/13、7/7、5/5），而泄漏 19 条里 16 条正属这三族 ⇒ **`clarify_informative` 不得当「L2 真信号」单独引用**。失败集中在翼盒 `rib_thickness`/`stringer_height`/`sweep_deg` 各 1/6。
+- **L2 澄清层两模型已跑（C-041，supporting，2026-10-30；同卷同 prompt sha `03129c56…` 同呈现，单变量只有 model）**：glm `clarify_all` **49/64 (76.6%)** ／ `informative` **30/45 (66.7%)** ／ `invalid` **19/19**（ok 49／fab 13／wrong 2）；ds **36/64 (56.2%)** ／ **21/45 (46.7%)** ／ **15/19**（36／20／8）。**★ 64 与 45 的差不是泄漏，是族构成（N-27，老王拍板 a 只标注不改口径）**：两模型都翼盒最差（glm 24/39、ds 15/39）。**★★ ds 给了独立反证**：同一批泄漏 19 条 glm 19/19、ds 15/19，且掉的 4 条全是「直接给 spec」或「问别的字段」（**根本没走追问路径**）⇒ **「泄漏 ⇒ 那 19 条必然全对」被证伪**，glm 的 19/19 是能力 + 族构成。**跨模型一致盲区**：`rib_thickness`/`stringer_height`/`sweep_deg` **恰好都是 1/6**（题面/判据层面的系统性难点）；唯一字段级反转 `tip_chord_ratio` glm 5/5 vs ds 0/5。**`clarify_informative` 不得当「L2 真信号」单独引用；n=2 不得谈模型优劣**。
 - **L2 与 L3 不是同一指标**：L3 判 spec 保真（TSR/SFR/MSR），L2 判「会不会追问」⇒ **不得并列成一张表**。L2 判据是**字面命中键名**（L2 零 `clarify_aliases`，属 R19 的选择）。
 - **两道 dev 题（`L3_stiffened_panel_800x600[_str3]` 的 `length`/`width` 角色缺陷）长期挂 dev**：不对外、不排 v8；要修只能 v8 新卷 + 重冻结 + bridge（R65）。R32 `--scope all` 实测 4 条违规**全部落在 dev**、`gate_ok=true`。
 - **环境级坑（会长回来）**：单次调用累计删除 ≥50 个文件会被沙箱拒绝 ⇒ 一趟 59 条 msr 必在第 ~53 条处锁删不掉（N-22）⇒ 一律分批（`--only`），单批 ≤40；硬杀进程必留 `.solve.lock`（finally 不执行）。
