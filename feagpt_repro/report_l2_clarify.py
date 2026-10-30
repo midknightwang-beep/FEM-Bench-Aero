@@ -69,11 +69,14 @@ def _rel(p):
         return os.path.abspath(p).replace('\\', '/')
 
 
-def dual_clarify(tasks_path=TASKS, paper=None):
+def dual_clarify(tasks_path=TASKS, paper=None, scores=None):
     """算出 L2 澄清题的 all / informative 两套分母。
 
     返回的 dict **同时**含两个块；调用方不得只取其中一块对外（R66）。
-    `passed` 恒为 None —— 本函数只负责分母与掩码，跑分结果由 L2 harness 回填。
+    `passed` 默认 None —— 本函数只负责分母与掩码，跑分结果由 `score_l2.py` 回填
+    （`scores=` 传进来）。★ T-A13a：只有 `scores['status'] == 'scored'`（64/64 都有候选）
+    才写 `passed` 并把 `status` 升 `scored`；不足 64 条一律保持 `not_run` + `partial` 说明，
+    因为 S-53 只认 `not_run` / `scored` 两个取值 —— **不为了少一条就把它标成跑完了**。
     """
     n_l2, hits, n_clean = check_l2_leak.scan(tasks_path)
     if n_l2 == 0:
@@ -95,7 +98,7 @@ def dual_clarify(tasks_path=TASKS, paper=None):
     fam_inf = collections.Counter(r['family'] for r in l2_rows if r['task_id'] not in invalid_set)
     fam_bad = collections.Counter(h['family'] for h in hits)
 
-    return {
+    rep = {
         'paper': paper or os.path.basename(tasks_path),
         'tasks': _rel(tasks_path),
         'tasks_sha256': _sha256(tasks_path),
@@ -128,6 +131,47 @@ def dual_clarify(tasks_path=TASKS, paper=None):
                      '只报一侧即 S-53 红。' % (n_l2, len(informative_ids))),
     }
 
+    if scores:
+        _apply_scores(rep, scores)
+    return rep
+
+
+def _apply_scores(rep, sc):
+    """把 `score_l2.py` 的跑分回填进双口径报告（T-A13a）。
+
+    ★ 纪律：**不齐全就不算跑完**。`score_l2.py` 的 status 只有 `scored`（64/64 有候选）
+      与 `partial`；后者在这里保持 `not_run` 并把缺口写进 `partial`，绝不冒充 `scored`
+      ——S-53 的加严（两侧都必须有整数 passed）只在真跑满时才触发。
+    """
+    n_l2 = rep['clarify_all']['n']
+    n_cand = sc.get('n_candidates')
+    complete = (sc.get('status') == 'scored') and (n_cand == n_l2)
+    rep['model'] = sc.get('model')
+    rep['candidates'] = sc.get('candidates')
+    rep['prompt_sha256'] = sc.get('prompt_sha256')
+    rep['presentation'] = sc.get('presentation')
+    rep['category_counts'] = sc.get('category_counts')
+    if complete:
+        rep['status'] = 'scored'
+        rep['clarify_all'].update(
+            passed=sc['clarify_all']['passed'], pct=sc['clarify_all']['pct'])
+        rep['clarify_informative'].update(
+            passed=sc['clarify_informative']['passed'], pct=sc['clarify_informative']['pct'])
+        rep['invalid'].update(
+            passed=sc['invalid_subset']['passed'], pct=sc['invalid_subset']['pct'])
+        # 通过数闭合：两侧相加必须等于全卷，否则双报就是两个对不上的数
+        assert (rep['clarify_all']['passed'] ==
+                rep['clarify_informative']['passed'] + rep['invalid']['passed']), \
+            '双口径通过数不闭合（R-A5）'
+    else:
+        rep['status'] = 'not_run'
+        rep['partial'] = {
+            'n_candidates': n_cand, 'n_tasks': n_l2, 'n_missing': sc.get('n_missing'),
+            'note': ('候选不齐（%s/%s）⇒ 不升 scored。S-53 只认 not_run/scored，'
+                     '少一条就标跑完是虚报。' % (n_cand, n_l2)),
+        }
+    return rep
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -135,15 +179,26 @@ def main():
     ap.add_argument('--md', help='同时写 Markdown')
     ap.add_argument('--tasks', default=TASKS)
     ap.add_argument('--paper', help='卷标签（默认取文件名）')
+    ap.add_argument('--scores', help='score_l2.py 的跑分 JSON（回填 passed；不给则恒 not_run）')
     args = ap.parse_args()
 
-    rep = dual_clarify(args.tasks, paper=args.paper)
+    _sc = None
+    if args.scores:
+        _sc = json.load(open(args.scores, encoding='utf-8'))
+    rep = dual_clarify(args.tasks, paper=args.paper, scores=_sc)
     a, inf, inv = rep['clarify_all'], rep['clarify_informative'], rep['invalid']
 
     print(f"[L2 clarify] 双口径（N-17 / C'）：status={rep['status']}")
-    print(f"  clarify_all          n = {a['n']:3d}  by_family={a['by_family']}")
-    print(f"  clarify_informative  n = {inf['n']:3d}  by_family={inf['by_family']}")
-    print(f"  无效子集（name 泄漏） n = {inv['n']:3d}  by_family={inv['by_family']}")
+    _score_str = lambda b: ('' if b.get('passed') is None        # noqa: E731
+                            else f"  passed = {b['passed']}（{b['pct']}%）")
+    print(f"  clarify_all          n = {a['n']:3d}{_score_str(a)}  by_family={a['by_family']}")
+    print(f"  clarify_informative  n = {inf['n']:3d}{_score_str(inf)}  by_family={inf['by_family']}")
+    print(f"  无效子集（name 泄漏） n = {inv['n']:3d}{_score_str(inv)}  by_family={inv['by_family']}")
+    if rep.get('model'):
+        print(f"  ★ 跑分：model={rep['model']}  呈现={rep.get('presentation')}  "
+              f"prompt={str(rep.get('prompt_sha256'))[:12]}…  类别={rep.get('category_counts')}")
+    if rep.get('partial'):
+        print(f"  ⚠ 未跑满：{rep['partial']['note']}")
     print(f"  informative 比例 {rep['informative_pct']}%")
     print(f"  ★ {rep['r54_note']}")
 
@@ -151,7 +206,8 @@ def main():
         os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
         obj = {
             '_note': ('L2 澄清题双口径（CONFLICT N-17 拍板 C\'）。判据见 check_l2_leak.py；'
-                      '本文件只给分母与掩码，passed 由 L2 首次跑分回填。'),
+                      '分母与掩码由本文件唯一维护，`passed` 由 score_l2.py 跑分经 --scores 回填'
+                      '（不齐 64/64 则保持 not_run 并记 partial）。'),
             **rep,
         }
         with open(args.out, 'w', encoding='utf-8') as f:
@@ -162,7 +218,11 @@ def main():
     if args.md:
         L = ['# L2 澄清题：双口径（CONFLICT N-17 → 拍板 C\'）', '',
              f"- 卷：`{rep['paper']}`　任务表：`{rep['tasks']}`",
-             f"- 状态：**{rep['status']}**（L2 至今未跑模型，`passed` 如实为空）",
+             f"- 状态：**{rep['status']}**"
+             + (f"（model `{rep['model']}`，呈现 `{rep.get('presentation')}`；"
+                f"`prompt_sha256` = `{str(rep.get('prompt_sha256'))[:16]}…`）"
+                if rep.get('passed') is not None or rep.get('clarify_all', {}).get('passed') is not None
+                else "（L2 未跑满，`passed` 如实为空）"),
              f"- 判据：{rep['criterion']}", '',
              '## 两套分母必须并列', '',
              '| 口径 | 分母 n | 含义 |', '|---|---|---|',

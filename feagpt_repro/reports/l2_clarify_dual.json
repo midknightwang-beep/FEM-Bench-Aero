@@ -1,5 +1,5 @@
 {
-  "_note": "L2 澄清题双口径（CONFLICT N-17 拍板 C'）。判据见 check_l2_leak.py；本文件只给分母与掩码，passed 由 L2 首次跑分回填。",
+  "_note": "L2 澄清题双口径（CONFLICT N-17 拍板 C'）。判据见 check_l2_leak.py；分母与掩码由本文件唯一维护，`passed` 由 score_l2.py 跑分经 --scores 回填（不齐 64/64 则保持 not_run 并记 partial）。",
   "paper": "tasks.jsonl",
   "tasks": "tasks/tasks.jsonl",
   "tasks_sha256": "caf0f6c3be8131c5b817a0bacfcca8ad3893fcfb95e29d8d9b525866a63e195a",

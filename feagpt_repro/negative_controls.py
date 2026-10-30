@@ -1902,6 +1902,78 @@ def main():
     print(f"  [{'ok ' if ok61 else 'BAD!'}] NC-61 S-54 新断言四向（正向/N-26/R52/同名不同义）  "
           f"actual={det61}")
 
+    # NC-62（T-A13a）：**L2 首次跑分器自己必须能被证伪**。
+    #   为什么必须测：L2 至今零候选，`score_baseline.py:289` 写死 `input_level=='L3'`
+    #   ⇒ L2 候选会被**静默跳过**（不报错、不计数）。一个从来没跑过的打分器，
+    #   最可能的失败形态不是算错，而是「什么都算成通过」或「把没跑的题排除掉」。
+    #   五向：
+    #    (a) 正向：整卷都写对键名 ⇒ 64 / 45 / 19 闭合、全对即全过
+    #    (b) 只写中文不写键名 ⇒ 该条必须红（"只认键名"是 R19 的选择，判据得真在执行）
+    #    (c) 澄清题给 spec ⇒ fabricated 必须红（R20）
+    #    (d) 缺一个候选文件 ⇒ `missing` 必须**计入分母**、`status=partial`（R-A5 不得静默排除）
+    #    (e) 两个分母的通过数也要闭合（all == inf + inv），不只是条数
+    ok62, det62 = False, 'no artifact'
+    try:
+        import tempfile as _tf62
+        from score_l2 import score as _score_l2, load_l2 as _load_l2
+
+        _tsk62 = _load_l2()
+
+        def _mk62(mut=None, drop=None):
+            d = _tf62.mkdtemp(prefix='nc62_')
+            for _x in _tsk62:
+                _k = (_x.get('expected_clarifications') or ['?'])[0]
+                body = {'task_id': _x['task_id'], 'model': 'nc62', 'presentation': 'nc62',
+                        'prompt_sha256': 'nc62',
+                        'clarify': json.dumps([f'缺少 {_k}，请提供'], ensure_ascii=False),
+                        'spec': None}
+                if mut and _x['task_id'] == mut[0]:
+                    body.update(mut[1])
+                if drop and _x['task_id'] == drop:
+                    continue
+                json.dump(body, open(os.path.join(d, _x['task_id'] + '.json'), 'w',
+                                     encoding='utf-8'), ensure_ascii=False)
+            return d
+
+        _t0 = _tsk62[0]['task_id']
+        _a = _score_l2(_mk62(), label='nc62')[0]
+        _b = _score_l2(_mk62(mut=(_t0, {'clarify': json.dumps(['缺一个数量参数'], ensure_ascii=False)})),
+                       label='nc62')[0]
+        _c = _score_l2(_mk62(mut=(_t0, {'clarify': None, 'spec': {'structure': {'params': {}}}})),
+                       label='nc62')[0]
+        _d = _score_l2(_mk62(drop=_t0), label='nc62')[0]
+
+        _chk62 = [
+            ('a', _a and _a['clarify_all']['n'] == 64 and _a['clarify_informative']['n'] == 45
+             and _a['invalid_subset']['n'] == 19 and _a['clarify_all']['passed'] == 64,
+             '正向必须过且 64/45/19 闭合'),
+            ('b', _b and _b['clarify_all']['passed'] == 63
+             and (_b['category_counts'].get('clarify_wrong') or 0) >= 1,
+             '只写中文不写键名应红（clarify_wrong）'),
+            ('c', _c and _c['clarify_all']['passed'] == 63
+             and (_c['category_counts'].get('fabricated') or 0) >= 1,
+             '澄清题给 spec 应红（fabricated）'),
+            ('d', _d and _d['n_missing'] == 1 and _d['clarify_all']['n'] == 64
+             and _d['clarify_all']['passed'] == 63 and _d['status'] == 'partial',
+             '缺候选不得从分母消失（missing + partial）'),
+            ('e', _a and _a['clarify_all']['passed'] ==
+             _a['clarify_informative']['passed'] + _a['invalid_subset']['passed'],
+             '两个分母的**通过数**也要闭合'),
+        ]
+        _bad62 = [f'({t}){why}' for t, good, why in _chk62 if not good]
+        ok62 = not _bad62
+        det62 = ('五向全中（正向 64/45/19 闭合 / 只写中文红 / 给 spec 红 / 缺候选 partial / 通过数闭合）'
+                 if ok62 else '未命中: ' + '; '.join(_bad62))
+    except Exception as _e62:
+        det62 = f'异常: {type(_e62).__name__}: {_e62}'
+    results.append({'id': 'NC-62',
+                    'desc': 'T-A13a L2 跑分器：全对即全过 / 只写中文不写键名须红 / '
+                            '澄清题给 spec 须红 / 缺候选不得静默排除 / 双口径通过数闭合',
+                    'expect': 'fwd=过 且四向各自因「正确原因」变红',
+                    'actual': det62, 'ok': ok62})
+    print(f"  [{'ok ' if ok62 else 'BAD!'}] NC-62 L2 跑分器五向（正向/只写中文/给spec/缺候选/通过数闭合）  "
+          f"actual={det62}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，    # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；
     #           ③ 源码里必须存在 else 分支（缺 msr ⇒ 加一条 ok=False），防被改回去。

@@ -47,6 +47,43 @@ const SYS = `你是飞机结构有限元建模专家。根据用户给出的结�
 // 下游一律当 UNKNOWN（不得当「相同」处理）。
 const PROMPT_SHA = crypto.createHash('sha256').update(SYS, 'utf8').digest('hex');
 
+// ---------------------------------------------------------------------------
+// L2（澄清题）输入渲染 —— T-A13a（2026-10-30）
+// ★★ 纪律：**SYS 一个字节都不许动**。它的 sha 是 L3 跨版本可比性的锚点（R53/S-39），
+//    改一个字就会让 C-032/C-040 的 `prompt_sha` 变成历史值。所以 L2 用 SYS + 追加段，
+//    不复制、不改写 —— 四族键名总表 / 数量铁律（R50）/ 词汇约定全部原样继承。
+// ---------------------------------------------------------------------------
+const L2_ADDENDUM = `
+★★ 本次任务类型：L2 澄清题（**以下三条优先于上文关于「用户给出结构描述」的全部表述**）
+1. 你拿到的**不是**工程描述文字，而是一个 FEM-Bench-Aero spec JSON（mm-t-s 单位制）。
+2. **JSON 里缺的键 = 用户没给该参数**：它不是 0、不是默认值，也不等于「没有这个特征」。
+   ★ 所以上文的「几何惯例」（完全未提长桁→长桁数写 0、未提锥度→tip_chord_ratio=1.0 等）在本次任务中**一律不适用**。
+   ★ 也不得从 name 里的数字反推（如 name 含 d30 就填 hole_d=30）——name 是标签，不是参数。
+3. 若缺键导致该族 spec 无法定义，**必须**输出 {"clarify":["…", …]}；**每条问题都必须写出缺失字段的键名**
+   （键名只能从上面四族键名总表取，如 n_frames / n_ribs / hole_d / skin_thickness）。
+   只写中文描述、不写键名，视为**没有提出**该字段。只有在缺的键不影响定义时才输出完整 spec。`;
+
+const SYS_L2 = SYS + '\n' + L2_ADDENDUM;
+const PROMPT_SHA_L2 = crypto.createHash('sha256').update(SYS_L2, 'utf8').digest('hex');
+
+// --mask-name：把 spec.name 换成中性 ID。N-17 的 19 条泄漏源就是 name 本身
+// （name=open_hole_panel_400x200_d30 而省略的正是 hole_d）；遮掉它，题才真的在考「会不会问」。
+// 只改**发给模型的呈现**，不改 tasks.jsonl（R65 冻结件）。
+function maskName(taskId) {
+  return 'case_' + crypto.createHash('sha256').update(String(taskId), 'utf8').digest('hex').slice(0, 8);
+}
+
+function buildUser(t, mask) {
+  if (t.input_level !== 'L2')
+    return `工程任务描述：\n${t.input.nl}\n请据此输出 spec JSON（或 {"clarify":[...]}）。`;
+  const s = JSON.parse(JSON.stringify(t.input.spec_normalized || {}));
+  if (mask) s.name = maskName(t.task_id);
+  return `结构族=${t.family}。下面是一个已给定的 spec JSON（mm-t-s）。\n` +
+    '★ 缺的键 = 用户没给该参数（不是 0、不是默认值）。\n' +
+    JSON.stringify(s, null, 1) +
+    '\n请输出完整 spec JSON；若缺键导致无法定义，输出 {"clarify":["…"]}，每条必须写出缺失字段的键名。';
+}
+
 // ---- 放宽版 schema：死字段不进 required（n_stringers_per_skin=0/缺 时 stringer 细节）----
 function relaxedSchema(schemaPath) {
   const s = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
@@ -94,6 +131,8 @@ async function main() {
   // R53：只打印当前 SYS prompt 的 sha256（给 check_claims.py 的 S-39 做漂移闸用，
   // 不联网、不调模型）。改了 prompt 却没重生成 ⇒ 成绩单里的 sha 会与这里不等。
   if (argv.includes('--print-prompt-sha')) { console.log(PROMPT_SHA); return; }
+  // T-A13a：L2 用的是另一份 SYS（SYS + 追加段），sha 必须单独报，不能与 L3 混用（R53）
+  if (argv.includes('--print-prompt-sha-l2')) { console.log(PROMPT_SHA_L2); return; }
   const tasksPath = get('--tasks', 'tasks/tasks.jsonl');
   const levels = (get('--levels', 'L3')).split(',');
   const splits = (get('--split', '')).split(',').filter(Boolean);
@@ -104,6 +143,8 @@ async function main() {
   const maxTurns = parseInt(get('--max-turns', '3'), 10);
   // R31/冒烟：按 task_id 精确挑选（逗号分隔），用于改 prompt 后的 1 条/族冒烟，不必跑全卷
   const only = (get('--only', '') || '').split(',').filter(Boolean);
+  // T-A13a：L2 呈现开关（默认关 = 与旧行为一致；开了才遮 name）
+  const MASK_NAME = argv.includes('--mask-name');
   fs.mkdirSync(outDir, { recursive: true });
 
   const ajv = new Ajv({ allErrors: true, strict: false });
@@ -134,8 +175,10 @@ async function main() {
     const outFile = path.join(outDir, `${t.task_id}.json`);
     if (fs.existsSync(outFile)) { console.log(`跳过（已存在）: ${t.task_id}`); continue; }
     process.stdout.write(`生成 ${t.task_id} … `);
-    const messages = [{ role: 'system', content: SYS },
-                      { role: 'user', content: `工程任务描述：\n${t.input.nl}\n请据此输出 spec JSON（或 {"clarify":[...]}）。` }];
+    const sysPrompt = t.input_level === 'L2' ? SYS_L2 : SYS;
+    const promptSha = t.input_level === 'L2' ? PROMPT_SHA_L2 : PROMPT_SHA;
+    const messages = [{ role: 'system', content: sysPrompt },
+                      { role: 'user', content: buildUser(t, MASK_NAME) }];
     const valHistory = [];
     let answer = '', spec = null, clarify = null, turnsUsed = 0;
 
@@ -165,6 +208,12 @@ async function main() {
       else if (r.clarify && !r.spec) { clarify = r.clarify; break; }
       else {
         spec = r.spec;
+        // ★★ L2：schema 校验 + 修复循环必须**关掉**。
+        //   理由：澄清题的"正确答案"就是「不产出 spec」；而缺的那个键在 schema 里是 required
+        //   ⇒ 修复循环会把「你缺 n_frames」当成错误推回给模型，等于**逼它编造**，
+        //   直接污染被测行为（R20 判"静默编造"就再也测不出来了）。
+        //   L2 下任何 spec 输出都由打分器记为 fabricated（judge_l3_candidate 的 ec 分支）。
+        if (t.input_level === 'L2') break;
         const ok = validate(spec);
         const cerr = ok ? contractErrors(spec) : [];
         if (ok && !cerr.length) break;
@@ -193,9 +242,11 @@ async function main() {
     }
     if (spec === undefined) continue;   // LLM 错误已写盘
     const row = { task_id: t.task_id, input_level: t.input_level, model: model.id,
-                  prompt_sha256: PROMPT_SHA,
+                  prompt_sha256: promptSha,
                   clarify, spec, turns_used: turnsUsed,
                   validation_history: valHistory, raw_len: answer.length };
+    // T-A13a：L2 额外落一条「呈现方式」，否则事后无法分辨这批候选是遮了 name 还是没遮
+    if (t.input_level === 'L2') row.presentation = MASK_NAME ? 'spec_json_masked_name' : 'spec_json_raw_name';
     fs.writeFileSync(outFile, JSON.stringify(row, null, 1));
     console.log(clarify ? `[CLARIFY] ${clarify.slice(0, 70)}` :
                 spec ? `[spec] turns=${turnsUsed} fam=${(spec.structure || {}).family || '?'}` : `[UNRESOLVED] turns=${turnsUsed}`);
@@ -206,4 +257,5 @@ async function main() {
 if (require.main === module) {
   main().catch(e => { console.error('FATAL:', e.message); process.exit(2); });
 }
-module.exports = { relaxedSchema, contractErrors, extractJSON };
+module.exports = { relaxedSchema, contractErrors, extractJSON, buildUser, maskName,
+                   PROMPT_SHA, PROMPT_SHA_L2, SYS, SYS_L2 };
