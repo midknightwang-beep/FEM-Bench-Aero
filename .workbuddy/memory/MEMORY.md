@@ -34,6 +34,7 @@
 - **★★ 放宽必须有边界（R69）**：任何「允许例外/允许违规」的闸必须同时写明 ① 哪里仍必须为 0 ② 例外必须带 reason ③ 例外不得进入对外数字。反例：旧 README 的「`--scope all` 必须 rc=0」——一句**字面为假**的闸门口径，照做的 Agent 只能阻塞或静默忽略。**能判的不变量优于需要维护的名单**（故 `r32` 用动态判据而非 allowlist）。
 - **★★ 按当前卷重跑一个带版本号的诊断脚本 = 静默改历史证据**（T-P1a 现场踩到）：`clarify_meta_audit_v6c.*` 是 C-033 的取证，脚本却读 `tasks/tasks.jsonl`；卷已换代 ⇒ 重跑把 59 改成 69，**文件名还叫 v6c**（同一形态：N-26 同名不同义）。⇒ 诊断脚本**必须有 `--label`/`--tasks`**，历史产物**只许回滚不许覆盖**；改回滚后的复现命令前，先证明「旧卷能逐字节复现原证据」。
 - **★★ 闸与负控可能互为前提（循环依赖）**：S-44(b) 要求 INDEX 负控行的 `= N/N` 分母 == artifact 实读条数，而 NC-49 的正向又靠这条绿 ⇒ **新增负控后必须先把 INDEX 累计数改到新分母**再跑，否则两者一起假红、看起来像「改了 INDEX 反而更糟」。同类：S-45 读的是**上一轮** `check_claims.json` 记录的 artifact 路径 ⇒ artifact 改名/搬家后首跑必红「不存在」、重跑自愈。**「首跑红、重跑绿」不一定是漂移，也可能是判据的比较对象滞后一轮。**
+- **★★ 用关键字判「层级/性质」的闸，会被正文里的一句无害措辞翻掉**（T-A14 现场踩到）：`R27` 的 `is_diag` 靠 claim 的 `status/level/statement` 里**是否含「diagnostic / 诊断」**来判官方 vs 诊断。我在 C-041 正文写「此前只活在一份手写**诊断** md 里」——一句描述历史的话，就把该 claim 判成 diag，立刻与共用同一 artifact 的 C-038 冲突而红。⇒ **写 claim 正文时，判据用到的词是保留字**；更根本的修法是**把这种判据改成结构化字段**（`level` 显式取值），而不是维护「哪些词不能写」的黑名单。
 
 ## 数字与口径
 - headline 只一条标 status 列，第二模型一律 `supporting`；不引 `eval_runs/`（gitignore）。**MSR 是条件通过率** ⇒ 95.2% 可「高于」90.9% 而 TSR 低 4 pp，须与 TSR/SFR 并列；bridge 表是唯一允许跨版本相减的场景；跨模型先看 `only_b`。
@@ -45,7 +46,7 @@
 ## 当前状态
 > 只记「在哪、卡在哪」，数字实读。
 - 代理模型线冻结（D37），KPI = TSR/FPR/修复/拒答/澄清。**三层口径别混**：数据集 v1.1 = 64 条案例 ／ **考卷 v7 = 64 条任务（C-037）** ／ **headline 仍是 C-032（v6c 55 条、exam 25）**——**v7 candidates 已跑（C-040，supporting，2026-10-29）**，但 headline 未切（R48，属 `v7-status`）。
-- ✅ 协议侧 **R1–R71** / RUBRIC **v6.6** / 负控 **67/67** / `check_claims` **33-68-59** 全绿；✅ 数据层 **C-036 GATED**。
+- ✅ 协议侧 **R1–R72** / RUBRIC **v6.7** / 负控 **68/68** / `check_claims` **33-68-60** 全绿；✅ 数据层 **C-036 GATED**。
 - **v7 双模型成绩（C-040，实读；ds 侧已含 T-P1a 修正）**：legacy exam glm TSR 23/25·SFR 20/22·MSR 20/22、ds **23/25**·20/21·19/21；exam_v11 两模型全对（9/9）；exam_full glm 32/34、ds **32/34** (94.1%)。**exam_full 高于 legacy 是换分母的抬升，不是变强**。2×2 = **both 23 / only_glm 0 / only_ds 0 / neither 2**（原 both 22 / only_glm 1；只翻 `L3_naca4412_wingbox` 1 条）。**★ 两模型 legacy TSR 已完全打平，但 SFR 分母不同（22 vs 21，ds 有 1 条 `no_output`）⇒ 打平不得解读为能力相同**。
 - **两处双分母**：exam `legacy 25`（与 C-032 同卷可比）／`full 34`；L2 clarify `all 64`／`informative 45`（invalid 19，**已跑两模型**）。都只禁相减、不禁并列。
 - **headline 已拍板不切（2026-10-30，方案 A）**：C-032 保持唯一 headline、C-040 维持 `supporting`、**T-A12c 取消**；`v7-status` 关闭。
@@ -55,4 +56,5 @@
 - **环境级坑（会长回来）**：单次调用累计删除 ≥50 个文件会被沙箱拒绝 ⇒ 一趟 59 条 msr 必在第 ~53 条处锁删不掉（N-22）⇒ 一律分批（`--only`），单批 ≤40；硬杀进程必留 `.solve.lock`（finally 不执行）。
 - **★ 交接已就绪（2026-10-30，T-HANDOFF，`d115337`）**：`HANDOFF/2026-10-30.md`（入库，= 新会话入口：项目定位/五层状态/未决三事/证伪路线/环境大件）+ `_handoff/`（**gitignore**）里 `git archive HEAD` 打出的 **38 MB / 1495 文件** zip（sha256 见 `_handoff/pack_manifest_2026-10-30.md`）。**新会话第一件事仍是 §0 两道闸 + 复述四数（headline/paper sha/prompt sha/分母）**；交接文档是快照不是 SOT，**不许从它抄数字进别的文档**（R63）。
 - **✅ P-1 已收口（T-P1a，`fbbc6af`，老王拍板方案 A：修标签 + 只观测不罚）**：`L3_naca4412_wingbox` 的 `clarify_wrong_keys` 把本族正确键 `n_stringers_per_skin` 登记成错族键 ⇒ **不改 `tasks.jsonl`**（与 published 卷同 sha，S-52 禁改老行），改用**显式修正表** `tasks/clarify_wrong_keys_fix.json`（`from` 必须逐字等于卷现值才生效，记 `provenance.judge_overrides`）；over-clarify **只观测 `n_questions`、不设 FAIL**（R71）。**三条被模拟证伪的路线：统一改 `n_stringers` 会判死两条加筋板题／按问句条数设上限代价单侧全落 ds／语义判 over-clarify 实测 4/4 假阳性**。**诚实边界**：L2 全 64 条 `clarify_wrong_keys=null` ⇒「把所有键名列一遍」的退化解在 L2 仍必胜，未堵。
-- **下一步（待老王挑）**：**A** L2 按族分层口径说明（N-27 已拍板只标注）→ **B** 第三方可用性验收（clone+fetch_data 能否复现 headline）→ **C** 退化解加固（列全键名的策略为何在 L2 必胜）。**P-2 N-25 柱壳可复现性单独立项**、**P-3 v8 新卷暂缓**（只影响 dev 4 条，代价远大于收益）。**headline 已拍板不切（方案 A）**：C-032 保持唯一 headline、C-040 维持 `supporting`、T-A12c 取消、`v7-status` 关闭。
+- **✅ A 已收口（T-A14，`1f865e6`，老王拍板 A1「可复算产物 + 闸」）**：L2 的**族级数字**（glm 翼盒 `24/39`、非翼盒 `25/25`；ds `15/39`、`21/25`）此前**只活在一份手写 md 里**、官方 artifact 的 `by_model.*.by_family` 全是 `null` ⇒ 违反 R-A3。本轮**不重跑模型、不改判据、不改分母**，只把它落盘：`score_l2` 三桶各增 `by_family`（每族 n/passed/pct + `Σ族==总数` 硬断言）→ `report_l2_clarify` 透传到 `by_model.<model>.<bucket>` → 新闸 **S-60** + **NC-66 六向** + **R72**（分层结论必须有分层证据）。**六个既有数字逐数未变**（`49/64`·`30/45`·`19/19`·`36/64`·`21/45`·`15/19`），且与手抄值**逐个对上** ⇒ 是「**数字对但没有 artifact**」，不是数字错。**S-60 边界**：守不了「族划分本身是否合理」（改族=改卷，走 R65）。
+- **下一步**：**B —— 第三方可用性验收**（clone + `fetch_data.py` 能否复现 headline C-032），这是「别人能不能用这个 benchmark」的唯一未验证前提；**C 退化解加固**（列全键名的策略为何在 L2 必胜）仍挂着；P-2 N-25 单独立项、P-3 v8 暂缓。**P-2 N-25 柱壳可复现性单独立项**、**P-3 v8 新卷暂缓**（只影响 dev 4 条，代价远大于收益）。**headline 已拍板不切（方案 A）**：C-032 保持唯一 headline、C-040 维持 `supporting`、T-A12c 取消、`v7-status` 关闭。
