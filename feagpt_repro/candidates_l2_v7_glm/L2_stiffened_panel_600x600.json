@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_stiffened_panel_600x600",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"缺少 n_stringers：题面为加筋板（stiffened_panel）但未给出长桁根数，请提供 n_stringers。\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 79,
+ "presentation": "spec_json_raw_name"
+}

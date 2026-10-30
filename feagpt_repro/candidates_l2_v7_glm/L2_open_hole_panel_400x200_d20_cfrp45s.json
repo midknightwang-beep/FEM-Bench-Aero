@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_open_hole_panel_400x200_d20_cfrp45s",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"structure.params.thickness 缺失：铺层板总厚度（4 层各 0.5mm 是否意味着总厚 2.0mm？请确认 thickness 取值）\",\"structure.params.hole_x 与 structure.params.hole_y 缺失：孔心坐标未给出，请说明孔是位于板中心还是给出偏心坐标\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 177,
+ "presentation": "spec_json_raw_name"
+}

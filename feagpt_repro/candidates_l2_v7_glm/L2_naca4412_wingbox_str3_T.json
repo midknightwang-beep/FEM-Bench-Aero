@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_naca4412_wingbox_str3_T",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"wingbox 族的 tip_chord_ratio 缺失，请给出翼尖/翼根弦比以确定展向锥度\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 63,
+ "presentation": "spec_json_raw_name"
+}

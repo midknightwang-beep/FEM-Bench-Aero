@@ -4,11 +4,11 @@
   "tasks": "tasks/tasks.jsonl",
   "tasks_sha256": "caf0f6c3be8131c5b817a0bacfcca8ad3893fcfb95e29d8d9b525866a63e195a",
   "criterion": "check_l2_leak.py 语义前缀匹配（d<N>/frm<N>/str<N>/...）；数值撞车不算泄漏（例：str4 揭示 n_stringers，不揭示 rib_thickness）",
-  "status": "not_run",
+  "status": "scored",
   "clarify_all": {
     "n": 64,
-    "passed": null,
-    "pct": null,
+    "passed": 49,
+    "pct": 76.6,
     "denominator": "全卷 L2 澄清题（含 name 泄漏的无效子集）",
     "by_family": {
       "fuselage_barrel": 7,
@@ -19,8 +19,8 @@
   },
   "clarify_informative": {
     "n": 45,
-    "passed": null,
-    "pct": null,
+    "passed": 30,
+    "pct": 66.7,
     "denominator": "name 未泄漏被省略值的可判子集（真的在考「会不会追问」）",
     "by_family": {
       "fuselage_barrel": 2,
@@ -278,9 +278,20 @@
           "str4"
         ]
       }
-    ]
+    ],
+    "passed": 19,
+    "pct": 100.0
   },
   "informative_pct": 70.3,
   "delta_allowed": false,
-  "r54_note": "两个分母不同（clarify_all 64 ≠ clarify_informative 45）⇒ 禁止相减、禁止据此排名（R54）；R66 要求无效子集隔离并双报，只报一侧即 S-53 红。"
+  "r54_note": "两个分母不同（clarify_all 64 ≠ clarify_informative 45）⇒ 禁止相减、禁止据此排名（R54）；R66 要求无效子集隔离并双报，只报一侧即 S-53 红。",
+  "model": "glm-5.3-flash",
+  "candidates": "candidates_l2_v7_glm",
+  "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+  "presentation": "spec_json_raw_name",
+  "category_counts": {
+    "clarify_ok": 49,
+    "fabricated": 13,
+    "clarify_wrong": 2
+  }
 }

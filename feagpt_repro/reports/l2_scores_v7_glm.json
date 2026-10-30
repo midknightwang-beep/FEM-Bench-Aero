@@ -1,0 +1,1259 @@
+{
+ "_note": "L2 澄清题首次跑分（T-A13a/T-A13b）。判据 import 自 score_baseline.judge_clarify_field_level（R17）；双口径掩码 import 自 check_l2_leak.scan（R66）。两个分母不同 ⇒ 禁相减、禁据此排名（R54）。",
+ "paper": "tasks.jsonl",
+ "tasks_sha256": "caf0f6c3be8131c5b817a0bacfcca8ad3893fcfb95e29d8d9b525866a63e195a",
+ "candidates": "candidates_l2_v7_glm",
+ "label": "T-A13b v7 x glm L2 clarify",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "presentation": "spec_json_raw_name",
+ "status": "scored",
+ "n_tasks_l2": 64,
+ "n_candidates": 64,
+ "n_missing": 0,
+ "category_counts": {
+  "clarify_ok": 49,
+  "fabricated": 13,
+  "clarify_wrong": 2
+ },
+ "clarify_all": {
+  "n": 64,
+  "passed": 49,
+  "pct": 76.6,
+  "denominator": "全卷 L2（含 name 泄漏的无效子集）"
+ },
+ "clarify_informative": {
+  "n": 45,
+  "passed": 30,
+  "pct": 66.7,
+  "denominator": "name 未泄漏的可判子集"
+ },
+ "invalid_subset": {
+  "n": 19,
+  "passed": 19,
+  "pct": 100.0,
+  "denominator": "name 泄漏 ⇒ 判据失效（R66 隔离，不得单独对外）"
+ },
+ "closure": {
+  "units": "tasks",
+  "all": 64,
+  "informative": 45,
+  "invalid": 19,
+  "formula": "all == informative + invalid（任务数与通过数两侧都成立）"
+ },
+ "per_task": [
+  {
+   "task_id": "L2_fuselage_barrel_d1600_l1600_str8_frm3",
+   "family": "fuselage_barrel",
+   "omitted_field": "n_frames",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"structure.params.n_frames 缺失，请给出框的数量\"]",
+   "detail": {
+    "text": "[\"structure.params.n_frames 缺失，请给出框的数量\"]",
+    "expected": [
+     "n_frames"
+    ],
+    "alias_hits": {
+     "n_frames": [
+      "n_frames"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_fuselage_barrel_d1800_l2000_str8_frm3",
+   "family": "fuselage_barrel",
+   "omitted_field": "thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"结构参数 thickness（蒙皮厚度）缺失，请提供该字段数值（单位 mm）\"]",
+   "detail": {
+    "text": "[\"结构参数 thickness（蒙皮厚度）缺失，请提供该字段数值（单位 mm）\"]",
+    "expected": [
+     "thickness"
+    ],
+    "alias_hits": {
+     "thickness": [
+      "thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_fuselage_barrel_d2000_l1600_str8_frm3",
+   "family": "fuselage_barrel",
+   "omitted_field": "n_stringers",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"structure.params.n_stringers 缺失：题面提到长桁（str8）但未给出具体根数，请提供 n_stringers。\"]",
+   "detail": {
+    "text": "[\"structure.params.n_stringers 缺失：题面提到长桁（str8）但未给出具体根数，请提供 n_stringers。\"]",
+    "expected": [
+     "n_stringers"
+    ],
+    "alias_hits": {
+     "n_stringers": [
+      "n_stringers"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_fuselage_barrel_d2000_l1800_str8_frm3",
+   "family": "fuselage_barrel",
+   "omitted_field": "n_stringers",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"fuselage_barrel 结构缺少长桁数量参数 n_stringers，请给出该柱壳每根长桁的数量（题面 name 含 str8 但不得据此反推）。\"]",
+   "detail": {
+    "text": "[\"fuselage_barrel 结构缺少长桁数量参数 n_stringers，请给出该柱壳每根长桁的数量（题面 name 含 str8 但不得据此反推）。\"]",
+    "expected": [
+     "n_stringers"
+    ],
+    "alias_hits": {
+     "n_stringers": [
+      "n_stringers"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_fuselage_barrel_d2000_l2000_str12_frm4",
+   "family": "fuselage_barrel",
+   "omitted_field": "n_frames",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"fuselage_barrel 族缺少 n_frames（框的数量），请补充该字段。\"]",
+   "detail": {
+    "text": "[\"fuselage_barrel 族缺少 n_frames（框的数量），请补充该字段。\"]",
+    "expected": [
+     "n_frames"
+    ],
+    "alias_hits": {
+     "n_frames": [
+      "n_frames"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_fuselage_barrel_d2000_l2000_str8_frm3",
+   "family": "fuselage_barrel",
+   "omitted_field": "thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺少 structure.params.thickness（蒙皮厚度），请提供该字段\"]",
+   "detail": {
+    "text": "[\"缺少 structure.params.thickness（蒙皮厚度），请提供该字段\"]",
+    "expected": [
+     "thickness"
+    ],
+    "alias_hits": {
+     "thickness": [
+      "thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+   "family": "fuselage_barrel",
+   "omitted_field": "n_stringers",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"缺少 n_stringers（机身长桁数量），题面提到加筋但未给出根数，请提供该键。\"]",
+   "detail": {
+    "text": "[\"缺少 n_stringers（机身长桁数量），题面提到加筋但未给出根数，请提供该键。\"]",
+    "expected": [
+     "n_stringers"
+    ],
+    "alias_hits": {
+     "n_stringers": [
+      "n_stringers"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox",
+   "family": "wingbox",
+   "omitted_field": "rib_thickness",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "rib_thickness"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_n_ribs3_chord1000",
+   "family": "wingbox",
+   "omitted_field": "n_stringers_per_skin",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"airfoil.n_stringers_per_skin 缺失：题面提到长桁（给了 stringer_height/stringer_thickness/stringer_kind），但未给出每侧蒙皮长桁根数，请补充 n_stringers_per_skin。\"]",
+   "detail": {
+    "text": "[\"airfoil.n_stringers_per_skin 缺失：题面提到长桁（给了 stringer_height/stringer_thickness/stringer_kind），但未给出每侧蒙皮长桁根数，请补充 n_stringers_per_skin。\"]",
+    "expected": [
+     "n_stringers_per_skin"
+    ],
+    "alias_hits": {
+     "n_stringers_per_skin": [
+      "n_stringers_per_skin"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_n_ribs3_chord800",
+   "family": "wingbox",
+   "omitted_field": "stringer_height",
+   "category": "clarify_wrong",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": "[\"airfoil.n_stringers_per_skin=0（无长桁）与同时给出 stringer_kind/stringer_thickness/stringer_flange_width 矛盾：请确认 n_stringers_per_skin 的真实根数，或确认无长桁（则应删除长桁细节键）\",\"stringer_kind=\\\"blade\\\" 时不应有 stringer_flange_width（blade 无缘条）；若确为 T 剖面请确认 stringer_kind 与 stringer_flange_width\",\"extra.sweep_index 不是该族允许的键，请确认其含义或删除\"]",
+   "detail": {
+    "text": "[\"airfoil.n_stringers_per_skin=0（无长桁）与同时给出 stringer_kind/stringer_thickness/stringer_flange_width 矛盾：请确认 n_stringers_per_skin 的真实根数，或确认无长桁（则应删除长桁细节键）\",\"stringer_kind=\\\"blade\\\" 时不应有 stringer_flange_wid",
+    "expected": [
+     "stringer_height"
+    ],
+    "alias_hits": {
+     "stringer_height": []
+    },
+    "note": "存在 expected 字段未被任何别名命中"
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_n_ribs5_chord800",
+   "family": "wingbox",
+   "omitted_field": "tip_chord_ratio",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"airfoil.tip_chord_ratio 缺失，请给出翼盒的翼尖弦长比（tip_chord_ratio）\"]",
+   "detail": {
+    "text": "[\"airfoil.tip_chord_ratio 缺失，请给出翼盒的翼尖弦长比（tip_chord_ratio）\"]",
+    "expected": [
+     "tip_chord_ratio"
+    ],
+    "alias_hits": {
+     "tip_chord_ratio": [
+      "tip_chord_ratio"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_n_ribs6_chord1000",
+   "family": "wingbox",
+   "omitted_field": "sweep_deg",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "sweep_deg"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_n_ribs7_chord1000",
+   "family": "wingbox",
+   "omitted_field": "sweep_deg",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "sweep_deg"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_n_ribs7_chord800",
+   "family": "wingbox",
+   "omitted_field": "skin_thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"airfoil.skin_thickness 缺失：翼盒蒙皮厚度未给出，无法定义模型\"]",
+   "detail": {
+    "text": "[\"airfoil.skin_thickness 缺失：翼盒蒙皮厚度未给出，无法定义模型\"]",
+    "expected": [
+     "skin_thickness"
+    ],
+    "alias_hits": {
+     "skin_thickness": [
+      "skin_thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_n_ribs9_chord1000",
+   "family": "wingbox",
+   "omitted_field": "n_ribs",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"翼盒缺少肋的数量：n_ribs 未给出，无法定义肋的布置，请提供 n_ribs。\"]",
+   "detail": {
+    "text": "[\"翼盒缺少肋的数量：n_ribs 未给出，无法定义肋的布置，请提供 n_ribs。\"]",
+    "expected": [
+     "n_ribs"
+    ],
+    "alias_hits": {
+     "n_ribs": [
+      "n_ribs"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_recombination_algorithm3",
+   "family": "wingbox",
+   "omitted_field": "rib_thickness",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "rib_thickness"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_chord900",
+   "family": "wingbox",
+   "omitted_field": "stringer_height",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "stringer_height"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_skin1p5",
+   "family": "wingbox",
+   "omitted_field": "n_stringers_per_skin",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"翼盒每侧蒙皮的长桁数量 n_stringers_per_skin 未给出（题面给出了长桁尺寸 stringer_height/stringer_thickness/stringer_kind，但未给根数），请提供该字段\"]",
+   "detail": {
+    "text": "[\"翼盒每侧蒙皮的长桁数量 n_stringers_per_skin 未给出（题面给出了长桁尺寸 stringer_height/stringer_thickness/stringer_kind，但未给根数），请提供该字段\"]",
+    "expected": [
+     "n_stringers_per_skin"
+    ],
+    "alias_hits": {
+     "n_stringers_per_skin": [
+      "n_stringers_per_skin"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_skin2",
+   "family": "wingbox",
+   "omitted_field": "stringer_height",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "stringer_height"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_skin2p5",
+   "family": "wingbox",
+   "omitted_field": "skin_thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"缺少 airfoil.skin_thickness（蒙皮厚度），无法定义翼盒模型，请补充该字段\"]",
+   "detail": {
+    "text": "[\"缺少 airfoil.skin_thickness（蒙皮厚度），无法定义翼盒模型，请补充该字段\"]",
+    "expected": [
+     "skin_thickness"
+    ],
+    "alias_hits": {
+     "skin_thickness": [
+      "skin_thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_skin4",
+   "family": "wingbox",
+   "omitted_field": "tip_chord_ratio",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"airfoil.tip_chord_ratio 缺失，请给出翼尖/翼根弦比（tip_chord_ratio），否则翼盒沿展向的弦长变化无法定义；另注：长桁为 blade 剖面时不应携带 stringer_flange_width，请确认是否保留该键或改为 T 剖面\"]",
+   "detail": {
+    "text": "[\"airfoil.tip_chord_ratio 缺失，请给出翼尖/翼根弦比（tip_chord_ratio），否则翼盒沿展向的弦长变化无法定义；另注：长桁为 blade 剖面时不应携带 stringer_flange_width，请确认是否保留该键或改为 T 剖面\"]",
+    "expected": [
+     "tip_chord_ratio"
+    ],
+    "alias_hits": {
+     "tip_chord_ratio": [
+      "tip_chord_ratio"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_span1600",
+   "family": "wingbox",
+   "omitted_field": "sweep_deg",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "sweep_deg"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_span2400",
+   "family": "wingbox",
+   "omitted_field": "skin_thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"wingbox 缺少翼面蒙皮厚度字段 skin_thickness，请给出该值\"]",
+   "detail": {
+    "text": "[\"wingbox 缺少翼面蒙皮厚度字段 skin_thickness，请给出该值\"]",
+    "expected": [
+     "skin_thickness"
+    ],
+    "alias_hits": {
+     "skin_thickness": [
+      "skin_thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_span2400_skin2",
+   "family": "wingbox",
+   "omitted_field": "n_ribs",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺少 airfoil.n_ribs：翼盒未给出肋的数量，无法定义模型，请提供 n_ribs。\"]",
+   "detail": {
+    "text": "[\"缺少 airfoil.n_ribs：翼盒未给出肋的数量，无法定义模型，请提供 n_ribs。\"]",
+    "expected": [
+     "n_ribs"
+    ],
+    "alias_hits": {
+     "n_ribs": [
+      "n_ribs"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_span3000",
+   "family": "wingbox",
+   "omitted_field": "rib_thickness",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "rib_thickness"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_span3000_skin1p5",
+   "family": "wingbox",
+   "omitted_field": "n_stringers_per_skin",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺少长桁数量字段 n_stringers_per_skin（题面给出了长桁尺寸但未给出每侧蒙皮长桁根数，无法定义模型）\"]",
+   "detail": {
+    "text": "[\"缺少长桁数量字段 n_stringers_per_skin（题面给出了长桁尺寸但未给出每侧蒙皮长桁根数，无法定义模型）\"]",
+    "expected": [
+     "n_stringers_per_skin"
+    ],
+    "alias_hits": {
+     "n_stringers_per_skin": [
+      "n_stringers_per_skin"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_str3",
+   "family": "wingbox",
+   "omitted_field": "stringer_height",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺失 airfoil.stringer_height：blade 长桁未给出高度，无法完整定义长桁剖面\"]",
+   "detail": {
+    "text": "[\"缺失 airfoil.stringer_height：blade 长桁未给出高度，无法完整定义长桁剖面\"]",
+    "expected": [
+     "stringer_height"
+    ],
+    "alias_hits": {
+     "stringer_height": [
+      "stringer_height"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_str3_T",
+   "family": "wingbox",
+   "omitted_field": "tip_chord_ratio",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"wingbox 族的 tip_chord_ratio 缺失，请给出翼尖/翼根弦比以确定展向锥度\"]",
+   "detail": {
+    "text": "[\"wingbox 族的 tip_chord_ratio 缺失，请给出翼尖/翼根弦比以确定展向锥度\"]",
+    "expected": [
+     "tip_chord_ratio"
+    ],
+    "alias_hits": {
+     "tip_chord_ratio": [
+      "tip_chord_ratio"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_str4",
+   "family": "wingbox",
+   "omitted_field": "rib_thickness",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "rib_thickness"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_str5",
+   "family": "wingbox",
+   "omitted_field": "sweep_deg",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "sweep_deg"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep10",
+   "family": "wingbox",
+   "omitted_field": "skin_thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"wingbox 缺少蒙皮厚度参数，请提供 airfoil.skin_thickness\"]",
+   "detail": {
+    "text": "[\"wingbox 缺少蒙皮厚度参数，请提供 airfoil.skin_thickness\"]",
+    "expected": [
+     "skin_thickness"
+    ],
+    "alias_hits": {
+     "skin_thickness": [
+      "skin_thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep20",
+   "family": "wingbox",
+   "omitted_field": "n_ribs",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺少 n_ribs（翼盒肋数量），请给出具体肋数\"]",
+   "detail": {
+    "text": "[\"缺少 n_ribs（翼盒肋数量），请给出具体肋数\"]",
+    "expected": [
+     "n_ribs"
+    ],
+    "alias_hits": {
+     "n_ribs": [
+      "n_ribs"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep20_taper060",
+   "family": "wingbox",
+   "omitted_field": "rib_thickness",
+   "category": "clarify_wrong",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": "[\"airfoil.n_stringers_per_skin=0 与已给出的 stringer_height/stringer_thickness/stringer_kind/stringer_flange_width 矛盾：若确无长桁请删除这些长桁细节键；若有长桁请给出 n_stringers_per_skin 的具体根数\",\"stringer_kind 为 blade（无缘条剖面）时不应存在 stringer_flange_width，请确认长桁剖面类型\"]",
+   "detail": {
+    "text": "[\"airfoil.n_stringers_per_skin=0 与已给出的 stringer_height/stringer_thickness/stringer_kind/stringer_flange_width 矛盾：若确无长桁请删除这些长桁细节键；若有长桁请给出 n_stringers_per_skin 的具体根数\",\"stringer_kind 为 blade（无缘条剖面）时不应存在 ",
+    "expected": [
+     "rib_thickness"
+    ],
+    "alias_hits": {
+     "rib_thickness": []
+    },
+    "note": "存在 expected 字段未被任何别名命中"
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep30",
+   "family": "wingbox",
+   "omitted_field": "n_stringers_per_skin",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"翼盒长桁根数缺失，必须给出 n_stringers_per_skin\",\"已给 stringer_kind=\\\"blade\\\"，blade 剖面无缘条，多余的 stringer_flange_width=30 需确认删除或改为 T 剖面并保留缘条宽度\"]",
+   "detail": {
+    "text": "[\"翼盒长桁根数缺失，必须给出 n_stringers_per_skin\",\"已给 stringer_kind=\\\"blade\\\"，blade 剖面无缘条，多余的 stringer_flange_width=30 需确认删除或改为 T 剖面并保留缘条宽度\"]",
+    "expected": [
+     "n_stringers_per_skin"
+    ],
+    "alias_hits": {
+     "n_stringers_per_skin": [
+      "n_stringers_per_skin"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep30_taper080",
+   "family": "wingbox",
+   "omitted_field": "stringer_height",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "stringer_height"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep35",
+   "family": "wingbox",
+   "omitted_field": "tip_chord_ratio",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺失翼盒锥度参数 tip_chord_ratio，请提供翼尖弦长与翼根弦长之比\"]",
+   "detail": {
+    "text": "[\"缺失翼盒锥度参数 tip_chord_ratio，请提供翼尖弦长与翼根弦长之比\"]",
+    "expected": [
+     "tip_chord_ratio"
+    ],
+    "alias_hits": {
+     "tip_chord_ratio": [
+      "tip_chord_ratio"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep40",
+   "family": "wingbox",
+   "omitted_field": "sweep_deg",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"缺少 airfoil.sweep_deg（name 中提到 sweep40 但 spec 未给出该键），请提供后掠角 sweep_deg 的数值\"]",
+   "detail": {
+    "text": "[\"缺少 airfoil.sweep_deg（name 中提到 sweep40 但 spec 未给出该键），请提供后掠角 sweep_deg 的数值\"]",
+    "expected": [
+     "sweep_deg"
+    ],
+    "alias_hits": {
+     "sweep_deg": [
+      "sweep_deg"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep40_taper040",
+   "family": "wingbox",
+   "omitted_field": "skin_thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺少翼盒蒙皮厚度 airfoil.skin_thickness，无法定义翼盒模型，请提供该字段\"]",
+   "detail": {
+    "text": "[\"缺少翼盒蒙皮厚度 airfoil.skin_thickness，无法定义翼盒模型，请提供该字段\"]",
+    "expected": [
+     "skin_thickness"
+    ],
+    "alias_hits": {
+     "skin_thickness": [
+      "skin_thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_taper040",
+   "family": "wingbox",
+   "omitted_field": "n_ribs",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺少 n_ribs：题面未给出翼盒的肋数量，无法定义模型，请提供 n_ribs。\"]",
+   "detail": {
+    "text": "[\"缺少 n_ribs：题面未给出翼盒的肋数量，无法定义模型，请提供 n_ribs。\"]",
+    "expected": [
+     "n_ribs"
+    ],
+    "alias_hits": {
+     "n_ribs": [
+      "n_ribs"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_taper060",
+   "family": "wingbox",
+   "omitted_field": "rib_thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"翼盒缺失 rib_thickness（肋厚），请补充该字段\"]",
+   "detail": {
+    "text": "[\"翼盒缺失 rib_thickness（肋厚），请补充该字段\"]",
+    "expected": [
+     "rib_thickness"
+    ],
+    "alias_hits": {
+     "rib_thickness": [
+      "rib_thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_taper070",
+   "family": "wingbox",
+   "omitted_field": "skin_thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺少 airfoil.skin_thickness（蒙皮厚度），请提供该字段\"]",
+   "detail": {
+    "text": "[\"缺少 airfoil.skin_thickness（蒙皮厚度），请提供该字段\"]",
+    "expected": [
+     "skin_thickness"
+    ],
+    "alias_hits": {
+     "skin_thickness": [
+      "skin_thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_taper080",
+   "family": "wingbox",
+   "omitted_field": "n_stringers_per_skin",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"翼盒 airfoil 块中给出了长桁尺寸（stringer_height/stringer_thickness/stringer_kind），但缺少每侧蒙皮的长桁根数 n_stringers_per_skin，请补充该字段。\"]",
+   "detail": {
+    "text": "[\"翼盒 airfoil 块中给出了长桁尺寸（stringer_height/stringer_thickness/stringer_kind），但缺少每侧蒙皮的长桁根数 n_stringers_per_skin，请补充该字段。\"]",
+    "expected": [
+     "n_stringers_per_skin"
+    ],
+    "alias_hits": {
+     "n_stringers_per_skin": [
+      "n_stringers_per_skin"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_taper090",
+   "family": "wingbox",
+   "omitted_field": "stringer_height",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "stringer_height"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_web1",
+   "family": "wingbox",
+   "omitted_field": "tip_chord_ratio",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺少翼型几何字段 tip_chord_ratio（翼尖弦/根弦比），未给出该值翼盒沿展向的几何无法定义，请提供 tip_chord_ratio；另外 extra 块中的 end_torque / torque_axis_dof 不是 wingbox 族的合法键，wingbox 的 extra 应为 {}\"]",
+   "detail": {
+    "text": "[\"缺少翼型几何字段 tip_chord_ratio（翼尖弦/根弦比），未给出该值翼盒沿展向的几何无法定义，请提供 tip_chord_ratio；另外 extra 块中的 end_torque / torque_axis_dof 不是 wingbox 族的合法键，wingbox 的 extra 应为 {}\"]",
+    "expected": [
+     "tip_chord_ratio"
+    ],
+    "alias_hits": {
+     "tip_chord_ratio": [
+      "tip_chord_ratio"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_web1_offcentre",
+   "family": "wingbox",
+   "omitted_field": "sweep_deg",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "sweep_deg"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_web2",
+   "family": "wingbox",
+   "omitted_field": "skin_thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺少 airfoil.skin_thickness（蒙皮厚度），翼盒模型无法定义，请提供该字段。\"]",
+   "detail": {
+    "text": "[\"缺少 airfoil.skin_thickness（蒙皮厚度），翼盒模型无法定义，请提供该字段。\"]",
+    "expected": [
+     "skin_thickness"
+    ],
+    "alias_hits": {
+     "skin_thickness": [
+      "skin_thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d20",
+   "family": "open_hole_panel",
+   "omitted_field": "length",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"open_hole_panel 缺少 params.length，请给出板长方向的尺寸\",\"load.kind 为 tip_force 与开孔板面内拉伸/面压载荷词汇不符，请确认载荷类型（kind）及大小\"]",
+   "detail": {
+    "text": "[\"open_hole_panel 缺少 params.length，请给出板长方向的尺寸\",\"load.kind 为 tip_force 与开孔板面内拉伸/面压载荷词汇不符，请确认载荷类型（kind）及大小\"]",
+    "expected": [
+     "length"
+    ],
+    "alias_hits": {
+     "length": [
+      "length"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d20_cfrp090s",
+   "family": "open_hole_panel",
+   "omitted_field": "hole_d",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"缺少 hole_d（开孔直径），请给出孔径数值\",\"缺少 hole_x 与 hole_y（孔心坐标），请说明孔位置偏心或居中\"]",
+   "detail": {
+    "text": "[\"缺少 hole_d（开孔直径），请给出孔径数值\",\"缺少 hole_x 与 hole_y（孔心坐标），请说明孔位置偏心或居中\"]",
+    "expected": [
+     "hole_d"
+    ],
+    "alias_hits": {
+     "hole_d": [
+      "hole_d"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d20_cfrp45s",
+   "family": "open_hole_panel",
+   "omitted_field": "thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"structure.params.thickness 缺失：铺层板总厚度（4 层各 0.5mm 是否意味着总厚 2.0mm？请确认 thickness 取值）\",\"structure.params.hole_x 与 structure.params.hole_y 缺失：孔心坐标未给出，请说明孔是位于板中心还是给出偏心坐标\"]",
+   "detail": {
+    "text": "[\"structure.params.thickness 缺失：铺层板总厚度（4 层各 0.5mm 是否意味着总厚 2.0mm？请确认 thickness 取值）\",\"structure.params.hole_x 与 structure.params.hole_y 缺失：孔心坐标未给出，请说明孔是位于板中心还是给出偏心坐标\"]",
+    "expected": [
+     "thickness"
+    ],
+    "alias_hits": {
+     "thickness": [
+      "thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d20_cfrp45s_d40",
+   "family": "open_hole_panel",
+   "omitted_field": "width",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"open_hole_panel 缺少 params.width（板宽），请补充\",\"open_hole_panel 缺少孔心位置：若为中心孔请确认，若为偏心孔请给出 params.hole_x 与 params.hole_y\"]",
+   "detail": {
+    "text": "[\"open_hole_panel 缺少 params.width（板宽），请补充\",\"open_hole_panel 缺少孔心位置：若为中心孔请确认，若为偏心孔请给出 params.hole_x 与 params.hole_y\"]",
+    "expected": [
+     "width"
+    ],
+    "alias_hits": {
+     "width": [
+      "width"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d20_cfrpqi",
+   "family": "open_hole_panel",
+   "omitted_field": "length",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"结构族 open_hole_panel 的 params 缺少 length（板长）字段，请给出板长。\"]",
+   "detail": {
+    "text": "[\"结构族 open_hole_panel 的 params 缺少 length（板长）字段，请给出板长。\"]",
+    "expected": [
+     "length"
+    ],
+    "alias_hits": {
+     "length": [
+      "length"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d20_offcentre",
+   "family": "open_hole_panel",
+   "omitted_field": "hole_d",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"open_hole_panel 缺少必需字段 hole_d，请提供孔直径 hole_d。\",\"load.kind=tip_force 与词汇约定不符：面内拉伸应使用 kind=\\\"pressure\\\" 并给出面压 magnitude（MPa），请澄清载荷 kind 与 magnitude。\"]",
+   "detail": {
+    "text": "[\"open_hole_panel 缺少必需字段 hole_d，请提供孔直径 hole_d。\",\"load.kind=tip_force 与词汇约定不符：面内拉伸应使用 kind=\\\"pressure\\\" 并给出面压 magnitude（MPa），请澄清载荷 kind 与 magnitude。\"]",
+    "expected": [
+     "hole_d"
+    ],
+    "alias_hits": {
+     "hole_d": [
+      "hole_d"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d30",
+   "family": "open_hole_panel",
+   "omitted_field": "hole_d",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"open_hole_panel 缺少孔直径参数，请给出 hole_d（孔径，mm）\"]",
+   "detail": {
+    "text": "[\"open_hole_panel 缺少孔直径参数，请给出 hole_d（孔径，mm）\"]",
+    "expected": [
+     "hole_d"
+    ],
+    "alias_hits": {
+     "hole_d": [
+      "hole_d"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d40",
+   "family": "open_hole_panel",
+   "omitted_field": "thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"open_hole_panel 缺少厚度参数，请提供 structure.params.thickness（板厚，mm）\"]",
+   "detail": {
+    "text": "[\"open_hole_panel 缺少厚度参数，请提供 structure.params.thickness（板厚，mm）\"]",
+    "expected": [
+     "thickness"
+    ],
+    "alias_hits": {
+     "thickness": [
+      "thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d40_offcentre",
+   "family": "open_hole_panel",
+   "omitted_field": "width",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"缺少结构参数 width（板宽），请提供 open_hole_panel 的宽度键 width 的数值。\"]",
+   "detail": {
+    "text": "[\"缺少结构参数 width（板宽），请提供 open_hole_panel 的宽度键 width 的数值。\"]",
+    "expected": [
+     "width"
+    ],
+    "alias_hits": {
+     "width": [
+      "width"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d50",
+   "family": "open_hole_panel",
+   "omitted_field": "length",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"open_hole_panel 缺少参数 length，请提供 length 的数值。\"]",
+   "detail": {
+    "text": "[\"open_hole_panel 缺少参数 length，请提供 length 的数值。\"]",
+    "expected": [
+     "length"
+    ],
+    "alias_hits": {
+     "length": [
+      "length"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_500x250_d45",
+   "family": "open_hole_panel",
+   "omitted_field": "hole_d",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"缺少 open_hole_panel 的孔直径字段 hole_d（孔半径/直径未给出），无法定义开孔几何，请提供 hole_d。\"]",
+   "detail": {
+    "text": "[\"缺少 open_hole_panel 的孔直径字段 hole_d（孔半径/直径未给出），无法定义开孔几何，请提供 hole_d。\"]",
+    "expected": [
+     "hole_d"
+    ],
+    "alias_hits": {
+     "hole_d": [
+      "hole_d"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_600x300_d30",
+   "family": "open_hole_panel",
+   "omitted_field": "hole_d",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"open_hole_panel 缺少孔直径参数 hole_d，请给出孔的直径（mm）。\"]",
+   "detail": {
+    "text": "[\"open_hole_panel 缺少孔直径参数 hole_d，请给出孔的直径（mm）。\"]",
+    "expected": [
+     "hole_d"
+    ],
+    "alias_hits": {
+     "hole_d": [
+      "hole_d"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_600x300_d60",
+   "family": "open_hole_panel",
+   "omitted_field": "thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺少 structure.params.thickness，请给出板厚。\"]",
+   "detail": {
+    "text": "[\"缺少 structure.params.thickness，请给出板厚。\"]",
+    "expected": [
+     "thickness"
+    ],
+    "alias_hits": {
+     "thickness": [
+      "thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_stiffened_panel_600x600",
+   "family": "stiffened_panel",
+   "omitted_field": "n_stringers",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺少 n_stringers：题面为加筋板（stiffened_panel）但未给出长桁根数，请提供 n_stringers。\"]",
+   "detail": {
+    "text": "[\"缺少 n_stringers：题面为加筋板（stiffened_panel）但未给出长桁根数，请提供 n_stringers。\"]",
+    "expected": [
+     "n_stringers"
+    ],
+    "alias_hits": {
+     "n_stringers": [
+      "n_stringers"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_stiffened_panel_600x600_str3",
+   "family": "stiffened_panel",
+   "omitted_field": "thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"stiffened_panel 缺少 thickness（壁板厚度），请提供 thickness。\"]",
+   "detail": {
+    "text": "[\"stiffened_panel 缺少 thickness（壁板厚度），请提供 thickness。\"]",
+    "expected": [
+     "thickness"
+    ],
+    "alias_hits": {
+     "thickness": [
+      "thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_stiffened_panel_700x600_str4",
+   "family": "stiffened_panel",
+   "omitted_field": "n_stringers",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"stiffened_panel 族缺失长桁根数参数 n_stringers，请给出壁板每侧/总长桁根数，否则模型无法定义。\"]",
+   "detail": {
+    "text": "[\"stiffened_panel 族缺失长桁根数参数 n_stringers，请给出壁板每侧/总长桁根数，否则模型无法定义。\"]",
+    "expected": [
+     "n_stringers"
+    ],
+    "alias_hits": {
+     "n_stringers": [
+      "n_stringers"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_stiffened_panel_800x600",
+   "family": "stiffened_panel",
+   "omitted_field": "n_stringers",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺少字段 n_stringers：题面未说明是素板也未给出加筋长桁根数，请明确长桁数量（素板请明示为 0）\",\"缺少字段 mesh.size：板壳类网格需给出单元尺寸 size，当前仅有 size_chord/size_span（翼盒专用键）\"]",
+   "detail": {
+    "text": "[\"缺少字段 n_stringers：题面未说明是素板也未给出加筋长桁根数，请明确长桁数量（素板请明示为 0）\",\"缺少字段 mesh.size：板壳类网格需给出单元尺寸 size，当前仅有 size_chord/size_span（翼盒专用键）\"]",
+    "expected": [
+     "n_stringers"
+    ],
+    "alias_hits": {
+     "n_stringers": [
+      "n_stringers"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_stiffened_panel_800x600_str3",
+   "family": "stiffened_panel",
+   "omitted_field": "thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺少 structure.params.thickness（壁板厚度），无法定义加筋板模型\"]",
+   "detail": {
+    "text": "[\"缺少 structure.params.thickness（壁板厚度），无法定义加筋板模型\"]",
+    "expected": [
+     "thickness"
+    ],
+    "alias_hits": {
+     "thickness": [
+      "thickness"
+     ]
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_naca4412_wingbox_web1",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"缺少翼型几何字段 tip_chord_ratio（翼尖弦/根弦比），未给出该值翼盒沿展向的几何无法定义，请提供 tip_chord_ratio；另外 extra 块中的 end_torque / torque_axis_dof 不是 wingbox 族的合法键，wingbox 的 extra 应为 {}\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 168,
+ "presentation": "spec_json_raw_name"
+}

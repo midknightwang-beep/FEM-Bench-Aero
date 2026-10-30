@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_naca4412_wingbox_n_ribs5_chord800",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"airfoil.tip_chord_ratio 缺失，请给出翼盒的翼尖弦长比（tip_chord_ratio）\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 71,
+ "presentation": "spec_json_raw_name"
+}

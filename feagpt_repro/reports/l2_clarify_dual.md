@@ -1,7 +1,7 @@
 # L2 澄清题：双口径（CONFLICT N-17 → 拍板 C'）
 
 - 卷：`tasks.jsonl`　任务表：`tasks/tasks.jsonl`
-- 状态：**not_run**（L2 未跑满，`passed` 如实为空）
+- 状态：**scored**（model `glm-5.3-flash`，呈现 `spec_json_raw_name`；`prompt_sha256` = `03129c56d83b8bd3…`）
 - 判据：check_l2_leak.py 语义前缀匹配（d<N>/frm<N>/str<N>/...）；数值撞车不算泄漏（例：str4 揭示 n_stringers，不揭示 rib_thickness）
 
 ## 两套分母必须并列

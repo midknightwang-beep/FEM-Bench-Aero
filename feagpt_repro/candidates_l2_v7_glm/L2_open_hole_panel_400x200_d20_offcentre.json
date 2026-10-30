@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_open_hole_panel_400x200_d20_offcentre",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"open_hole_panel 缺少必需字段 hole_d，请提供孔直径 hole_d。\",\"load.kind=tip_force 与词汇约定不符：面内拉伸应使用 kind=\\\"pressure\\\" 并给出面压 magnitude（MPa），请澄清载荷 kind 与 magnitude。\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 161,
+ "presentation": "spec_json_raw_name"
+}

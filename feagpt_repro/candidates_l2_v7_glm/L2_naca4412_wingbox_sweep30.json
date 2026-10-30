@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_naca4412_wingbox_sweep30",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"翼盒长桁根数缺失，必须给出 n_stringers_per_skin\",\"已给 stringer_kind=\\\"blade\\\"，blade 剖面无缘条，多余的 stringer_flange_width=30 需确认删除或改为 T 剖面并保留缘条宽度\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 141,
+ "presentation": "spec_json_raw_name"
+}

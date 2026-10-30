@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_naca4412_wingbox_size_span3000_skin1p5",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"缺少长桁数量字段 n_stringers_per_skin（题面给出了长桁尺寸但未给出每侧蒙皮长桁根数，无法定义模型）\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 75,
+ "presentation": "spec_json_raw_name"
+}

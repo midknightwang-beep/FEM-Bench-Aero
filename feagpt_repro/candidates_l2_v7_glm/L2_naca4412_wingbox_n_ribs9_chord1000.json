@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_naca4412_wingbox_n_ribs9_chord1000",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"翼盒缺少肋的数量：n_ribs 未给出，无法定义肋的布置，请提供 n_ribs。\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 56,
+ "presentation": "spec_json_raw_name"
+}

@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
- "n_active_claims": 32,
- "n_artifacts": 65,
+ "n_active_claims": 33,
+ "n_artifacts": 67,
  "n_fail": 0,
  "n_fail_structural": 0,
  "n_fail_semantic": 0,
@@ -133,8 +133,8 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 6.2",
-   "actual": "6.2",
+   "expect": "全部 = 6.3",
+   "actual": "6.3",
    "ok": true,
    "skip": false
   },
@@ -286,7 +286,7 @@
    "id": "S-34",
    "desc": "第二模型不取代 headline（R48）",
    "expect": "恰有一条 claim 标（对外 headline）（当前 = C-032）；C-031/C-033 等第二模型标 supporting 且不自称 headline",
-   "actual": "唯一 headline = ['C-032']；supporting = ['C-031', 'C-033', 'C-040']（均未自称 headline）",
+   "actual": "唯一 headline = ['C-032']；supporting = ['C-031', 'C-033', 'C-040', 'C-041']（均未自称 headline）",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793361668/1793361668；check 1793361877 vs 负控 1793361668",
+   "actual": "C-019 mtime 记录/实际 = 1793362528/1793362528；check 1793362547 vs 负控 1793362528",
    "ok": true,
    "skip": false
   },
@@ -446,7 +446,7 @@
    "id": "S-53",
    "desc": "L2 clarify 无效子集必须隔离并双报：clarify_all(64) 与 clarify_informative(45) 并列（R66）",
    "expect": "reports/l2_clarify_dual.json 必须同时含两块且闭合（all−inf==invalid）；informative 掩码必须与现算一致（防过期）；delta_allowed 必须 False（R54）；status=scored 时两侧都必须有整数 passed",
-   "actual": "掩码与现算一致（invalid 19 / informative 45）；all n=64 ／ informative n=45（status=not_run）",
+   "actual": "掩码与现算一致（invalid 19 / informative 45）；all n=64 ／ informative n=45（status=scored）",
    "ok": true,
    "skip": false
   },
@@ -680,9 +680,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 43259,
-   "sha256": "a958ac7bcdb25173e661f25b5709c03bd7f70e417d3106782aaed586f7a40b80",
-   "mtime": 1793361822
+   "size": 43508,
+   "sha256": "19c43d85e5fb109efac97aaa29858c5148b3b6ce196a376a889362d0f9f19c03",
+   "mtime": 1793362362
   },
   {
    "claim_id": "C-027",
@@ -985,6 +985,30 @@
    "mtime": 1793360099
   },
   {
+   "claim_id": "C-041",
+   "artifact": "feagpt_repro/reports/l2_scores_v7_glm.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 39773,
+   "sha256": "2b76b78841814929319b70af7281787997e10920de5901e939343c5725ecf579",
+   "mtime": 1793362268
+  },
+  {
+   "claim_id": "C-041",
+   "artifact": "feagpt_repro/reports/l2_clarify_dual.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 9905,
+   "sha256": "ee6b16886516e952faca9b6d984a0feecde28413cb873042bf19bccfd45f0237",
+   "mtime": 1793362303
+  },
+  {
    "claim_id": "C-038",
    "artifact": "feagpt_repro/reports/l2_clarify_dual.json",
    "exists": true,
@@ -992,9 +1016,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 9573,
-   "sha256": "36bdd863c384f82500f605c3d3f9e869eedcc357661214430a38668c64d42b68",
-   "mtime": 1793361720
+   "size": 9905,
+   "sha256": "ee6b16886516e952faca9b6d984a0feecde28413cb873042bf19bccfd45f0237",
+   "mtime": 1793362303
   },
   {
    "claim_id": "C-038",
@@ -1004,9 +1028,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 2587,
-   "sha256": "b36780d5b7bec169fe6b495b376576090350d58e8152139a3f807cb3b9dff0ec",
-   "mtime": 1793361720
+   "size": 2643,
+   "sha256": "5988b9c31125a50756a9fa701a17b8dd7f07390e3ed7488147ca79fb8a3f3b9c",
+   "mtime": 1793362303
   },
   {
    "claim_id": "C-039",
@@ -1246,7 +1270,7 @@
    "problems": [],
    "size": 14956,
    "sha256": "491909db02d0a99c77ea463796996bcf7e52de71d8e527ebcee4485fb51213c9",
-   "mtime": 1793361668
+   "mtime": 1793362528
   }
  ]
 }

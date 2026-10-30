@@ -1531,7 +1531,13 @@ def main():
             o['status'] = 'scored'
             o['clarify_all']['passed'] = 3
             o['clarify_all']['pct'] = 4.7
-            # informative 仍为 None ⇒ 必须红
+            # ★★ T-A13b：这一向**必须显式删掉另一侧**。
+            #   旧版只把 all 设成数字，靠 informative 原本是 None 才算「只报一侧」——
+            #   artifact 一升到 scored（两侧都是整数）这一向就退化成**空操作**，
+            #   NC-56 (d) 当场变红。这就是「变异锚点依赖基线状态」的另一种形态：
+            #   锚点不是写死的数字，而是写死的「基线长什么样」。
+            o['clarify_informative']['passed'] = None
+            o['clarify_informative']['pct'] = None
         _d56, _rd56 = _l2d56(base=_mk56(_mut_d56))
 
         ok56 = (_fwd56 is True

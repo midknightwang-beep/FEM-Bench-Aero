@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_open_hole_panel_400x200_d20_cfrp090s",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"缺少 hole_d（开孔直径），请给出孔径数值\",\"缺少 hole_x 与 hole_y（孔心坐标），请说明孔位置偏心或居中\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 78,
+ "presentation": "spec_json_raw_name"
+}
