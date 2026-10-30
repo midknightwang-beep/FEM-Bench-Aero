@@ -22,22 +22,68 @@ RUNS = os.path.join(HERE, 'eval_runs')
 PY = sys.executable
 
 
-def require_dataset(fea=None):
-    """前置闸（W5a'）：金标准数据集本体不在 git（`modeling/` 被 .gitignore 排除，由
-    fetch_data.py 解包分发）。缺 gold 时 spec_fidelity 会把所有候选判成 spec_fail，
-    于是 clean clone 上「0/11」看起来像模型全错——**静默空转必须改成硬错误**。
+def case_id_of(task_id):
+    """`task_id` → 数据集目录名（去掉层前缀与候选后缀）。
+
+    ★ **与 evaluate_one() 内的同名转换必须逐字等价**——T-C1 已把原先散在三处的内联链
+      统一到本函数，并由 `_c1_caseid_equiv.py` 对两个卷全部 task_id 逐条断言新旧结果相等。
+      **改这里就是改金标准定位**，任何改动前先跑那个等价脚本。
+    """
+    return (task_id.replace('L1_', '').replace('L2_', '').replace('L3_', '')
+            .replace('_final', '').replace('cand_', ''))
+
+
+def require_dataset(fea=None, expect_ids=None):
+    """前置闸（W5a' → **T-C1 加深**）：金标准数据集必须**在**，不只是**目录在**。
+
+    背景：`modeling/` 不在 git（由 fetch_data.py 解包分发）。缺 gold 时 spec_fidelity 会把
+    所有候选判成 spec_fail，于是 clean clone 上「0/11」看起来像模型全错 —— 静默空转必须硬错。
+
+    ★ **为什么不能只查 `isdir`（B-1 实锤，D-6）**：`mkdir modeling` 就能骗过只查 isdir 的闸，
+      静默产出 `exam TSR 3/25 (12.0%)` 的**假成绩且无任何警告** —— 比缺数据更危险，
+      因为它带着一张看起来合法的成绩单。前置闸必须查**数据在不在**：
+      ①目录存在 ②目录里真有 `spec.json` ③给定任务卷时逐条覆盖。
+
+    参数
+    ----
+    fea : str, optional        数据集根（默认全局 FEA）
+    expect_ids : list, optional 任务卷的 `task_id` 列表；给了就要求逐条有 `spec.json`
+                                （挡「目录非空但不全」，如 v1.0 数据包 55 条 vs v7 卷 64 条）
 
     返回 None 表示可用；否则返回错误说明字符串。
     """
     fea = fea or FEA
     # 只硬性要求 modeling/（ccx 可发布树，evaluate 用它的 spec.json 作金标准）；
     # _xval/（Abaqus 树）按发布策略不随数据包分发，只有双码交叉校验才需要 ⇒ 不阻断评测。
-    need = [os.path.join(fea, 'modeling')]
-    missing = [p for p in need if not os.path.isdir(p)]
-    if missing:
-        return (f'缺少金标准数据集：{missing}（git 里没有数据集本体）。'
+    modeling = os.path.join(fea, 'modeling')
+    if not os.path.isdir(modeling):
+        return (f'缺少金标准数据集：{[modeling]}（git 里没有数据集本体）。'
                 f'先跑 `python fetch_data.py --src <FEM-Bench-Aero-v1.0-data.tar.gz>` 解包后再评测；'
                 f'否则所有候选都会被判 spec_fail，看起来像模型全错（W5a\' 已加此闸防静默空转）。')
+
+    # ② 目录存在 ≠ 数据在：空目录 / 解包到别处 / 解包失败都在这一层被挡。
+    have = [d for d in os.listdir(modeling)
+            if os.path.isfile(os.path.join(modeling, d, 'spec.json'))]
+    if not have:
+        return (f'金标准目录存在但里面没有任何 spec.json：{modeling}。'
+                f'这通常是**解包失败或解到了别处**，不是「数据正好没有」。'
+                f'（B-1 实测：只查 isdir 的前置闸会被 `mkdir modeling` 骗过，'
+                f'静默产出 exam TSR 3/25 的假成绩且不报警。）'
+                f'请重新跑 `python fetch_data.py --src <FEM-Bench-Aero-v1.0-data.tar.gz>` 并看它的条数核对。')
+
+    # ③ 给了任务卷就查覆盖：目录非空但不全时，缺的那几条会被静默判成 spec_fail。
+    if expect_ids:
+        missing = [t for t in expect_ids
+                   if not os.path.isfile(os.path.join(modeling, case_id_of(t), 'spec.json'))]
+        if missing:
+            sample = '、'.join(missing[:5])
+            more = '' if len(missing) <= 5 else f' …（共 {len(missing)} 条）'
+            return (f'金标准数据集不完整：{modeling} 里有 {len(have)} 条 spec.json，'
+                    f'但卷内 {len(expect_ids)} 条任务里有 {len(missing)} 条缺：{sample}{more}。'
+                    f'最常见原因是**数据包版本与任务卷版本不一致**'
+                    f'（v1.0 数据包 55 条 / v7 卷 64 条 —— 见 DATA.md），'
+                    f'缺的这几条会被静默判成 spec_fail，看起来像模型全错。'
+                    f'请换用与卷匹配的数据包，或改用该数据包覆盖的卷（`--tasks reports/papers/tasks_v6c.jsonl`）。')
     return None
 
 MIN_J = 0.30          # 关1 判据（D10）
@@ -250,8 +296,7 @@ def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800, skip_solve=F
 
     if skip_solve:
         # 负控快通道：只跑 spec_fidelity（字段级真值），不起求解器
-        case_id = (task['task_id'].replace('L1_', '').replace('L2_', '').replace('L3_', '')
-                   .replace('_final', '').replace('cand_', ''))
+        case_id = case_id_of(task['task_id'])
         gold_spec_path = os.path.join(FEA, 'modeling', case_id, 'spec.json')
         if os.path.exists(gold_spec_path):
             gold_spec = json.load(open(gold_spec_path, encoding='utf-8'))
@@ -301,8 +346,7 @@ def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800, skip_solve=F
     # W4d：剥离「gold 没有且属纯元数据」的自创键（FEASpec dataclass 不收未知键，
     # 判分层豁免的元数据不能在全链炸掉模型——两层口径一致）；语义自创键保留，
     # 由 FEASpec/pipeline 拒绝（编造语义候选 MSR 照死）。
-    case_id_early = (task_id.replace('L1_', '').replace('L2_', '').replace('L3_', '')
-                     .replace('_final', '').replace('cand_', ''))
+    case_id_early = case_id_of(task_id)
     gold_early_path = os.path.join(FEA, 'modeling', case_id_early, 'spec.json')
     metadata_stripped = []
     if os.path.exists(gold_early_path):
@@ -404,9 +448,7 @@ def evaluate_one(task, cand_spec_path, out_root=RUNS, timeout=1800, skip_solve=F
         result['fidelity_disp_dev_pct'] = round(dev_pct, 4)
 
     # ---- 4b. spec_fidelity 字段级真值（W4a P0-1 强制闸）----
-    case_id = task['task_id']
-    case_id = case_id.replace('L1_', '').replace('L2_', '').replace('L3_', '') \
-                     .replace('_final', '').replace('cand_', '')
+    case_id = case_id_of(task['task_id'])
     gold_spec_path = os.path.join(FEA, 'modeling', case_id, 'spec.json')
     if os.path.exists(gold_spec_path):
         gold_spec = json.load(open(gold_spec_path, encoding='utf-8'))

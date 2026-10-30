@@ -199,6 +199,14 @@ def main():
 
     tasks = {t['task_id']: t for t in load_tasks(tasks_path)
              if t['input_level'] == 'L3'}
+    # ★ T-C1（D-6 第二级）：上面那次只证明「目录在、里面有 spec.json」；这里查**覆盖**。
+    #   `--only` 指定本批时只查本批（否则只跑 3 条也会被另外 61 条的缺失挡住）；
+    #   `--reuse` 会把其余任务从复用源照抄，但照抄不出 gold ⇒ 仍需全覆盖，故只在有 only 时收窄。
+    _expect = sorted(tasks) if not only_ids else sorted(t for t in tasks if t in only_ids)
+    err = require_dataset(expect_ids=_expect)
+    if err:
+        print('[dataset] ' + err)
+        return 2
     cands = {}
     for fn in sorted(os.listdir(cand_dir)):
         if fn.endswith('.json'):

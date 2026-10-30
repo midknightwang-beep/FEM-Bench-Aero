@@ -2284,6 +2284,77 @@ def main():
     print(f"  [{'ok ' if ok66 else 'BAD!'}] NC-66 L2 族分层闭合六向（正向/删族级/Σn/Σpassed/不可加/换义/无对象）  "
           f"actual={det66}")
 
+    # NC-67（T-C1 / D-6）：**前置闸 `require_dataset` 必须查「数据在」，不是「目录在」。**
+    #   背景（T-B1 在真 clone 里实测）：旧实现只 `os.path.isdir(modeling)` ⇒ 第三方
+    #   `mkdir modeling` 就能骗过闸，静默跑出 `exam TSR 3/25 (12.0%)` 的**假成绩单且无任何警告**。
+    #   ⇒ 加两级实质检查（里面有 spec.json / 覆盖任务卷）。
+    #   五向：① 目录不存在（原有第一级不得被改坏）② 空目录 ③ 目录里有文件但没有 spec.json
+    #         ④ 有 spec.json 但覆盖不全 ⑤ 真实数据**不得误报**。
+    #   ★ 每向都要断言「红的原因对不对」——①与②③必须给出**不同**的原因，否则只是碰巧红（R69）。
+    import shutil as _sh67
+    import tempfile as _tf67
+    from evaluate import require_dataset as _rd67
+
+    def _mk67(root, n_specs, n_junk=0):
+        m = os.path.join(root, 'modeling')
+        os.makedirs(m, exist_ok=True)
+        for i in range(n_specs):
+            d = os.path.join(m, 'case_%02d' % i)
+            os.makedirs(d, exist_ok=True)
+            with open(os.path.join(d, 'spec.json'), 'w', encoding='utf-8') as f:
+                f.write('{}')
+        for i in range(n_junk):
+            d = os.path.join(m, 'junk_%02d' % i)
+            os.makedirs(d, exist_ok=True)
+            with open(os.path.join(d, 'model.bdf'), 'w', encoding='utf-8') as f:
+                f.write('x')
+        return m
+
+    _d67 = _tf67.mkdtemp()
+    try:
+        _e1 = _rd67(os.path.join(_d67, '__no_such__'))          # ① 根本没有 modeling/
+        _mk67(os.path.join(_d67, 'empty'), 0)                    # ② 空目录
+        _e2 = _rd67(os.path.join(_d67, 'empty'))
+        _mk67(os.path.join(_d67, 'junk'), 0, n_junk=3)           # ③ 有文件但没有 spec.json
+        _e3 = _rd67(os.path.join(_d67, 'junk'))
+        _mk67(os.path.join(_d67, 'partial'), 5)                  # ④ 有 5 条，卷要 55 条
+        _ask = ['L3_case_%02d' % i for i in range(55)]
+        _e4 = _rd67(os.path.join(_d67, 'partial'), expect_ids=_ask)
+        _e5 = _rd67()                                            # ⑤ 真实数据不得误报
+    finally:
+        _sh67.rmtree(_d67, ignore_errors=True)
+
+    _c67 = [
+        ('①目录不存在', bool(_e1), '缺少金标准数据集', _e1 or ''),
+        ('②空目录', bool(_e2), '没有任何 spec.json', _e2 or ''),
+        ('③有文件无 spec', bool(_e3), '没有任何 spec.json', _e3 or ''),
+        ('④覆盖不全', bool(_e4), '不完整', _e4 or ''),
+    ]
+    _mis67 = []
+    for _name, _red, _kw, _msg in _c67:
+        if not _red:
+            _mis67.append(f'{_name} 未变红')
+        elif _kw not in _msg:
+            _mis67.append(f'{_name} 红了但原因不对（缺「{_kw}」）')
+    # ④ 还必须报出**缺多少条**，否则「不完整」三个字对使用者毫无用处
+    if not _mis67 and '50' not in (_e4 or ''):
+        _mis67.append('④未报出缺失条数（期望 50）')
+    # ⑤ 正向不误报；且 ①与②③ 的原因必须不同，否则等于没区分「没解包」与「解包失败」
+    if _e5 is not None:
+        _mis67.append(f'⑤真实数据被误报：{_e5[:60]}')
+    if _e1 and _e2 and _e1 == _e2:
+        _mis67.append('①与②红的原因相同（无法区分「没有包」与「包解错了」）')
+    ok67 = not _mis67
+    det67 = ('五向全中（①缺失/②空目录/③有文件无 spec/④缺 50 条/⑤正向 None）'
+             if ok67 else '；'.join(_mis67))
+    results.append({'id': 'NC-67',
+                    'desc': 'T-C1 前置闸查「数据在」而非「目录在」：空目录/无 spec/覆盖不全必须红'
+                            '（D-6：旧实现被 mkdir 骗过，静默产出 exam 3/25 假成绩）',
+                    'expect': '①缺失 ②空目录 ③有文件无spec ④覆盖不全（须报条数） 各自因正确原因变红；⑤真实数据 None',
+                    'actual': det67, 'ok': ok67})
+    print(f"  [{'ok ' if ok67 else 'BAD!'}] NC-67 前置闸查数据实体五向"
+          f"（缺失/空目录/有文件无spec/覆盖不全/正向）  actual={det67}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，    # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；
     #           ③ 源码里必须存在 else 分支（缺 msr ⇒ 加一条 ok=False），防被改回去。

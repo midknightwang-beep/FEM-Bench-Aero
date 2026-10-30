@@ -425,6 +425,14 @@ def main():
 
     tasks = {t['task_id']: t for t in load_tasks(tasks_path)
              if t['input_level'] == 'L3'}
+    # ★ T-C1（D-6 第二级）：上面那次 `require_dataset()` 只证明「目录在、里面有 spec.json」；
+    #   这里再查**覆盖**——目录非空但不全时，缺的那几条会被静默判成 spec_fail。
+    #   只对 L3 查（`modeling/` 只覆盖 L3；L1/L2 是纯文本题，不该因缺 gold 而阻断）。
+    #   两次调用是有意为之：保留「缺数据优先于其它错误」的既有报错顺序。
+    err = require_dataset(expect_ids=sorted(tasks))
+    if err:
+        print('[dataset] ' + err)
+        return 2
     # W5b：exam 期望条数从考卷自动推（硬编码 11 在扩到 25 条后会让 partial 判断失真）
     # ★ T-A11a：必须按 `in STRATA` 数，不能按 `is not None`——v7 里 v11 也非空，
     #   若数成 34 则 `partial = (25 < 34) = True`，成绩单会被自己判成「半张」，误报。

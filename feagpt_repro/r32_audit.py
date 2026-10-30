@@ -309,6 +309,12 @@ def main():
     tasks = [t for t in load_tasks(tasks_path) if t['input_level'] == 'L3']
     if scope == 'exam':
         tasks = [t for t in tasks if stratum_of(t) is not None]
+    # ★ T-C1（D-6 第二级）：上面那次只证明「目录在、里面有 spec.json」；这里查**覆盖**。
+    #   按当前 scope 过滤后的实际任务集查（audit 只用这些题的 gold）。
+    err = require_dataset(expect_ids=[t['task_id'] for t in tasks])
+    if err:
+        print('[dataset] ' + err)
+        return 2
     rows, viol = [], []
     counts = collections.Counter()
     n_fields = 0

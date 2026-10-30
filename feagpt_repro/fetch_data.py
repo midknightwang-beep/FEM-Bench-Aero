@@ -2,11 +2,18 @@
 """
 fetch_data.py — 数据集本体获取与校验（W4a P0-5：让 v1.0 可复现）
 
-v1.0-rc 标签只含代码+清单+任务层；数据集本体（modeling/，236 MB）以归档包分发：
-  F:/FEA_Archive_20261024/FEM-Bench-Aero-v1.0-data.tar.gz + SHA256SUMS.txt
+v1.0-rc 标签只含代码+清单+任务层；数据集本体（modeling/，236 MB）以归档包分发，
+**不进 git**：
+  <DATA_DIR>/FEM-Bench-Aero-v1.0-data.tar.gz + SHA256SUMS.txt
+（`<DATA_DIR>` 是维护者给你的下载目录或随附介质 —— 见 FEM-Bench-Aero/DATA.md。
+  B-1 实测：本文件原先在这里写的是维护者本机绝对路径，第三方照抄必然失败。）
+
+★ **包与卷的版本必须匹配**：v1.0 数据包是 **55 条**，而 v7 任务卷是 **64 条** ⇒
+  用 v1.0 包跑 v7 卷会缺 9 条 gold。评测侧已由 `require_dataset(expect_ids=…)` 硬拦（T-C1），
+  会在开跑前报「数据集不完整：… 缺 N 条」，而不是静默把它们算成 spec_fail。
 
 用法：
-  python fetch_data.py --src F:/FEA_Archive_20261024/FEM-Bench-Aero-v1.0-data.tar.gz
+  python fetch_data.py --src <DATA_DIR>/FEM-Bench-Aero-v1.0-data.tar.gz
   python fetch_data.py --src <path> --dest ../FEM-Bench-Aero   # 默认解包到 ../FEM-Bench-Aero/
 校验：SHA256 对比 SHA256SUMS.txt（同目录）；解包后核对 modeling/ 目录条数 = manifest.n_cases。
 """
