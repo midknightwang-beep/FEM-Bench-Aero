@@ -23,9 +23,16 @@ PY="C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
 "$PY" negative_controls.py      # 必须全绿；条数以本次输出为准（R63）—— **必须先跑**（R59）
 "$PY" check_claims.py --json "$TEMP/check_claims_preflight.json"   # 必须 all_ok=True；条数以本次输出为准（R63）
 git status --short              # 先看清工作区；有别人未提交的改动时不要覆盖
+"$PY" check_commit.py --audit   # 工作区必须干净（除白名单）；rc=0 才开工
 ```
 
 > **⚠ 为什么命令块里写成 `"$PY"` 而不是 `python`**（T-A12a）：旧版这里写裸 `python`，紧跟的下一条 ⚠ 又说「负控必须用 venv」—— **同一节自相矛盾**，而 CLAUDE.md 只是照抄了它的命令块。任何一个 Agent 按字面执行都会在负控上 `ModuleNotFoundError: numpy`，然后把它记成环境/数据失败（R16 红线）。**修的是根，不是抄本。**
+
+> **⚠ 提交闸（D5）：`check_commit.py` + pre-commit hook**
+> 本仓库已装 `.git/hooks/pre-commit`，`git commit` 时会自动跑 `check_commit.py`。它守的判据是**「暂存区 == 工作区全部非白名单改动」**——堵的是 T-C1 那次「只 `add` 了新增文件、12 个改动全漏在工作区」的事故（当时 `git status` 是绿的、所有门禁也是绿的，因为门禁跑的是**工作区**，不是**提交**）。
+> **★ hook 不入库**（`.git/` 不被追踪）⇒ **新 clone / 换机后必须跑一次 `"$PY" check_commit.py --install-hook`，否则这道闸等于不存在。**
+> 白名单是例外，规则写在 `feagpt_repro/commit_allowlist.json` 自己身上（每条必须带 `reason`；文件一旦入库、或磁盘上已消失，闸即判红强制清理；名单内文件不得进入任何对外数字）。
+> `--no-verify` 能绕过，但**等于主动放弃这条闸**，只在确认「就是要提交半截」时才用，并须在报告里写明原因。
 
 > **⚠ dataset / 求解类脚本必须用项目 venv**（R60）：`verify_dataset` / `check_forms` / `score_baseline` / `msr_l3` / `eval_dataset` / `dedup_dataset` / `run_pipeline` 一律用 `…/envs/default/Scripts/python.exe`；**系统 python 缺 numpy/gmsh**，报 `ModuleNotFoundError` 是**环境问题、不得记成数据失败**（R16）。
 >
