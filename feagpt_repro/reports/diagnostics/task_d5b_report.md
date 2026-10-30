@@ -76,6 +76,36 @@ H0 非 git 目录 ⇒ 无对象       红=无  [not_applicable]
 - 负控 **69/69**（未加 NC → C-019 的 69 链、S-44/NC-49 循环依赖均未触发）
 - `check_claims` **33 claims / 68 artifacts / 语义项 61 条 → 全过**
 
+### 4.4 真 clone 对照实验（R67：构造性零差异）
+
+「自检通过」不等于「新 clone 里拦得住」。用 `git clone --shared` 各建一次，对比**改动前**与**改动后**两个提交：
+
+| 提交 | clone 里 `check_claims` 的红项 | 语义项 |
+|---|---|---|
+| `4c3d58d`（T-D5b 之前） | S-39 / S-43 / S-45 / S-59 —— **4 项** | 60 |
+| `7eb0d00`（T-D5b 之后） | 同上 4 项 **+ S-61** —— 5 项 | 61 |
+
+⇒ **差异恰好只有 S-61 一项**，其余 4 项在改动前就存在。新 clone 里 S-61 的输出：
+
+```
+[FAIL] S-61 … 生效目录=<clone>\.git\hooks；H1=BAD H2=skip H3=skip；红=H1
+       ⇒ **提交闸当前不会运行**（跑 `check_commit.py --install-hook`）
+```
+
+**这正是 D5b 想要的行为**：新 clone 没有 hook，自检直接报出来，并给出可执行的修复命令。
+
+#### ★ 顺手发现的 D 段遗留（不属 D5b 范围，已登记）
+
+新 clone 里那 4 项红**与本次改动无关**，其中至少 2 项是**真实的第三方可用性阻断**：
+
+| 项 | 原因（已查明） |
+|---|---|
+| **S-39 / S-43** | `node_modules/` 被 `.gitignore` 忽略 ⇒ 新 clone 里**没有** ⇒ `node gen_candidates_v2.js --print-prompt-sha` 直接 `rc=1` ⇒ 判据读不到当前 prompt sha。**第三方需先 `npm install`**，而 `QUICKSTART.md` 没写这一步 |
+| S-45 | 记录的是**原机** artifact `mtime`；clone 后文件时间戳是 checkout 时间 ⇒ 必然不等。结构性结果，非配置错误 |
+| S-59 | 未查明（本轮不处理，留给 D 段立项） |
+
+按单变量纪律，**本轮不改 `QUICKSTART.md`**（不在契约 allowlist 内）⇒ 登记为 follow-up **F-1**。
+
 ## 5. 三条现场自纠（都是自检抓出来的，不是读代码看出来的）
 
 **① 八向「全绿」是假绿。** 首版自检 8 向全部通过，但明细里每行都带 `[not_applicable]` —— 我定义了 `_mk_repo()` 却忘了在 `probe()` 里调用，临时目录根本没 `git init`，于是 `applicable=False`、8 向全是「红=无」。
