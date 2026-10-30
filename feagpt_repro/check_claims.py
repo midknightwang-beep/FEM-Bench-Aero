@@ -395,6 +395,95 @@ def v7_dual_denominator_audit(root, names=None):
     return ok, '；'.join(det)
 
 
+def judge_metadata_fix_consistency(here, fix_path=None, tasks_path=None, scorecard_paths=None):
+    """S-59（T-P1a / R71）：**判分元数据修正表**必须自洽、不过期、且不制造新的同类错误。
+
+    ★ 参数化是为了让负控能在**临时目录**里造变异、而不弄脏工作区（NC-65 五向）。
+    """
+    probs, det = [], []
+    fix_p = fix_path or os.path.join(here, 'tasks', 'clarify_wrong_keys_fix.json')
+    tasks_p = tasks_path or os.path.join(here, 'tasks', 'tasks.jsonl')
+    if not os.path.exists(fix_p):
+        return True, '无修正表（正常态，R71 不要求必须有）'
+    try:
+        raw = json.load(open(fix_p, encoding='utf-8'))
+    except Exception as e:                                    # noqa: BLE001
+        return False, f'修正表 JSON 解析失败：{type(e).__name__}: {e}'
+    fixes = raw.get('fixes') or []
+    rows = {}
+    for ln in open(tasks_p, encoding='utf-8'):
+        if ln.strip():
+            t = json.loads(ln)
+            rows[t['task_id']] = t
+    try:
+        from _audit_clarify_meta import FAMILY_STRINGER_KEY as _FK
+    except Exception:                                          # noqa: BLE001
+        _FK = {}
+        probs.append('取不到 R34 族键契约（`_audit_clarify_meta.FAMILY_STRINGER_KEY`）')
+    # (a)(b)(c)
+    covered = set()
+    for i, f in enumerate(fixes):
+        tag = f"{f.get('task_id')}#{i}"
+        miss = [k for k in ('task_id', 'field', 'from', 'to', 'reason') if not f.get(k)]
+        if miss:
+            probs.append(f'{tag} 缺字段 {miss}')
+            continue
+        tid, fld = f['task_id'], f['field']
+        if tid not in rows:
+            probs.append(f'{tag} 指向不存在的任务（当前卷里没有 `{tid}`）')
+            continue
+        cur = rows[tid].get(fld)
+        if not isinstance(cur, list) or sorted(cur) != sorted(f['from']):
+            probs.append(f'{tag} 已过期：卷现值 {cur} ≠ 表里 from {f["from"]}'
+                         '（卷改过就必须同步改表，否则不得静默留用）')
+            continue
+        own = _FK.get(rows[tid].get('family'))
+        if own and own in (f['to'] or []):
+            probs.append(f'{tag} 的 to 包含本族 R34 正确键 `{own}`'
+                         '（等于用修正表再制造一次同样的错）')
+            continue
+        covered.add((tid, fld))
+        det.append(f'{tid}:{fld} {f["from"]}→{f["to"]}')
+    # (d) 新增矛盾不得静默
+    uncovered = []
+    for tid, t in rows.items():
+        own = _FK.get(t.get('family'))
+        if not own:
+            continue
+        if own in (t.get('clarify_wrong_keys') or []) and (tid, 'clarify_wrong_keys') not in covered:
+            uncovered.append(tid)
+    if uncovered:
+        probs.append(f'当前卷有 {len(uncovered)} 条「本族正确键被登记成错族键」但修正表没覆盖：'
+                     f'{uncovered[:5]}')
+    # (e) 成绩单必须留痕且不过期
+    fix_sha = sha256_file(fix_p)
+    scps = scorecard_paths if scorecard_paths is not None else [
+        os.path.join(here, 'reports', f'baseline_scorecard_L3_v7_{m}.json') for m in ('glm', 'ds')]
+    for m, sp in zip(('glm', 'ds'), scps):
+        if not os.path.exists(sp):
+            continue
+        prov = (json.load(open(sp, encoding='utf-8')).get('provenance') or {})
+        jo = prov.get('judge_overrides') or {}
+        if not jo.get('sha256'):
+            probs.append(f'成绩单 v7 {m} 的 provenance 没记 judge_overrides'
+                         '（用了表却不记 = 两份成绩单口径不同而看不出差别）')
+            continue
+        if jo['sha256'] != fix_sha:
+            probs.append(f'成绩单 v7 {m} 记的表 sha 与磁盘不一致（artifact 过期）')
+            continue
+        want = sorted({tid for (tid, fld) in covered if fld == 'clarify_wrong_keys' and tid in rows})
+        got = sorted(jo.get('applied_to') or [])
+        if got != want:
+            probs.append(f'成绩单 v7 {m} 的 applied_to={got} 与表命中当前卷的 {want} 不符')
+        else:
+            det.append(f'v7 {m} 留痕一致（applied_to={got}）')
+    if probs:
+        return False, '；'.join(probs)
+    return True, (f'修正表 {len(fixes)} 条、from 均等于卷现值、to 不含本族正确键、'
+                  '卷内无未覆盖矛盾；两份成绩单 provenance 的 sha 与 applied_to 均一致。'
+                  + ('明细：' + '；'.join(det) if det else ''))
+
+
 def r32_scope_policy(root, cur_sha=None):
     """S-57（T-A12b，第十四轮 P1-3）：**R32 两个 scope 的口径必须可分、可判、不过期**。
 
@@ -2428,6 +2517,24 @@ def semantic_checks(root, rows):
         '`judge_clarify_field_level` 函数体（去注释后）零 `x in text` 且两处都调 `_alias_hit`；'
         '行为两向：只写超串须 FAIL、`structure.params.x` 须 PASS',
         _det58, _ok58)
+
+    # S-59（T-P1a / R71）：**判分元数据修正表**必须自洽、不过期、且不制造新的同类错误。
+    #   ★ 为什么必须有这条闸：R71 允许「用修正表修事实错误」，这就开了一个**可写入判分口径**的口子。
+    #     没有闸的话，它退化成「想改哪个数就加一条 fix」—— 与 R69「放宽必须有边界」同一个坑。
+    #   ★ 五条断言各自能独立证伪（NC-65 五向）：
+    #     (a) 结构齐全：task_id / field / from / to / reason 都在
+    #     (b) **不过期**：`from` 必须逐字等于当前卷现值 —— 卷一变，表自动失效（而不是静默留用）
+    #     (c) **不制造新错**：`to` 不得包含该族的 R34 正确键（否则等于换个写法再犯一次同样的错）
+    #     (d) **新增矛盾不得静默**：卷里凡「本族正确键被登记成错族键」的题，必须被表覆盖
+    #     (e) **用了必须留痕**：成绩单 provenance.judge_overrides 的 sha 必须等于磁盘上的表，
+    #         且 applied_to 必须与「表里命中当前卷的条目」逐条相等
+    _ok59, _det59 = judge_metadata_fix_consistency(HERE)
+
+    add('S-59', '判分元数据修正表必须自洽、不过期、不制造新错，且必须记进成绩单 provenance（R71）',
+        'fixes 每条须有 task_id/field/from/to/reason；(b) from 必须逐字等于当前卷现值；'
+        '(c) to 不得含该族 R34 正确键；(d) 卷内凡「本族正确键被登记为错族键」的题必须被覆盖；'
+        '(e) 成绩单 provenance.judge_overrides 的 sha256 须等于磁盘表、applied_to 须与命中集相等',
+        _det59, _ok59)
 
     return out
 

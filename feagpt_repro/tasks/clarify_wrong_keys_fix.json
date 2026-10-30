@@ -1,0 +1,25 @@
+{
+ "_note": "判分元数据的显式修正表（P-1a）。★ 这是**判分口径的一部分**，不是卷面：`tasks/tasks.jsonl` 一个字节不动（S-52 卷链语义是「只许加行」，改行会让链断）。每条修正必须可通过 S-59 校验：from 必须逐字等于当前卷现值、to 不得包含该族 R34 正确键、reason 非空。用途仅限「修事实错误」，不得用于改阈值或口径（R71）。",
+ "_version": "p1-1",
+ "_created": "2026-10-30",
+ "_evidence": "reports/diagnostics/p1_overclarify_policy.md（决策材料 + 影响面量化）",
+ "_r19_note": "R34 键名契约：wingbox 用 n_stringers_per_skin；fuselage_barrel / stiffened_panel 用 n_stringers；open_hole_panel 无长桁键。",
+ "fixes": [
+  {
+   "task_id": "L3_naca4412_wingbox",
+   "field": "clarify_wrong_keys",
+   "from": [
+    "n_stringers_per_skin"
+   ],
+   "to": [
+    "n_stringers"
+   ],
+   "reason": "原登记把**本族正确键**当错族键：R34 规定翼盒族长桁数键就是 n_stringers_per_skin。原登记使 ds 的「先问对 n_ribs、又多问一句 n_stringers_per_skin」被判 clarify_wrong，判分理由（「使用了错族键名」）与事实相反。改为 n_stringers（柱壳/加筋板族的键），保留「错族键」这一概念，且 R70 的 token 边界保证它不会吃掉 n_stringers_per_skin。",
+   "evidence": [
+    "reports/diagnostics/p1_overclarify_policy.md §1/§3",
+    "_audit_clarify_meta.py（W5c-6d 第 ① 条已记此缺陷）"
+   ],
+   "observed_effect": "candidates_l3_v7_ds/L3_naca4412_wingbox.json: clarify_wrong -> clarify_ok（1 条翻转，逐题模拟确认）"
+  }
+ ]
+}

@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_66.json）",
-   "expect": "66/66",
-   "actual": "66/66",
+   "desc": "C-019 负控通过数（源 negative_controls_67.json）",
+   "expect": "67/67",
+   "actual": "67/67",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "66",
-   "actual": "66",
+   "expect": "67",
+   "actual": "67",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 6.5",
-   "actual": "6.5",
+   "expect": "全部 = 6.6",
+   "actual": "6.6",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "66/66",
-   "actual": "66/66",
+   "expect": "67/67",
+   "actual": "67/67",
    "ok": true,
    "skip": false
   },
@@ -366,7 +366,7 @@
    "id": "S-44",
    "desc": "官方导航文件 INDEX 的 headline 指向与负控编号必须与 artifact 一致（R58）",
    "expect": "含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致",
-   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L26 主区间 NC-23..64 / 总数 66；artifact 最大 NC-64、共 66 条",
+   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L26 主区间 NC-23..65 / 总数 67；artifact 最大 NC-65、共 67 条",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793364186/1793364186；check 1793364422 vs 负控 1793364186",
+   "actual": "C-019 mtime 记录/实际 = 1793366602/1793366602；check 1793366716 vs 负控 1793366602",
    "ok": true,
    "skip": false
   },
@@ -471,6 +471,14 @@
    "desc": "判据的字符串匹配必须有边界（R70）：ASCII 标识符按 token 边界，中文按子串",
    "expect": "`_alias_hit` 存在且 ASCII 分支含 `(?<!…)`/`(?!…)`/`re.escape`/`fullmatch` 分流；`judge_clarify_field_level` 函数体（去注释后）零 `x in text` 且两处都调 `_alias_hit`；行为两向：只写超串须 FAIL、`structure.params.x` 须 PASS",
    "actual": "静态：`_alias_hit` 有 re.escape + 两侧边界 + ASCII/非 ASCII 分流；判分函数零裸子串、两处都走 `_alias_hit`。行为：假通过已关、点前缀不过严",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-59",
+   "desc": "判分元数据修正表必须自洽、不过期、不制造新错，且必须记进成绩单 provenance（R71）",
+   "expect": "fixes 每条须有 task_id/field/from/to/reason；(b) from 必须逐字等于当前卷现值；(c) to 不得含该族 R34 正确键；(d) 卷内凡「本族正确键被登记为错族键」的题必须被覆盖；(e) 成绩单 provenance.judge_overrides 的 sha256 须等于磁盘表、applied_to 须与命中集相等",
+   "actual": "修正表 1 条、from 均等于卷现值、to 不含本族正确键、卷内无未覆盖矛盾；两份成绩单 provenance 的 sha 与 applied_to 均一致。明细：L3_naca4412_wingbox:clarify_wrong_keys ['n_stringers_per_skin']→['n_stringers']；v7 glm 留痕一致（applied_to=['L3_naca4412_wingbox']）；v7 ds 留痕一致（applied_to=['L3_naca4412_wingbox']）",
    "ok": true,
    "skip": false
   }
@@ -688,9 +696,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 44864,
-   "sha256": "52011f285b55c2ccccab4a6383f19c250bb8e6eb05123495ddea24069bde18db",
-   "mtime": 1793364322
+   "size": 45923,
+   "sha256": "e044dd2ac9778da4749304c8a0550a314f0c8f1d6e0b5dc51b31874c756658b7",
+   "mtime": 1793366564
   },
   {
    "claim_id": "C-027",
@@ -1072,9 +1080,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 81980,
-   "sha256": "2e625af29757b1dacef89e3d7d74c5f02195255fd08dbef15b0fcc4e2aac0448",
-   "mtime": 1793364102
+   "size": 84312,
+   "sha256": "e4185f792ec3bb271eab247ac8eae6a165052b34be34be5911ed0faace36c4c1",
+   "mtime": 1793366131
   },
   {
    "claim_id": "C-040",
@@ -1084,9 +1092,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 79049,
-   "sha256": "c086fa2e54709e166a06a86e235d8483ba7da3b9cfc143a6a5a26045cee717bb",
-   "mtime": 1793364107
+   "size": 81353,
+   "sha256": "23bc1e4fed93776bc80d0ec15d8595304917b07c6bc24e5a8014895df042150d",
+   "mtime": 1793366133
   },
   {
    "claim_id": "C-040",
@@ -1098,7 +1106,7 @@
    "problems": [],
    "size": 3764,
    "sha256": "c67456ba515c8db773dcbea4e4212b8790bf98d8b51ad220cef55e572b103cc0",
-   "mtime": 1793288012
+   "mtime": 1793366132
   },
   {
    "claim_id": "C-040",
@@ -1108,9 +1116,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 3759,
-   "sha256": "25d8ac5534c840412c1721ae751f59ffa6468fd103954137a0247eb92b2b4174",
-   "mtime": 1793289552
+   "size": 3763,
+   "sha256": "f924a806cc63e052a3ded9e9ffa4f48cfbc3ab29be3c879d32112a3a7a260f31",
+   "mtime": 1793366134
   },
   {
    "claim_id": "C-035",
@@ -1218,7 +1226,7 @@
    "problems": [],
    "size": 997,
    "sha256": "d320084004e43ce2bccfdc868930e4a7c18e889cd4579ea37f6df262a47f7cdc",
-   "mtime": 1793031393
+   "mtime": 1793366755
   },
   {
    "claim_id": "C-032",
@@ -1282,15 +1290,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_66.json",
+   "artifact": "feagpt_repro/reports/negative_controls_67.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 15688,
-   "sha256": "c266aceb3689d3bcb03276814d752e54083d1c7d12cf96fda198884f505e975c",
-   "mtime": 1793364186
+   "size": 16087,
+   "sha256": "96bebcc6e88fad2dbe2bac72f25668845a0d1b67b8323871b515dbc5c3d452d9",
+   "mtime": 1793366602
   }
  ]
 }

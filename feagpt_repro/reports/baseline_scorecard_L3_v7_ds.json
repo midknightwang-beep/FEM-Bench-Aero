@@ -19,7 +19,7 @@
  "first_pass_valid": 3,
  "n_unresolved": 0,
  "provenance": {
-  "label": "T-A11b v7 x deepseek-v4-pro prompt-v2 (paper v7 64, candidates_l3_v7_ds)",
+  "label": "C-040 v7 x ds (paper v7, candidates ds)",
   "tasks_path": "reports/papers/tasks_v7.jsonl",
   "tasks_sha256": "caf0f6c3be8131c5b817a0bacfcca8ad3893fcfb95e29d8d9b525866a63e195a",
   "candidates_dir": "candidates_l3_v7_ds",
@@ -27,7 +27,17 @@
   "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
   "prompt_sha256_note": "读自候选文件（生成时对 SYS prompt 取的 sha256）。UNKNOWN = 该批候选生成时未记录 ⇒ 与任何批次都不可比（R53）",
   "n_candidates": 64,
-  "generated_by": "score_baseline.py"
+  "generated_by": "score_baseline.py",
+  "judge_overrides": {
+   "path": "tasks/clarify_wrong_keys_fix.json",
+   "sha256": "517b32d07d4c162b210d8cf058571bdb2d075df34fca747661ddb4d351ed2d8e",
+   "version": "p1-1",
+   "n_fixes": 1,
+   "applied_to": [
+    "L3_naca4412_wingbox"
+   ],
+   "note": "判分元数据修正表（R71）：只许修「与 R34 键名契约矛盾」的事实错误；from 必须等于卷现值，否则不应用（S-59 守）。"
+  }
  },
  "n_tasks": 64,
  "n_tasks_in_paper": 64,
@@ -39,16 +49,16 @@
  "partial_candidates": false,
  "underpowered": false,
  "tsr": {
-  "pass": 53,
+  "pass": 54,
   "total": 64,
-  "pct": 82.8
+  "pct": 84.4
  },
  "exam": {
   "n": 25,
   "tsr": {
-   "pass": 22,
+   "pass": 23,
    "total": 25,
-   "pct": 88.0
+   "pct": 92.0
   },
   "sfr": {
    "pass": 20,
@@ -56,10 +66,10 @@
    "pct": 95.2
   },
   "categories": {
-   "clarify_ok": 2,
+   "clarify_ok": 3,
    "spec_pass": 20,
-   "clarify_wrong": 2,
-   "spec_fail": 1
+   "spec_fail": 1,
+   "clarify_wrong": 1
   },
   "msr": "19/21"
  },
@@ -85,9 +95,9 @@
  "exam_full": {
   "n": 34,
   "tsr": {
-   "pass": 31,
+   "pass": 32,
    "total": 34,
-   "pct": 91.2
+   "pct": 94.1
   },
   "sfr": {
    "pass": 28,
@@ -95,10 +105,10 @@
    "pct": 96.6
   },
   "categories": {
-   "clarify_ok": 3,
+   "clarify_ok": 4,
    "spec_pass": 28,
-   "clarify_wrong": 2,
-   "spec_fail": 1
+   "spec_fail": 1,
+   "clarify_wrong": 1
   },
   "note": "exam_full = exam(legacy) + exam_v11（C-037 双分母）。与 C-032 的 exam 25 条**不可相减**（R54），只可并列陈述。",
   "msr": "27/29"
@@ -142,7 +152,7 @@
   "n_clarify_tasks": 5,
   "fabrication_rate_pct": 20.0,
   "overclarify": 1,
-  "clarify_wrong_field": 1
+  "clarify_wrong_field": 0
  },
  "by_split": {
   "train": {
@@ -221,9 +231,9 @@
   "interpolation": {
    "n": 6,
    "tsr": {
-    "pass": 5,
+    "pass": 6,
     "total": 6,
-    "pct": 83.3
+    "pct": 100.0
    },
    "sfr": {
     "pass": 5,
@@ -231,7 +241,7 @@
     "pct": 100.0
    },
    "categories": {
-    "clarify_wrong": 1,
+    "clarify_ok": 1,
     "spec_pass": 5
    }
   },
@@ -265,6 +275,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": true,
+   "n_questions": 1,
    "turns_used": 1,
    "text": "[\"n_frames\"]",
    "expected": [
@@ -286,6 +297,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 0,
@@ -304,6 +316,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 0,
@@ -322,6 +335,7 @@
    "is_exam": false,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 0,
@@ -340,6 +354,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 0,
@@ -358,6 +373,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 0,
@@ -376,6 +392,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 0,
@@ -388,21 +405,37 @@
    "task_id": "L3_naca4412_wingbox",
    "split_v2": "interpolation_test",
    "family": "wingbox",
-   "category": "clarify_wrong",
-   "tsr_pass": false,
+   "category": "clarify_ok",
+   "tsr_pass": true,
    "exam_stratum": "interpolation",
    "is_exam": true,
    "is_exam_full": true,
    "ec": true,
+   "n_questions": 2,
    "turns_used": 3,
    "text": "[\"题面提到若干翼肋等距布置，但未给出具体翼肋数量 n_ribs，请提供肋的数量。\",\"题面未明确蒙皮长桁数量 n_stringers_per_skin，请提供每侧蒙皮长桁数；若确实无长桁，请明确说明为 0。\"]",
    "expected": [
     "n_ribs"
    ],
-   "wrong_keys_hit": [
-    "n_stringers_per_skin"
-   ],
-   "note": "问题使用了错族键名（键名即契约，R19）"
+   "wrong_keys_override": {
+    "field": "clarify_wrong_keys",
+    "from": [
+     "n_stringers_per_skin"
+    ],
+    "to": [
+     "n_stringers"
+    ],
+    "reason": "原登记把**本族正确键**当错族键：R34 规定翼盒族长桁数键就是 n_stringers_per_skin。原登记使 ds 的「先问对 n_ribs、又多问一句 n_stringers_per_skin」被判 clarify_wrong，判分理由（「使用了错族键名」）与事实相反。改为 n_stringers（柱壳/加",
+    "table_version": "p1-1"
+   },
+   "alias_hits": {
+    "n_ribs": [
+     "n_ribs",
+     "翼肋",
+     "肋数",
+     "肋的数量"
+    ]
+   }
   },
   {
    "task_id": "L3_naca4412_wingbox_n_ribs3_chord1000",
@@ -414,6 +447,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -432,6 +466,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -450,6 +485,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -468,6 +504,7 @@
    "is_exam": false,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -486,6 +523,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -504,6 +542,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -522,6 +561,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -540,6 +580,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -558,6 +599,7 @@
    "is_exam": false,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -576,6 +618,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -594,6 +637,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -612,6 +656,7 @@
    "is_exam": false,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -630,6 +675,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -648,6 +694,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -666,6 +713,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -684,6 +732,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -702,6 +751,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -720,6 +770,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -738,6 +789,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 27,
    "n_fail": 0,
@@ -756,6 +808,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 28,
    "n_fail": 0,
@@ -774,6 +827,7 @@
    "is_exam": false,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 27,
    "n_fail": 0,
@@ -792,6 +846,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 27,
    "n_fail": 0,
@@ -810,6 +865,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -828,6 +884,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -846,6 +903,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -864,6 +922,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -882,6 +941,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -900,6 +960,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -918,6 +979,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -936,6 +998,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -954,6 +1017,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -972,6 +1036,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -990,6 +1055,7 @@
    "is_exam": false,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -1008,6 +1074,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -1026,6 +1093,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -1044,6 +1112,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 26,
    "n_fail": 2,
@@ -1065,6 +1134,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 26,
    "n_fail": 2,
@@ -1086,6 +1156,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 26,
    "n_fail": 2,
@@ -1107,6 +1178,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": true,
+   "n_questions": 0,
    "turns_used": 2,
    "note": "澄清题静默编造 spec（缺 ['hole_d']）",
    "expected_clarifications": [
@@ -1123,6 +1195,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 1,
@@ -1143,6 +1216,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 1,
@@ -1163,6 +1237,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 1,
    "turns_used": 3,
    "clarify": "[\"open_hole_panel 的 layup 字段在当前契约中应为 number，无法表达铺层对象；请确认铺层板参数应如何提供，或该模型是否应按均质铝板处理\"]",
    "note": "该答不答（信息完备却澄清）"
@@ -1177,6 +1252,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 3,
    "n_fields": 18,
    "n_fail": 1,
@@ -1197,6 +1273,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
@@ -1215,6 +1292,7 @@
    "is_exam": false,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
@@ -1233,6 +1311,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
@@ -1251,6 +1330,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
@@ -1269,6 +1349,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
@@ -1287,6 +1368,7 @@
    "is_exam": false,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
@@ -1305,6 +1387,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
@@ -1323,6 +1406,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
@@ -1341,6 +1425,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 14,
    "n_fail": 0,
@@ -1359,6 +1444,7 @@
    "is_exam": true,
    "is_exam_full": true,
    "ec": true,
+   "n_questions": 1,
    "turns_used": 1,
    "text": "[\"n_stringers\"]",
    "expected": [
@@ -1380,6 +1466,7 @@
    "is_exam": false,
    "is_exam_full": true,
    "ec": true,
+   "n_questions": 1,
    "turns_used": 1,
    "text": "[\"n_stringers\"]",
    "expected": [
@@ -1401,6 +1488,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 14,
    "n_fail": 2,
@@ -1422,6 +1510,7 @@
    "is_exam": false,
    "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 14,
    "n_fail": 2,
@@ -1439,12 +1528,12 @@
   "TSR_floor_used": "T1_retrieval",
   "TSR_T1_exam_pct": 0.0,
   "TSR_T1plus_exam_pct": 0.0,
-  "TSR_LLM_exam_pct": 88.0,
-  "delta_pp": 88.0,
+  "TSR_LLM_exam_pct": 92.0,
+  "delta_pp": 92.0,
   "field_level": {
    "floor_hit_rate": 0.8593,
-   "llm_hit_rate": 0.9094,
-   "delta_pp": 5.0,
+   "llm_hit_rate": 0.9508,
+   "delta_pp": 9.2,
    "floor_n_fields_gated_avg": 21.5,
    "floor_n_fail_exam": {
     "min": 1,
@@ -1452,15 +1541,15 @@
     "max": 5,
     "n_with_0_fail(T1+ 通过)": 0
    },
-   "n_exam_counted": 23,
-   "n_excluded_clarify_ok": 2,
-   "n_zero_non_spec": 2,
+   "n_exam_counted": 22,
+   "n_excluded_clarify_ok": 3,
+   "n_zero_non_spec": 1,
    "note": "地板 = 逐字段族级众数（不读输入的最强策略）；n_fail_exam 是地板「差几个受判字段才过」的分布。分母构成：n_exam_counted = 计入题数（含记 0 的编造题），n_excluded_clarify_ok = 合法澄清（无 spec 可判，排除），n_zero_non_spec = 编造/答非所问（**记 0，不排除**）。",
    "verdict": "BELOW"
   },
   "criterion": ">= 10 pp 才算 LLM 真有增量（专家 6.3.1）；n_exam<20 ⇒ underpowered 不得判 PASS（R12）",
   "verdict": "PASS",
-  "verdict_split": "任务级 PASS / 字段级 BELOW（Δ5.0 pp）—— 两尺度结论相反，文档必须并列报，禁止只引有利的一侧（R49）"
+  "verdict_split": "任务级 PASS / 字段级 BELOW（Δ9.2 pp）—— 两尺度结论相反，文档必须并列报，禁止只引有利的一侧（R49）"
  },
  "msr_section": {
   "note": "全链 MSR（R14/R16/R23，W5a 修正）：契约闸+ccx 求解+关1+关4+fidelity+spec_fidelity 全 PASS；分母 = spec-required 且非澄清题（R23：澄清/未收敛候选不计，编造归 FPR）；依赖预检不过即环境退出；失败分层 env/contract/model/solver，env 不计模型失败。",

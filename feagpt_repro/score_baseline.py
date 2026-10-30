@@ -112,6 +112,89 @@ def sha256_file(p):
     return h.hexdigest()
 
 
+# ══════════════════════════════════════════════════════════════════════════
+# 判分元数据修正表（T-P1a / R71）
+# ══════════════════════════════════════════════════════════════════════════
+# ★ 为什么要有这一层，而不是直接改 `tasks/tasks.jsonl`：
+#   `tasks.jsonl` 与 `reports/papers/tasks_v7.jsonl` 同 sha，是**冻结件**；
+#   S-52 的卷链语义是「跨版只许加行、不许改老行」⇒ 改一行会让链断，
+#   并连带作废所有下游 sha 锚点（r32 artifact 的 `paper_sha256`、成绩单 provenance、S-57）。
+#   把修正单独成表：卷不动、sha 不变、修正可审计可回滚，且反过来多一条可判不变量（S-59）。
+#
+# ★ 用途边界（R71）：**只许修事实错误**（登记与 R34 键名契约矛盾），
+#   不得用于改阈值、改口径、或让某个模型好看。每条必须带 reason + evidence，
+#   且 `from` 必须逐字等于当前卷现值（卷一变，表自动失效，不会静默留用）。
+OVERRIDES_PATH = os.path.join(HERE, 'tasks', 'clarify_wrong_keys_fix.json')
+_OV_CACHE = {'path': None, 'mtime': None, 'data': None}
+
+
+def load_judge_overrides(path=None):
+    """→ {(task_id, field): fix_dict}。文件不存在 = 无修正（正常态）。"""
+    p = path or OVERRIDES_PATH
+    if not os.path.exists(p):
+        return {}
+    mt = os.path.getmtime(p)
+    if _OV_CACHE['path'] == p and _OV_CACHE['mtime'] == mt and _OV_CACHE['data'] is not None:
+        return _OV_CACHE['data']
+    raw = json.load(open(p, encoding='utf-8'))
+    out = {}
+    for f in (raw.get('fixes') or []):
+        out[(f.get('task_id'), f.get('field'))] = f
+    _OV_CACHE.update({'path': p, 'mtime': mt, 'data': out})
+    return out
+
+
+def _effective_wrong_keys(task):
+    """→ (wrong_keys, override_applied_or_None)
+
+    应用的充要条件：表里有 (task_id, 'clarify_wrong_keys')，**且** `from` 与卷现值逐字相等。
+    `from` 不等 ⇒ 表已过期 ⇒ **不应用**，并在 detail 里如实标 `skipped`（不静默）。
+    """
+    raw = task.get('clarify_wrong_keys')
+    cur = raw if isinstance(raw, list) else []
+    ov = load_judge_overrides().get((task.get('task_id'), 'clarify_wrong_keys'))
+    if not ov:
+        return cur, None
+    if sorted(cur) != sorted(ov.get('from') or []):
+        return cur, {'skipped': 'from 与当前卷现值不符（修正表已过期，S-59 会报红）',
+                     'current': cur, 'table_from': ov.get('from')}
+    return list(ov.get('to') or []), {
+        'field': 'clarify_wrong_keys',
+        'from': cur,
+        'to': list(ov.get('to') or []),
+        'reason': (ov.get('reason') or '')[:160],
+        'table_version': (json.load(open(OVERRIDES_PATH, encoding='utf-8')).get('_version')
+                          if os.path.exists(OVERRIDES_PATH) else None),
+    }
+
+
+def judge_overrides_provenance(tasks=None):
+    """成绩单里记录「用了哪张修正表、sha 多少、实际应用在哪些题」——防止「用了却没记」。"""
+    p = OVERRIDES_PATH
+    if not os.path.exists(p):
+        return {'path': None, 'sha256': None, 'n_fixes': 0, 'applied_to': []}
+    raw = json.load(open(p, encoding='utf-8'))
+    fixes = raw.get('fixes') or []
+    applied = []
+    if tasks:
+        for f in fixes:
+            t = tasks.get(f.get('task_id'))
+            if t is None:
+                continue
+            cur = t.get('clarify_wrong_keys')
+            if isinstance(cur, list) and sorted(cur) == sorted(f.get('from') or []):
+                applied.append(f.get('task_id'))
+    return {
+        'path': rel(os.path.abspath(p)),
+        'sha256': sha256_file(p),
+        'version': raw.get('_version'),
+        'n_fixes': len(fixes),
+        'applied_to': sorted(applied),
+        'note': ('判分元数据修正表（R71）：只许修「与 R34 键名契约矛盾」的事实错误；'
+                 'from 必须等于卷现值，否则不应用（S-59 守）。'),
+    }
+
+
 def _candidate_model(cand_dir):
     """从候选文件里读模型 id（W5c-6c / R48 溯源）。
 
@@ -191,6 +274,27 @@ def _alias_hit(alias, text):
     return alias in text
 
 
+def _n_questions(cand):
+    """问句条数 —— **只观测，不参与任何判定**（P-1 裁定 / R71）。
+
+    ★ 为什么只观测：把「多问」做成判 FAIL 的判据，实测既不可靠也不公平 ——
+      ① 按语义判（是否提到别的键名）4/4 假阳性（模型是在解释「题面给了 X 但没给 Y」）；
+      ② 按条数判，代价几乎全落在单侧（L2 上 glm 掉 0 条、ds 掉 8 条）⇒ 等于按模型调阈值。
+    ★ clarify 是「字符串里装的 JSON 数组」（`'["a","b"]'`）⇒ 必须 json.loads 后再取 len，
+      按标点切分会得到假分布（首版 glm 3 / ds 8 的假象即由此而来）。
+    """
+    cl = cand.get('clarify')
+    if cl is None:
+        return 0
+    if isinstance(cl, list):
+        return len(cl)
+    try:
+        v = json.loads(cl)
+        return len(v) if isinstance(v, list) else 1
+    except Exception:
+        return 1
+
+
 def judge_clarify_field_level(text, task):
     """字段级澄清判分（R17）。返回 (ok, detail)。
 
@@ -199,7 +303,9 @@ def judge_clarify_field_level(text, task):
       - 且【不含错族键名】（clarify_wrong_keys——其他族的同义键，键名即契约 R19）。
     """
     aliases = task.get('clarify_aliases') or {}
-    wrong = task.get('clarify_wrong_keys') or []
+    # ★ T-P1a / R71：错族键走修正表。判定逻辑本身没变 —— 变的只是「哪几个键算错族」，
+    #   而那是 R34 键名契约的事实问题（表里 `from` 必须等于卷现值，否则不应用）。
+    wrong, _ov = _effective_wrong_keys(task)
     fields = task.get('expected_clarifications') or []
     if not fields:
         return False, {'note': '任务未登记 expected_clarifications'}
@@ -212,6 +318,9 @@ def judge_clarify_field_level(text, task):
     #   必须仍取空列表，**不能**逐字符迭代 —— 否则与旧行为不等价。
     hit_wrong = [k for k in (wrong if isinstance(wrong, list) else []) if _alias_hit(k, text)]
     detail = {'text': text[:200], 'expected': fields}
+    if _ov:
+        # 留痕：这条题用了修正表（或表已过期被跳过）。不进判定，只进证据。
+        detail['wrong_keys_override'] = _ov
     if hit_wrong:
         detail['wrong_keys_hit'] = hit_wrong
         detail['note'] = '问题使用了错族键名（键名即契约，R19）'
@@ -342,6 +451,7 @@ def main():
                      'is_exam': st in STRATA,
                      'is_exam_full': st in STRATA_ALL,
                      'ec': bool(t.get('expected_clarifications')),
+                     'n_questions': _n_questions(cand),
                      'turns_used': cand.get('turns_used'), **detail})
 
     exam_rows = [r for r in rows if r['is_exam']]               # legacy 三栏（v6c/v7 都是 25，与 C-032 同口径）
@@ -430,6 +540,9 @@ def main():
                                    'UNKNOWN = 该批候选生成时未记录 ⇒ 与任何批次都不可比（R53）'),
             'n_candidates': len(rows),
             'generated_by': 'score_baseline.py',
+            # ★ T-P1a / R71：判分元数据修正表必须留痕 —— 否则「用了表却没记」，
+            #   两份成绩单用不同口径判分而看不出差别（与「prompt sha 未记」同族事故）。
+            'judge_overrides': judge_overrides_provenance(tasks),
         },
         'n_tasks': len(rows),
         # W5b-3（专家第七轮 NC-28）：候选覆盖必须显式记账——v6 考卷 55 条，

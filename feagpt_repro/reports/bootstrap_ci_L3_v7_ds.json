@@ -11,13 +11,13 @@
  },
  "metrics": {
   "TSR": {
-   "point_pct": 88.0,
+   "point_pct": 92.0,
    "ci95": [
-    76.0,
+    80.0,
     100.0
    ],
    "n": 25,
-   "n_pass": 22,
+   "n_pass": 23,
    "denominator": "exam 全部任务"
   },
   "SFR": {
@@ -71,9 +71,9 @@
   },
   "wingbox": {
    "n": 18,
-   "tsr_pct": 88.9,
+   "tsr_pct": 94.4,
    "ci95": [
-    72.2,
+    83.3,
     100.0
    ],
    "note": "n<10，只报不判"
@@ -102,10 +102,10 @@
   },
   "interpolation": {
    "n": 6,
-   "n_pass": 5,
-   "tsr_pct": 83.3,
+   "n_pass": 6,
+   "tsr_pct": 100.0,
    "ci95": [
-    50.0,
+    100.0,
     100.0
    ],
    "note": "分栏 n<20，只报不判（R12/R30）"
@@ -118,13 +118,13 @@
   "underpowered": false,
   "metrics": {
    "TSR": {
-    "point_pct": 91.2,
+    "point_pct": 94.1,
     "ci95": [
-     79.4,
+     85.3,
      100.0
     ],
     "n": 34,
-    "n_pass": 31,
+    "n_pass": 32,
     "denominator": "exam_full 全部任务"
    },
    "SFR": {
@@ -171,10 +171,10 @@
    },
    "interpolation": {
     "n": 6,
-    "n_pass": 5,
-    "tsr_pct": 83.3,
+    "n_pass": 6,
+    "tsr_pct": 100.0,
     "ci95": [
-     50.0,
+     100.0,
      100.0
     ],
     "note": "分栏 n<20，只报不判（R12/R30）"

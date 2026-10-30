@@ -1,0 +1,34 @@
+{
+ "note": "澄清判分元数据自洽审计（W5c-6d）。判据来源：R34 键名契约（翼盒用 n_stringers_per_skin；柱壳/加筋板用 n_stringers）+ R17（错族键名 ⇒ FAIL）。本文件**只记录缺陷、不改本轮任何数字**（R18：判分口径改动必须先预注册）。",
+ "n_ec_tasks": 69,
+ "n_findings": 1,
+ "n_findings_exam": 1,
+ "findings": [
+  {
+   "task_id": "L3_naca4412_wingbox",
+   "family": "wingbox",
+   "expected_clarifications": [
+    "n_ribs"
+   ],
+   "clarify_wrong_keys": [
+    "n_stringers_per_skin"
+   ],
+   "clarify_aliases": [
+    "n_ribs",
+    "翼肋",
+    "肋数",
+    "多少道肋",
+    "几道翼肋",
+    "肋的数量"
+   ],
+   "family_correct_stringer_key": "n_stringers_per_skin",
+   "wrong_key_is_own_family_key": [
+    "n_stringers_per_skin"
+   ],
+   "substring_hazard": [],
+   "is_exam": true
+  }
+ ],
+ "policy_open_question": "「问对了 + 多问一句键名正确但不必要的问题」算 PASS 还是 FAIL？RUBRIC 未预注册。当前实现走 R19 的严格一侧（含任何错族键即 FAIL），但把本族正确键当错族键用，理由写错了。",
+ "do_not_do": "不得为了让 C-033 从 22/25 变 23/25 而在本轮改元数据 —— 那是事后改判分（R18）。正确顺序：老王先拍板 over-clarify 政策 ⇒ 修元数据 + 把子串匹配改成 token 边界匹配⇒ 重打分（两模型同规格重打）⇒ 旧数字留档（D10）。"
+}

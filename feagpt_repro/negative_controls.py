@@ -2127,6 +2127,86 @@ def main():
     print(f"  [{'ok ' if ok64 else 'BAD!'}] NC-64 判据边界六向（假通过已关/不过严×2/假红已修/中文不变/thickness 已关）  "
           f"actual={det64}")
 
+    # NC-65（T-P1a / R71）：**S-59（判分元数据修正表）必须能被证伪**。
+    #   为什么必须测：R71 允许「用修正表修事实错误」，这就开了一个**可写判分口径**的口子。
+    #   没有这一条，S-59 退化成「照着当前表写死、永远绿」的印章（R58 的反面）。
+    #   五向，每向只造一个错，并断言**红的原因对**（不只是红了）：
+    #    (fwd)    正向：真实仓库 + 特意造的好表都必须过（先证明不误报）
+    #    (stale)  表里 `from` 与卷现值不符 ⇒ 红，原因须含「已过期」
+    #    (newerr) 表里 `to` 含本族 R34 正确键 ⇒ 红，原因须含「R34 正确键」
+    #    (uncover)卷里有矛盾但 `fixes` 为空 ⇒ 红，原因须含「没覆盖」
+    #    (noprov) 成绩单 provenance 不记 judge_overrides ⇒ 红，原因须含「没记 judge_overrides」
+    ok65, det65 = False, 'no run'
+    try:
+        from check_claims import judge_metadata_fix_consistency as _s59, sha256_file as _sha65
+        import tempfile as _tf65
+
+        _R65_WB = {'task_id': 'T1', 'family': 'wingbox', 'clarify_wrong_keys': ['n_stringers_per_skin']}
+        _R65_PN = {'task_id': 'T2', 'family': 'stiffened_panel', 'clarify_wrong_keys': ['每侧蒙皮']}
+
+        def _mk65(fixes, prov_ok=True):
+            d = _tf65.mkdtemp(prefix='nc65_')
+            os.makedirs(os.path.join(d, 'tasks'), exist_ok=True)
+            os.makedirs(os.path.join(d, 'reports'), exist_ok=True)
+            with open(os.path.join(d, 'tasks', 'tasks.jsonl'), 'w', encoding='utf-8') as f:
+                for r in (_R65_WB, _R65_PN):
+                    f.write(json.dumps(r, ensure_ascii=False) + '\n')
+            fp = os.path.join(d, 'tasks', 'clarify_wrong_keys_fix.json')
+            with open(fp, 'w', encoding='utf-8') as f:
+                json.dump({'fixes': fixes}, f, ensure_ascii=False)
+            sh = _sha65(fp)
+            for m in ('glm', 'ds'):
+                jo = {'sha256': sh, 'applied_to': ['T1']} if prov_ok else {}
+                with open(os.path.join(d, 'reports', f'baseline_scorecard_L3_v7_{m}.json'), 'w',
+                          encoding='utf-8') as f:
+                    json.dump({'provenance': {'judge_overrides': jo}}, f, ensure_ascii=False)
+            return d
+
+        _F65_OK = [{'task_id': 'T1', 'field': 'clarify_wrong_keys',
+                    'from': ['n_stringers_per_skin'], 'to': ['n_stringers'], 'reason': '实例'}]
+        _F65_STALE = [{'task_id': 'T1', 'field': 'clarify_wrong_keys',
+                       'from': ['n_frames'], 'to': ['n_stringers'], 'reason': '实例'}]
+        _F65_NEWERR = [{'task_id': 'T1', 'field': 'clarify_wrong_keys',
+                        'from': ['n_stringers_per_skin'], 'to': ['n_stringers_per_skin'], 'reason': '实例'}]
+
+        _F65_GOOD = _mk65(_F65_OK)
+        _r65 = {
+            'fwd_real': _s59(HERE),
+            'fwd_fixture': _s59(_F65_GOOD, scorecard_paths=[os.path.join(_F65_GOOD, 'reports', f'baseline_scorecard_L3_v7_{m}.json') for m in ('glm', 'ds')]),
+            'stale': _s59(_mk65(_F65_STALE)),
+            'newerr': _s59(_mk65(_F65_NEWERR)),
+            'uncover': _s59(_mk65([])),
+            'noprov': _s59(_mk65(_F65_OK, prov_ok=False)),
+        }
+        _why65 = {
+            'fwd_real': '正向（真实仓库）不得误报',
+            'fwd_fixture': '正向（临时夹具）不得误报',
+            'stale': '已过期',
+            'newerr': 'R34 正确键',
+            'uncover': '没覆盖',
+            'noprov': '没记 judge_overrides',
+        }
+        _mis65 = []
+        for k, (ok_, det_) in _r65.items():
+            need_ok = k.startswith('fwd')
+            if need_ok and not ok_:
+                _mis65.append(f'[{k}] 正向却判红：{det_[:60]}')
+            if (not need_ok) and ok_:
+                _mis65.append(f'[{k}] 该红却绿')
+            if not need_ok and not ok_ and _why65[k] not in str(det_):
+                _mis65.append(f'[{k}] 红了但原因不对：{det_[:60]}')
+        ok65 = not _mis65
+        det65 = ('五向全中（正向×2 不误报 / 过期必红 / 新错必红 / 未覆盖必红 / 未留痕必红）'
+                 if ok65 else '；'.join(_mis65))
+    except Exception as e:                                        # noqa: BLE001
+        ok65, det65 = False, f'异常：{type(e).__name__}: {e}'
+    results.append({'id': 'NC-65',
+                    'desc': 'T-P1a 判分元数据修正表闸（R71/S-59）：修正表必须自洽、不过期、不制造新错、且留痕',
+                    'expect': '正向不误报；过期/新错/未覆盖/未留痕四向各自因正确原因变红',
+                    'actual': det65, 'ok': ok65})
+    print(f"  [{'ok ' if ok65 else 'BAD!'}] NC-65 元数据修正表五向（正向×2/过期/新错/未覆盖/未留痕）  "
+          f"actual={det65}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，    # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；
     #           ③ 源码里必须存在 else 分支（缺 msr ⇒ 加一条 ok=False），防被改回去。

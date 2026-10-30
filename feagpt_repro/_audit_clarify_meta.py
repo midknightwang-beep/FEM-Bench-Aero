@@ -42,6 +42,9 @@ def main(argv=None):
     ap.add_argument('--out', default=os.path.join(OUT_DIR, 'clarify_meta_audit_v6c.json'))
     ap.add_argument('--md', default=os.path.join(OUT_DIR, 'clarify_meta_audit_v6c.md'))
     ap.add_argument('--tasks', default=TASKS)
+    # ★ 默认值保持不变（v6c）⇒ 不带参数时输出格式与本脚本历史产物逐字节一致；
+    #   换卷审计必须显式传 --label，**不得**让「文件名叫 v6c、内容来自 v7」（N-26 同名不同义）。
+    ap.add_argument('--label', default='v6c')
     _a = ap.parse_args(argv)
     rows = [json.loads(l) for l in open(_a.tasks, encoding='utf-8') if l.strip()]
     findings = []
@@ -89,7 +92,7 @@ def main(argv=None):
     os.makedirs(os.path.dirname(os.path.abspath(jp)), exist_ok=True)
     json.dump(rec, open(jp, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 
-    L = ['# 澄清判分元数据审计（v6c，W5c-6d）', '',
+    L = [f'# 澄清判分元数据审计（{_a.label}，W5c-6d）', '',
          f"- 有 `expected_clarifications` 的题：**{rec['n_ec_tasks']}** 条",
          f"- 命中缺陷：**{rec['n_findings']}** 条（其中 exam **{rec['n_findings_exam']}** 条）", '',
          '| task_id | family | 期望字段 | 现在的 clarify_wrong_keys | 本族正确键 | 问题 |',
