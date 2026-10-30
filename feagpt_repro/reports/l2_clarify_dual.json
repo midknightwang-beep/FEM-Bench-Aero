@@ -285,6 +285,62 @@
   "informative_pct": 70.3,
   "delta_allowed": false,
   "r54_note": "两个分母不同（clarify_all 64 ≠ clarify_informative 45）⇒ 禁止相减、禁止据此排名（R54）；R66 要求无效子集隔离并双报，只报一侧即 S-53 红。",
+  "by_model": {
+    "glm-5.3-flash": {
+      "model": "glm-5.3-flash",
+      "candidates": "candidates_l2_v7_glm",
+      "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+      "presentation": "spec_json_raw_name",
+      "category_counts": {
+        "clarify_ok": 49,
+        "fabricated": 13,
+        "clarify_wrong": 2
+      },
+      "status": "scored",
+      "clarify_all": {
+        "n": 64,
+        "passed": 49,
+        "pct": 76.6
+      },
+      "clarify_informative": {
+        "n": 45,
+        "passed": 30,
+        "pct": 66.7
+      },
+      "invalid": {
+        "n": 19,
+        "passed": 19,
+        "pct": 100.0
+      }
+    },
+    "deepseek-v4-pro": {
+      "model": "deepseek-v4-pro",
+      "candidates": "candidates_l2_v7_ds",
+      "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+      "presentation": "spec_json_raw_name",
+      "category_counts": {
+        "clarify_ok": 36,
+        "fabricated": 20,
+        "clarify_wrong": 8
+      },
+      "status": "scored",
+      "clarify_all": {
+        "n": 64,
+        "passed": 36,
+        "pct": 56.2
+      },
+      "clarify_informative": {
+        "n": 45,
+        "passed": 21,
+        "pct": 46.7
+      },
+      "invalid": {
+        "n": 19,
+        "passed": 15,
+        "pct": 78.9
+      }
+    }
+  },
   "model": "glm-5.3-flash",
   "candidates": "candidates_l2_v7_glm",
   "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",

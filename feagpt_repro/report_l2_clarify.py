@@ -136,40 +136,78 @@ def dual_clarify(tasks_path=TASKS, paper=None, scores=None):
     return rep
 
 
-def _apply_scores(rep, sc):
-    """把 `score_l2.py` 的跑分回填进双口径报告（T-A13a）。
+def _score_block(rep, sc):
+    """把一个 `score_l2.py` 结果转成**统一的分数块**（T-A13c：为多模型并列而抽出来）。
 
     ★ 纪律：**不齐全就不算跑完**。`score_l2.py` 的 status 只有 `scored`（64/64 有候选）
       与 `partial`；后者在这里保持 `not_run` 并把缺口写进 `partial`，绝不冒充 `scored`
       ——S-53 的加严（两侧都必须有整数 passed）只在真跑满时才触发。
+    ★ 每个块**自己**做通过数闭合断言：all == informative + invalid。多模型时逐块都要闭，
+      否则「并列」就变成把两个来源不明的数摆在一起。
     """
     n_l2 = rep['clarify_all']['n']
     n_cand = sc.get('n_candidates')
     complete = (sc.get('status') == 'scored') and (n_cand == n_l2)
-    rep['model'] = sc.get('model')
-    rep['candidates'] = sc.get('candidates')
-    rep['prompt_sha256'] = sc.get('prompt_sha256')
-    rep['presentation'] = sc.get('presentation')
-    rep['category_counts'] = sc.get('category_counts')
+    blk = {
+        'model': sc.get('model'),
+        'candidates': sc.get('candidates'),
+        'prompt_sha256': sc.get('prompt_sha256'),
+        'presentation': sc.get('presentation'),
+        'category_counts': sc.get('category_counts'),
+        'status': 'scored' if complete else 'not_run',
+        'clarify_all': {'n': n_l2, 'passed': None, 'pct': None},
+        'clarify_informative': {'n': rep['clarify_informative']['n'],
+                                'passed': None, 'pct': None},
+        'invalid': {'n': rep['invalid']['n'], 'passed': None, 'pct': None},
+    }
     if complete:
-        rep['status'] = 'scored'
-        rep['clarify_all'].update(
+        blk['clarify_all'].update(
             passed=sc['clarify_all']['passed'], pct=sc['clarify_all']['pct'])
-        rep['clarify_informative'].update(
+        blk['clarify_informative'].update(
             passed=sc['clarify_informative']['passed'], pct=sc['clarify_informative']['pct'])
-        rep['invalid'].update(
+        blk['invalid'].update(
             passed=sc['invalid_subset']['passed'], pct=sc['invalid_subset']['pct'])
-        # 通过数闭合：两侧相加必须等于全卷，否则双报就是两个对不上的数
-        assert (rep['clarify_all']['passed'] ==
-                rep['clarify_informative']['passed'] + rep['invalid']['passed']), \
-            '双口径通过数不闭合（R-A5）'
+        assert (blk['clarify_all']['passed'] ==
+                blk['clarify_informative']['passed'] + blk['invalid']['passed']), \
+            '双口径通过数不闭合（R-A5）：%s' % blk['model']
     else:
-        rep['status'] = 'not_run'
-        rep['partial'] = {
+        blk['partial'] = {
             'n_candidates': n_cand, 'n_tasks': n_l2, 'n_missing': sc.get('n_missing'),
             'note': ('候选不齐（%s/%s）⇒ 不升 scored。S-53 只认 not_run/scored，'
                      '少一条就标跑完是虚报。' % (n_cand, n_l2)),
         }
+    return blk
+
+
+def _apply_scores(rep, sc_list):
+    """把一份或多份跑分回填进双口径报告（T-A13a 单模型 / T-A13c 多模型并列）。
+
+    ★ 顶层字段仍取**第一个**成绩（primary）—— 向后兼容：S-53 与历史 artifact 都读顶层，
+      单模型时行为与改造前逐字节一致。
+    ★ 同时把所有模型都写进 `by_model`，**一个都不许省**：多模型并列时，
+      「只留有利那一侧」的新形态就是「只在顶层放它、by_model 里删掉另一个」。
+    """
+    if isinstance(sc_list, dict):
+        sc_list = [sc_list]
+    blocks = {}
+    for sc in sc_list:
+        blk = _score_block(rep, sc)
+        key = blk['model'] or ('model_%d' % len(blocks))
+        assert key not in blocks, '同一模型给了两份成绩：%s' % key
+        blocks[key] = blk
+    assert blocks, '没有任何成绩可回填'
+
+    rep['by_model'] = blocks
+    prim = next(iter(blocks.values()))
+    for k in ('model', 'candidates', 'prompt_sha256', 'presentation',
+              'category_counts', 'status'):
+        rep[k] = prim[k]
+    for side in ('clarify_all', 'clarify_informative', 'invalid'):
+        rep[side].update(passed=prim[side]['passed'], pct=prim[side]['pct'])
+    if 'partial' in prim:
+        rep['partial'] = prim['partial']
+    else:
+        rep.pop('partial', None)
     return rep
 
 
@@ -179,12 +217,14 @@ def main():
     ap.add_argument('--md', help='同时写 Markdown')
     ap.add_argument('--tasks', default=TASKS)
     ap.add_argument('--paper', help='卷标签（默认取文件名）')
-    ap.add_argument('--scores', help='score_l2.py 的跑分 JSON（回填 passed；不给则恒 not_run）')
+    ap.add_argument('--scores', help='score_l2.py 的跑分 JSON（回填 passed；不给则恒 not_run）。'
+                                     '多个模型用逗号分隔，**第一个为顶层（primary）**，全部进 by_model')
     args = ap.parse_args()
 
     _sc = None
     if args.scores:
-        _sc = json.load(open(args.scores, encoding='utf-8'))
+        _paths = [p.strip() for p in args.scores.split(',') if p.strip()]
+        _sc = [json.load(open(p, encoding='utf-8')) for p in _paths]
     rep = dual_clarify(args.tasks, paper=args.paper, scores=_sc)
     a, inf, inv = rep['clarify_all'], rep['clarify_informative'], rep['invalid']
 
@@ -194,8 +234,18 @@ def main():
     print(f"  clarify_all          n = {a['n']:3d}{_score_str(a)}  by_family={a['by_family']}")
     print(f"  clarify_informative  n = {inf['n']:3d}{_score_str(inf)}  by_family={inf['by_family']}")
     print(f"  无效子集（name 泄漏） n = {inv['n']:3d}{_score_str(inv)}  by_family={inv['by_family']}")
+    if rep.get('by_model'):
+        print('  ★ 逐模型（顶层 = 第一个）：')
+        for name, b in rep['by_model'].items():
+            _s = (f"{b['clarify_all']['passed']}/{b['clarify_all']['n']}（{b['clarify_all']['pct']}%）"
+                  if b['status'] == 'scored' else 'not_run')
+            print(f"    - {name:16s} 呈现={b.get('presentation')} "
+                  f"prompt={str(b.get('prompt_sha256'))[:12]}…  all={_s} "
+                  f"| informative={b['clarify_informative']['passed']}/"
+                  f"{b['clarify_informative']['n']} "
+                  f"| invalid={b['invalid']['passed']}/{b['invalid']['n']}")
     if rep.get('model'):
-        print(f"  ★ 跑分：model={rep['model']}  呈现={rep.get('presentation')}  "
+        print(f"  ★ 顶层跑分：model={rep['model']}  呈现={rep.get('presentation')}  "
               f"prompt={str(rep.get('prompt_sha256'))[:12]}…  类别={rep.get('category_counts')}")
     if rep.get('partial'):
         print(f"  ⚠ 未跑满：{rep['partial']['note']}")
@@ -219,19 +269,34 @@ def main():
         L = ['# L2 澄清题：双口径（CONFLICT N-17 → 拍板 C\'）', '',
              f"- 卷：`{rep['paper']}`　任务表：`{rep['tasks']}`",
              f"- 状态：**{rep['status']}**"
-             + (f"（model `{rep['model']}`，呈现 `{rep.get('presentation')}`；"
-                f"`prompt_sha256` = `{str(rep.get('prompt_sha256'))[:16]}…`）"
-                if rep.get('passed') is not None or rep.get('clarify_all', {}).get('passed') is not None
-                else "（L2 未跑满，`passed` 如实为空）"),
-             f"- 判据：{rep['criterion']}", '',
+             + (f"（顶层 = `{rep['model']}`；逐模型见下表）"
+                if rep.get('by_model') else ''),
+             f"- 判据：{rep['criterion']}",
+             f"- 差异来源：**族构成不同，不是泄漏净效应**（N-27，见文末）", '',
              '## 两套分母必须并列', '',
              '| 口径 | 分母 n | 含义 |', '|---|---|---|',
              f"| `clarify_all` | **{a['n']}** | {a['denominator']} |",
              f"| `clarify_informative` | **{inf['n']}** | {inf['denominator']} |",
              f"| （无效子集，不进任何单一口径） | {inv['n']} | {inv['reason']} |", '',
-             f"> {rep['r54_note']}", '',
-             '## 无效子集明细（19 条）', '',
-             '| family | case_id | 省略字段 | name 里的证据 |', '|---|---|---|---|']
+             f"> {rep['r54_note']}", '']
+        if rep.get('by_model'):
+            L += ['## 成绩（逐模型并列；**R54：两个分母不得相减、模型间不得据此排名**）', '',
+                  '| 模型 | 呈现 | prompt sha | `clarify_all` | `clarify_informative` | `invalid`(泄漏 19) | 类别 |',
+                  '|---|---|---|---|---|---|---|']
+            for name, b in rep['by_model'].items():
+                _f = (lambda s: (f"**{s['passed']}/{s['n']} = {s['pct']}%**"
+                                 if s['passed'] is not None else '—'))
+                L.append(f"| `{name}` | `{b.get('presentation')}` | "
+                         f"`{str(b.get('prompt_sha256'))[:12]}…` | {_f(b['clarify_all'])} | "
+                         f"{_f(b['clarify_informative'])} | {_f(b['invalid'])} | "
+                         f"{b.get('category_counts')} |")
+            L += ['', '> **★ 两个分母的差主要是族构成差，不是泄漏净效应（N-27）**：'
+                      '实测 15 条失败全部落在 `wingbox`，非翼盒三族（`open_hole_panel` / '
+                      '`fuselage_barrel` / `stiffened_panel`）全对；而泄漏 19 条里有 16 条正属这三族、'
+                      '干净 45 条里 36 条是翼盒 ⇒ **不得把 `clarify_informative` 当「L2 真信号」单独引用**。'
+                      '（N-27 已拍板：只如实标注、不动口径。）', '']
+        L += ['## 无效子集明细（19 条）', '',
+              '| family | case_id | 省略字段 | name 里的证据 |', '|---|---|---|---|']
         for d in inv['detail']:
             L.append(f"| {d['family']} | `{d['case_id']}` | `{d['omitted_field']}` | "
                      f"{', '.join('`' + e + '`' for e in d['name_evidence'])} |")

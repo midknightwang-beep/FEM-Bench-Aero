@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_naca4412_wingbox_size_span1600",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"n_ribs 与题面给定值矛盾或缺失，请确认 n_ribs 数值；n_stringers_per_skin 为 0 但给出了 stringer_height/stringer_thickness/stringer_kind/stringer_flange_width，若确有长桁需给出 n_stringers_per_skin 实际根数，若无长桁请删除长桁细节键\",\"stringer_flange_width 与 stringer_kind=blade 矛盾，blade 剖面不应有 stringer_flange_width，请确认或删除该键\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 302,
+ "presentation": "spec_json_raw_name"
+}

@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_naca4412_wingbox_sweep30_taper080",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"n_stringers_per_skin 与给定长桁细节矛盾：题面已给 stringer_thickness=2.5、stringer_kind=\\\"blade\\\"、stringer_flange_width=30，表明存在长桁，但 n_stringers_per_skin 为 0；需澄清每块蒙皮长桁根数（若确为无长桁素板，应删除 stringer_* 三个键，而不是保留长桁细节并置 0）\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 237,
+ "presentation": "spec_json_raw_name"
+}

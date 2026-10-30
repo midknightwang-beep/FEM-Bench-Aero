@@ -1,0 +1,98 @@
+{
+ "task_id": "L2_open_hole_panel_400x200_d20_cfrp45s",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": null,
+ "spec": {
+  "name": "open_hole_panel_400x200_d20_cfrp45s",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 400,
+    "width": 200,
+    "hole_d": 20,
+    "layup": {
+     "plies": [
+      {
+       "angle": 45,
+       "thickness": 0.5
+      },
+      {
+       "angle": -45,
+       "thickness": 0.5
+      },
+      {
+       "angle": -45,
+       "thickness": 0.5
+      },
+      {
+       "angle": 45,
+       "thickness": 0.5
+      }
+     ],
+     "material": {
+      "name": "CFRP_T300",
+      "E1": 140000,
+      "E2": 10000,
+      "E3": 10000,
+      "nu12": 0.3,
+      "nu13": 0.3,
+      "nu23": 0.45,
+      "G12": 5000,
+      "G13": 5000,
+      "G23": 4000,
+      "density": 1.6e-9
+     }
+    }
+   }
+  },
+  "mesh": {
+   "element_order": 1,
+   "size_chord": 4,
+   "size_span": 4,
+   "refine_at_leading_edge": true,
+   "leading_edge_threshold": 1.6,
+   "min_jacobian": 0.3,
+   "algorithm_2d": 6,
+   "recombine": true,
+   "recombination_algorithm": 0
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 4000,
+   "direction": [
+    1,
+    0,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {
+   "solver": "ccx",
+   "step_type": "static",
+   "incremental": true,
+   "initial_increment": 0.25,
+   "total_time": 1,
+   "outputs": [
+    "U",
+    "S"
+   ]
+  },
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 1672,
+ "presentation": "spec_json_raw_name"
+}

@@ -1980,6 +1980,93 @@ def main():
     print(f"  [{'ok ' if ok62 else 'BAD!'}] NC-62 L2 跑分器五向（正向/只写中文/给spec/缺候选/通过数闭合）  "
           f"actual={det62}")
 
+    # NC-63（T-A13c）：**多模型并列时，每一块自己必须闭合、必须两侧报分**。
+    #   为什么必须单独测：S-53 原本只断顶层，而**顶层天然只有一个模型** ⇒ 下列三种形态
+    #   只断顶层一个都发现不了：
+    #     · by_model 里某个模型「只写通过数、不写分母」；
+    #     · 某块 all != inf + inv（并列出来的是两个来源不明的数）；
+    #     · 顶层与 by_model 不同源（顶层放有利的那个、块里换成别的）。
+    #   R69：新判据必须能真红，且红的原因必须**对**（不只断言「红了」）。
+    #   五向：
+    #    (a) 两模型并列且各自闭合 ⇒ 必须**绿**（防判据过严：正常并列不该被拦）
+    #    (b) 某块 scored 但一侧 passed 缺失 ⇒ 红，原因须含「只报有利一侧」
+    #    (c) 某块 all.passed != inf+inv ⇒ 红，原因须含「不闭合」（R-A5 逐块）
+    #    (d) 顶层 model 不在 by_model 里 ⇒ 红，原因须含「不同源」
+    #    (e) 顶层 passed 与对应块不等 ⇒ 红，原因须含「不一致」
+    ok63, det63 = False, 'no artifact'
+    try:
+        import importlib.util as _ilu63
+        import tempfile as _tf63
+        import copy as _cp63
+        import report_l2_clarify as _r63
+
+        _spec63 = _ilu63.spec_from_file_location('_cc63', os.path.join(HERE, 'check_claims.py'))
+        _cc63 = _ilu63.module_from_spec(_spec63)
+        _spec63.loader.exec_module(_cc63)
+
+        _sc63 = json.load(open(os.path.join(HERE, 'reports', 'l2_scores_v7_glm.json'),
+                              encoding='utf-8'))
+        _base63 = _r63.dual_clarify(scores=[_sc63])
+        _m1_63 = list(_base63['by_model'].values())[0]
+        _prim63 = _base63['model']
+
+        def _two63():
+            _rep = _cp63.deepcopy(_base63)
+            _m2 = _cp63.deepcopy(_m1_63)
+            _m2['model'] = 'nc63-second'
+            _rep['by_model']['nc63-second'] = _m2
+            return _rep
+
+        def _run63(_rep):
+            _p = os.path.join(_tf63.mkdtemp(prefix='nc63_'), 'l2_clarify_dual.json')
+            json.dump(_rep, open(_p, 'w', encoding='utf-8'), ensure_ascii=False)
+            return _cc63.l2_clarify_dual(report=_p)
+
+        _r63a = _run63(_two63())
+
+        _x = _two63()
+        _x['by_model']['nc63-second']['clarify_informative']['passed'] = None
+        _r63b = _run63(_x)
+
+        _x = _two63()
+        _x['by_model']['nc63-second']['clarify_all']['passed'] += 1
+        _r63c = _run63(_x)
+
+        _x = _two63()
+        _x['model'] = 'nc63-not-in-by-model'
+        _r63d = _run63(_x)
+
+        _x = _two63()
+        _x['clarify_all']['passed'] += 1
+        _r63e = _run63(_x)
+
+        _chk63 = [
+            ('a', _r63a[0] is True,
+             '两模型并列且各自闭合必须绿（判据不得过严）'),
+            ('b', _r63b[0] is False and '只报有利一侧' in _r63b[1],
+             '一侧 passed 缺失须因「只报有利一侧」红'),
+            ('c', _r63c[0] is False and '不闭合' in _r63c[1],
+             '块内通过数不闭合须因 R-A5 红'),
+            ('d', _r63d[0] is False and '不同源' in _r63d[1],
+             '顶层 model 不在 by_model 须因「不同源」红'),
+            ('e', _r63e[0] is False and '不一致' in _r63e[1],
+             '顶层 passed 与对应块不等须因「不一致」红'),
+        ]
+        _bad63 = [f'({t}){why}' for t, good, why in _chk63 if not good]
+        ok63 = not _bad63
+        det63 = ('五向全中（并列正常绿 / 一侧缺失红 / 块内不闭合红 / 顶层不同源红 / 顶层不一致红）'
+                 if ok63 else '未命中: ' + '; '.join(_bad63)
+                 + '｜实际: a=%r b=%r c=%r d=%r e=%r' % (
+                     _r63a[0], _r63b[1][:40], _r63c[1][:40], _r63d[1][:40], _r63e[1][:40]))
+    except Exception as _e63:
+        det63 = f'异常: {type(_e63).__name__}: {_e63}'
+    results.append({'id': 'NC-63',
+                    'desc': 'T-A13c L2 多模型并列：每块须自闭合、两侧报分、顶层与块同源',
+                    'expect': '并列正常须绿；四向各自因「正确原因」变红',
+                    'actual': det63, 'ok': ok63})
+    print(f"  [{'ok ' if ok63 else 'BAD!'}] NC-63 L2 多模型并列五向（正常/一侧缺失/块内不闭合/顶层不同源/顶层不一致）  "
+          f"actual={det63}")
+
     # NC-36（R29 补）：语义项**不得静默消失**。    # 起因：C-029 的成绩单还没跑 MSR 时，S-19/S-20 因 `if '/' in msrH` 直接不出现，    # 语义项总数从 29 掉到 27，而自检仍报「全过」——「不参与判定的检查不是检查」的复刻。
     # 三端都守：① 最新成绩单必须有 msr/exam.msr；② 语义报告里 S-19 与 S-20 **都在**；
     #           ③ 源码里必须存在 else 分支（缺 msr ⇒ 加一条 ok=False），防被改回去。

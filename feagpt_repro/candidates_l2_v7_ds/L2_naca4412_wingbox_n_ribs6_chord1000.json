@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_naca4412_wingbox_n_ribs6_chord1000",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"stringer_flange_width 与 stringer_kind=blade 冲突：blade 剖面没有缘条，该键不应出现，请确认是否应删除或 stringer_kind 应为 T\",\"n_stringers_per_skin 为 0，但同时给出了 stringer_height/stringer_thickness/stringer_kind 等长桁细节键，请确认该翼盒是否有长桁，若有请给出 n_stringers_per_skin 数量\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 273,
+ "presentation": "spec_json_raw_name"
+}

@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_open_hole_panel_600x300_d60",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"thickness\",\"hole_x\",\"hole_y\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 66,
+ "presentation": "spec_json_raw_name"
+}

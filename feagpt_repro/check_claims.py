@@ -1548,6 +1548,54 @@ def l2_clarify_dual(base=None, report=None):
     elif st != 'not_run':
         problems.append(f"status 只能是 'not_run' 或 'scored'，实测 {st!r}")
 
+    # (e) T-A13c：**多模型并列时，每个模型块自己都要闭合、都要两侧报分**。
+    #     多模型带来的新形态「只报有利一侧」不是「顶层少写一侧」，而是
+    #     「顶层放有利的那个、by_model 里悄悄少一个」或「by_model 里那个只写通过数不写分母」。
+    #     ⇒ 只断顶层是不够的（顶层本来就是单个模型），必须逐块断。
+    by_model = rep.get('by_model')
+    if by_model is not None:
+        if not isinstance(by_model, dict) or not by_model:
+            problems.append('by_model 存在但不是非空字典')
+        else:
+            for mname, b in by_model.items():
+                if not isinstance(b, dict):
+                    problems.append(f'by_model.{mname} 不是字典')
+                    continue
+                _ba = b.get('clarify_all') or {}
+                _bi = b.get('clarify_informative') or {}
+                _bv = b.get('invalid') or {}
+                for side, sb in (('clarify_all', _ba), ('clarify_informative', _bi),
+                                 ('invalid', _bv)):
+                    if not isinstance(sb.get('n'), int):
+                        problems.append(f'by_model.{mname}.{side}.n 不是整数')
+                if isinstance(_ba.get('n'), int) and _ba['n'] != all_b['n']:
+                    problems.append(f'by_model.{mname}.clarify_all.n 与顶层不同源'
+                                    f"（{_ba['n']} vs {all_b['n']}）")
+                if all(isinstance(x.get('passed'), int) for x in (_ba, _bi, _bv)):
+                    # 每块独立闭合：all == informative + invalid（R-A5）
+                    if _ba['passed'] != _bi['passed'] + _bv['passed']:
+                        problems.append(
+                            f"by_model.{mname} 通过数不闭合：{_ba['passed']} != "
+                            f"{_bi['passed']} + {_bv['passed']}（R-A5）")
+                elif b.get('status') == 'scored':
+                    problems.append(f'by_model.{mname} 声称 scored 但三块 passed 不齐'
+                                    f'（不得只报有利一侧）')
+            # 顶层必须就是其中一块，且逐数相等 —— 防「顶层与并列块不同源」
+            prim = rep.get('model')
+            if prim is not None:
+                if prim not in by_model:
+                    problems.append(f'顶层 model={prim!r} 不在 by_model 里（顶层与并列块不同源）')
+                else:
+                    pb = by_model[prim]
+                    for side, ref in (('clarify_all', all_b),
+                                      ('clarify_informative', inf_b),
+                                      ('invalid', rep.get('invalid') or {})):
+                        if (pb.get(side) or {}).get('passed') != ref.get('passed'):
+                            problems.append(f'顶层 {side}.passed 与 by_model.{prim} 不一致'
+                                            f'（{ref.get("passed")!r} vs '
+                                            f'{(pb.get(side) or {}).get("passed")!r}）')
+            notes.append(f'by_model 并列 {len(by_model)} 个模型（逐块闭合已验）')
+
     if problems:
         return False, '；'.join(problems)
     notes.append(f"all n={all_b['n']} ／ informative n={inf_b['n']}（status={st}）")
@@ -2291,7 +2339,9 @@ def semantic_checks(root, rows):
     add('S-53', 'L2 clarify 无效子集必须隔离并双报：clarify_all(64) 与 clarify_informative(45) 并列（R66）',
         'reports/l2_clarify_dual.json 必须同时含两块且闭合（all−inf==invalid）；'
         'informative 掩码必须与现算一致（防过期）；delta_allowed 必须 False（R54）；'
-        'status=scored 时两侧都必须有整数 passed',
+        'status=scored 时两侧都必须有整数 passed；'
+        '多模型并列（by_model）时**每个模型块自己**都要闭合且两侧报分，且顶层必须是其中一块、逐数相等'
+        '（T-A13c：多模型带来的新形态「只报有利一侧」= 顶层放它、by_model 里少一个）',
         _det53, _ok53)
 
     # S-56（T-A12a，第十四轮 P1-1）：**协议不得硬编码 rubric 版本 / 规则范围 / 解释器**。

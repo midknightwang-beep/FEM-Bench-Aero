@@ -1,0 +1,1218 @@
+{
+ "_note": "L2 澄清题首次跑分（T-A13a/T-A13b）。判据 import 自 score_baseline.judge_clarify_field_level（R17）；双口径掩码 import 自 check_l2_leak.scan（R66）。两个分母不同 ⇒ 禁相减、禁据此排名（R54）。",
+ "paper": "tasks.jsonl",
+ "tasks_sha256": "caf0f6c3be8131c5b817a0bacfcca8ad3893fcfb95e29d8d9b525866a63e195a",
+ "candidates": "candidates_l2_v7_ds",
+ "label": "T-A13c v7 x ds L2 clarify",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "presentation": "spec_json_raw_name",
+ "status": "scored",
+ "n_tasks_l2": 64,
+ "n_candidates": 64,
+ "n_missing": 0,
+ "category_counts": {
+  "clarify_ok": 36,
+  "fabricated": 20,
+  "clarify_wrong": 8
+ },
+ "clarify_all": {
+  "n": 64,
+  "passed": 36,
+  "pct": 56.2,
+  "denominator": "全卷 L2（含 name 泄漏的无效子集）"
+ },
+ "clarify_informative": {
+  "n": 45,
+  "passed": 21,
+  "pct": 46.7,
+  "denominator": "name 未泄漏的可判子集"
+ },
+ "invalid_subset": {
+  "n": 19,
+  "passed": 15,
+  "pct": 78.9,
+  "denominator": "name 泄漏 ⇒ 判据失效（R66 隔离，不得单独对外）"
+ },
+ "closure": {
+  "units": "tasks",
+  "all": 64,
+  "informative": 45,
+  "invalid": 19,
+  "formula": "all == informative + invalid（任务数与通过数两侧都成立）"
+ },
+ "per_task": [
+  {
+   "task_id": "L2_fuselage_barrel_d1600_l1600_str8_frm3",
+   "family": "fuselage_barrel",
+   "omitted_field": "n_frames",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"n_frames\"]",
+   "detail": {
+    "text": "[\"n_frames\"]",
+    "expected": [
+     "n_frames"
+    ],
+    "alias_hits": {
+     "n_frames": [
+      "n_frames"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_fuselage_barrel_d1800_l2000_str8_frm3",
+   "family": "fuselage_barrel",
+   "omitted_field": "thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"structure.params.thickness（蒙皮厚度未给出）\"]",
+   "detail": {
+    "text": "[\"structure.params.thickness（蒙皮厚度未给出）\"]",
+    "expected": [
+     "thickness"
+    ],
+    "alias_hits": {
+     "thickness": [
+      "thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_fuselage_barrel_d2000_l1600_str8_frm3",
+   "family": "fuselage_barrel",
+   "omitted_field": "n_stringers",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": true,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "n_stringers"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_fuselage_barrel_d2000_l1800_str8_frm3",
+   "family": "fuselage_barrel",
+   "omitted_field": "n_stringers",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"n_stringers\"]",
+   "detail": {
+    "text": "[\"n_stringers\"]",
+    "expected": [
+     "n_stringers"
+    ],
+    "alias_hits": {
+     "n_stringers": [
+      "n_stringers"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_fuselage_barrel_d2000_l2000_str12_frm4",
+   "family": "fuselage_barrel",
+   "omitted_field": "n_frames",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"n_frames\"]",
+   "detail": {
+    "text": "[\"n_frames\"]",
+    "expected": [
+     "n_frames"
+    ],
+    "alias_hits": {
+     "n_frames": [
+      "n_frames"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_fuselage_barrel_d2000_l2000_str8_frm3",
+   "family": "fuselage_barrel",
+   "omitted_field": "thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"structure.params.thickness（蒙皮厚度）缺失，fuselage_barrel 无法定义\",\"material.youngs_modulus 与材料键名契约不一致：应使用 material.E（或按材料名给出 E）；请确认材料弹性模量键名\",\"material.poisson_ratio 与材料键名契约不一致：应使用 material.nu；请确认材料泊松比键名\",\"material.density 与材料键名契约不一致：应使用 material.rho；请确认材料密度键名\",\"material.yield_strength 与材料键名契约不一致：应使用 material.yield；请确认材料屈服强度键名\",\"mesh.size_chord / mesh.size_span 不属于 fuselage_barrel 族网格键（应使用 mesh.size）；请确认网格尺寸键名\",\"extra.shear_axis 不属于 fuselage_barrel 族 extra 契约键；请确认是否应删除或改用合法键\",\"extra.moment_axis 不属于 fuselage_barrel 族 extra 契约键；请确认是否应删除或改用合法键\"]",
+   "detail": {
+    "text": "[\"structure.params.thickness（蒙皮厚度）缺失，fuselage_barrel 无法定义\",\"material.youngs_modulus 与材料键名契约不一致：应使用 material.E（或按材料名给出 E）；请确认材料弹性模量键名\",\"material.poisson_ratio 与材料键名契约不一致：应使用 material.nu；请确认材料泊松比键名\",\"ma",
+    "expected": [
+     "thickness"
+    ],
+    "alias_hits": {
+     "thickness": [
+      "thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+   "family": "fuselage_barrel",
+   "omitted_field": "n_stringers",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": true,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "n_stringers"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox",
+   "family": "wingbox",
+   "omitted_field": "rib_thickness",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "rib_thickness"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_n_ribs3_chord1000",
+   "family": "wingbox",
+   "omitted_field": "n_stringers_per_skin",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"n_stringers_per_skin\"]",
+   "detail": {
+    "text": "[\"n_stringers_per_skin\"]",
+    "expected": [
+     "n_stringers_per_skin"
+    ],
+    "alias_hits": {
+     "n_stringers_per_skin": [
+      "n_stringers_per_skin"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_n_ribs3_chord800",
+   "family": "wingbox",
+   "omitted_field": "stringer_height",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"缺失字段：stringer_height（翼盒长桁高度未给出，无法定义 blade 长桁剖面尺寸）\"]",
+   "detail": {
+    "text": "[\"缺失字段：stringer_height（翼盒长桁高度未给出，无法定义 blade 长桁剖面尺寸）\"]",
+    "expected": [
+     "stringer_height"
+    ],
+    "alias_hits": {
+     "stringer_height": [
+      "stringer_height"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_n_ribs5_chord800",
+   "family": "wingbox",
+   "omitted_field": "tip_chord_ratio",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "tip_chord_ratio"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_n_ribs6_chord1000",
+   "family": "wingbox",
+   "omitted_field": "sweep_deg",
+   "category": "clarify_wrong",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": "[\"stringer_flange_width 与 stringer_kind=blade 冲突：blade 剖面没有缘条，该键不应出现，请确认是否应删除或 stringer_kind 应为 T\",\"n_stringers_per_skin 为 0，但同时给出了 stringer_height/stringer_thickness/stringer_kind 等长桁细节键，请确认该翼盒是否有长桁，若有请给出 n_stringers_per_skin 数量\"]",
+   "detail": {
+    "text": "[\"stringer_flange_width 与 stringer_kind=blade 冲突：blade 剖面没有缘条，该键不应出现，请确认是否应删除或 stringer_kind 应为 T\",\"n_stringers_per_skin 为 0，但同时给出了 stringer_height/stringer_thickness/stringer_kind 等长桁细节键，请确认该翼盒是否有长桁，",
+    "expected": [
+     "sweep_deg"
+    ],
+    "alias_hits": {
+     "sweep_deg": []
+    },
+    "note": "存在 expected 字段未被任何别名命中"
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_n_ribs7_chord1000",
+   "family": "wingbox",
+   "omitted_field": "sweep_deg",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"sweep_deg\"]",
+   "detail": {
+    "text": "[\"sweep_deg\"]",
+    "expected": [
+     "sweep_deg"
+    ],
+    "alias_hits": {
+     "sweep_deg": [
+      "sweep_deg"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_n_ribs7_chord800",
+   "family": "wingbox",
+   "omitted_field": "skin_thickness",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "skin_thickness"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_n_ribs9_chord1000",
+   "family": "wingbox",
+   "omitted_field": "n_ribs",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"n_ribs\"]",
+   "detail": {
+    "text": "[\"n_ribs\"]",
+    "expected": [
+     "n_ribs"
+    ],
+    "alias_hits": {
+     "n_ribs": [
+      "n_ribs"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_recombination_algorithm3",
+   "family": "wingbox",
+   "omitted_field": "rib_thickness",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "rib_thickness"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_chord900",
+   "family": "wingbox",
+   "omitted_field": "stringer_height",
+   "category": "clarify_wrong",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": "[\"n_stringers_per_skin\"]",
+   "detail": {
+    "text": "[\"n_stringers_per_skin\"]",
+    "expected": [
+     "stringer_height"
+    ],
+    "alias_hits": {
+     "stringer_height": []
+    },
+    "note": "存在 expected 字段未被任何别名命中"
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_skin1p5",
+   "family": "wingbox",
+   "omitted_field": "n_stringers_per_skin",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"n_stringers_per_skin\"]",
+   "detail": {
+    "text": "[\"n_stringers_per_skin\"]",
+    "expected": [
+     "n_stringers_per_skin"
+    ],
+    "alias_hits": {
+     "n_stringers_per_skin": [
+      "n_stringers_per_skin"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_skin2",
+   "family": "wingbox",
+   "omitted_field": "stringer_height",
+   "category": "clarify_wrong",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": "[\"n_stringers_per_skin 与 stringer_kind/stringer_flange_width/stringer_thickness 矛盾：n_stringers_per_skin=0 表示无长桁，但给定 stringer_kind=blade、stringer_flange_width=30、stringer_thickness=2.5 为长桁参数；若确有长桁需给出实际数量，若确为素板应删除长桁细节键\"]",
+   "detail": {
+    "text": "[\"n_stringers_per_skin 与 stringer_kind/stringer_flange_width/stringer_thickness 矛盾：n_stringers_per_skin=0 表示无长桁，但给定 stringer_kind=blade、stringer_flange_width=30、stringer_thickness=2.5 为长桁参数；若确有长桁需给出实际",
+    "expected": [
+     "stringer_height"
+    ],
+    "alias_hits": {
+     "stringer_height": []
+    },
+    "note": "存在 expected 字段未被任何别名命中"
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_skin2p5",
+   "family": "wingbox",
+   "omitted_field": "skin_thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"skin_thickness 缺失：airfoil 块中未提供蒙皮厚度，无法定义翼盒蒙皮尺寸。\"]",
+   "detail": {
+    "text": "[\"skin_thickness 缺失：airfoil 块中未提供蒙皮厚度，无法定义翼盒蒙皮尺寸。\"]",
+    "expected": [
+     "skin_thickness"
+    ],
+    "alias_hits": {
+     "skin_thickness": [
+      "skin_thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_skin4",
+   "family": "wingbox",
+   "omitted_field": "tip_chord_ratio",
+   "category": "clarify_wrong",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": "[\"n_stringers_per_skin：题面中长桁数量为 0，但存在 stringer_height、stringer_thickness、stringer_kind、stringer_flange_width，长桁数缺失或矛盾，需澄清\"]",
+   "detail": {
+    "text": "[\"n_stringers_per_skin：题面中长桁数量为 0，但存在 stringer_height、stringer_thickness、stringer_kind、stringer_flange_width，长桁数缺失或矛盾，需澄清\"]",
+    "expected": [
+     "tip_chord_ratio"
+    ],
+    "alias_hits": {
+     "tip_chord_ratio": []
+    },
+    "note": "存在 expected 字段未被任何别名命中"
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_span1600",
+   "family": "wingbox",
+   "omitted_field": "sweep_deg",
+   "category": "clarify_wrong",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": "[\"n_ribs 与题面给定值矛盾或缺失，请确认 n_ribs 数值；n_stringers_per_skin 为 0 但给出了 stringer_height/stringer_thickness/stringer_kind/stringer_flange_width，若确有长桁需给出 n_stringers_per_skin 实际根数，若无长桁请删除长桁细节键\",\"stringer_flange_width 与 stringer_kind=blade 矛盾，blade 剖面不应有 stringer_flange_width，请确认或删除该键\"]",
+   "detail": {
+    "text": "[\"n_ribs 与题面给定值矛盾或缺失，请确认 n_ribs 数值；n_stringers_per_skin 为 0 但给出了 stringer_height/stringer_thickness/stringer_kind/stringer_flange_width，若确有长桁需给出 n_stringers_per_skin 实际根数，若无长桁请删除长桁细节键\",\"stringer_flang",
+    "expected": [
+     "sweep_deg"
+    ],
+    "alias_hits": {
+     "sweep_deg": []
+    },
+    "note": "存在 expected 字段未被任何别名命中"
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_span2400",
+   "family": "wingbox",
+   "omitted_field": "skin_thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"skin_thickness\"]",
+   "detail": {
+    "text": "[\"skin_thickness\"]",
+    "expected": [
+     "skin_thickness"
+    ],
+    "alias_hits": {
+     "skin_thickness": [
+      "skin_thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_span2400_skin2",
+   "family": "wingbox",
+   "omitted_field": "n_ribs",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "n_ribs"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_span3000",
+   "family": "wingbox",
+   "omitted_field": "rib_thickness",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "rib_thickness"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_size_span3000_skin1p5",
+   "family": "wingbox",
+   "omitted_field": "n_stringers_per_skin",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"n_stringers_per_skin\"]",
+   "detail": {
+    "text": "[\"n_stringers_per_skin\"]",
+    "expected": [
+     "n_stringers_per_skin"
+    ],
+    "alias_hits": {
+     "n_stringers_per_skin": [
+      "n_stringers_per_skin"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_str3",
+   "family": "wingbox",
+   "omitted_field": "stringer_height",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "stringer_height"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_str3_T",
+   "family": "wingbox",
+   "omitted_field": "tip_chord_ratio",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "tip_chord_ratio"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_str4",
+   "family": "wingbox",
+   "omitted_field": "rib_thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"rib_thickness\"]",
+   "detail": {
+    "text": "[\"rib_thickness\"]",
+    "expected": [
+     "rib_thickness"
+    ],
+    "alias_hits": {
+     "rib_thickness": [
+      "rib_thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_str5",
+   "family": "wingbox",
+   "omitted_field": "sweep_deg",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "sweep_deg"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep10",
+   "family": "wingbox",
+   "omitted_field": "skin_thickness",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "skin_thickness"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep20",
+   "family": "wingbox",
+   "omitted_field": "n_ribs",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"n_ribs\"]",
+   "detail": {
+    "text": "[\"n_ribs\"]",
+    "expected": [
+     "n_ribs"
+    ],
+    "alias_hits": {
+     "n_ribs": [
+      "n_ribs"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep20_taper060",
+   "family": "wingbox",
+   "omitted_field": "rib_thickness",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "rib_thickness"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep30",
+   "family": "wingbox",
+   "omitted_field": "n_stringers_per_skin",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"n_stringers_per_skin\"]",
+   "detail": {
+    "text": "[\"n_stringers_per_skin\"]",
+    "expected": [
+     "n_stringers_per_skin"
+    ],
+    "alias_hits": {
+     "n_stringers_per_skin": [
+      "n_stringers_per_skin"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep30_taper080",
+   "family": "wingbox",
+   "omitted_field": "stringer_height",
+   "category": "clarify_wrong",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": "[\"n_stringers_per_skin 与给定长桁细节矛盾：题面已给 stringer_thickness=2.5、stringer_kind=\\\"blade\\\"、stringer_flange_width=30，表明存在长桁，但 n_stringers_per_skin 为 0；需澄清每块蒙皮长桁根数（若确为无长桁素板，应删除 stringer_* 三个键，而不是保留长桁细节并置 0）\"]",
+   "detail": {
+    "text": "[\"n_stringers_per_skin 与给定长桁细节矛盾：题面已给 stringer_thickness=2.5、stringer_kind=\\\"blade\\\"、stringer_flange_width=30，表明存在长桁，但 n_stringers_per_skin 为 0；需澄清每块蒙皮长桁根数（若确为无长桁素板，应删除 stringer_* 三个键，而不是保留长桁细节并置 0）\"]",
+    "expected": [
+     "stringer_height"
+    ],
+    "alias_hits": {
+     "stringer_height": []
+    },
+    "note": "存在 expected 字段未被任何别名命中"
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep35",
+   "family": "wingbox",
+   "omitted_field": "tip_chord_ratio",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "tip_chord_ratio"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep40",
+   "family": "wingbox",
+   "omitted_field": "sweep_deg",
+   "category": "clarify_wrong",
+   "pass": false,
+   "name_leak": true,
+   "clarify_text": "[\"n_stringers_per_skin\"]",
+   "detail": {
+    "text": "[\"n_stringers_per_skin\"]",
+    "expected": [
+     "sweep_deg"
+    ],
+    "alias_hits": {
+     "sweep_deg": []
+    },
+    "note": "存在 expected 字段未被任何别名命中"
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_sweep40_taper040",
+   "family": "wingbox",
+   "omitted_field": "skin_thickness",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "skin_thickness"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_taper040",
+   "family": "wingbox",
+   "omitted_field": "n_ribs",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"n_ribs\"]",
+   "detail": {
+    "text": "[\"n_ribs\"]",
+    "expected": [
+     "n_ribs"
+    ],
+    "alias_hits": {
+     "n_ribs": [
+      "n_ribs"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_taper060",
+   "family": "wingbox",
+   "omitted_field": "rib_thickness",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "rib_thickness"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_taper070",
+   "family": "wingbox",
+   "omitted_field": "skin_thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"skin_thickness\"]",
+   "detail": {
+    "text": "[\"skin_thickness\"]",
+    "expected": [
+     "skin_thickness"
+    ],
+    "alias_hits": {
+     "skin_thickness": [
+      "skin_thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_taper080",
+   "family": "wingbox",
+   "omitted_field": "n_stringers_per_skin",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"n_stringers_per_skin\"]",
+   "detail": {
+    "text": "[\"n_stringers_per_skin\"]",
+    "expected": [
+     "n_stringers_per_skin"
+    ],
+    "alias_hits": {
+     "n_stringers_per_skin": [
+      "n_stringers_per_skin"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_taper090",
+   "family": "wingbox",
+   "omitted_field": "stringer_height",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "stringer_height"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_web1",
+   "family": "wingbox",
+   "omitted_field": "tip_chord_ratio",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "tip_chord_ratio"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_web1_offcentre",
+   "family": "wingbox",
+   "omitted_field": "sweep_deg",
+   "category": "clarify_wrong",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": "[\"extra 中 end_torque / torque_axis_dof 不是 wingbox 族允许的键，wingbox 族 extra 应为 {}；如需定义扭矩载荷，请提供合法载荷字段\"]",
+   "detail": {
+    "text": "[\"extra 中 end_torque / torque_axis_dof 不是 wingbox 族允许的键，wingbox 族 extra 应为 {}；如需定义扭矩载荷，请提供合法载荷字段\"]",
+    "expected": [
+     "sweep_deg"
+    ],
+    "alias_hits": {
+     "sweep_deg": []
+    },
+    "note": "存在 expected 字段未被任何别名命中"
+   }
+  },
+  {
+   "task_id": "L2_naca4412_wingbox_web2",
+   "family": "wingbox",
+   "omitted_field": "skin_thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"skin_thickness\"]",
+   "detail": {
+    "text": "[\"skin_thickness\"]",
+    "expected": [
+     "skin_thickness"
+    ],
+    "alias_hits": {
+     "skin_thickness": [
+      "skin_thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d20",
+   "family": "open_hole_panel",
+   "omitted_field": "length",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"structure.params.length\"]",
+   "detail": {
+    "text": "[\"structure.params.length\"]",
+    "expected": [
+     "length"
+    ],
+    "alias_hits": {
+     "length": [
+      "length"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d20_cfrp090s",
+   "family": "open_hole_panel",
+   "omitted_field": "hole_d",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"structure.params.hole_d\",\"structure.params.hole_x\",\"structure.params.hole_y\"]",
+   "detail": {
+    "text": "[\"structure.params.hole_d\",\"structure.params.hole_x\",\"structure.params.hole_y\"]",
+    "expected": [
+     "hole_d"
+    ],
+    "alias_hits": {
+     "hole_d": [
+      "hole_d"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d20_cfrp45s",
+   "family": "open_hole_panel",
+   "omitted_field": "thickness",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "thickness"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d20_cfrp45s_d40",
+   "family": "open_hole_panel",
+   "omitted_field": "width",
+   "category": "fabricated",
+   "pass": false,
+   "name_leak": true,
+   "clarify_text": null,
+   "detail": {
+    "note": "澄清题静默编造 spec（R20）",
+    "expected_clarifications": [
+     "width"
+    ]
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d20_cfrpqi",
+   "family": "open_hole_panel",
+   "omitted_field": "length",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"length\",\"hole_x\",\"hole_y\",\"mesh.size\"]",
+   "detail": {
+    "text": "[\"length\",\"hole_x\",\"hole_y\",\"mesh.size\"]",
+    "expected": [
+     "length"
+    ],
+    "alias_hits": {
+     "length": [
+      "length"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d20_offcentre",
+   "family": "open_hole_panel",
+   "omitted_field": "hole_d",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"hole_d\"]",
+   "detail": {
+    "text": "[\"hole_d\"]",
+    "expected": [
+     "hole_d"
+    ],
+    "alias_hits": {
+     "hole_d": [
+      "hole_d"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d30",
+   "family": "open_hole_panel",
+   "omitted_field": "hole_d",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"hole_d\"]",
+   "detail": {
+    "text": "[\"hole_d\"]",
+    "expected": [
+     "hole_d"
+    ],
+    "alias_hits": {
+     "hole_d": [
+      "hole_d"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d40",
+   "family": "open_hole_panel",
+   "omitted_field": "thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"thickness\",\"hole_x\",\"hole_y\"]",
+   "detail": {
+    "text": "[\"thickness\",\"hole_x\",\"hole_y\"]",
+    "expected": [
+     "thickness"
+    ],
+    "alias_hits": {
+     "thickness": [
+      "thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d40_offcentre",
+   "family": "open_hole_panel",
+   "omitted_field": "width",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"width\",\"hole_y\"]",
+   "detail": {
+    "text": "[\"width\",\"hole_y\"]",
+    "expected": [
+     "width"
+    ],
+    "alias_hits": {
+     "width": [
+      "width"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_400x200_d50",
+   "family": "open_hole_panel",
+   "omitted_field": "length",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"structure.params.length\",\"structure.params.hole_x\",\"structure.params.hole_y\"]",
+   "detail": {
+    "text": "[\"structure.params.length\",\"structure.params.hole_x\",\"structure.params.hole_y\"]",
+    "expected": [
+     "length"
+    ],
+    "alias_hits": {
+     "length": [
+      "length"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_500x250_d45",
+   "family": "open_hole_panel",
+   "omitted_field": "hole_d",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"hole_d\"]",
+   "detail": {
+    "text": "[\"hole_d\"]",
+    "expected": [
+     "hole_d"
+    ],
+    "alias_hits": {
+     "hole_d": [
+      "hole_d"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_600x300_d30",
+   "family": "open_hole_panel",
+   "omitted_field": "hole_d",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"hole_d\",\"hole_x\",\"hole_y\"]",
+   "detail": {
+    "text": "[\"hole_d\",\"hole_x\",\"hole_y\"]",
+    "expected": [
+     "hole_d"
+    ],
+    "alias_hits": {
+     "hole_d": [
+      "hole_d"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_open_hole_panel_600x300_d60",
+   "family": "open_hole_panel",
+   "omitted_field": "thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"thickness\",\"hole_x\",\"hole_y\"]",
+   "detail": {
+    "text": "[\"thickness\",\"hole_x\",\"hole_y\"]",
+    "expected": [
+     "thickness"
+    ],
+    "alias_hits": {
+     "thickness": [
+      "thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_stiffened_panel_600x600",
+   "family": "stiffened_panel",
+   "omitted_field": "n_stringers",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"structure.params.n_stringers\"]",
+   "detail": {
+    "text": "[\"structure.params.n_stringers\"]",
+    "expected": [
+     "n_stringers"
+    ],
+    "alias_hits": {
+     "n_stringers": [
+      "n_stringers"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_stiffened_panel_600x600_str3",
+   "family": "stiffened_panel",
+   "omitted_field": "thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"thickness\",\"stringer_height\",\"stringer_thickness\",\"stringer_kind\"]",
+   "detail": {
+    "text": "[\"thickness\",\"stringer_height\",\"stringer_thickness\",\"stringer_kind\"]",
+    "expected": [
+     "thickness"
+    ],
+    "alias_hits": {
+     "thickness": [
+      "thickness"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_stiffened_panel_700x600_str4",
+   "family": "stiffened_panel",
+   "omitted_field": "n_stringers",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": true,
+   "clarify_text": "[\"structure.params.n_stringers\"]",
+   "detail": {
+    "text": "[\"structure.params.n_stringers\"]",
+    "expected": [
+     "n_stringers"
+    ],
+    "alias_hits": {
+     "n_stringers": [
+      "n_stringers"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_stiffened_panel_800x600",
+   "family": "stiffened_panel",
+   "omitted_field": "n_stringers",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"n_stringers\"]",
+   "detail": {
+    "text": "[\"n_stringers\"]",
+    "expected": [
+     "n_stringers"
+    ],
+    "alias_hits": {
+     "n_stringers": [
+      "n_stringers"
+     ]
+    }
+   }
+  },
+  {
+   "task_id": "L2_stiffened_panel_800x600_str3",
+   "family": "stiffened_panel",
+   "omitted_field": "thickness",
+   "category": "clarify_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": "[\"structure.params.thickness\"]",
+   "detail": {
+    "text": "[\"structure.params.thickness\"]",
+    "expected": [
+     "thickness"
+    ],
+    "alias_hits": {
+     "thickness": [
+      "thickness"
+     ]
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "task_id": "L2_fuselage_barrel_d2000_l2000_str8_frm3",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"structure.params.thickness（蒙皮厚度）缺失，fuselage_barrel 无法定义\",\"material.youngs_modulus 与材料键名契约不一致：应使用 material.E（或按材料名给出 E）；请确认材料弹性模量键名\",\"material.poisson_ratio 与材料键名契约不一致：应使用 material.nu；请确认材料泊松比键名\",\"material.density 与材料键名契约不一致：应使用 material.rho；请确认材料密度键名\",\"material.yield_strength 与材料键名契约不一致：应使用 material.yield；请确认材料屈服强度键名\",\"mesh.size_chord / mesh.size_span 不属于 fuselage_barrel 族网格键（应使用 mesh.size）；请确认网格尺寸键名\",\"extra.shear_axis 不属于 fuselage_barrel 族 extra 契约键；请确认是否应删除或改用合法键\",\"extra.moment_axis 不属于 fuselage_barrel 族 extra 契约键；请确认是否应删除或改用合法键\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 612,
+ "presentation": "spec_json_raw_name"
+}
