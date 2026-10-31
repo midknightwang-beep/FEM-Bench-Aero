@@ -1,0 +1,45 @@
+# 数据集许可：CC BY 4.0
+
+本仓库中的**数据集与评测材料**采用
+[Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)
+许可协议。
+
+## 1. 适用范围
+
+**包含**（受本许可约束）：
+
+- `FEM-Bench-Aero/` 下的算例材料：几何（`*.step`）、网格（`*.msh` / `*.inp`）、
+  真值（`truth.json`）、题面（`spec.json`）、任务清单（`tasks/*.jsonl`）
+- `feagpt_repro/reports/` 下的成绩单、桥接表与证据 JSON
+- `feagpt_repro/candidates_*/` 下的模型候选输出（作为评测记录的一部分）
+- 数据包 `FEM-Bench-Aero-*-data.tar.gz` 及其内容
+
+**不包含**（受根目录 `LICENSE` = MIT 约束）：
+
+- 全部源代码：Python / JavaScript 脚本、命令行工具、构建脚本
+
+## 2. 你可以
+
+- **共享** —— 以任何媒介或格式复制、分发本材料
+- **演绎** —— 修改、转换、基于本材料再创作，用于任何目的（含商业用途）
+
+## 3. 你必须
+
+- **署名** —— 给出适当署名、提供许可链接、并**说明是否作了修改**。
+  建议引用格式见本仓库根 `README.md`。
+- **不得增加额外限制** —— 不得以法律条款或技术措施限制他人行使本许可允许的权利。
+
+## 4. 没有担保
+
+本材料按「现状」提供，不含任何明示或默示担保。使用者对材料的适用性自行负责。
+
+## 5. 完整法律文本
+
+本文件是**要点摘要**，不构成许可全文。具有法律效力的完整条款见：
+
+- 人类可读摘要：https://creativecommons.org/licenses/by/4.0/
+- 完整法律文本：https://creativecommons.org/licenses/by/4.0/legalcode
+
+--------------------------------------------------------------------------------
+说明：本仓库不含任何受限、专有或来自第三方的受限数据。全部算例为合成模型，
+由本项目的 pipeline 生成，可复现（见 `FEM-Bench-Aero/DATA.md`）。
