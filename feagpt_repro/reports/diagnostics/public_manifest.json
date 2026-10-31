@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-10-31T14:27:52+08:00",
- "source_head": "f9524a96bbe9ff157b747b803c31ea960121ef6a",
+ "generated_at": "2026-10-31T15:29:28+08:00",
+ "source_head": "1bcb32ec3cdb7ae5a85cca35f2014d760201a58c",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 1540,
- "bytes_total": 86913757,
- "n_keep": 1110,
- "bytes_keep": 12870681,
+ "n_total": 1543,
+ "bytes_total": 86940084,
+ "n_keep": 1113,
+ "bytes_keep": 12891918,
  "categories": {
   "KEEP:根目录必需": {
    "n": 4,
@@ -13,7 +13,7 @@
   },
   "内部记忆/应用": {
    "n": 26,
-   "bytes": 511925
+   "bytes": 517015
   },
   "根目录内部材料": {
    "n": 46,
@@ -32,8 +32,8 @@
    "bytes": 50600388
   },
   "KEEP:代码与证据": {
-   "n": 999,
-   "bytes": 9157140
+   "n": 1002,
+   "bytes": 9178377
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -205,6 +205,7 @@
   "feagpt_repro/_diag_prompt_ablation.py",
   "feagpt_repro/_diff_judge_a13d.py",
   "feagpt_repro/_eval_b6.log",
+  "feagpt_repro/_f3_public_exempt_selftest.py",
   "feagpt_repro/_gate3_t1.log",
   "feagpt_repro/_m4_probe/README.md",
   "feagpt_repro/_m4_probe/bad.json",
@@ -1084,6 +1085,8 @@
   "feagpt_repro/reports/diagnostics/task_d5_report.md",
   "feagpt_repro/reports/diagnostics/task_d5b_contract.md",
   "feagpt_repro/reports/diagnostics/task_d5b_report.md",
+  "feagpt_repro/reports/diagnostics/task_f3_contract.md",
+  "feagpt_repro/reports/diagnostics/task_f3_report.md",
   "feagpt_repro/reports/diagnostics/task_p1a_contract.md",
   "feagpt_repro/reports/diagnostics/task_r1_contract.md",
   "feagpt_repro/reports/diagnostics/task_r1_report.md",
