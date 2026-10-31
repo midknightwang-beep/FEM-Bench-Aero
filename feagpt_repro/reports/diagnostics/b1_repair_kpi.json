@@ -1,0 +1,625 @@
+{
+ "generated_at": "2026-11-01T07:52:33+08:00",
+ "purpose": "B1 补算：修复成功率 / 修复收敛轮数（零重跑，只读既有 artifact）",
+ "definition_contract": "reports/diagnostics/task_b1kpi_contract.md",
+ "layers": {
+  "L1": "结构层（schema/contract 合法）——「修复成功率」只指这一层",
+  "L2": "产出层（修成 spec 还是 clarify）",
+  "L3": "语义层（spec_fidelity 全对，取成绩单 category，不重算）"
+ },
+ "runs": [
+  {
+   "label": "C-040 v7 x glm",
+   "scorecard": "reports/baseline_scorecard_L3_v7_glm.json",
+   "scorecard_sha256": "f4d994586006ce1d086f66122de2caccca5671945d3b9a1cd8f4421e85d26937",
+   "candidates_dir": "candidates_l3_v7_glm",
+   "n_tasks_in_scorecard": 64,
+   "n_candidates_read": 64,
+   "n_stray_files": 1,
+   "stray_files": [
+    "_retry1_taper040_http502.json.bak"
+   ],
+   "structure_repair_L1": {
+    "denominator_n": 59,
+    "numerator_n": 59,
+    "rate_pct": 100.0,
+    "n_exhausted": 0,
+    "exhausted_ids": [],
+    "definition": "首轮 schema/contract 未过（turns_used>=2）的题中，在 max_turns=3 内产出可判记录（spec 或 clarify 非空）的比例；机械上限 = 2 次修复"
+   },
+   "repair_outcome_L2": {
+    "repaired_to_spec": 59,
+    "repaired_to_clarify": 0,
+    "clarify_ids": []
+   },
+   "post_repair_semantics_L3": {
+    "basis": "成绩单 per_task.category（不重算 TSR，保持单一来源）",
+    "repaired_to_spec_n": 59,
+    "spec_pass": 48,
+    "spec_fail": 11,
+    "other_categories": {},
+    "closure_ok": true,
+    "closure_expr": "59 = spec_pass 48 + spec_fail 11 + other 0（已知集合 spec_pass/spec_fail/fabricated；出现集合外类别即判红）",
+    "pass_rate_pct": 81.4,
+    "note": "结构修好 ≠ 内容正确：这一层是「修好格式之后仍然有失败」的证据。分母含 other（如 fabricated = 修出合法 spec 但那题本该澄清），所以它比「spec 类通过率」更严。"
+   },
+   "convergence": {
+    "all_turns_histogram": {
+     "1": 5,
+     "2": 57,
+     "3": 2
+    },
+    "repair_turns_histogram": {
+     "1": 57,
+     "2": 2
+    },
+    "median_repair_turns": 1,
+    "mean_repair_turns": 1.03,
+    "max_repair_turns": 2,
+    "within_1_repair_n": 57,
+    "within_1_repair_pct": 96.6,
+    "note": "修复轮数 = turns_used - 1（turns_used 含首轮调用，见契约 §0.2）"
+   },
+   "first_pass": {
+    "n": 5,
+    "by_output": {
+     "clarify": 5
+    },
+    "note": "首轮通过的题按产出类型拆开 —— 若 spec 全 0，说明结构闸对 spec 从未一次放过"
+   },
+   "first_failure_reasons": {
+    "n_tasks_needing_repair": 59,
+    "counts_multilabel": {
+     "extra_key": 55,
+     "json_parse": 1,
+     "required_missing": 58,
+     "type_or_value": 6
+    },
+    "n_unclassified": 0,
+    "top_missing_required": [
+     [
+      "youngs_modulus",
+      58
+     ],
+     [
+      "poisson_ratio",
+      58
+     ],
+     [
+      "yield_strength",
+      58
+     ],
+     [
+      "size_chord",
+      21
+     ],
+     [
+      "size_span",
+      21
+     ],
+     [
+      "n_stringers_per_skin",
+      13
+     ],
+     [
+      "sweep_deg",
+      4
+     ],
+     [
+      "tip_chord_ratio",
+      3
+     ]
+    ],
+    "top_extra_keys": [
+     [
+      "type",
+      48
+     ],
+     [
+      "size",
+      21
+     ],
+     [
+      "element",
+      12
+     ],
+     [
+      "elements",
+      7
+     ],
+     [
+      "element_type",
+      7
+     ],
+     [
+      "refine_hole",
+      4
+     ],
+     [
+      "units",
+      2
+     ],
+     [
+      "point",
+      2
+     ],
+     [
+      "support",
+      2
+     ],
+     [
+      "shell_element",
+      1
+     ]
+    ],
+    "note": "多标签（一条题常同时踩几个闸），合计 > 分母；errors 被生成器截到 12 条（.slice(0, 12)）⇒ 计数是下界，Top 键同理"
+   },
+   "refusal_accuracy": {
+    "status": "not_computable",
+    "reason": "需要越界题/拒答题题型；B5 五类题只完成了扩族，这类题一条没有",
+    "counted_as": null,
+    "note": "不印数字（R-A3）；不许填 0 也不许说「通过率 100%」"
+   },
+   "paper": "v7"
+  },
+  {
+   "label": "C-040 v7 x ds",
+   "scorecard": "reports/baseline_scorecard_L3_v7_ds.json",
+   "scorecard_sha256": "a0760dfc283cfd15924e30fdec5af4160875193a81332ceba738c36b5fa1332c",
+   "candidates_dir": "candidates_l3_v7_ds",
+   "n_tasks_in_scorecard": 64,
+   "n_candidates_read": 64,
+   "n_stray_files": 0,
+   "stray_files": [],
+   "structure_repair_L1": {
+    "denominator_n": 61,
+    "numerator_n": 61,
+    "rate_pct": 100.0,
+    "n_exhausted": 0,
+    "exhausted_ids": [],
+    "definition": "首轮 schema/contract 未过（turns_used>=2）的题中，在 max_turns=3 内产出可判记录（spec 或 clarify 非空）的比例；机械上限 = 2 次修复"
+   },
+   "repair_outcome_L2": {
+    "repaired_to_spec": 59,
+    "repaired_to_clarify": 2,
+    "clarify_ids": [
+     "L3_naca4412_wingbox",
+     "L3_open_hole_panel_400x200_d20_cfrp45s_d40"
+    ]
+   },
+   "post_repair_semantics_L3": {
+    "basis": "成绩单 per_task.category（不重算 TSR，保持单一来源）",
+    "repaired_to_spec_n": 59,
+    "spec_pass": 50,
+    "spec_fail": 8,
+    "other_categories": {
+     "fabricated": 1
+    },
+    "closure_ok": true,
+    "closure_expr": "59 = spec_pass 50 + spec_fail 8 + other 1（已知集合 spec_pass/spec_fail/fabricated；出现集合外类别即判红）",
+    "pass_rate_pct": 84.7,
+    "note": "结构修好 ≠ 内容正确：这一层是「修好格式之后仍然有失败」的证据。分母含 other（如 fabricated = 修出合法 spec 但那题本该澄清），所以它比「spec 类通过率」更严。"
+   },
+   "convergence": {
+    "all_turns_histogram": {
+     "1": 3,
+     "2": 58,
+     "3": 3
+    },
+    "repair_turns_histogram": {
+     "1": 58,
+     "2": 3
+    },
+    "median_repair_turns": 1,
+    "mean_repair_turns": 1.05,
+    "max_repair_turns": 2,
+    "within_1_repair_n": 58,
+    "within_1_repair_pct": 95.1,
+    "note": "修复轮数 = turns_used - 1（turns_used 含首轮调用，见契约 §0.2）"
+   },
+   "first_pass": {
+    "n": 3,
+    "by_output": {
+     "clarify": 3
+    },
+    "note": "首轮通过的题按产出类型拆开 —— 若 spec 全 0，说明结构闸对 spec 从未一次放过"
+   },
+   "first_failure_reasons": {
+    "n_tasks_needing_repair": 61,
+    "counts_multilabel": {
+     "extra_key": 24,
+     "required_missing": 61,
+     "type_or_value": 7
+    },
+    "n_unclassified": 0,
+    "top_missing_required": [
+     [
+      "youngs_modulus",
+      61
+     ],
+     [
+      "poisson_ratio",
+      61
+     ],
+     [
+      "yield_strength",
+      47
+     ],
+     [
+      "size_chord",
+      22
+     ],
+     [
+      "size_span",
+      22
+     ],
+     [
+      "n_stringers_per_skin",
+      6
+     ],
+     [
+      "direction",
+      4
+     ],
+     [
+      "density",
+      4
+     ],
+     [
+      "n_ribs",
+      1
+     ]
+    ],
+    "top_extra_keys": [
+     [
+      "size",
+      22
+     ],
+     [
+      "element_type",
+      2
+     ],
+     [
+      "type",
+      1
+     ],
+     [
+      "simple_support",
+      1
+     ]
+    ],
+    "note": "多标签（一条题常同时踩几个闸），合计 > 分母；errors 被生成器截到 12 条（.slice(0, 12)）⇒ 计数是下界，Top 键同理"
+   },
+   "refusal_accuracy": {
+    "status": "not_computable",
+    "reason": "需要越界题/拒答题题型；B5 五类题只完成了扩族，这类题一条没有",
+    "counted_as": null,
+    "note": "不印数字（R-A3）；不许填 0 也不许说「通过率 100%」"
+   },
+   "paper": "v7"
+  },
+  {
+   "label": "C-032 v6c x glm",
+   "scorecard": "reports/baseline_scorecard_L3_v6c_p2.json",
+   "scorecard_sha256": "9e4eb126f2565eb2321bbe4bc41b8319944c821ee1cdb4fbf6b932ce28080454",
+   "candidates_dir": "candidates_l3_v6c_glm_p2",
+   "n_tasks_in_scorecard": 55,
+   "n_candidates_read": 55,
+   "n_stray_files": 0,
+   "stray_files": [],
+   "structure_repair_L1": {
+    "denominator_n": 52,
+    "numerator_n": 52,
+    "rate_pct": 100.0,
+    "n_exhausted": 0,
+    "exhausted_ids": [],
+    "definition": "首轮 schema/contract 未过（turns_used>=2）的题中，在 max_turns=3 内产出可判记录（spec 或 clarify 非空）的比例；机械上限 = 2 次修复"
+   },
+   "repair_outcome_L2": {
+    "repaired_to_spec": 51,
+    "repaired_to_clarify": 1,
+    "clarify_ids": [
+     "L3_open_hole_panel_400x200_d20"
+    ]
+   },
+   "post_repair_semantics_L3": {
+    "basis": "成绩单 per_task.category（不重算 TSR，保持单一来源）",
+    "repaired_to_spec_n": 51,
+    "spec_pass": 41,
+    "spec_fail": 10,
+    "other_categories": {},
+    "closure_ok": true,
+    "closure_expr": "51 = spec_pass 41 + spec_fail 10 + other 0（已知集合 spec_pass/spec_fail/fabricated；出现集合外类别即判红）",
+    "pass_rate_pct": 80.4,
+    "note": "结构修好 ≠ 内容正确：这一层是「修好格式之后仍然有失败」的证据。分母含 other（如 fabricated = 修出合法 spec 但那题本该澄清），所以它比「spec 类通过率」更严。"
+   },
+   "convergence": {
+    "all_turns_histogram": {
+     "1": 3,
+     "2": 50,
+     "3": 2
+    },
+    "repair_turns_histogram": {
+     "1": 50,
+     "2": 2
+    },
+    "median_repair_turns": 1,
+    "mean_repair_turns": 1.04,
+    "max_repair_turns": 2,
+    "within_1_repair_n": 50,
+    "within_1_repair_pct": 96.2,
+    "note": "修复轮数 = turns_used - 1（turns_used 含首轮调用，见契约 §0.2）"
+   },
+   "first_pass": {
+    "n": 3,
+    "by_output": {
+     "clarify": 3
+    },
+    "note": "首轮通过的题按产出类型拆开 —— 若 spec 全 0，说明结构闸对 spec 从未一次放过"
+   },
+   "first_failure_reasons": {
+    "n_tasks_needing_repair": 52,
+    "counts_multilabel": {
+     "extra_key": 47,
+     "required_missing": 52,
+     "type_or_value": 7
+    },
+    "n_unclassified": 0,
+    "top_missing_required": [
+     [
+      "youngs_modulus",
+      52
+     ],
+     [
+      "poisson_ratio",
+      52
+     ],
+     [
+      "yield_strength",
+      52
+     ],
+     [
+      "size_chord",
+      19
+     ],
+     [
+      "size_span",
+      19
+     ],
+     [
+      "n_stringers_per_skin",
+      8
+     ],
+     [
+      "tip_chord_ratio",
+      1
+     ],
+     [
+      "sweep_deg",
+      1
+     ]
+    ],
+    "top_extra_keys": [
+     [
+      "type",
+      42
+     ],
+     [
+      "size",
+      19
+     ],
+     [
+      "element",
+      12
+     ],
+     [
+      "elements",
+      9
+     ],
+     [
+      "point",
+      4
+     ],
+     [
+      "element_type",
+      4
+     ],
+     [
+      "refine_hole",
+      4
+     ],
+     [
+      "units",
+      1
+     ],
+     [
+      "clarify",
+      1
+     ],
+     [
+      "distribution",
+      1
+     ]
+    ],
+    "note": "多标签（一条题常同时踩几个闸），合计 > 分母；errors 被生成器截到 12 条（.slice(0, 12)）⇒ 计数是下界，Top 键同理"
+   },
+   "refusal_accuracy": {
+    "status": "not_computable",
+    "reason": "需要越界题/拒答题题型；B5 五类题只完成了扩族，这类题一条没有",
+    "counted_as": null,
+    "note": "不印数字（R-A3）；不许填 0 也不许说「通过率 100%」"
+   },
+   "paper": "v6c"
+  },
+  {
+   "label": "C-033 v6c x ds",
+   "scorecard": "reports/baseline_scorecard_L3_v6c_ds_p2.json",
+   "scorecard_sha256": "13638cac10cbfc6fa61d5a1f343ac1433b3bb92c6c9b28f2777570ac90cad9f4",
+   "candidates_dir": "candidates_l3_v6c_ds_p2",
+   "n_tasks_in_scorecard": 55,
+   "n_candidates_read": 55,
+   "n_stray_files": 0,
+   "stray_files": [],
+   "structure_repair_L1": {
+    "denominator_n": 53,
+    "numerator_n": 52,
+    "rate_pct": 98.1,
+    "n_exhausted": 1,
+    "exhausted_ids": [
+     "L3_open_hole_panel_400x200_d20_cfrp45s_d40"
+    ],
+    "definition": "首轮 schema/contract 未过（turns_used>=2）的题中，在 max_turns=3 内产出可判记录（spec 或 clarify 非空）的比例；机械上限 = 2 次修复"
+   },
+   "repair_outcome_L2": {
+    "repaired_to_spec": 51,
+    "repaired_to_clarify": 1,
+    "clarify_ids": [
+     "L3_naca4412_wingbox"
+    ]
+   },
+   "post_repair_semantics_L3": {
+    "basis": "成绩单 per_task.category（不重算 TSR，保持单一来源）",
+    "repaired_to_spec_n": 51,
+    "spec_pass": 42,
+    "spec_fail": 8,
+    "other_categories": {
+     "fabricated": 1
+    },
+    "closure_ok": true,
+    "closure_expr": "51 = spec_pass 42 + spec_fail 8 + other 1（已知集合 spec_pass/spec_fail/fabricated；出现集合外类别即判红）",
+    "pass_rate_pct": 82.4,
+    "note": "结构修好 ≠ 内容正确：这一层是「修好格式之后仍然有失败」的证据。分母含 other（如 fabricated = 修出合法 spec 但那题本该澄清），所以它比「spec 类通过率」更严。"
+   },
+   "convergence": {
+    "all_turns_histogram": {
+     "1": 2,
+     "2": 48,
+     "3": 5
+    },
+    "repair_turns_histogram": {
+     "1": 48,
+     "2": 5
+    },
+    "median_repair_turns": 1,
+    "mean_repair_turns": 1.09,
+    "max_repair_turns": 2,
+    "within_1_repair_n": 48,
+    "within_1_repair_pct": 90.6,
+    "note": "修复轮数 = turns_used - 1（turns_used 含首轮调用，见契约 §0.2）"
+   },
+   "first_pass": {
+    "n": 2,
+    "by_output": {
+     "clarify": 2
+    },
+    "note": "首轮通过的题按产出类型拆开 —— 若 spec 全 0，说明结构闸对 spec 从未一次放过"
+   },
+   "first_failure_reasons": {
+    "n_tasks_needing_repair": 53,
+    "counts_multilabel": {
+     "extra_key": 22,
+     "required_missing": 53,
+     "type_or_value": 6
+    },
+    "n_unclassified": 0,
+    "top_missing_required": [
+     [
+      "youngs_modulus",
+      53
+     ],
+     [
+      "poisson_ratio",
+      53
+     ],
+     [
+      "yield_strength",
+      45
+     ],
+     [
+      "size_chord",
+      19
+     ],
+     [
+      "size_span",
+      19
+     ],
+     [
+      "n_stringers_per_skin",
+      6
+     ],
+     [
+      "direction",
+      5
+     ],
+     [
+      "density",
+      2
+     ],
+     [
+      "kind",
+      1
+     ],
+     [
+      "magnitude",
+      1
+     ]
+    ],
+    "top_extra_keys": [
+     [
+      "size",
+      18
+     ],
+     [
+      "type",
+      2
+     ],
+     [
+      "position",
+      2
+     ],
+     [
+      "simply_supported",
+      2
+     ],
+     [
+      "size_axial",
+      1
+     ],
+     [
+      "size_circumferential",
+      1
+     ],
+     [
+      "pressure",
+      1
+     ],
+     [
+      "application_point",
+      1
+     ],
+     [
+      "four_edges",
+      1
+     ]
+    ],
+    "note": "多标签（一条题常同时踩几个闸），合计 > 分母；errors 被生成器截到 12 条（.slice(0, 12)）⇒ 计数是下界，Top 键同理"
+   },
+   "refusal_accuracy": {
+    "status": "not_computable",
+    "reason": "需要越界题/拒答题题型；B5 五类题只完成了扩族，这类题一条没有",
+    "counted_as": null,
+    "note": "不印数字（R-A3）；不许填 0 也不许说「通过率 100%」"
+   },
+   "paper": "v6c"
+  }
+ ],
+ "checks_failed": [],
+ "notes": [
+  "C-040 v7 x glm: 候选目录里有 1 个非 .json 文件（不计入任何统计）：['_retry1_taper040_http502.json.bak']"
+ ],
+ "warnings": [
+  "v6c 与 v7 是不同卷（55 vs 64 条）⇒ 两组的任何比率**不可相减**，只可并列陈述。",
+  "L1 接近 100% 是「闸严格度」的产物：所有 spec 题首轮结构校验全部未过，首轮通过的清一色是澄清题。它不证明模型会建模。",
+  "L3 才是模型能力那一面，与成绩单 TSR 同源（同一 category 字段）。"
+ ]
+}
