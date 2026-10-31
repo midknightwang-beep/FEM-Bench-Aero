@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-10-31T20:53:04+08:00",
- "source_head": "154e21098ecac9365e90fca1179d61fcffb6db5f",
+ "generated_at": "2026-10-31T21:32:02+08:00",
+ "source_head": "18e119d5c20bb93308cc19e1a199c2c4a6550dd5",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 1552,
- "bytes_total": 87582877,
- "n_keep": 1121,
- "bytes_keep": 13011510,
+ "n_total": 1554,
+ "bytes_total": 87601903,
+ "n_keep": 1123,
+ "bytes_keep": 13026080,
  "categories": {
   "根目录内部材料": {
    "n": 47,
@@ -13,15 +13,15 @@
   },
   "KEEP:根目录必需": {
    "n": 4,
-   "bytes": 9888
+   "bytes": 10060
   },
   "内部记忆/应用": {
    "n": 26,
-   "bytes": 525649
+   "bytes": 530105
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
-   "bytes": 3689317
+   "bytes": 3690728
   },
   "汇报图表": {
    "n": 22,
@@ -32,8 +32,8 @@
    "bytes": 51098052
   },
   "KEEP:代码与证据": {
-   "n": 1010,
-   "bytes": 9290350
+   "n": 1012,
+   "bytes": 9303337
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -1093,6 +1093,8 @@
   "feagpt_repro/reports/diagnostics/task_d5_report.md",
   "feagpt_repro/reports/diagnostics/task_d5b_contract.md",
   "feagpt_repro/reports/diagnostics/task_d5b_report.md",
+  "feagpt_repro/reports/diagnostics/task_f2_contract.md",
+  "feagpt_repro/reports/diagnostics/task_f2_report.md",
   "feagpt_repro/reports/diagnostics/task_f3_contract.md",
   "feagpt_repro/reports/diagnostics/task_f3_report.md",
   "feagpt_repro/reports/diagnostics/task_p1a_contract.md",

@@ -12,8 +12,8 @@
 用法：
   python _d4_public_set.py                      # 统计 + 写 reports/diagnostics/public_manifest.json
   python _d4_public_set.py --emit ../_handoff/public_snapshot   # 生成快照目录
-  python _d4_public_set.py --check ../_handoff/public_snapshot  # 校验已有快照（P1–P6）
-  python _d4_public_set.py --self-test          # 构造性验证判据会红（P1/P2/P4/P5 各一向）
+  python _d4_public_set.py --check ../_handoff/public_snapshot  # 校验已有快照（P1–P7）
+  python _d4_public_set.py --self-test          # 构造性验证判据会红（P1/P2/P4/P5/P7 共七向）
 
 退出码：0 = 全过；2 = 有判据红（原因逐条打印）；1 = 环境/参数错误。
 """
@@ -364,6 +364,35 @@ def check(snap, manifest=None):
     else:
         notes.append('P6 ok：快照 %d 个文件与 manifest KEEP 集合逐条一致' % len(have))
 
+    # ---- P7 快照做成的库必须能纳入全部文件（F-2）----
+    # 动机：快照里**带着 `.gitignore` 一起发**。若其中某条规则挡住了 KEEP 里的文件，
+    # 第三方 `git init && git add -A` 会**静默少一个文件**——P6 只比「磁盘 vs manifest」，
+    # 看不出来（F-2 实测：`feagpt_repro/package-lock.json` 就是这样被挡掉的）。
+    # 判据用法与「真做一次」一致：临时 bare git-dir 当索引，`add -A` 后比 ls-files。
+    # 不靠模拟 gitignore 语法 —— 那是第二份实现，规则只有一处（见 MEMORY：工具必须读规则表）。
+    gd = None
+    try:
+        gd = tempfile.mkdtemp(prefix='_d4_p7_')
+        env = dict(os.environ, GIT_DIR=gd, GIT_WORK_TREE=os.path.abspath(snap))
+        subprocess.run(['git', 'init', '-q', '--bare', gd], check=True,
+                       capture_output=True, timeout=120)
+        subprocess.run(['git', 'add', '-A'], check=True, env=env, cwd=snap,
+                       capture_output=True, timeout=600)
+        raw = subprocess.run(['git', 'ls-files', '-z'], env=env, cwd=snap,
+                             capture_output=True, timeout=120).stdout
+        tracked = set(x for x in raw.decode('utf-8', 'replace').split('\0') if x)
+        lost = sorted(have_set - tracked)
+        if lost:
+            fails.append(('P7', '快照里 %d 个文件会被 `.gitignore` 挡住（第三方建库时装不进）: %s'
+                          % (len(lost), ', '.join(lost[:6]))))
+        else:
+            notes.append('P7 ok：快照 %d 个文件全部可被新库纳入（`.gitignore` 无自相矛盾）' % len(have))
+    except Exception as e:                                   # 没有 git / 超时：判红，不 skip（R58）
+        fails.append(('P7', '无法建立临时索引验证入库（缺 git 即无闸）: %s' % e))
+    finally:
+        if gd:
+            shutil.rmtree(gd, ignore_errors=True)
+
     return fails, notes
 
 
@@ -442,7 +471,8 @@ def emit(dest, manifest, redact=True):
 # ---------------- 自检：证明判据能红 ----------------
 
 def self_test():
-    """四向：P1 混入内部文件 / P2 文档引用内部文件 / P4 本机路径 / P5 受限标识，各必须红且原因对。"""
+    """七向：P1 混入内部文件 / P2 文档引用内部文件 / P4 本机路径 / P5 受限标识 /
+    P7 gitignore 挡住 KEEP 文件（F-2）/ P7 反向不挡须绿，各必须红且原因对。"""
     results = []
     with tempfile.TemporaryDirectory() as td:
         snap = os.path.join(td, 'snap')
@@ -506,6 +536,25 @@ def self_test():
         got = [x[0] for x in f]
         results.append(('P5 受限标识', 'P5' in got, got))
 
+        # ⑥ P7：快照自带的 `.gitignore` 挡住了 KEEP 里的文件 ⇒ 第三方建库会静默少一个
+        #    这是 F-2 的原地复现（实测当时 `package-lock.json` 就是这么丢的）
+        m7 = {'keep': list(m['keep']) + ['.gitignore'], 'drop_categories': m['drop_categories']}
+        d = dict(base)
+        d['.gitignore'] = 'feagpt_repro/evaluate.py\n'
+        mk(d)
+        f, _ = check(snap, m7)
+        got = [x[0] for x in f]
+        results.append(('P7 gitignore 挡文件', 'P7' in got, got))
+
+        # ⑦ P7 反向：不挡时必须绿。**每次 check 都会跑 P7**，若它处处误红，
+        #    上面五向的断言会被同一个假红污染 —— 这一向是给 P7 自己立的「不许过严」
+        d = dict(base)
+        d['.gitignore'] = 'feagpt_repro/node_modules/\nfeagpt_repro/candidates/\n'
+        mk(d)
+        f, _ = check(snap, m7)
+        got = [x[0] for x in f]
+        results.append(('P7 不挡须绿', 'P7' not in got, got))
+
     print('=== _d4_public_set --self-test ===')
     ok = True
     for name, good, ids in results:
@@ -567,7 +616,7 @@ def main():
             for cid, msg in fails:
                 print('  [FAIL] %-4s %s' % (cid, msg))
             return 2
-        print('\n结论：全过（P0/P1/P2/P3/P4/P5/P6）')
+        print('\n结论：全过（P0/P1/P2/P3/P4/P4b/P5/P6/P7）')
     return 0
 
 
