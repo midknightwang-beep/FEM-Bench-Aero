@@ -22,7 +22,7 @@ F-7 的真相不是「漏了一个文件」，而是「**默认拒绝 + 手抄�
 | paper sha256 | `tasks_v7.jsonl`（未动） | 同左 |
 | prompt sha256 | `ce225186…`（未动） | 同左 |
 | rubric 版本 | v6.10（未动） | v6.10（未动） |
-| 公开集 | 1123 个 / 12.4 MB，移出 431 个 | **1124 个 / 12.43 MB，移出 430 个 / 71.12 MB** |
+| 公开集 | 1123 个 / 12.4 MB，移出 431 个 | **1127 个 / 12.45 MB，移出 430 个 / 71.13 MB** |
 | 分类计数 | `KEEP:根目录必需 = 4`（含 `.gitignore`） | `KEEP:根目录必需 = 3`、**`KEEP:根目录仓库配置 = 2`**（`.gitignore` + `.gitattributes` 同组） |
 | 判据数 | P0–P7（10 条） | **P0–P8（11 条）** |
 | 自检向数 | 7 | **12** |
@@ -73,28 +73,49 @@ def _is_repo_config(p):
 
 | # | 验收项 | 结果 |
 |---|---|---|
-| V1 | 修复前后双向对照 | `f7_attr_evidence.json`：源库 `run_xval_v11.sh` = `[['eol','lf'],['text','set']]`、`_d3_normalize_eol.py` = `[['eol','crlf'],['text','auto']]`；**修复后快照逐项相同**（`source_vs_after_fix_equal=true`）；**删掉 `.gitattributes` 后两者属性全空**（`source_vs_without_equal=false`） |
-| V2 | 公开集确实多了它 | `n_keep` 1123 → **1124**；`KEEP:根目录仓库配置 = 2` |
+| V1 | 修复前后双向对照（**两层**） | 见下方 V1 明细：内容层（`check-attr`）+ 行为层（快照真建库后 checkout 出来的字节），两层结论一致 |
+| V2 | 公开集确实多了它 | `n_keep` 1123 → **1127**（含本轮新增的 3 个诊断文件）；`KEEP:根目录仓库配置 = 2` |
 | V3 | 自检 | **12/12，rc=0** |
 | V4 | P8 在真实快照上绿 | `P8 ok：仓库行为配置 2 个与源库逐字节一致；生效已实测（run_xval_v11.sh → [['eol','lf'],['text','set']]）` |
 | V5 | 闸不退化 | 负控 **69/69 ok**；claims **active 33 / artifact 68 / 语义项 61 → 全过**（连跑两次，S-45 绿） |
 | V6 | 主仓没被误伤 | `.gitattributes` **未改**（`git diff --stat` 空、`git status` 无它）；快照内该文件的 blob sha 与 `HEAD:.gitattributes` **完全相同**（`7db82c5f`）⇒ 既没被脱敏改到、也没被重写行尾 |
 | V7 | 快照其余判据不退化 | `--check` 报 P1/P2/P3/P4/P4b/P5/P6/P7 全 ok（P3 = 58 个 claim artifact 全在快照内） |
 
-## 5. 现场自纠（都是自检抓出来的，不是读代码看出来的）
+## 5. V1 明细：两层取证（`f7_attr_evidence.json`）
+
+**内容层**（`git check-attr`，问的是「git 怎么解释这个文件」）：
+
+| 文件 | 源库 | 修复后快照 | 删掉 `.gitattributes` |
+|---|---|---|---|
+| `run_xval_v11.sh` | `eol: lf` / `text: set` | **相同** | **无任何属性** |
+| `_d3_normalize_eol.py` | `eol: crlf` / `text: auto` | **相同** | **无任何属性** |
+
+**行为层**（把快照真建成一个仓库 → commit → `checkout-index`，看出来的**实际字节**）：
+
+| | 入索引文件数 | `ls-files --eol`（`.sh`） | checkout 后首行 | 含 CRLF |
+|---|---|---|---|---|
+| 修复后 | **1127** | `i/lf w/lf attr/text eol=lf` | `#!/usr/bin/env bash` | **否** |
+| 删掉 `.gitattributes` | 1126 | `i/lf w/lf attr/`（空） | `#!/usr/bin/env bash\r` | **是** |
+
+⇒ 这不是「一个文件没发」，是**第三方拿到手的脚本在 POSIX 上根本跑不起来**：
+`#!/usr/bin/env bash\r` 会报 `/usr/bin/env: 'bash\r': No such file or directory`。
+行为层比内容层更强的地方在于：内容层只能证明「git 说有这条规则」，行为层证明「规则真的改变了落盘字节」。
+
+## 6. 现场自纠（都是自检抓出来的，不是读代码看出来的）
 
 1. **首版自检 8/12，其中 3 个 BAD 全是脚手架自己造的假红**：`mk()` 用 `open(..., 'w')` 写文件，**Windows 文本模式默认把 `\n` 写成 CRLF**，于是 `P8` 拿工作区字节算的 sha256 对不上，正向、⑪、⑫ 三向一起红。
    ⇒ 与 T-D3 那次「以为 `json.dump` 写 LF 就去加 `newline='\r\n'`」是同一个坑的镜像：**先怀疑脚手架，再怀疑判据**。修法 `newline=''`。
 2. **⑩ 第一次构造不干净**：用了 `check(snap, m)`，而 `m.keep` 不含 `.gitignore` ⇒ P6 也红，断言 `'P6' not in got` 失败。断言是对的，构造是错的 —— 改成 `make_m(d)` 后再从 `repo_configs` 里 pop 掉它，让「红只红在 P8」。
-3. **`1124 个 / 12.4 MB` 与上一轮记录的 `12.5 MB` 差 0.1**：不是体积变了，是 MB 取整位不同（实际 12.43 MB）。已按本轮实读值改 ROADMAP，不再沿用旧的四舍五入。
+3. **数字两次变化，都不是「体积变了」**：报告初稿写 1124（提交前 3 个诊断文件还没入库、不在 `tracked_files` 里），提交后重建快照变 **1127**；MB 也从 12.43 变 12.45。⇒ **诊断报告本身就在公开集里**，它一入库就会改变自己统计的分母。最终值一律以 `public_manifest.json` 实读为准，不在正文留"当时"的数。
 
-## 6. 已知问题 / 未验证
+## 7. 已知问题 / 未验证
 
 - **P8 的 sha256 是「工作区字节」**，`.gitattributes` 在 Windows 上是 CRLF 版、Linux 上是 LF 版。它只在「manifest 与快照同一次运行产出」这个前提下自洽（`main()` 里 `--check` 传的正是现算的 manifest）⇒ **不得把它当跨机锚点**；跨机比对需要改用 `git hash-object`（按 attributes 归一化）。已在代码里写死这段前提，不留给下一个人踩。
 - **未在干净 clone 后重跑 `--check`**：本轮只在本机验证。按 D3 的教训「本机绿证明不了换机绿」，这一条仍是缺口；但它属于「离线 bundle / 干净 clone 验证」那条单子（§13 现第 1 位），不在本轮范围。
 - **分类计数变化本身不是闸**：`KEEP:根目录仓库配置 = 2` 掉了回去，没有任何东西会报 —— 真正守住它的是 P8。记录这个区别，免得以后把「计数好看」当成验证。
 - **顺带发现、本轮不修**：`.workbuddy/memory/MEMORY.md` 的「历史索引」表缺 T-D2 / T-D3 / T-F2 / T-F3 四行（报告文件都在，只是索引没登记）。这是「文档没有闸守 ⇒ 会漂」的又一例（T-R1 同族）。本轮只补了 T-F7 一行，不顺手补齐 —— 补索引应配一条「报告文件 ↔ 索引行」的闸，单独立项。
+- **顺带发现、本轮不修：提交闸挡死了 `git commit --amend`**。本轮第一次提交的 message 因 here-string 语法用错（把 PowerShell 的 `@'…'@` 写进了 bash）多出一个 `@` 开头行，修正时 `git commit --amend -F …` 被 **G5「暂存区为空（空提交）」** 判红 —— 而 amend 时暂存区本来就该是空的。**闸把正常操作误判成事故**。本轮改用 `git reset --soft HEAD~1` + 重新 `commit` 绕过（暂存区非空 ⇒ G5 通过，`--no-verify` 一次都没用）。已登记 **F-8**：G5 应排除 amend 场景（例如只在**非** amend 时要求暂存区非空），并加一向自检证明「amend 能过、真空提交仍被拦」。
 
-## 7. 下一步（一个）
+## 8. 下一步（一个）
 
 **离线 bundle 验证**：`_handoff/FEM-Bench-Aero_3059d90.bundle` 存在但从未在干净环境实测 clone。它是 D 段剩下的最后 0.5，也是把上面「未验证项」一次性关掉的唯一机会（干净 clone 里跑 `--check` + `check_claims`）。

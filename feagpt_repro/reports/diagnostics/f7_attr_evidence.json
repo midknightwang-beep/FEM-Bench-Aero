@@ -1,61 +1,70 @@
 {
- "generated_at": "2026-10-31T22:10:15+08:00",
- "head": "969cb265a218476c53388332730f64cabdc5504f",
+ "generated_at": "2026-10-31T22:19:22+08:00",
+ "head": "3007ca19a563264e0278dc4bbb3bfb6dbd214d4c",
  "purpose": "T-F7 对照片：D3 的行尾规则是否随公开集分发、是否仍生效",
  "samples": [
   "feagpt_repro/reports/diagnostics/run_xval_v11.sh",
   "feagpt_repro/_d3_normalize_eol.py"
  ],
- "source_repo": {
-  "feagpt_repro/reports/diagnostics/run_xval_v11.sh": [
-   [
-    "eol",
-    "lf"
+ "layer_1_content": {
+  "source_repo": {
+   "feagpt_repro/reports/diagnostics/run_xval_v11.sh": [
+    [
+     "eol",
+     "lf"
+    ],
+    [
+     "text",
+     "set"
+    ]
    ],
-   [
-    "text",
-    "set"
+   "feagpt_repro/_d3_normalize_eol.py": [
+    [
+     "eol",
+     "crlf"
+    ],
+    [
+     "text",
+     "auto"
+    ]
    ]
-  ],
-  "feagpt_repro/_d3_normalize_eol.py": [
-   [
-    "eol",
-    "crlf"
+  },
+  "snapshot_after_fix": {
+   "feagpt_repro/reports/diagnostics/run_xval_v11.sh": [
+    [
+     "eol",
+     "lf"
+    ],
+    [
+     "text",
+     "set"
+    ]
    ],
-   [
-    "text",
-    "auto"
+   "feagpt_repro/_d3_normalize_eol.py": [
+    [
+     "eol",
+     "crlf"
+    ],
+    [
+     "text",
+     "auto"
+    ]
    ]
-  ]
+  }
  },
- "snapshot_after_fix": {
-  "feagpt_repro/reports/diagnostics/run_xval_v11.sh": [
-   [
-    "eol",
-    "lf"
-   ],
-   [
-    "text",
-    "set"
-   ]
-  ],
-  "feagpt_repro/_d3_normalize_eol.py": [
-   [
-    "eol",
-    "crlf"
-   ],
-   [
-    "text",
-    "auto"
-   ]
-  ]
- },
- "snapshot_without_gitattributes": {
-  "feagpt_repro/reports/diagnostics/run_xval_v11.sh": [],
-  "feagpt_repro/_d3_normalize_eol.py": []
- },
- "verdict": {
-  "source_vs_after_fix_equal": true,
-  "source_vs_without_equal": false
+ "layer_2_behaviour": {
+  "snapshot_after_fix": {
+   "tracked_files": 1127,
+   "ls_files_eol": "i/lf    w/lf    attr/text eol=lf",
+   "checked_out_first_line": "#!/usr/bin/env bash",
+   "checked_out_has_crlf": false
+  },
+  "snapshot_without_gitattributes": {
+   "tracked_files": 1126,
+   "ls_files_eol": "i/lf    w/lf    attr/",
+   "checked_out_first_line": "#!/usr/bin/env bash\r",
+   "checked_out_has_crlf": true
+  },
+  "note": "行为层：把快照建成真仓库后 checkout，看 *.sh 出来的实际字节。shebang 行若带 \\r，POSIX 下执行会报 \"bash\\r: No such file or directory\"。"
  }
 }

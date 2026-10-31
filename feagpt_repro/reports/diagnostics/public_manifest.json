@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-10-31T22:09:43+08:00",
- "source_head": "969cb265a218476c53388332730f64cabdc5504f",
+ "generated_at": "2026-10-31T22:28:38+08:00",
+ "source_head": "3007ca19a563264e0278dc4bbb3bfb6dbd214d4c",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 1554,
- "bytes_total": 87616043,
- "n_keep": 1124,
- "bytes_keep": 13038082,
+ "n_total": 1557,
+ "bytes_total": 87641889,
+ "n_keep": 1127,
+ "bytes_keep": 13058589,
  "categories": {
   "KEEP:根目录仓库配置": {
    "n": 2,
@@ -13,7 +13,7 @@
   },
   "内部记忆/应用": {
    "n": 26,
-   "bytes": 533435
+   "bytes": 538774
   },
   "根目录内部材料": {
    "n": 46,
@@ -21,7 +21,7 @@
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
-   "bytes": 3690728
+   "bytes": 3692587
   },
   "KEEP:根目录必需": {
    "n": 3,
@@ -36,8 +36,8 @@
    "bytes": 51098052
   },
   "KEEP:代码与证据": {
-   "n": 1012,
-   "bytes": 9314147
+   "n": 1015,
+   "bytes": 9332795
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -1047,6 +1047,7 @@
   "feagpt_repro/reports/diagnostics/data_pack_volume_gap.json",
   "feagpt_repro/reports/diagnostics/dev_reversal_v6c_p2.json",
   "feagpt_repro/reports/diagnostics/dev_reversal_v6c_p2.md",
+  "feagpt_repro/reports/diagnostics/f7_attr_evidence.json",
   "feagpt_repro/reports/diagnostics/gen_v6c_dsv4pro_run.log",
   "feagpt_repro/reports/diagnostics/judge_diff_a13d.json",
   "feagpt_repro/reports/diagnostics/model_diff_v6c_dsv4pro.json",
@@ -1102,6 +1103,8 @@
   "feagpt_repro/reports/diagnostics/task_f2_report.md",
   "feagpt_repro/reports/diagnostics/task_f3_contract.md",
   "feagpt_repro/reports/diagnostics/task_f3_report.md",
+  "feagpt_repro/reports/diagnostics/task_f7_contract.md",
+  "feagpt_repro/reports/diagnostics/task_f7_report.md",
   "feagpt_repro/reports/diagnostics/task_p1a_contract.md",
   "feagpt_repro/reports/diagnostics/task_r1_contract.md",
   "feagpt_repro/reports/diagnostics/task_r1_report.md",
