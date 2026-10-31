@@ -12,12 +12,13 @@
 用法：
   python _d4_public_set.py                      # 统计 + 写 reports/diagnostics/public_manifest.json
   python _d4_public_set.py --emit ../_handoff/public_snapshot   # 生成快照目录
-  python _d4_public_set.py --check ../_handoff/public_snapshot  # 校验已有快照（P1–P7）
-  python _d4_public_set.py --self-test          # 构造性验证判据会红（P1/P2/P4/P5/P7 共七向）
+  python _d4_public_set.py --check ../_handoff/public_snapshot  # 校验已有快照（P1–P8）
+  python _d4_public_set.py --self-test          # 构造性验证判据会红（P1/P2/P4/P5/P7/P8 共十二向）
 
 退出码：0 = 全过；2 = 有判据红（原因逐条打印）；1 = 环境/参数错误。
 """
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -32,7 +33,9 @@ ROOT = os.path.dirname(HERE)
 MANIFEST = os.path.join(HERE, 'reports', 'diagnostics', 'public_manifest.json')
 
 # ---- 根目录必需文件（其余根目录文件一律不进公开集）----
-ROOT_KEEP = {'.gitignore', 'LICENSE', 'LICENSE-DATA', 'README.md'}
+# 注意 `.gitignore` / `.gitattributes` 这类**定义仓库行为的配置**不在这里：
+# 它们由 _is_repo_config() 的结构性规则命中（T-F7）。放进名单就会漏，漏了还没人报。
+ROOT_KEEP = {'LICENSE', 'LICENSE-DATA', 'README.md'}
 
 # ---- 对外文档：反向必含的来源 ----
 PUBLIC_DOCS = [
@@ -72,6 +75,69 @@ def _git(args, cwd=None):
     return p.returncode, p.stdout
 
 
+def _is_repo_config(p):
+    """根目录下**定义仓库行为**的配置文件：`.gitignore` / `.gitattributes` / `.gitmodules` …
+
+    为什么不做成名单（F-7）：T-F2 现场证明「默认拒绝 + 手抄名单」这个组合必然漏项 ——
+    `.gitignore` 被手工加进了 ROOT_KEEP，作用完全相同的 `.gitattributes` 没加，
+    于是第三方 clone 公开库后 `* text=auto eol=crlf` / `*.sh text eol=lf` 两条规则**全部消失**
+    （实测 `eol: crlf` → `eol: unspecified`），D3 一整轮解决的换机行尾问题在公开库侧原样复活。
+    而**没有任何闸会报**：P6 比的是「快照 vs manifest」，manifest 恰恰由 classify() 产出 ⇒ 自证循环。
+
+    所以改成结构性规则：根目录、basename 以 `.git` 开头且不是 `.git` 目录本身 ⇒ 仓库行为配置。
+    新增同类文件自动覆盖，不需要维护名单（R69：能判的不变量优于需要维护的名单）。
+    """
+    if '/' in p or '\\' in p:
+        return False
+    return p.startswith('.git') and p != '.git'
+
+
+def _sha256_file(fp):
+    h = hashlib.sha256()
+    with open(fp, 'rb') as f:
+        for chunk in iter(lambda: f.read(1 << 20), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _attr_probe_target(files):
+    """P8 生效性探针的样本：优先 `.sh`（`*.sh text eol=lf` 是最容易被 echo 掉的**例外**规则），
+    其次 `.py`（被 `* text=auto eol=crlf` 命中）。同类取排序后第一个 ⇒ 结果与顺序无关。
+    样本缺失时返回 None（由调用方记 not_run，不假装验证过）。"""
+    for ext in ('.sh', '.py'):
+        cand = sorted(p for p in files if p.endswith(ext))
+        if cand:
+            return cand[0]
+    return sorted(files)[0] if files else None
+
+
+def _git_check_attr(sample, work_tree, git_dir=None):
+    """问 git：它对这个文件的属性解释成什么。返回 [[attr, value], ...] 或 None（git 不可用/报错）。
+
+    为什么问 git 而不是自己解析 `.gitattributes`：规则只有一处，第二处实现就是 bug
+    （T-D3 的行尾规范化器就是栽在「自建第二套规则」上）。这里只比**结果**。
+    """
+    env = dict(os.environ)
+    cwd = ROOT
+    if git_dir:
+        env['GIT_DIR'] = git_dir
+        env['GIT_WORK_TREE'] = work_tree
+        cwd = work_tree
+    try:
+        p = subprocess.run(['git', '-c', 'core.quotepath=false', 'check-attr', '--all', '--', sample],
+                           cwd=cwd, env=env, capture_output=True, timeout=120)
+    except Exception:
+        return None
+    if p.returncode != 0:
+        return None
+    out = []
+    for line in p.stdout.decode('utf-8', 'replace').splitlines():
+        parts = line.rsplit(': ', 2)
+        if len(parts) == 3:
+            out.append([parts[1], parts[2]])
+    return sorted(out)
+
+
 def tracked_files():
     rc, out = _git(['ls-files', '-z'])
     if rc != 0:
@@ -90,6 +156,8 @@ def classify(p):
         return True, 'KEEP:bench 文档与数据'
     if p.startswith('feagpt_repro/'):
         return True, 'KEEP:代码与证据'
+    if _is_repo_config(p):
+        return True, 'KEEP:根目录仓库配置'
     if p in ROOT_KEEP:
         return True, 'KEEP:根目录必需'
     if p.startswith('.workbuddy/') or p.endswith('.genie'):
@@ -166,6 +234,21 @@ def build_manifest():
             drop.setdefault(c, []).append(p)
     rc, out = _git(['rev-parse', 'HEAD'])
     head = out.decode().strip() if rc == 0 else ''
+    # P8 的基准：**从源库现取**，不写名单（新增 `.gitmodules` 之类自动覆盖）
+    # ⚠ sha256 记的是**工作区字节**（因此 `.gitattributes` 在 Windows 上是 CRLF 版、Linux 上是 LF 版）。
+    #   它只在「manifest 与快照同一次运行产出」这个前提下自洽 —— `main()` 里 `--check` 传的正是
+    #   现算的 manifest。**不得**把它当跨机锚点用（拿入库的旧 manifest 去 check 另一台机器的新快照
+    #   会得到假红）；跨机比对请改用 `git hash-object`（它按 attributes 归一化）。
+    repo_configs = {}
+    for p in sorted(q for q in files if _is_repo_config(q)):
+        fp = os.path.join(ROOT, p)
+        repo_configs[p] = {'sha256': _sha256_file(fp), 'bytes': os.path.getsize(fp)}
+    sample = _attr_probe_target(keep)
+    repo_attr_probe = {
+        'sample': sample,
+        # 源库对这个样本的属性解释。生效性判据在 check() 里拿**快照库**的回答跟它比。
+        'attrs': _git_check_attr(sample, ROOT) if sample else None,
+    }
     return {
         'generated_at': datetime.now(timezone.utc).astimezone().isoformat(timespec='seconds'),
         'source_head': head,
@@ -178,6 +261,8 @@ def build_manifest():
         'keep': sorted(keep),
         'pulled_by_reference': sorted(pulled),
         'drop_categories': {k: sorted(v) for k, v in drop.items()},
+        'repo_configs': repo_configs,
+        'repo_attr_probe': repo_attr_probe,
     }
 
 
@@ -393,6 +478,58 @@ def check(snap, manifest=None):
         if gd:
             shutil.rmtree(gd, ignore_errors=True)
 
+    # ---- P8 仓库行为配置必须随库分发，且真的生效（F-7）----
+    # 动机：`.gitignore` 进了公开集、作用完全相同的 `.gitattributes` 没进 —— 而**没有闸会报**
+    # （P6 比「快照 vs manifest」，manifest 由 classify() 产出 ⇒ 自证循环）。后果实测量化：
+    # 第三方 clone 公开库后 `eol: crlf` 变 `eol: unspecified`、`*.sh` 的 `eol: lf` 也消失
+    # ⇒ D3 解决的换机行尾不一致在公开库侧原样复活。
+    # 判据**不写名单**：源库该有哪些由 manifest 现取；快照多给的也红（双向）。
+    # 并且**真问一次 git**（check-attr）—— 只比 sha 只能证「文件没被换」，证不了「规则生效」。
+    cfg = manifest.get('repo_configs') or {}
+    miss8 = sorted(p for p in cfg if not os.path.exists(os.path.join(snap, p.replace('/', os.sep))))
+    bad8 = sorted(p for p in cfg
+                  if p not in miss8
+                  and _sha256_file(os.path.join(snap, p.replace('/', os.sep))) != cfg[p].get('sha256'))
+    extra8 = sorted(p for p in have if _is_repo_config(p) and p not in cfg)   # 根目录文件天然不含 '/'
+    probe = manifest.get('repo_attr_probe') or {}
+    sample, want = probe.get('sample'), probe.get('attrs')
+    attr_note = None
+    if miss8 or bad8 or extra8:
+        parts = []
+        if miss8:
+            parts.append('缺 %d 个（%s）' % (len(miss8), ', '.join(miss8[:4])))
+        if bad8:
+            parts.append('内容与源库不一致 %d 个（%s）' % (len(bad8), ', '.join(bad8[:4])))
+        if extra8:
+            parts.append('源库没有、快照多给 %d 个（%s）' % (len(extra8), ', '.join(extra8[:4])))
+        fails.append(('P8', '仓库行为配置未随库分发：' + '；'.join(parts)))
+    elif not cfg:
+        fails.append(('P8', 'manifest 未记录任何仓库行为配置（无基准 = 无闸，R58）'))
+    elif not sample or want is None:
+        fails.append(('P8', '缺少生效性探针（sample/attrs），无法证明规则真的生效（R58）'))
+    else:
+        gd8 = None
+        try:
+            gd8 = tempfile.mkdtemp(prefix='_d4_p8_')
+            subprocess.run(['git', 'init', '-q', '--bare', gd8], check=True,
+                           capture_output=True, timeout=120)
+            got = _git_check_attr(sample, os.path.abspath(snap), gd8)
+            if got is None:
+                fails.append(('P8', '无法在快照库上问出属性（缺 git 即无闸）'))
+            elif got != want:
+                fails.append(('P8', '仓库行为配置未生效：`%s` 在快照库里被解释为 %s，源库是 %s'
+                              % (sample, got or '（无任何属性）', want)))
+            else:
+                attr_note = '生效已实测（`%s` → %s）' % (sample, got)
+        except Exception as e:
+            fails.append(('P8', '无法验证行为配置是否生效（缺 git 即无闸）: %s' % e))
+        finally:
+            if gd8:
+                shutil.rmtree(gd8, ignore_errors=True)
+    if attr_note:
+        notes.append('P8 ok：仓库行为配置 %d 个与源库逐字节一致；%s'
+                     % (len(cfg), attr_note))
+
     return fails, notes
 
 
@@ -471,16 +608,24 @@ def emit(dest, manifest, redact=True):
 # ---------------- 自检：证明判据能红 ----------------
 
 def self_test():
-    """七向：P1 混入内部文件 / P2 文档引用内部文件 / P4 本机路径 / P5 受限标识 /
-    P7 gitignore 挡住 KEEP 文件（F-2）/ P7 反向不挡须绿，各必须红且原因对。"""
+    """十二向：P1 内部文件 / P2 文档引用内部文件 / P4 本机路径 / P5 受限标识 /
+    P7 gitignore 挡 KEEP 文件（F-2）/ P7 不挡须绿 /
+    P8 内容漂移 / P8 缺失 / P8 多给 / P8 一致且生效须绿 / P8 生效性断言真的会红（F-7）。
+    每向断言的是「红的**是哪一条**」，不是只断言「红了」—— 强判据吃弱判据时
+    「弱判据永假绿」是看不出来的（NC 系列同款纪律）。"""
+    ATTR = '*.py text eol=crlf\n'
+    ATTR_NOPY = '*.txt text eol=crlf\n'
+    PROBE = 'feegpt_repro/evaluate.py'
+    WANT = [['eol', 'crlf'], ['text', 'set']]
+
+    def cfg_of(d):
+        return {p: {'sha256': hashlib.sha256(c.encode('utf-8')).hexdigest(),
+                    'bytes': len(c.encode('utf-8'))}
+                for p, c in d.items() if _is_repo_config(p)}
+
     results = []
     with tempfile.TemporaryDirectory() as td:
         snap = os.path.join(td, 'snap')
-        m = {'keep': ['FEM-Bench-Aero/README.md', 'feagpt_repro/evaluate.py',
-                      'FEM-Bench-Aero/QUICKSTART.md', 'FEM-Bench-Aero/DATA.md',
-                      'FEM-Bench-Aero/RUBRIC.md', 'FEM-Bench-Aero/CLAIMS.md',
-                      'feagpt_repro/reports/INDEX.md'],
-             'drop_categories': {'探针/调试产物': ['feagpt_repro/_probe_b6/x.inp']}}
 
         def mk(files):
             if os.path.exists(snap):
@@ -488,7 +633,9 @@ def self_test():
             for rel, content in files.items():
                 fp = os.path.join(snap, rel.replace('/', os.sep))
                 os.makedirs(os.path.dirname(fp), exist_ok=True)
-                with open(fp, 'w', encoding='utf-8') as f:
+                # newline='' 必须给：Windows 上文本模式默认把 '\n' 写成 CRLF，
+                # 会让 P8 的 sha256 对不上（= 一条纯粹由测试脚手架制造的假红）
+                with open(fp, 'w', encoding='utf-8', newline='') as f:
                     f.write(content)
 
         base = {'FEM-Bench-Aero/README.md': '# r\n', 'feagpt_repro/evaluate.py': 'x=1\n',
@@ -496,6 +643,17 @@ def self_test():
                 'FEM-Bench-Aero/DATA.md': 'see evaluate.py\n',
                 'FEM-Bench-Aero/RUBRIC.md': '# r\n', 'FEM-Bench-Aero/CLAIMS.md': '# c\n',
                 'feagpt_repro/reports/INDEX.md': '# i\n'}
+        base['.gitattributes'] = ATTR
+
+        def make_m(d, extra_keep=None):
+            """按快照内容现造 manifest：keep = 快照镜像（除标注的例外），repo_configs 照实取。"""
+            mm = {'keep': sorted(set(d) | set(extra_keep or [])),
+                  'drop_categories': {'探针/调试产物': ['feagpt_repro/_probe_b6/x.inp']},
+                  'repo_configs': cfg_of(d),
+                  'repo_attr_probe': {'sample': PROBE, 'attrs': WANT}}
+            return mm
+
+        m = make_m(base)
 
         # ① 正向：应全绿
         mk(base)
@@ -538,11 +696,9 @@ def self_test():
 
         # ⑥ P7：快照自带的 `.gitignore` 挡住了 KEEP 里的文件 ⇒ 第三方建库会静默少一个
         #    这是 F-2 的原地复现（实测当时 `package-lock.json` 就是这么丢的）
-        m7 = {'keep': list(m['keep']) + ['.gitignore'], 'drop_categories': m['drop_categories']}
-        d = dict(base)
-        d['.gitignore'] = 'feagpt_repro/evaluate.py\n'
+        d = dict(base); d['.gitignore'] = 'feagpt_repro/evaluate.py\n'
         mk(d)
-        f, _ = check(snap, m7)
+        f, _ = check(snap, make_m(d))
         got = [x[0] for x in f]
         results.append(('P7 gitignore 挡文件', 'P7' in got, got))
 
@@ -551,14 +707,58 @@ def self_test():
         d = dict(base)
         d['.gitignore'] = 'feagpt_repro/node_modules/\nfeagpt_repro/candidates/\n'
         mk(d)
-        f, _ = check(snap, m7)
+        f, _ = check(snap, make_m(d))
         got = [x[0] for x in f]
         results.append(('P7 不挡须绿', 'P7' not in got, got))
+
+        # ⑧ P8 内容漂移：文件在、但内容与源库不一致（P6 必须绿 ⇒ 红的只能是一条）
+        #    这一向是 F-7 的主向 —— 现状恰恰是「文件根本不在」，而那时 P8 与 P6 同时红，
+        #    分不清是「分类规则漏了」还是「emit 写漏了」。内容漂移只红 P8，能把两者分开。
+        d = dict(base); d['.gitattributes'] = '*.py text eol=lf\n'
+        mk(d)
+        f, _ = check(snap, m)
+        got = [x[0] for x in f]
+        results.append(('P8 内容漂移', 'P8' in got and 'P6' not in got, got))
+
+        # ⑨ P8 缺失：源库有、快照没有（= F-7 的现状形态）
+        d = dict(base); d.pop('.gitattributes')
+        mk(d)
+        f, _ = check(snap, m)
+        got = [x[0] for x in f]
+        results.append(('P8 缺失', 'P8' in got and 'P6' in got, got))
+
+        # ⑩ P8 多给：源库没有、快照里凭空多一个改行为的文件（防「反向放水」）
+        #    构造要点：keep **含**它（P6 绿），repo_configs **不含**它 ⇒ 红的只能是 P8
+        d = dict(base); d['.gitignore'] = 'feagpt_repro/node_modules/\n'
+        mk(d)
+        mm = make_m(d)
+        mm['repo_configs'].pop('.gitignore', None)
+        f, _ = check(snap, mm)
+        got = [x[0] for x in f]
+        results.append(('P8 源库无而快照多给', 'P8' in got and 'P6' not in got, got))
+
+        # ⑪ P8 一致且生效：必须绿，且 note 里要能看见「生效已实测」——
+        #    只断言「没红」等于允许 P8 整个不跑（判据没跑起来与判据通过，外观一样）
+        mk(base)
+        f, n = check(snap, m)
+        results.append(('P8 一致且生效须绿',
+                        'P8' not in [x[0] for x in f] and any('生效已实测' in x for x in n),
+                        [x[0] for x in f]))
+
+        # ⑫ P8 生效性断言真的会红：`.gitattributes` 内容与 manifest 记的 sha **一致**（同步绿），
+        #    但它声明的规则不作用于探针样本 ⇒ 必须由「生效性」这一条单独抓出来。
+        #    没有这一向，生效性检查可能只是个永远不触发的新增代码（N-26 恒真式同款风险）。
+        d = dict(base); d['.gitattributes'] = ATTR_NOPY
+        mk(d)
+        mm = make_m(d)                 # repo_configs 记的是 ATTR_NOPY 的 sha ⇒ 同步这条绿
+        f, _ = check(snap, mm)
+        msg = ' '.join(x[1] for x in f if x[0] == 'P8')
+        results.append(('P8 生效性须真会红', '未生效' in msg, [x[0] for x in f] or ['']))
 
     print('=== _d4_public_set --self-test ===')
     ok = True
     for name, good, ids in results:
-        print('  [%s] %-24s 红项=%s' % ('ok  ' if good else 'BAD ', name, ids or '[]'))
+        print('  [%s] %-26s 红项=%s' % ('ok  ' if good else 'BAD ', name, ids or '[]'))
         ok = ok and good
     print('=> %d/%d' % (sum(1 for _, g, _ in results if g), len(results)))
     return 0 if ok else 2
@@ -616,7 +816,7 @@ def main():
             for cid, msg in fails:
                 print('  [FAIL] %-4s %s' % (cid, msg))
             return 2
-        print('\n结论：全过（P0/P1/P2/P3/P4/P4b/P5/P6/P7）')
+        print('\n结论：全过（P0/P1/P2/P3/P4/P4b/P5/P6/P7/P8）')
     return 0
 
 

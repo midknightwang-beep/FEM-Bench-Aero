@@ -1,0 +1,61 @@
+{
+ "generated_at": "2026-10-31T22:10:15+08:00",
+ "head": "969cb265a218476c53388332730f64cabdc5504f",
+ "purpose": "T-F7 对照片：D3 的行尾规则是否随公开集分发、是否仍生效",
+ "samples": [
+  "feagpt_repro/reports/diagnostics/run_xval_v11.sh",
+  "feagpt_repro/_d3_normalize_eol.py"
+ ],
+ "source_repo": {
+  "feagpt_repro/reports/diagnostics/run_xval_v11.sh": [
+   [
+    "eol",
+    "lf"
+   ],
+   [
+    "text",
+    "set"
+   ]
+  ],
+  "feagpt_repro/_d3_normalize_eol.py": [
+   [
+    "eol",
+    "crlf"
+   ],
+   [
+    "text",
+    "auto"
+   ]
+  ]
+ },
+ "snapshot_after_fix": {
+  "feagpt_repro/reports/diagnostics/run_xval_v11.sh": [
+   [
+    "eol",
+    "lf"
+   ],
+   [
+    "text",
+    "set"
+   ]
+  ],
+  "feagpt_repro/_d3_normalize_eol.py": [
+   [
+    "eol",
+    "crlf"
+   ],
+   [
+    "text",
+    "auto"
+   ]
+  ]
+ },
+ "snapshot_without_gitattributes": {
+  "feagpt_repro/reports/diagnostics/run_xval_v11.sh": [],
+  "feagpt_repro/_d3_normalize_eol.py": []
+ },
+ "verdict": {
+  "source_vs_after_fix_equal": true,
+  "source_vs_without_equal": false
+ }
+}

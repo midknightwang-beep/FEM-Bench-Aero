@@ -1,27 +1,31 @@
 {
- "generated_at": "2026-10-31T21:32:02+08:00",
- "source_head": "18e119d5c20bb93308cc19e1a199c2c4a6550dd5",
+ "generated_at": "2026-10-31T22:09:43+08:00",
+ "source_head": "969cb265a218476c53388332730f64cabdc5504f",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
  "n_total": 1554,
- "bytes_total": 87601903,
- "n_keep": 1123,
- "bytes_keep": 13026080,
+ "bytes_total": 87616043,
+ "n_keep": 1124,
+ "bytes_keep": 13038082,
  "categories": {
-  "根目录内部材料": {
-   "n": 47,
-   "bytes": 11136964
-  },
-  "KEEP:根目录必需": {
-   "n": 4,
-   "bytes": 10060
+  "KEEP:根目录仓库配置": {
+   "n": 2,
+   "bytes": 3215
   },
   "内部记忆/应用": {
    "n": 26,
-   "bytes": 530105
+   "bytes": 533435
+  },
+  "根目录内部材料": {
+   "n": 46,
+   "bytes": 11135772
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
    "bytes": 3690728
+  },
+  "KEEP:根目录必需": {
+   "n": 3,
+   "bytes": 8037
   },
   "汇报图表": {
    "n": 22,
@@ -33,7 +37,7 @@
   },
   "KEEP:代码与证据": {
    "n": 1012,
-   "bytes": 9303337
+   "bytes": 9314147
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -49,6 +53,7 @@
   }
  },
  "keep": [
+  ".gitattributes",
   ".gitignore",
   "FEM-Bench-Aero/BASELINE.md",
   "FEM-Bench-Aero/CLAIMS.md",
@@ -1180,8 +1185,35 @@
   "feagpt_repro/_probe_m14/h_convergence.py"
  ],
  "drop_categories": {
+  "内部记忆/应用": [
+   ".wbapp_Tl8jf0GeqRmnK59Hr64PuS.genie",
+   ".workbuddy/applications.yaml",
+   ".workbuddy/memory/2026-07-14.md",
+   ".workbuddy/memory/2026-10-01.md",
+   ".workbuddy/memory/2026-10-02.md",
+   ".workbuddy/memory/2026-10-03.md",
+   ".workbuddy/memory/2026-10-04.md",
+   ".workbuddy/memory/2026-10-05.md",
+   ".workbuddy/memory/2026-10-06.md",
+   ".workbuddy/memory/2026-10-07.md",
+   ".workbuddy/memory/2026-10-08.md",
+   ".workbuddy/memory/2026-10-11.md",
+   ".workbuddy/memory/2026-10-17.md",
+   ".workbuddy/memory/2026-10-19.md",
+   ".workbuddy/memory/2026-10-24.md",
+   ".workbuddy/memory/2026-10-25.md",
+   ".workbuddy/memory/2026-10-26.md",
+   ".workbuddy/memory/2026-10-27.md",
+   ".workbuddy/memory/2026-10-28.md",
+   ".workbuddy/memory/2026-10-29.md",
+   ".workbuddy/memory/2026-10-30.md",
+   ".workbuddy/memory/2026-10-31.md",
+   ".workbuddy/memory/MEMORY.md",
+   ".workbuddy/memory/MEMORY_ARCHIVE_20261024_full.md",
+   ".workbuddy/memory/MEMORY_ARCHIVE_20261027_pre_compact.md",
+   ".workbuddy/memory/MEMORY_ARCHIVE_20261028_pre_compact.md"
+  ],
   "根目录内部材料": [
-   ".gitattributes",
    "AGENTS.md",
    "CLAUDE.md",
    "CONFLICT.md",
@@ -1228,34 +1260,6 @@
    "飞机结构FEA数据集调研报告.pdf",
    "飞机结构智能有限元建模数据集调研报告_2026Q4.html",
    "飞机结构智能有限元建模数据集调研报告_2026Q4.md"
-  ],
-  "内部记忆/应用": [
-   ".wbapp_Tl8jf0GeqRmnK59Hr64PuS.genie",
-   ".workbuddy/applications.yaml",
-   ".workbuddy/memory/2026-07-14.md",
-   ".workbuddy/memory/2026-10-01.md",
-   ".workbuddy/memory/2026-10-02.md",
-   ".workbuddy/memory/2026-10-03.md",
-   ".workbuddy/memory/2026-10-04.md",
-   ".workbuddy/memory/2026-10-05.md",
-   ".workbuddy/memory/2026-10-06.md",
-   ".workbuddy/memory/2026-10-07.md",
-   ".workbuddy/memory/2026-10-08.md",
-   ".workbuddy/memory/2026-10-11.md",
-   ".workbuddy/memory/2026-10-17.md",
-   ".workbuddy/memory/2026-10-19.md",
-   ".workbuddy/memory/2026-10-24.md",
-   ".workbuddy/memory/2026-10-25.md",
-   ".workbuddy/memory/2026-10-26.md",
-   ".workbuddy/memory/2026-10-27.md",
-   ".workbuddy/memory/2026-10-28.md",
-   ".workbuddy/memory/2026-10-29.md",
-   ".workbuddy/memory/2026-10-30.md",
-   ".workbuddy/memory/2026-10-31.md",
-   ".workbuddy/memory/MEMORY.md",
-   ".workbuddy/memory/MEMORY_ARCHIVE_20261024_full.md",
-   ".workbuddy/memory/MEMORY_ARCHIVE_20261027_pre_compact.md",
-   ".workbuddy/memory/MEMORY_ARCHIVE_20261028_pre_compact.md"
   ],
   "汇报图表": [
    "_report/_v11_abq_audit.py",
@@ -1622,6 +1626,29 @@
    "智能生成技术项目汇报/slides/14.slide",
    "智能生成技术项目汇报/slides/15.slide",
    "智能生成技术项目汇报/智能生成技术项目汇报.pptx"
+  ]
+ },
+ "repo_configs": {
+  ".gitattributes": {
+   "sha256": "b49701981f179bfae18a3ba8090900bf2a548919bdea50a61869e2ca0878e4e3",
+   "bytes": 1192
+  },
+  ".gitignore": {
+   "sha256": "0d8103262e14b4680d70d8dec544b6848bed0e03429f1bc200acf8189030e967",
+   "bytes": 2023
+  }
+ },
+ "repo_attr_probe": {
+  "sample": "feagpt_repro/reports/diagnostics/run_xval_v11.sh",
+  "attrs": [
+   [
+    "eol",
+    "lf"
+   ],
+   [
+    "text",
+    "set"
+   ]
   ]
  },
  "redactions": {
