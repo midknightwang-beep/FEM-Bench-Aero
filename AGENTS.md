@@ -41,6 +41,14 @@ git status --short              # 先看清工作区；有别人未提交的改�
 > **用法前提**：加了 `--public` 之后**仍然红的项才是要处理的**（例如缺 `node_modules` ⇒ 先按 `QUICKSTART.md` 装依赖）。**它不是一个「让自检变绿」的开关。**
 > 判据本体在 `check_claims.py`；边界自检 `"$PY" _f3_public_exempt_selftest.py`（六向，含三向「本该红」）。
 
+> **⚠ 提交前必须过一遍行尾规范化（T-D3 / R76）**
+> 仓库用 `.gitattributes` 统一 CRLF（`*.sh`/`*.cmd` 之外），因为 **blob 里只有 LF 一套**、`autocrlf` 在 checkout 转 CRLF，
+> 而新写出来的文件默认是 LF（Write 工具、不走 git 的脚本产物）——不处理就会重新制造「本机 LF / clone CRLF」的漂移面，
+> 也就是 D-3 里 61.6% 锚点断裂的成因。提交前跑：
+> `"$PY" _d3_normalize_eol.py`（dry-run，看「待处理」是否为 0）→ 需要时加 `--apply`（幂等，只动行尾）。
+> **本机自查证明不了换机**：唯一硬证据是干净 clone 后 `"$PY" _b1_eol_scan.py <clone>` 报「不同数 = 0」。
+> 工作区正常态 = `git ls-files --eol` 里 `w/lf` 只剩两个 `*.sh`。
+
 > **⚠ dataset / 求解类脚本必须用项目 venv**（R60）：`verify_dataset` / `check_forms` / `score_baseline` / `msr_l3` / `eval_dataset` / `dedup_dataset` / `run_pipeline` 一律用 `…/envs/default/Scripts/python.exe`；**系统 python 缺 numpy/gmsh**，报 `ModuleNotFoundError` 是**环境问题、不得记成数据失败**（R16）。
 >
 > **⚠ `check_claims.py` 是唯一能用系统 python 的脚本**（纯文本/JSON 解析）；其余一律 venv。旧版这条写的是「两道文本闸可用系统 python」，已被 T-A10 实测证伪。

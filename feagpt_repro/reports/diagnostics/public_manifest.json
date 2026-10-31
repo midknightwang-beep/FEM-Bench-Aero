@@ -1,51 +1,51 @@
 {
- "generated_at": "2026-10-31T15:29:28+08:00",
- "source_head": "1bcb32ec3cdb7ae5a85cca35f2014d760201a58c",
+ "generated_at": "2026-10-31T15:46:08+08:00",
+ "source_head": "9020ba5bbcf497fcc0e5d3c60b28bab7da4b3907",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 1543,
- "bytes_total": 86940084,
- "n_keep": 1113,
- "bytes_keep": 12891918,
+ "n_total": 1549,
+ "bytes_total": 87554305,
+ "n_keep": 1118,
+ "bytes_keep": 12988966,
  "categories": {
+  "根目录内部材料": {
+   "n": 47,
+   "bytes": 11136175
+  },
   "KEEP:根目录必需": {
    "n": 4,
-   "bytes": 8715
+   "bytes": 8937
   },
   "内部记忆/应用": {
    "n": 26,
-   "bytes": 517015
-  },
-  "根目录内部材料": {
-   "n": 46,
-   "bytes": 11124872
+   "bytes": 520410
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
-   "bytes": 3683136
+   "bytes": 3684681
   },
   "汇报图表": {
    "n": 22,
-   "bytes": 5258166
+   "bytes": 5260217
   },
   "探针/调试产物": {
    "n": 252,
-   "bytes": 50600388
+   "bytes": 51098052
   },
   "KEEP:代码与证据": {
-   "n": 1002,
-   "bytes": 9178377
+   "n": 1007,
+   "bytes": 9273393
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
-   "bytes": 21690
+   "bytes": 21955
   },
   "技术设计报告": {
    "n": 28,
-   "bytes": 5498887
+   "bytes": 5500318
   },
   "汇报幻灯": {
    "n": 56,
-   "bytes": 1048838
+   "bytes": 1050167
   }
  },
  "keep": [
@@ -199,6 +199,9 @@
   "feagpt_repro/_check_forms_b6.log",
   "feagpt_repro/_check_forms_b7_root.log",
   "feagpt_repro/_check_forms_t3.log",
+  "feagpt_repro/_d3_eol_anchor_scan.py",
+  "feagpt_repro/_d3_fix_anchors.py",
+  "feagpt_repro/_d3_normalize_eol.py",
   "feagpt_repro/_d4_public_set.py",
   "feagpt_repro/_diag_dev_reversal.py",
   "feagpt_repro/_diag_model_diff.py",
@@ -1079,6 +1082,8 @@
   "feagpt_repro/reports/diagnostics/task_b1_report.md",
   "feagpt_repro/reports/diagnostics/task_c1_contract.md",
   "feagpt_repro/reports/diagnostics/task_c1_report.md",
+  "feagpt_repro/reports/diagnostics/task_d3_contract.md",
+  "feagpt_repro/reports/diagnostics/task_d3_measure.md",
   "feagpt_repro/reports/diagnostics/task_d4_contract.md",
   "feagpt_repro/reports/diagnostics/task_d4_report.md",
   "feagpt_repro/reports/diagnostics/task_d5_contract.md",
@@ -1170,35 +1175,8 @@
   "feagpt_repro/_probe_m14/h_convergence.py"
  ],
  "drop_categories": {
-  "内部记忆/应用": [
-   ".wbapp_Tl8jf0GeqRmnK59Hr64PuS.genie",
-   ".workbuddy/applications.yaml",
-   ".workbuddy/memory/2026-07-14.md",
-   ".workbuddy/memory/2026-10-01.md",
-   ".workbuddy/memory/2026-10-02.md",
-   ".workbuddy/memory/2026-10-03.md",
-   ".workbuddy/memory/2026-10-04.md",
-   ".workbuddy/memory/2026-10-05.md",
-   ".workbuddy/memory/2026-10-06.md",
-   ".workbuddy/memory/2026-10-07.md",
-   ".workbuddy/memory/2026-10-08.md",
-   ".workbuddy/memory/2026-10-11.md",
-   ".workbuddy/memory/2026-10-17.md",
-   ".workbuddy/memory/2026-10-19.md",
-   ".workbuddy/memory/2026-10-24.md",
-   ".workbuddy/memory/2026-10-25.md",
-   ".workbuddy/memory/2026-10-26.md",
-   ".workbuddy/memory/2026-10-27.md",
-   ".workbuddy/memory/2026-10-28.md",
-   ".workbuddy/memory/2026-10-29.md",
-   ".workbuddy/memory/2026-10-30.md",
-   ".workbuddy/memory/2026-10-31.md",
-   ".workbuddy/memory/MEMORY.md",
-   ".workbuddy/memory/MEMORY_ARCHIVE_20261024_full.md",
-   ".workbuddy/memory/MEMORY_ARCHIVE_20261027_pre_compact.md",
-   ".workbuddy/memory/MEMORY_ARCHIVE_20261028_pre_compact.md"
-  ],
   "根目录内部材料": [
+   ".gitattributes",
    "AGENTS.md",
    "CLAUDE.md",
    "CONFLICT.md",
@@ -1245,6 +1223,34 @@
    "飞机结构FEA数据集调研报告.pdf",
    "飞机结构智能有限元建模数据集调研报告_2026Q4.html",
    "飞机结构智能有限元建模数据集调研报告_2026Q4.md"
+  ],
+  "内部记忆/应用": [
+   ".wbapp_Tl8jf0GeqRmnK59Hr64PuS.genie",
+   ".workbuddy/applications.yaml",
+   ".workbuddy/memory/2026-07-14.md",
+   ".workbuddy/memory/2026-10-01.md",
+   ".workbuddy/memory/2026-10-02.md",
+   ".workbuddy/memory/2026-10-03.md",
+   ".workbuddy/memory/2026-10-04.md",
+   ".workbuddy/memory/2026-10-05.md",
+   ".workbuddy/memory/2026-10-06.md",
+   ".workbuddy/memory/2026-10-07.md",
+   ".workbuddy/memory/2026-10-08.md",
+   ".workbuddy/memory/2026-10-11.md",
+   ".workbuddy/memory/2026-10-17.md",
+   ".workbuddy/memory/2026-10-19.md",
+   ".workbuddy/memory/2026-10-24.md",
+   ".workbuddy/memory/2026-10-25.md",
+   ".workbuddy/memory/2026-10-26.md",
+   ".workbuddy/memory/2026-10-27.md",
+   ".workbuddy/memory/2026-10-28.md",
+   ".workbuddy/memory/2026-10-29.md",
+   ".workbuddy/memory/2026-10-30.md",
+   ".workbuddy/memory/2026-10-31.md",
+   ".workbuddy/memory/MEMORY.md",
+   ".workbuddy/memory/MEMORY_ARCHIVE_20261024_full.md",
+   ".workbuddy/memory/MEMORY_ARCHIVE_20261027_pre_compact.md",
+   ".workbuddy/memory/MEMORY_ARCHIVE_20261028_pre_compact.md"
   ],
   "汇报图表": [
    "_report/_v11_abq_audit.py",
@@ -1843,6 +1849,24 @@
    "n": 1,
    "markers": [
     "{{REPO_ROOT}}"
+   ]
+  },
+  "feagpt_repro/_d3_eol_anchor_scan.py": {
+   "n": 1,
+   "markers": [
+    "{{REPO_ROOT_WIN}}"
+   ]
+  },
+  "feagpt_repro/_d3_fix_anchors.py": {
+   "n": 1,
+   "markers": [
+    "{{REPO_ROOT_WIN}}"
+   ]
+  },
+  "feagpt_repro/_d3_normalize_eol.py": {
+   "n": 1,
+   "markers": [
+    "{{REPO_ROOT_WIN}}"
    ]
   },
   "feagpt_repro/_v11/run_v11_abaqus.bat": {
