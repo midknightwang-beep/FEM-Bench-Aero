@@ -247,7 +247,7 @@
    "id": "NC-22",
    "desc": "成绩单 exam.msr 汇总字段（P1-1）",
    "expect": "present",
-   "actual": "19/21",
+   "actual": "20/22",
    "ok": true
   },
   {

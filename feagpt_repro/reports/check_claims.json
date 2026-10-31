@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793369197/1793369197；check 1793407482 vs 负控 1793369197",
+   "actual": "C-019 mtime 记录/实际 = 1793432486/1793432486；check 1793432671 vs 负控 1793432486",
    "ok": true,
    "skip": false
   },
@@ -857,8 +857,8 @@
    "ok": true,
    "problems": [],
    "size": 27613,
-   "sha256": "6ec82c1aa492a8c4550a8c3447aa5a450d65d2ba59c66afe9dbaced339f09bf9",
-   "mtime": 1792923639
+   "sha256": "c57280ff3ac204e58e3fb7d3a1bdc53a67fe5a40bc8306e1d2864d4856a50a71",
+   "mtime": 1792425600
   },
   {
    "claim_id": "C-030",
@@ -1097,8 +1097,8 @@
    "ok": true,
    "problems": [],
    "size": 84312,
-   "sha256": "e4185f792ec3bb271eab247ac8eae6a165052b34be34be5911ed0faace36c4c1",
-   "mtime": 1793366131
+   "sha256": "f4d994586006ce1d086f66122de2caccca5671945d3b9a1cd8f4421e85d26937",
+   "mtime": 1793432405
   },
   {
    "claim_id": "C-040",
@@ -1109,8 +1109,8 @@
    "ok": true,
    "problems": [],
    "size": 81353,
-   "sha256": "23bc1e4fed93776bc80d0ec15d8595304917b07c6bc24e5a8014895df042150d",
-   "mtime": 1793366133
+   "sha256": "a0760dfc283cfd15924e30fdec5af4160875193a81332ceba738c36b5fa1332c",
+   "mtime": 1793432400
   },
   {
    "claim_id": "C-040",
@@ -1313,8 +1313,8 @@
    "ok": true,
    "problems": [],
    "size": 17046,
-   "sha256": "1b2da630e571a709236af988da8960759b664e025dafc3ae1c0e0d8a898665f9",
-   "mtime": 1793369197
+   "sha256": "d544de25439a00dedf14dccb59d5bfec95e14bee347cd6e7c6dd6059e52dadbf",
+   "mtime": 1793432486
   }
  ]
 }

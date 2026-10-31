@@ -6,7 +6,7 @@
  "provenance": {
   "label": "C-021 official (paper v4, candidates v4)",
   "tasks_path": "reports/papers/tasks_v4.jsonl",
-  "tasks_sha256": "f8e0182b60c4ad1da13e3b395f4ffcb823c3e524fd52e1bda19d3aab999f070a",
+  "tasks_sha256": "7f241a918495dca6339dd8a8c57b5f2d9022f973e8408146ba1afaf769f87a2c",
   "candidates_dir": "candidates_l3_v3",
   "n_candidates": 30,
   "generated_by": "score_baseline.py"
@@ -701,7 +701,7 @@
   "note": "全链 MSR（R14/R16/R23，W5a 修正）：契约闸+ccx 求解+关1+关4+fidelity+spec_fidelity 全 PASS；分母 = spec-required 且非澄清题（R23：澄清/未收敛候选不计，编造归 FPR）；依赖预检不过即环境退出；失败分层 env/contract/model/solver，env 不计模型失败。",
   "provenance": {
    "tasks_path": "reports/papers/tasks_v4.jsonl",
-   "tasks_sha256": "f8e0182b60c4ad1da13e3b395f4ffcb823c3e524fd52e1bda19d3aab999f070a",
+   "tasks_sha256": "7f241a918495dca6339dd8a8c57b5f2d9022f973e8408146ba1afaf769f87a2c",
    "candidates_dir": "candidates_l3_v3",
    "reuse_source": null
   },

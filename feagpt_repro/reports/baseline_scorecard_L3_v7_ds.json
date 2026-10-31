@@ -30,7 +30,7 @@
   "generated_by": "score_baseline.py",
   "judge_overrides": {
    "path": "tasks/clarify_wrong_keys_fix.json",
-   "sha256": "517b32d07d4c162b210d8cf058571bdb2d075df34fca747661ddb4d351ed2d8e",
+   "sha256": "c9d60bc166f28b3cc7766cda71c4691095374ce0893f2ac33a625be14fc77c76",
    "version": "p1-1",
    "n_fixes": 1,
    "applied_to": [

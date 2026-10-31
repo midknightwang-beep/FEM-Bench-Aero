@@ -1,0 +1,18 @@
+# 行尾策略（T-D3 / R76）
+#
+# 事实（实测，见 reports/diagnostics/task_d3_measure.md）：
+#   · git blob 里 1475 个文本**全部是 LF**；core.autocrlf=true 在 checkout 时转 CRLF；
+#   · 工作区却是混合态（LF 912 / CRLF 521 / mixed 42）——因为部分文件是后续由脚本直接写成 LF 的，
+#     绕过了 checkout。⇒ 同一 commit，本机与 clone 的字节不同，sha256 锚点换机即断。
+#   · 全仓 456 条可归因锚点中，428 条认 CRLF 版、28 条认 LF 版。
+#
+# 选择：统一 CRLF。理由不是「CRLF 更好」，而是「返工量小一个量级」——
+#   本项目全部证据链（R25/R26/R29 的 sha256 锚点、成绩单 provenance）都产在 Windows 工作区，
+#   统一 CRLF 只需重算 28 条（活跃锚点 7 条），统一 LF 要重算 428 条。
+#   **边界**：本文件必须与工作区规范化同批落地，否则只修了本机、Linux clone 仍断（R75）。
+#
+# 例外：*.sh 强制 LF（POSIX 脚本带 CRLF 会在 shebang 处直接失败）。本仓当前无 .sh，属预防性声明。
+* text=auto eol=crlf
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.sh   text eol=lf
