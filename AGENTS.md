@@ -35,6 +35,12 @@ git status --short              # 先看清工作区；有别人未提交的改�
 > 白名单是例外，规则写在 `feagpt_repro/commit_allowlist.json` 自己身上（每条必须带 `reason`；文件一旦入库、或磁盘上已消失，闸即判红强制清理；名单内文件不得进入任何对外数字）。
 > `--no-verify` 能绕过，但**等于主动放弃这条闸**，只在确认「就是要提交半截」时才用，并须在报告里写明原因。
 
+> **⚠ 公开分发集：`check_claims.py --public`（T-F3 / R75）**
+> 公开快照里，五类判据的**对象按拍板不存在**（本机外部归档的 `SHA256SUMS.txt`、被渲染层脱敏的 `PY=`、移出的 `AGENTS.md`/`CLAUDE.md`、不分发的 `.git/hooks`、以及因协议文件不齐而失去对象的版本判据），所以它们判红**不代表代码错**。加 `--public` 后这些项标 `exempt` + 原因、**不计入通过数**，在输出里单列。
+> **它是放宽，所以边界写死（R75）**：① 只在显式加参数时生效，**绝不自动**（不得写成「文件不存在就跳过」——那会让删文件成为逃避手段）；② 只对「失败原因确实是公开集造成」生效：协议文件**存在且**写死计数、`PY=` 是裸 `python`、非目标 claim 的 artifact 缺失，**仍判红**；③ 豁免项不得进入任何对外数字，也不得说成「全绿」。
+> **用法前提**：加了 `--public` 之后**仍然红的项才是要处理的**（例如缺 `node_modules` ⇒ 先按 `QUICKSTART.md` 装依赖）。**它不是一个「让自检变绿」的开关。**
+> 判据本体在 `check_claims.py`；边界自检 `"$PY" _f3_public_exempt_selftest.py`（六向，含三向「本该红」）。
+
 > **⚠ dataset / 求解类脚本必须用项目 venv**（R60）：`verify_dataset` / `check_forms` / `score_baseline` / `msr_l3` / `eval_dataset` / `dedup_dataset` / `run_pipeline` 一律用 `…/envs/default/Scripts/python.exe`；**系统 python 缺 numpy/gmsh**，报 `ModuleNotFoundError` 是**环境问题、不得记成数据失败**（R16）。
 >
 > **⚠ `check_claims.py` 是唯一能用系统 python 的脚本**（纯文本/JSON 解析）；其余一律 venv。旧版这条写的是「两道文本闸可用系统 python」，已被 T-A10 实测证伪。

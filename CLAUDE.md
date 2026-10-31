@@ -12,3 +12,4 @@
    **提交前闸（D5）**：`git commit` 会触发 `.git/hooks/pre-commit` 跑 `check_commit.py`，判据是「暂存区 == 工作区全部非白名单改动」——**它是唯一检查「提交内容」而不是「工作区」的闸**，堵 T-C1 那次「只 add 了新增文件、12 个改动漏掉」。**hook 不入库**，新 clone 后先跑 `check_commit.py --install-hook`，否则这道闸不存在。**这条现在有闸守**：`check_claims.py` 的 S-61（判据在 `hook_guard.py`）会查 hook 是否存在、是否指向当前脚本、是否被 `core.hooksPath` 改道；只跑复现的可 `--skip-hook-guard` 显式跳过（标 `skip`，须写明原因）。
 4. 分母必须显式闭合；不同 paper/prompt/model/分母不得直接相减。
 5. 发现不一致：停下来写 `CONFLICT.md`，不要静默改 claim 或 artifact。
+6. **公开分发集**（只有快照、没有私有库/`.git/hooks`）：`check_claims.py --public`。它**只**豁免「公开集里对象不存在」造成的红（本机外部归档 / 被脱敏的 `PY=` / 移出的协议文件 / 无 hook），按 R75 必须逐项带 reason、标 `exempt`、**不计入通过**；判据真的违规仍红。**不要用它去「修红」**——加了之后仍然红的项才是要处理的（例如缺 `node_modules`，见 `QUICKSTART.md`）。

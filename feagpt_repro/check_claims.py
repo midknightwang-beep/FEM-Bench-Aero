@@ -37,7 +37,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)                      # 仓库根 = F:/AI FEA Modeling DataSets
 CLAIMS_DEFAULT = os.path.join(ROOT, 'FEM-Bench-Aero', 'CLAIMS.md')
 
-PATH_RE = re.compile(r'[A-Za-z0-9_./\\:\-]+\.(?:jsonl|json|md|csv|tar\.gz|txt)')
+# T-F3：字符类补 `{}` —— 渲染层占位符（`{{DATA_ARCHIVE}}/SHA256SUMS.txt`）里含花括号，
+# 旧字符类会在花括号处截断，把 artifact 解析成 `/SHA256SUMS.txt`（看着像仓库内路径，
+# 实际是外部归档）。**这是信息失真，不只是豁免判断问题**：同族于 T-D4 那次
+# `\.(?:json|jsonl)` 交替写反把 `x.jsonl` 截成 `x.json` —— 正则没覆盖输入的实际字符。
+PATH_RE = re.compile(r'[A-Za-z0-9_./\\:\-{}]+\.(?:jsonl|json|md|csv|tar\.gz|txt)')
 FLAG_RE = re.compile(r'--(?:report|json|out|report-dir|md)\s+([^\s`;+]+)')
 # W5c：产出方式不止 --out/--report。考卷快照是 `cp tasks/tasks.jsonl reports/papers/xxx.jsonl`，
 # sha 清单是 `sha256sum … >> reports/papers/SHA256SUMS`。这两种也是**真实产出**，不纳入的话
@@ -1942,7 +1946,101 @@ def hook_guard_state(root):
     return ok, f"{head}；{parts}{tail}"
 
 
-def semantic_checks(root, rows, skip_hook_guard=False):
+# ---------------------------------------------------------------------------
+# T-F3（R75）：`--public` 显式豁免 —— 只针对「公开分发集里结构上不可能满足」的判据
+# ---------------------------------------------------------------------------
+# 背景（T-D4 实测）：公开快照里本闸红 7 项，其中 4 项是 D4 自己引入的
+#   C-013 外部归档的 SHA256SUMS.txt 不在公开集（且被渲染层脱敏成占位符）
+#   S-46  INDEX 的 `PY=` 被脱敏成占位符 ⇒ venv 特征不可判
+#   S-51  AGENTS.md 按拍板①移出公开集 ⇒ 判据对象不存在
+#   S-56  同上（CLAUDE.md 也移出）
+# 加上 D5b 的 S-61（公开快照不分发 `.git/hooks`）共 5 项。
+# 它们**不是代码错了**，是公开集里没有对应对象 —— 但也不能就那么红着：
+# 第三方第一次照 QUICKSTART 跑就是 5 项红，后面的成绩再漂亮也没人信。
+#
+# R69 三条边界（写死在这里；改豁免清单必须同时改这一段和 RUBRIC R75）：
+#   ① 显式：不加 `--public` 一切照旧 —— **豁免绝不自动生效**；
+#   ② 精确到原因：只在该判据「因为公开集这个特定原因」失败时豁免。判据真的违规
+#      （协议文件写死计数、`PY=` 是裸 `python`、非 C-013 的 artifact 缺失）**仍红**；
+#   ③ 不计入通过：豁免项标 `exempt` + `reason`，单列计数，不得当作绿数引用。
+_PUBLIC_EXEMPT_REASON = {
+    'C-013': '该 claim 的 artifact 是本机外部归档的 SHA256SUMS.txt，公开集按拍板不含它'
+             '（D2 发布数据包后应由下载地址替代）',
+    'S-46':  'INDEX 的 `PY=` 在渲染层被替换为占位符（本机路径不外泄），venv 特征不可判',
+    'S-51':  'AGENTS.md / CLAUDE.md 按 D4 拍板①移出公开集，判据对象不存在',
+    'S-56':  '同上：协议文件不在公开集',
+    'S-61':  '公开快照不分发 .git/hooks（hook 是本地安装物，不在版本控制内）',
+}
+
+
+def public_exempt_reason(sid, detail, root):
+    """判断某个**已经判红**的语义项能否在 `--public` 下豁免。返回 `(bool, 说明)`。
+
+    只回答「失败原因是否恰好是公开集造成的」，**不回答「这条判据要不要查」** ——
+    这是整条设计的关键：如果只看 `sid` 就豁免，那么协议真的写死了计数、
+    `PY=` 真的写成裸 `python` 时也会被放过，等于把判据废掉。
+
+    每条判据都自带一个「什么情况下仍判红」的分支（见 RUBRIC R75 表）。
+    """
+    if sid not in _PUBLIC_EXEMPT_REASON:
+        return False, ''
+    base = _PUBLIC_EXEMPT_REASON[sid]
+    root = os.path.abspath(root)
+
+    if sid == 'S-46':
+        p = os.path.join(root, 'feagpt_repro', 'reports', 'INDEX.md')
+        if not os.path.exists(p):
+            return False, 'INDEX 不存在（不是脱敏造成的）⇒ 不豁免'
+        try:
+            txt = open(p, encoding='utf-8', errors='replace').read()
+        except OSError:
+            return False, 'INDEX 读不出 ⇒ 不豁免'
+        mm = re.search(r'^PY\s*=\s*"([^"]*)"', txt, re.M)
+        if not mm:
+            return False, 'INDEX 无 `PY=` 定义 ⇒ 判据本该红，不豁免'
+        val = mm.group(1)
+        if '{{' in val and '}}' in val:
+            return True, base + '（实测 `PY=%s`）' % val
+        return False, '`PY=` 是实际值 %r、不是占位符 ⇒ 判据本该红，不豁免' % val
+
+    if sid in ('S-51', 'S-56'):
+        ea = os.path.exists(os.path.join(root, 'AGENTS.md'))
+        ec = os.path.exists(os.path.join(root, 'CLAUDE.md'))
+        if ea or ec:
+            return False, ('协议文件仍存在（AGENTS=%s / CLAUDE=%s）⇒ 判据有对象，不豁免'
+                           % (ea, ec))
+        return True, base
+
+    if sid == 'S-61':
+        mm = re.search(r'红=([A-Za-z0-9,]+)', detail or '')
+        if not mm:
+            return False, '无法解析红点集合（不是「hook 缺失」这一形态）⇒ 不豁免'
+        red = {x.strip() for x in mm.group(1).split(',') if x.strip()}
+        if red == {'H1'}:
+            return True, base + '（唯一红点 H1）'
+        return False, '红点 %s 不止 H1（有 hook 但内容/指向不对）⇒ 真问题，不豁免' % sorted(red)
+
+    if sid == 'C-013':
+        # 由结构层单独调用 `public_exempt_external_artifact`；这里只为自检留口。
+        return False, 'C-013 由 artifact 层判定，这里不处理'
+
+    return False, ''
+
+
+def public_exempt_external_artifact(rel):
+    """C-013 的豁免判定：**只有当 artifact 是渲染层占位符**时才豁免。
+
+    为什么不用「cid == C-013 且 exists == False」：那样等于给这一条 claim 免检。
+    占位符（`{{DATA_ARCHIVE}}/SHA256SUMS.txt`）才是「原本指向本机外部归档、
+    公开集不含」的**证据**；如果它是普通相对路径却不存在，那是真缺失，该红。
+    """
+    a = (rel or '').strip()
+    if '{{' in a and '}}' in a:
+        return True, _PUBLIC_EXEMPT_REASON['C-013'] + '（实测 artifact=%s）' % a
+    return False, 'artifact %r 不是渲染层占位符 ⇒ 缺失是真问题，不豁免' % a
+
+
+def semantic_checks(root, rows, skip_hook_guard=False, public_mode=False):
     """逐条核对：账本文本里声称的数字 vs artifact 实读的数字（R29）。"""
     out, m = [], _measures(root)
     by = {}
@@ -1955,8 +2053,16 @@ def semantic_checks(root, rows, skip_hook_guard=False):
         return out
 
     def add(sid, desc, expect, actual, ok):
-        out.append({'id': sid, 'desc': desc, 'expect': str(expect), 'actual': str(actual),
-                    'ok': bool(ok), 'skip': False})
+        rec = {'id': sid, 'desc': desc, 'expect': str(expect), 'actual': str(actual),
+               'ok': bool(ok), 'skip': False}
+        # T-F3：只在**已经判红**且 `--public` 时，才问「这个红是不是公开集造成的」。
+        # 豁免成立 ⇒ ok=True + skip=True + exempt=True + reason；三者缺一都不算豁免
+        # （ok=False 会进 sem_fails；skip=False 会被当通过数；无 reason 违反 R69②）。
+        if not ok and public_mode:
+            _ex, _why = public_exempt_reason(sid, rec['actual'], root)
+            if _ex:
+                rec.update({'ok': True, 'skip': True, 'exempt': True, 'reason': _why})
+        out.append(rec)
 
     # 0) 必需 claim 必须还在（整行被删掉比写错数字更危险）
     missing = [c for c in REQUIRED_CLAIMS if c not in by]
@@ -2728,11 +2834,22 @@ def main():
                     help='同时核对文本数字 vs artifact 实读（R29，默认开）')
     ap.add_argument('--no-semantic', dest='semantic', action='store_false',
                     help='只做结构检查（旧行为）')
+    ap.add_argument('--public', action='store_true',
+                    help='公开分发集模式：**显式**豁免 5 项「公开集里结构上不可能满足」的判据'
+                         '（C-013 外部归档 / S-46 venv 路径被脱敏 / S-51、S-56 协议文件移出 / '
+                         'S-61 无 .git/hooks）。按 R69：标 exempt + reason、不计入通过数，'
+                         '且**只在失败原因确实是公开集造成时**才生效 —— 判据真的违规仍红。'
+                         '不加本参数时行为与旧版完全一致')
     ap.add_argument('--skip-hook-guard', action='store_true',
                     help='显式跳过 S-61（pre-commit hook 存活判据）。仅在 CI / 第三方只跑复现时用；'
                          '按 R69 必须在当次报告里写明原因，且 S-61 会标 skip 而不是通过')
     args = ap.parse_args()
     root = os.path.abspath(args.root)
+    # T-F3：结构层与语义层共用同一个开关。**必须是具名局部变量**——
+    # 首版结构层直接写 `public_mode`，而 main 里只有 `args.public` ⇒
+    # 主仓全绿（所有 artifact 都存在，`problems` 为 False 短路，那段代码压根没执行），
+    # 快照里才炸 NameError。又一次「判据没跑起来与判据通过外观一样」。
+    public_mode = bool(args.public)
 
     rows = parse_claims(args.claims)
     active = [r for r in rows if 'active' in r.get('status', '').lower()
@@ -2789,6 +2906,14 @@ def main():
                 seen[key] = (cid, is_diag)
             rec = {'claim_id': cid, 'artifact': rel, 'exists': exists, 'git_tracked': tracked,
                    'external': external, 'ok': not problems, 'problems': problems}
+            # T-F3：C-013 的 artifact 是本机外部归档、公开集按拍板不含 ⇒ `--public` 下豁免。
+            # 豁免条件**只认「artifact 是渲染层占位符」**（`{{DATA_ARCHIVE}}/...`），
+            # 不认「cid==C-013 且不存在」—— 后者等于给这条 claim 免检（R75 边界②）。
+            if problems and public_mode and cid == 'C-013' and not exists:
+                _ex, _why = public_exempt_external_artifact(rel)
+                if _ex:
+                    rec.update({'ok': True, 'exempt': True, 'reason': _why})
+                    problems = []
             if exists:
                 ap_ = os.path.join(root, rel) if not external else rel
                 rec.update({'size': os.path.getsize(ap_), 'sha256': sha256_file(ap_),
@@ -2798,11 +2923,14 @@ def main():
                 fails.append(f"{cid}: {rel} -> {'; '.join(problems)}")
 
     # ---- 语义计数（R29）：文本数字必须等于 artifact 实读 ----
-    sem = semantic_checks(root, rows, skip_hook_guard=args.skip_hook_guard) if args.semantic else []
+    sem = semantic_checks(root, rows, skip_hook_guard=args.skip_hook_guard,
+                          public_mode=public_mode) if args.semantic else []
     sem_fails = [f"{s['id']}: {s['desc']} -> 声称 {s['actual']} / 实测 {s['expect']}"
                  for s in sem if not s['ok']]
     fails_all = fails + sem_fails
 
+    n_ex_art = len([r for r in results if r.get('exempt')])
+    n_ex_sem = len([s_ for s_ in sem if s_.get('exempt')])
     report = {'claims_file': os.path.relpath(args.claims, root).replace('\\', '/'),
               'n_active_claims': len({r['claim_id'] for r in results}),
               'n_artifacts': len(results),
@@ -2812,25 +2940,41 @@ def main():
               'all_ok': not fails_all, 'fails': fails_all,
               'structural_fails': fails, 'semantic_fails': sem_fails,
               'semantic': sem, 'results': results}
+    # 只在 --public 下加这些键 ⇒ 不加参数时 JSON 与旧版逐字节一致（P1）
+    if public_mode:
+        report['public_mode'] = True
+        report['n_exempt'] = n_ex_art + n_ex_sem
+        report['exempt'] = (
+            [{'id': r['claim_id'], 'artifact': r['artifact'], 'reason': r['reason']}
+             for r in results if r.get('exempt')]
+            + [{'id': s_['id'], 'reason': s_['reason']} for s_ in sem if s_.get('exempt')])
     os.makedirs(os.path.dirname(os.path.abspath(args.json)) or '.', exist_ok=True)
     json.dump(report, open(args.json, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 
     print('== CLAIMS 自检（R25/R26/R27 结构 + R29 语义计数）==')
     for rec in results:
+        if rec.get('exempt'):
+            print(f"  [EXEM] {rec['claim_id']:<7} {rec['artifact']}  <- {rec['reason']}")
+            continue
         tag = 'ok  ' if rec['ok'] else 'FAIL'
         extra = '' if rec['ok'] else '  <- ' + '; '.join(rec['problems'])
         print(f"  [{tag}] {rec['claim_id']:<7} {rec['artifact']}{extra}")
     if sem:
         print('-- 语义计数（声称值 vs artifact 实读）--')
         for s in sem:
+            if s.get('exempt'):
+                print(f"  [EXEM] {s['id']:<5} {s['desc']}: {s['reason']}")
+                continue
             if s.get('skip'):
                 print(f"  [skip] {s['id']:<5} {s['desc']}: {s['actual']}")
                 continue
             tag = 'ok  ' if s['ok'] else 'FAIL'
             print(f"  [{tag}] {s['id']:<5} {s['desc']:<34} 声称={s['actual']} 实测={s['expect']}")
+    _n_ex = n_ex_art + n_ex_sem
     print(f"\nactive claims {report['n_active_claims']} 条 / artifact {report['n_artifacts']} 个 / "
           f"语义项 {len([s for s in sem if not s.get('skip')])} 条 "
-          f"-> {'全过' if report['all_ok'] else f'结构 {len(fails)} 项 + 语义 {len(sem_fails)} 项失败'}")
+          + (f"；另有 {_n_ex} 项 --public 豁免（不计入通过）" if _n_ex else '')
+          + f"-> {'全过' if report['all_ok'] else f'结构 {len(fails)} 项 + 语义 {len(sem_fails)} 项失败'}")
     print(f"report -> {args.json}")
     if fails_all:
         print('红线条 R26/R29：CLAIMS 自检未过，不得对外引用这些数字。')

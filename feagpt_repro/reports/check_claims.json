@@ -133,8 +133,8 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 6.9",
-   "actual": "6.9",
+   "expect": "全部 = 6.10",
+   "actual": "6.10",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793369197/1793369197；check 1793371950 vs 负控 1793369197",
+   "actual": "C-019 mtime 记录/实际 = 1793369197/1793369197；check 1793407482 vs 负控 1793369197",
    "ok": true,
    "skip": false
   },
