@@ -1,0 +1,56 @@
+{
+ "generated_at": "2026-10-31T22:49:12+08:00",
+ "purpose": "T-D6：离线 bundle 能否重建仓库（D 段最后 0.5）",
+ "source_repo": "F:\\AI FEA Modeling DataSets",
+ "strict": false,
+ "info": {
+  "bundle": {
+   "path": "_handoff/FEM-Bench-Aero_2698612.bundle",
+   "bytes": 38398374,
+   "verify_rc": 0,
+   "complete_history": true,
+   "refs": {
+    "HEAD": "2698612f6ac914aa0e78cbaa3848f262d4451e52",
+    "refs/heads/main": "2698612f6ac914aa0e78cbaa3848f262d4451e52",
+    "refs/tags/v1.0-l3-v4": "68cd251ccef58992f3b4dacbefe1380f3db6544f",
+    "refs/tags/v1.0-l3-v5": "cec1020fa1f5238fdb32982b500d3edc80a6a29a",
+    "refs/tags/v1.0-l3-v6": "03a97f2ef909c45fef9a627d365dc5be022c6718",
+    "refs/tags/v1.0-l3-v6b": "2e21370895cb5def3cda8318c40515072230710e",
+    "refs/tags/v1.0-l3-v6c": "7898c6968b38d68a112f58d54450c11eca995c14",
+    "refs/tags/v1.0-rc": "894dbd008630be723edf80f9275c4c9e1d444620"
+   }
+  },
+  "clone": {
+   "dest": "temp",
+   "rc": 0,
+   "head": "2698612f6ac914aa0e78cbaa3848f262d4451e52",
+   "dirty": 0
+  },
+  "commits": {
+   "source": "118",
+   "clone": "118"
+  },
+  "files": 1557,
+  "eol_diff_lines": 0,
+  "freshness": {
+   "source_head": "2698612f6ac914aa0e78cbaa3848f262d4451e52",
+   "behind_by": 0
+  },
+  "data_chain": {
+   "tarball": "F:\\AI FEA Modeling DataSets\\_handoff\\release\\FEM-Bench-Aero-v1.1-data.tar.gz",
+   "rc": 0,
+   "tail": [
+    "解包 F:\\AI FEA Modeling DataSets\\_handoff\\release\\FEM-Bench-Aero-v1.1-data.tar.gz -> C:\\Users\\22207\\AppData\\Local\\Temp\\_d6_clone__0ssa197\\repo\\FEM-Bench-Aero",
+    "modeling 目录条数: 64（manifest 期望 64）",
+    "[OK] 数据集本体就绪：C:\\Users\\22207\\AppData\\Local\\Temp\\_d6_clone__0ssa197\\repo\\FEM-Bench-Aero/modeling（64 条）—— evaluate.py 可用"
+   ],
+   "expect": 64,
+   "have": 64
+  },
+  "fail_count": 0,
+  "warn_count": 0
+ },
+ "fails": [],
+ "warns": [],
+ "ok": true
+}
