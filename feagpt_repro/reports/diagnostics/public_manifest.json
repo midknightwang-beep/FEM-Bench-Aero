@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-10-31T08:43:49+08:00",
- "source_head": "fc32af3758dd88743e7d1c4302438c215faa03fa",
+ "generated_at": "2026-10-31T08:56:23+08:00",
+ "source_head": "fdaf5970279d42021ac8ab75b16e79e01d352cda",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 1537,
- "bytes_total": 86790326,
- "n_keep": 1108,
- "bytes_keep": 12739139,
+ "n_total": 1540,
+ "bytes_total": 86899050,
+ "n_keep": 1110,
+ "bytes_keep": 12857729,
  "categories": {
   "KEEP:根目录必需": {
    "n": 4,
    "bytes": 8715
   },
   "内部记忆/应用": {
-   "n": 25,
-   "bytes": 521791
+   "n": 26,
+   "bytes": 511925
   },
   "根目录内部材料": {
    "n": 46,
@@ -21,7 +21,7 @@
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
-   "bytes": 3677882
+   "bytes": 3679210
   },
   "汇报图表": {
    "n": 22,
@@ -32,8 +32,8 @@
    "bytes": 50600388
   },
   "KEEP:代码与证据": {
-   "n": 997,
-   "bytes": 9030852
+   "n": 999,
+   "bytes": 9148114
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -1059,6 +1059,7 @@
   "feagpt_repro/reports/diagnostics/prompt_v2_effect_glm.md",
   "feagpt_repro/reports/diagnostics/prompt_v3_ablation.json",
   "feagpt_repro/reports/diagnostics/prompt_v3_ablation.md",
+  "feagpt_repro/reports/diagnostics/public_manifest.json",
   "feagpt_repro/reports/diagnostics/run_xval_v11.sh",
   "feagpt_repro/reports/diagnostics/score_v6c_dsv4pro.log",
   "feagpt_repro/reports/diagnostics/score_v6c_recheck.log",
@@ -1078,6 +1079,7 @@
   "feagpt_repro/reports/diagnostics/task_c1_contract.md",
   "feagpt_repro/reports/diagnostics/task_c1_report.md",
   "feagpt_repro/reports/diagnostics/task_d4_contract.md",
+  "feagpt_repro/reports/diagnostics/task_d4_report.md",
   "feagpt_repro/reports/diagnostics/task_d5_contract.md",
   "feagpt_repro/reports/diagnostics/task_d5_report.md",
   "feagpt_repro/reports/diagnostics/task_d5b_contract.md",
@@ -1187,6 +1189,7 @@
    ".workbuddy/memory/2026-10-28.md",
    ".workbuddy/memory/2026-10-29.md",
    ".workbuddy/memory/2026-10-30.md",
+   ".workbuddy/memory/2026-10-31.md",
    ".workbuddy/memory/MEMORY.md",
    ".workbuddy/memory/MEMORY_ARCHIVE_20261024_full.md",
    ".workbuddy/memory/MEMORY_ARCHIVE_20261027_pre_compact.md",
@@ -1611,341 +1614,341 @@
   "FEM-Bench-Aero/CLAIMS.md": {
    "n": 1,
    "markers": [
-    "F:/FEA_Archive_20261024"
+    "{{DATA_ARCHIVE}}"
    ]
   },
   "FEM-Bench-Aero/README.md": {
    "n": 1,
    "markers": [
-    "C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+    "{{VENV_PY}}"
    ]
   },
   "FEM-Bench-Aero/RUBRIC.md": {
    "n": 1,
    "markers": [
-    "C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+    "{{VENV_PY}}"
    ]
   },
   "FEM-Bench-Aero/STAGE_GATE_M14.md": {
    "n": 1,
    "markers": [
-    "C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+    "{{VENV_PY}}"
    ]
   },
   "FEM-Bench-Aero/W5B_PLAN.md": {
    "n": 3,
    "markers": [
-    "F:/AI FEA Modeling DataSets",
-    "F:\\AI FEA Modeling DataSets",
-    "C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+    "{{REPO_ROOT}}",
+    "{{REPO_ROOT_WIN}}",
+    "{{VENV_PY}}"
    ]
   },
   "FEM-Bench-Aero/gate3_all55_d37.json": {
    "n": 1,
    "markers": [
-    "F:/FEA_Archive_20261024"
+    "{{DATA_ARCHIVE}}"
    ]
   },
   "feagpt_repro/DECISIONS.md": {
    "n": 1,
    "markers": [
-    "22207"
+    "{{USER}}"
    ]
   },
   "feagpt_repro/FeaGPT流程复现报告.html": {
    "n": 2,
    "markers": [
-    "F:\\AI FEA Modeling DataSets",
-    "22207"
+    "{{REPO_ROOT_WIN}}",
+    "{{USER}}"
    ]
   },
   "feagpt_repro/_b1_compare.py": {
    "n": 1,
    "markers": [
-    "F:\\AI FEA Modeling DataSets"
+    "{{REPO_ROOT_WIN}}"
    ]
   },
   "feagpt_repro/_b1_eol_scan.py": {
    "n": 1,
    "markers": [
-    "F:\\AI FEA Modeling DataSets"
+    "{{REPO_ROOT_WIN}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_fuselage_barrel_d1600_l1600_str8_frm3/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_fuselage_barrel_d1800_l2000_str8_frm3/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_fuselage_barrel_d2000_l1600_str8_frm3/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_fuselage_barrel_d2000_l2000_str12_frm4/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_fuselage_barrel_d2000_l2000_str8_frm3/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_naca4412_wingbox_n_ribs3_chord1000/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_naca4412_wingbox_n_ribs3_chord800/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_naca4412_wingbox_n_ribs5_chord800/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_naca4412_wingbox_n_ribs7_chord1000/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_naca4412_wingbox_n_ribs7_chord800/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_naca4412_wingbox_n_ribs9_chord1000/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_naca4412_wingbox_recombination_algorithm3/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_naca4412_wingbox_size_skin1p5/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_naca4412_wingbox_size_skin2/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_naca4412_wingbox_size_skin4/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_naca4412_wingbox_size_span1600/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_naca4412_wingbox_size_span2400/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_naca4412_wingbox_size_span2400_skin2/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_naca4412_wingbox_size_span3000/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_open_hole_panel_400x200_d20_cfrp090s/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_open_hole_panel_400x200_d20_cfrp45s/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_open_hole_panel_400x200_d20_cfrp45s_d40/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_open_hole_panel_400x200_d20_cfrpqi/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_open_hole_panel_400x200_d20_offcentre/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_stiffened_panel_600x600/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_stiffened_panel_600x600_str3/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_stiffened_panel_800x600/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_bridge_v3/eval_runs/L3_stiffened_panel_800x600_str3/evaluation.json": {
    "n": 1,
    "markers": [
-    "F:/AI FEA Modeling DataSets"
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/_v11/run_v11_abaqus.bat": {
    "n": 3,
    "markers": [
-    "F:\\AI FEA Modeling DataSets",
-    "C:\\Users\\22207\\.workbuddy\\binaries\\python\\envs\\default\\Scripts\\python.exe"
+    "{{REPO_ROOT_WIN}}",
+    "{{VENV_PY_WIN}}"
    ]
   },
   "feagpt_repro/check_claims.py": {
    "n": 2,
    "markers": [
-    "F:/AI FEA Modeling DataSets",
-    "F:/FEA_Archive"
+    "{{REPO_ROOT}}",
+    "{{DATA_ARCHIVE_PREFIX}}"
    ]
   },
   "feagpt_repro/gate3_all55.py": {
    "n": 2,
    "markers": [
-    "F:/FEA_Archive_20261024"
+    "{{DATA_ARCHIVE}}"
    ]
   },
   "feagpt_repro/make_w5d_leaderboard.py": {
    "n": 1,
    "markers": [
-    "C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+    "{{VENV_PY}}"
    ]
   },
   "feagpt_repro/msr_l3.py": {
    "n": 1,
    "markers": [
-    "C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+    "{{VENV_PY}}"
    ]
   },
   "feagpt_repro/parse_xval_v11_log.py": {
    "n": 3,
    "markers": [
-    "F:\\AI FEA Modeling DataSets"
+    "{{REPO_ROOT_WIN}}"
    ]
   },
   "feagpt_repro/reports/INDEX.md": {
    "n": 3,
    "markers": [
-    "F:/AI FEA Modeling DataSets",
-    "F:/FEA_Archive_20261024",
-    "C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+    "{{REPO_ROOT}}",
+    "{{DATA_ARCHIVE}}",
+    "{{VENV_PY}}"
    ]
   },
   "feagpt_repro/reports/check_claims.json": {
    "n": 2,
    "markers": [
-    "F:/FEA_Archive_20261024",
-    "C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+    "{{DATA_ARCHIVE}}",
+    "{{VENV_PY}}"
    ]
   },
   "feagpt_repro/reports/diagnostics/run_xval_v11.sh": {
    "n": 3,
    "markers": [
-    "F:/AI FEA Modeling DataSets",
-    "C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+    "{{REPO_ROOT}}",
+    "{{VENV_PY}}"
    ]
   },
   "feagpt_repro/reports/diagnostics/task_a13_contract.md": {
    "n": 1,
    "markers": [
-    "C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+    "{{VENV_PY}}"
    ]
   },
   "feagpt_repro/reports/diagnostics/task_a13c_contract.md": {
    "n": 1,
    "markers": [
-    "C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+    "{{VENV_PY}}"
    ]
   },
   "feagpt_repro/reports/diagnostics/task_a13d_contract.md": {
    "n": 1,
    "markers": [
-    "C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+    "{{VENV_PY}}"
    ]
   },
   "feagpt_repro/reports/diagnostics/task_b1_contract.md": {
    "n": 1,
    "markers": [
-    "F:/FEA_Archive_20261024"
+    "{{DATA_ARCHIVE}}"
    ]
   },
   "feagpt_repro/reports/diagnostics/task_b1_report.md": {
    "n": 1,
    "markers": [
-    "F:/FEA_Archive_20261024"
+    "{{DATA_ARCHIVE}}"
    ]
   },
   "feagpt_repro/reports/diagnostics/task_c1_contract.md": {
    "n": 1,
    "markers": [
-    "F:/FEA_Archive_20261024"
+    "{{DATA_ARCHIVE}}"
    ]
   },
   "feagpt_repro/reports/diagnostics/w5b4_defect_analysis_v6b.md": {
    "n": 2,
    "markers": [
-    "F:/AI FEA Modeling DataSets",
-    "C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+    "{{REPO_ROOT}}",
+    "{{VENV_PY}}"
    ]
   },
   "feagpt_repro/reports/w5d_leaderboard.md": {
    "n": 1,
    "markers": [
-    "C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+    "{{VENV_PY}}"
    ]
   }
  }

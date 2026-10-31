@@ -393,14 +393,18 @@ REDACT_B = [(o.encode('utf-8'), n.encode('utf-8')) for o, n in REDACT]
 
 
 def _redact_bytes(b):
-    """在 bytes 上替换：完全保留 BOM / 行尾 / 编码，不做任何解码。返回 (new, 替换次数, 命中词表)。"""
+    """在 bytes 上替换：完全保留 BOM / 行尾 / 编码，不做任何解码。返回 (new, 替换次数, 命中词表)。
+
+    命中词表记的是**占位符**而不是原文 —— 因为 manifest 本身也在公开集里，
+    若记录原文，manifest 自己就成了泄露源（自指：它还得再被脱敏一次，而脱敏又改变它自己）。
+    """
     n, hits = 0, []
     for old, new in REDACT_B:
         c = b.count(old)
         if c:
             b = b.replace(old, new)
             n += c
-            hits.append(old.decode('utf-8'))
+            hits.append(new.decode('utf-8'))
     return b, n, hits
 
 
@@ -548,6 +552,11 @@ def main():
         with open(MANIFEST, 'w', encoding='utf-8') as f:
             json.dump(m, f, ensure_ascii=False, indent=1)
         print('manifest -> %s' % os.path.relpath(MANIFEST, ROOT))
+        # manifest 自身也在公开集里 ⇒ 必须把**新写的这一版**同步进快照，
+        # 否则快照里留的是上一版（P4b 会红：内容 ≠ 原文经同一替换的结果）。
+        if a.emit and 'feagpt_repro/reports/diagnostics/public_manifest.json' in m['keep']:
+            shutil.copy2(MANIFEST, os.path.join(
+                dest, 'feagpt_repro', 'reports', 'diagnostics', 'public_manifest.json'))
 
     if a.check:
         fails, notes = check(a.check, m)
