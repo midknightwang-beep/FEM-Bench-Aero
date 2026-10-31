@@ -1,17 +1,17 @@
 {
- "generated_at": "2026-10-31T22:49:12+08:00",
+ "generated_at": "2026-10-31T22:55:57+08:00",
  "purpose": "T-D6：离线 bundle 能否重建仓库（D 段最后 0.5）",
  "source_repo": "F:\\AI FEA Modeling DataSets",
  "strict": false,
  "info": {
   "bundle": {
-   "path": "_handoff/FEM-Bench-Aero_2698612.bundle",
-   "bytes": 38398374,
+   "path": "_handoff/FEM-Bench-Aero_3a2cfdd.bundle",
+   "bytes": 38424098,
    "verify_rc": 0,
    "complete_history": true,
    "refs": {
-    "HEAD": "2698612f6ac914aa0e78cbaa3848f262d4451e52",
-    "refs/heads/main": "2698612f6ac914aa0e78cbaa3848f262d4451e52",
+    "HEAD": "3a2cfddd9617e5dca2904d4d19c21f8417d9929d",
+    "refs/heads/main": "3a2cfddd9617e5dca2904d4d19c21f8417d9929d",
     "refs/tags/v1.0-l3-v4": "68cd251ccef58992f3b4dacbefe1380f3db6544f",
     "refs/tags/v1.0-l3-v5": "cec1020fa1f5238fdb32982b500d3edc80a6a29a",
     "refs/tags/v1.0-l3-v6": "03a97f2ef909c45fef9a627d365dc5be022c6718",
@@ -23,26 +23,26 @@
   "clone": {
    "dest": "temp",
    "rc": 0,
-   "head": "2698612f6ac914aa0e78cbaa3848f262d4451e52",
+   "head": "3a2cfddd9617e5dca2904d4d19c21f8417d9929d",
    "dirty": 0
   },
   "commits": {
-   "source": "118",
-   "clone": "118"
+   "source": "119",
+   "clone": "119"
   },
-  "files": 1557,
+  "files": 1561,
   "eol_diff_lines": 0,
   "freshness": {
-   "source_head": "2698612f6ac914aa0e78cbaa3848f262d4451e52",
+   "source_head": "3a2cfddd9617e5dca2904d4d19c21f8417d9929d",
    "behind_by": 0
   },
   "data_chain": {
    "tarball": "F:\\AI FEA Modeling DataSets\\_handoff\\release\\FEM-Bench-Aero-v1.1-data.tar.gz",
    "rc": 0,
    "tail": [
-    "解包 F:\\AI FEA Modeling DataSets\\_handoff\\release\\FEM-Bench-Aero-v1.1-data.tar.gz -> C:\\Users\\22207\\AppData\\Local\\Temp\\_d6_clone__0ssa197\\repo\\FEM-Bench-Aero",
+    "解包 F:\\AI FEA Modeling DataSets\\_handoff\\release\\FEM-Bench-Aero-v1.1-data.tar.gz -> C:\\Users\\22207\\AppData\\Local\\Temp\\_d6_clone_vggp18vc\\repo\\FEM-Bench-Aero",
     "modeling 目录条数: 64（manifest 期望 64）",
-    "[OK] 数据集本体就绪：C:\\Users\\22207\\AppData\\Local\\Temp\\_d6_clone__0ssa197\\repo\\FEM-Bench-Aero/modeling（64 条）—— evaluate.py 可用"
+    "[OK] 数据集本体就绪：C:\\Users\\22207\\AppData\\Local\\Temp\\_d6_clone_vggp18vc\\repo\\FEM-Bench-Aero/modeling（64 条）—— evaluate.py 可用"
    ],
    "expect": 64,
    "have": 64

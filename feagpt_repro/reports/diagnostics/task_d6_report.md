@@ -52,8 +52,8 @@
 | C3 | 干净临时目录 `git clone`，**不碰网络、不碰源 `.git`** |
 | C3b | clone 的 HEAD 等于包声明的 main；空仓库单独报 |
 | C4 | clone 里 `git fsck --full` 无 missing / broken |
-| C5 | 提交数与源库同一提交相等（118） |
-| C6 | `git ls-tree -r` **整棵树逐条相比**（mode/type/**blob sha**/path）⇒ 文件集+内容+权限位一次覆盖（1557） |
+| C5 | 提交数与源库同一提交相等（119） |
+| C6 | `git ls-tree -r` **整棵树逐条相比**（mode/type/**blob sha**/path）⇒ 文件集+内容+权限位一次覆盖（1561） |
 | C7 | `git ls-files --eol` 与源库**逐行相同** ⇒ D3 的行尾成果在离线路径上也成立 |
 | C8 | clone 工作区 `status --porcelain` 为空 ⇒ 行尾若解错会立刻显形 |
 | C9 | 新鲜度：`behind_by` + 「落后的那些提交是否只改了文档」 |
@@ -75,9 +75,9 @@
 | # | 项 | 结果 |
 |---|---|---|
 | V1 | 旧包确实过期 | `rev-list --count 3059d90..HEAD` = **25**；文件 1523 vs 1557（差 **34**） |
-| V2 | 新包完整 | `is okay` + `records a complete history`；**8 refs**（HEAD + main + 6 tag）；38,398,374 B（36.62 MiB），`sha256 d2f84e3d…8d785` |
-| V3 | 干净环境能重建 | clone 成功、HEAD=2698612、提交数 118=118、`fsck --full` 干净 |
-| V4 | 内容逐字节对上 | `ls-tree -r` 整树逐条相同，**1557 个文件** |
+| V2 | 新包完整 | `is okay` + `records a complete history`；**8 refs**（HEAD + main + 6 tag）；38,424,098 B（36.64 MiB），`sha256 941d1112…a2152` |
+| V3 | 干净环境能重建 | clone 成功、HEAD=3a2cfdd、提交数 119=119、`fsck --full` 干净 |
+| V4 | 内容逐字节对上 | `ls-tree -r` 整树逐条相同，**1561 个文件** |
 | V5 | D3 行尾在离线路径成立 | `ls-files --eol` **0 行不同**；`status --porcelain` **0 条** |
 | V6 | 离线数据链 | 本地 tarball 解出 **64 条 == manifest 期望 64**，全程无网络 |
 | V7 | 闸自身会红 | 自检 **6/6**，六向原因各不相同 |
