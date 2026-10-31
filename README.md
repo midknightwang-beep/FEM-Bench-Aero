@@ -15,19 +15,33 @@
 ## 5 分钟上手
 
 ```bash
-git clone <this-repo> && cd <this-repo>/feagpt_repro
-python score_baseline.py          # 复算 L3 成绩单（零第三方依赖，不需要求解器）
+git clone https://github.com/midknightwang-beep/FEM-Bench-Aero.git repo
+cd repo/feagpt_repro
+"$PY" score_baseline.py          # 复算 L3 成绩单（零第三方依赖，不需要求解器）
 ```
+
+（`"$PY"` 换成你的 Python 可执行文件；Windows 上建议用项目 venv。）
 
 完整步骤（含数据包获取、澄清层复算、需要求解器的部分）见
 **[`FEM-Bench-Aero/QUICKSTART.md`](FEM-Bench-Aero/QUICKSTART.md)**。
 
 ## 数据
 
-算例本体（几何 / 网格 / 真值）不在 git 里，通过数据包分发：
+算例本体（几何 / 网格 / 真值）不在 git 里，走 **GitHub Release** 分发：
 
-- 下载地址与校验方法：**[`FEM-Bench-Aero/DATA.md`](FEM-Bench-Aero/DATA.md)**
-- 解包：`python fetch_data.py --src <数据包路径>`（也支持 `--url` 直接下载）
+> <https://github.com/midknightwang-beep/FEM-Bench-Aero/releases/tag/data-v1.0-v1.1>
+
+| 你要跑 | 下哪个包 |
+|---|---|
+| headline（v6c 卷，55 题） | `FEM-Bench-Aero-v1.0-data.tar.gz` |
+| 当前主卷 v7（64 题） | `FEM-Bench-Aero-v1.1-data.tar.gz` |
+
+```bash
+curl -L -O <上文 Release 页里的包地址>
+cd feagpt_repro && "$PY" fetch_data.py --src <下载好的 .tar.gz 路径>
+```
+
+校验方式与**版本匹配**要求见 **[`FEM-Bench-Aero/DATA.md`](FEM-Bench-Aero/DATA.md)**。
 
 ## 目录
 
@@ -38,6 +52,9 @@ python score_baseline.py          # 复算 L3 成绩单（零第三方依赖，�
 | `feagpt_repro/tasks/` | 任务清单（当前卷 + 历史卷） |
 | `feagpt_repro/reports/` | 官方 artifact：成绩单、桥接表、诊断记录 |
 | `feagpt_repro/candidates_*/` | 各模型在各卷上的候选输出（评测记录） |
+
+> 仓库根目录另有一批**项目过程文档**（各轮复评、汇报材料、临时快照），与基准本身无关，可忽略 ——
+> 读基准请从上表那两个目录进。
 
 ## 文档地图
 
@@ -68,6 +85,10 @@ python score_baseline.py          # 复算 L3 成绩单（零第三方依赖，�
 
 ## 已知限制
 
-存在若干已登记的口径边界与未解问题（例如分层面板类算例的角色缺陷、行尾对 sha 锚点的
-影响）。这些**写在文档里而不是藏起来**，见 `FEM-Bench-Aero/DATA.md` 的「已知问题」
-一节与 `FEM-Bench-Aero/ROADMAP.md` 的「已证伪路线」。
+存在若干已登记的口径边界与未解问题（例如分层面板类算例的角色缺陷、`package-lock.json`
+未入库导致依赖树不能逐字节复现、`latest_scorecard` 按 `mtime` 选对象）。这些**写在文档里
+而不是藏起来**：见 `FEM-Bench-Aero/DATA.md` 的「已知问题」与
+`FEM-Bench-Aero/ROADMAP.md` 的「已证伪路线」。
+
+> **行尾问题已解决**（2026-10-31 / T-D3）：仓库用 `.gitattributes` 统一 CRLF，
+> 干净 clone 后 1550 个文件逐字节一致。此前「行尾会让 sha 锚点对不上」的说法不再成立。
