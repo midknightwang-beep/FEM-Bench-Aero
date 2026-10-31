@@ -20,34 +20,43 @@
 
 ## 1. 拿到仓库
 
-仓库含 1500+ 文件、含完整历史。三种拿法，任选一种（本仓库**没有公开远端**，见 §6）：
+仓库含 1500+ 文件、含完整历史。**直接 clone**（public 仓库，无需凭据）：
 
 ```bash
-# 方式 A：维护者给了 bundle（单个文件，含完整历史，可像仓库一样 clone）
-git clone FEM-Bench-Aero.bundle repo
-
-# 方式 B：维护者给了压缩包
-tar -xzf FEM-Bench-Aero.tar.gz && cd repo
-
-# 方式 C：直接给了 git 地址
-git clone <GIT_URL> repo
+git clone https://github.com/midknightwang-beep/FEM-Bench-Aero.git repo
+cd repo
 ```
 
-> **不要在 Windows 上用「下载 ZIP」再解压**：那样你拿到的是某些文件的 CRLF 副本，
-> 而本项目的一部分证据是 sha256 锚定的 —— 会出现「校验对不上」的假警报。用 `git clone` 或 bundle。
+离线环境可用 bundle（单个文件，含完整历史，可像仓库一样 clone）：
+
+```bash
+git clone FEM-Bench-Aero.bundle repo
+```
+
+> **优先 `git clone`，不要在 Windows 上用「Download ZIP」**：ZIP 是导出快照，不带 `.git`，
+> 也没有 hooks 与 reflog；本项目证据是 sha256 锚定的，clone 是唯一被实测过的路径
+> （2026-10-31 匿名 clone 后 1550/1550 文件逐字节一致）。
 
 ---
 
 ## 2. 拿到数据集本体
 
-数据集（`modeling/`）**不进 git**，以归档包单独分发。**获取方式见 [DATA.md](DATA.md)** ——
-那里写了包的内容、校验方法和**版本匹配**要求（v1.0 包是 55 条，v7 卷是 64 条，**别混用**）。
+数据集（`modeling/`）**不进 git**，走 **GitHub Release** 分发：
+
+> <https://github.com/midknightwang-beep/FEM-Bench-Aero/releases/tag/data-v1.0-v1.1>
+
+| 你要跑 | 下哪个包 |
+|---|---|
+| headline **C-032**（v6c 卷，55 题） | `FEM-Bench-Aero-v1.0-data.tar.gz`（用 v1.1 也行，它是超集） |
+| 当前主卷 **v7**（64 题） | `FEM-Bench-Aero-v1.1-data.tar.gz` |
+
+包的内容、校验方法与**版本匹配**要求见 [DATA.md](DATA.md)（**别混用包和卷**）。
 
 拿到包后，在 `feagpt_repro/` 下解包并校验：
 
 ```bash
 cd repo/feagpt_repro
-python fetch_data.py --src <DATA_DIR>/FEM-Bench-Aero-v1.0-data.tar.gz
+"$PY" fetch_data.py --src <DATA_DIR>/FEM-Bench-Aero-v1.1-data.tar.gz   # 或 v1.0
 ```
 
 预期输出里会出现逐文件 SHA256 核对与 `条数 = 55` 之类的一行。**条数对不上就别往下走**。
@@ -141,12 +150,12 @@ export FEAGPT_CCX=/path/to/ccx          # Windows Git Bash: export FEAGPT_CCX="C
 
 | 现象 | 原因 | 现状 |
 |---|---|---|
-| 本仓库没有公开远端地址 | 尚未发布 | **你需要向维护者索取 bundle / 包 / 地址** |
-| 数据包没有公开下载地址 | 同上 | 见 [DATA.md](DATA.md) |
-| `check_claims.py` 在 clone 里红几项，sha 值对不上 | **行尾**：仓库无 `.gitattributes`，工作区是**逐文件混合态**（老文件 CRLF、新文件 LF）⇒ **没有任何单一配置能让全部锚点同时对上** | 已知，**详见 [DATA.md](DATA.md) §6.1**（那里写了「你该在意哪一项、可以忽略哪一项」） |
+| ~~本仓库没有公开远端地址~~ | **已发布**（2026-10-31） | 直接 clone：`https://github.com/midknightwang-beep/FEM-Bench-Aero.git` |
+| ~~数据包没有公开下载地址~~ | **已发布**（2026-10-31） | Release 页见 §2 与 [DATA.md](DATA.md) §2 |
+| ~~`check_claims.py` 在 clone 里红几项，sha 值对不上~~ | **已修**（2026-10-31 / T-D3）：仓库加了 `.gitattributes`，行尾统一 CRLF，7 处活锚点重算 | 重新 clone 即可。行尾不再造成 sha 不一致（详见 [DATA.md](DATA.md) §6.1） |
 | `check_claims.py` 的 `S-39`/`S-43` 红 | 缺 `node_modules`（有一项要 `node --print-prompt-sha`，依赖 `ajv`） | `npm install` 即可 |
 | `check_claims.py` 还红 `C-013`/`S-46`/`S-51`/`S-56`/`S-61` | 这五项的**对象不在公开集里**（外部归档的数据包清单、被脱敏的 `PY=`、按发布决定移出的 `AGENTS.md`/`CLAUDE.md`、以及不分发的 `.git/hooks`）—— 不是你的环境错 | 加 `--public` 重跑：它们会标 `exempt` 并写明原因，**不计入通过数**（R75）。**加了之后仍然红的项才是要处理的** |
-| `fetch_data.py` 对不上 sha256 | 同上（Windows 行尾） | 手工 `sha256sum` 比对，见 [DATA.md](DATA.md) §3.1 |
+| `fetch_data.py` 对不上 sha256 | 包没下全，或下的是另一个版本 | 用 Release 里的 `SHA256SUMS.txt` 跑 `sha256sum -c`，见 [DATA.md](DATA.md) §3.1 |
 
 > **别把行尾问题当成「数字不可信」**：判分只读内容、不校验 sha ——
 > §4 那条命令在任何平台上都能跑出 `23/25 (92.0%)`。sha 类红项影响的是**证据的可移植性**，不是**结论的正确性**。

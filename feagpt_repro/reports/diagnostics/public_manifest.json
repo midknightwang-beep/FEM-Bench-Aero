@@ -1,15 +1,15 @@
 {
- "generated_at": "2026-10-31T15:46:08+08:00",
- "source_head": "9020ba5bbcf497fcc0e5d3c60b28bab7da4b3907",
+ "generated_at": "2026-10-31T20:50:01+08:00",
+ "source_head": "383860f0f917315107ee3a6a8dc3655c61bed715",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 1549,
- "bytes_total": 87554305,
- "n_keep": 1118,
- "bytes_keep": 12988966,
+ "n_total": 1552,
+ "bytes_total": 87581625,
+ "n_keep": 1121,
+ "bytes_keep": 13010258,
  "categories": {
   "根目录内部材料": {
    "n": 47,
-   "bytes": 11136175
+   "bytes": 11136964
   },
   "KEEP:根目录必需": {
    "n": 4,
@@ -17,11 +17,11 @@
   },
   "内部记忆/应用": {
    "n": 26,
-   "bytes": 520410
+   "bytes": 525649
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
-   "bytes": 3684681
+   "bytes": 3689317
   },
   "汇报图表": {
    "n": 22,
@@ -32,8 +32,8 @@
    "bytes": 51098052
   },
   "KEEP:代码与证据": {
-   "n": 1007,
-   "bytes": 9273393
+   "n": 1010,
+   "bytes": 9290049
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -1082,8 +1082,11 @@
   "feagpt_repro/reports/diagnostics/task_b1_report.md",
   "feagpt_repro/reports/diagnostics/task_c1_contract.md",
   "feagpt_repro/reports/diagnostics/task_c1_report.md",
+  "feagpt_repro/reports/diagnostics/task_d2_contract.md",
+  "feagpt_repro/reports/diagnostics/task_d2_report.md",
   "feagpt_repro/reports/diagnostics/task_d3_contract.md",
   "feagpt_repro/reports/diagnostics/task_d3_measure.md",
+  "feagpt_repro/reports/diagnostics/task_d3_report.md",
   "feagpt_repro/reports/diagnostics/task_d4_contract.md",
   "feagpt_repro/reports/diagnostics/task_d4_report.md",
   "feagpt_repro/reports/diagnostics/task_d5_contract.md",
@@ -1963,6 +1966,12 @@
    "n": 1,
    "markers": [
     "{{DATA_ARCHIVE}}"
+   ]
+  },
+  "feagpt_repro/reports/diagnostics/task_d2_report.md": {
+   "n": 1,
+   "markers": [
+    "{{DATA_ARCHIVE_WIN}}"
    ]
   },
   "feagpt_repro/reports/diagnostics/w5b4_defect_analysis_v6b.md": {

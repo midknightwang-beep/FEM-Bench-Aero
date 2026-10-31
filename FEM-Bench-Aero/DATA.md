@@ -18,27 +18,42 @@
 | `model.step` | 几何 |
 | `model.results.json` | 求解结果摘要 |
 
-**它为什么不在 git 里**：解包后约 236 MB，而 git 仓本体只有几 MB。数据以归档包单独分发，
-仓库里只放代码、任务卷、候选集与成绩单 artifact。
+**它为什么不在 git 里**：解包后 **236 MB（55 条）/ 276 MB（64 条）**，而 git 仓本体只有几 MB。
+数据以归档包单独分发，仓库里只放代码、任务卷、候选集与成绩单 artifact。
 
 ---
 
 ## 2. 获取方式
 
-**本仓库不含下载地址** —— 数据集不随仓库分发，也没有公开的发布页。可用的获取途径：
+数据集走 **GitHub Release** 分发（不随仓库分发）：
 
-| 途径 | 形态 | 说明 |
-|---|---|---|
-| **向维护者索取归档包** | 单个 `.tar.gz`（约 **85 MB**）+ 同名 `SHA256SUMS.txt` | 推荐。拿到后按 §3 校验 |
-| **内部介质** | 同上 | 适用于内网环境 |
+> **下载页**：<https://github.com/midknightwang-beep/FEM-Bench-Aero/releases/tag/data-v1.0-v1.1>
 
-包内结构（解包后）：
+| 资产 | 条数 | 大小 | 对应考卷 |
+|---|---|---|---|
+| `FEM-Bench-Aero-v1.0-data.tar.gz` | **55** | 85.4 MiB | `reports/papers/tasks_v6c.jsonl`（55 题 = headline **C-032**） |
+| `FEM-Bench-Aero-v1.1-data.tar.gz` | **64** | 100.2 MiB | `tasks/tasks.jsonl`（64 题 = 当前主卷 v7） |
+| `SHA256SUMS.txt` | — | — | 两个包的指纹（裸文件名，`sha256sum -c` 直接可用） |
+
+**v1.1 是 v1.0 的超集**：多 9 条（1 `fuselage_barrel` + 5 `naca4412_wingbox` + 2 `open_hole_panel`
++ 1 `stiffened_panel`），v1.0 的 55 条在 v1.1 里**逐字节相同**（384/384 文件 sha256 一致，实测）。
+
+命令行下载（无需登录）：
+
+```bash
+BASE=https://github.com/midknightwang-beep/FEM-Bench-Aero/releases/download/data-v1.0-v1.1
+curl -L -O "$BASE/FEM-Bench-Aero-v1.1-data.tar.gz"   # 想跑 v7 卷用这个
+curl -L -O "$BASE/FEM-Bench-Aero-v1.0-data.tar.gz"   # 只复现 headline 用这个
+curl -L -O "$BASE/SHA256SUMS.txt"
+```
+
+包内结构（解包后，两版相同）：
 
 ```
 <dest>/
-├── MANIFEST.md          # 包自述
+├── MANIFEST.md          # 包自述（人读，按 split 分组）
 ├── manifest.json        # 机读清单：n_cases / splits / by_family
-└── modeling/            # 55 条算例目录
+└── modeling/            # v1.0 = 55 条 / v1.1 = 64 条算例目录
 ```
 
 > ⚠️ **包的版本与卷的版本必须匹配**，见 §5。这是本项目已知最容易踩的坑。
@@ -49,32 +64,35 @@
 
 ### 3.1 sha256 校验（确认「文件没被换」）
 
-包目录里有一个 `SHA256SUMS.txt`，格式是 `sha256sum` 生成的：
-
-```
-<64位hex> *<路径>/FEM-Bench-Aero-v1.0-data.tar.gz
-```
-
-**注意那个 `<路径>`**：它记录的是**打包那台机器上的绝对路径**（`*/f/FEA_Archive_...` 这种形式），
-所以 `sha256sum -c SHA256SUMS.txt` 在你的机器上会因为找不到该路径而失败 —— **这不是包坏了**。
-
-正确做法是手工比对：
+Release 附件里的 `SHA256SUMS.txt` 用**裸文件名**，和两个包放同一目录即可直接校验：
 
 ```bash
-# Linux / macOS / Git Bash
-sha256sum <DATA_DIR>/FEM-Bench-Aero-v1.0-data.tar.gz
-
-# Windows PowerShell
-Get-FileHash <DATA_DIR>\FEM-Bench-Aero-v1.0-data.tar.gz -Algorithm SHA256
+sha256sum -c SHA256SUMS.txt
 ```
 
-然后与 `SHA256SUMS.txt` 第一列逐字符比对。当前 v1.0 包的指纹是：
+期望两行都 `OK`：
 
 ```
-8cec47ce65486d00a6cad8777894f3f996d703a5aa70d6c0d0411ec0fc181dd3
+FEM-Bench-Aero-v1.0-data.tar.gz: OK
+FEM-Bench-Aero-v1.1-data.tar.gz: OK
 ```
 
-> 维护者**重新打包**后这条会变；以包自带的 `SHA256SUMS.txt` 为准，本文这条只是给你一个「应该是它」的凭据。
+Windows PowerShell（清单格式不适用，逐个算）：
+
+```powershell
+Get-FileHash .\FEM-Bench-Aero-v1.1-data.tar.gz -Algorithm SHA256
+```
+
+当前两个包的指纹：
+
+| 包 | sha256 |
+|---|---|
+| v1.0（55 条） | `8cec47ce65486d00a6cad8777894f3f996d703a5aa70d6c0d0411ec0fc181dd3` |
+| v1.1（64 条） | `8b6295d16f8505bca80971432c205e819d3e466c2a19a26407c08e2d76af0a4e` |
+
+> 维护者**重新打包**后这两条会变；以 Release 附件里的 `SHA256SUMS.txt` 为准。
+> **注意不要用包内自带的那份**：`v1.0` 包里的 `SHA256SUMS.txt` 记的是打包机绝对路径（`*/f/FEA_Archive_...`），
+> `-c` 会失败 —— 那是旧格式，不是包坏了。
 
 ### 3.2 条数校验（确认「数据齐」）—— 这一步才是关键
 
@@ -82,7 +100,8 @@ sha256 只能证明「文件没被换」，**证明不了「里面是你要的�
 
 ```bash
 cd <REPO>/feagpt_repro
-python fetch_data.py --src <DATA_DIR>/FEM-Bench-Aero-v1.0-data.tar.gz
+"$PY" fetch_data.py --src <DATA_DIR>/FEM-Bench-Aero-v1.1-data.tar.gz   # 跑 v7 卷用 v1.1
+"$PY" fetch_data.py --src <DATA_DIR>/FEM-Bench-Aero-v1.0-data.tar.gz   # 只复现 headline 用 v1.0
 ```
 
 `fetch_data.py` 会做：sha256 比对 → 解包 → 读包内 `manifest.json` 的 `n_cases` → 数
@@ -93,7 +112,7 @@ python fetch_data.py --src <DATA_DIR>/FEM-Bench-Aero-v1.0-data.tar.gz
 
 ```bash
 cd <REPO>/feagpt_repro
-python score_baseline.py --candidates candidates_l3_v6c_glm_p2 \
+"$PY" score_baseline.py --candidates candidates_l3_v6c_glm_p2 \
   --tasks reports/papers/tasks_v6c.jsonl --report /tmp/x.json
 ```
 
@@ -127,36 +146,40 @@ export FEAGPT_CCX=/path/to/ccx          # Windows Git Bash: export FEAGPT_CCX="C
 
 ## 5. ★ 版本匹配（最容易踩的坑）
 
-**三个版本号必须分清**：
+**四个版本号必须分清**：
 
 | 名字 | 是什么 | 条数 |
 |---|---|---|
-| **数据包 v1.0** | 归档包里 `modeling/` 的实际条数 | **55** |
+| **数据包 v1.0** | Release 里 `FEM-Bench-Aero-v1.0-data.tar.gz` 的 `modeling/` | **55** |
+| **数据包 v1.1** | Release 里 `FEM-Bench-Aero-v1.1-data.tar.gz`（= 当前仓库 `modeling/` 磁盘态） | **64** |
 | **考卷 v6c** | `reports/papers/tasks_v6c.jsonl` 的 L3 题（= 对外 headline C-032 用的卷） | **55** |
 | **考卷 v7** | `tasks/tasks.jsonl` 的 L3 题（当前主卷，含 v1.1 新增 9 条） | **64** |
 
-⇒ **`v1.0 包 + v6c 卷` 完全匹配（缺 0）；`v1.0 包 + v7 卷` 缺 9 条。**
-v7 卷新加的 9 条属数据集 v1.1 增量，**尚未进 v1.0 数据包**。
+⇒ **`v1.0 包 + v6c 卷` 完全匹配；`v1.1 包 + v7 卷` 完全匹配。**
+混用（`v1.0 包 + v7 卷`）会有缺口，会在开跑前被 §3.2 那条闸拦住。
 
 差集是**可复算的**，不靠本文手抄 —— 用 `_c1_pack_gap.py` 现算：
 
 ```bash
 cd <REPO>/feagpt_repro
-"$PY" _c1_pack_gap.py --src <DATA_DIR>/FEM-Bench-Aero-v1.0-data.tar.gz \
+"$PY" _c1_pack_gap.py --src <DATA_DIR>/FEM-Bench-Aero-v1.1-data.tar.gz \
                       --out reports/diagnostics/data_pack_volume_gap.json
 ```
 
-**当前实测结果**（`reports/diagnostics/data_pack_volume_gap.json`，2026-10-30）：
+**当前实测结果**（`reports/diagnostics/data_pack_volume_gap.json`，v1.1 包口径）：
 
 | 卷 | L3 题数 | 覆盖 | 缺 |
 |---|---|---|---|
 | v6c | 55 | 55 | **0** ✅ |
-| v7 | 64 | 55 | **9** ⚠️ |
+| v7 | 64 | 64 | **0** ✅ |
+
+> `v1.0 包`对 v7 卷是有缺口的（这正是 v1.1 存在的理由）—— 把上面的 `--src` 换成
+> `FEM-Bench-Aero-v1.0-data.tar.gz` 即可复算那张缺口表，本文不写死这几条。
 
 ### 该怎么办
-- **只想复现 headline（C-032）** → 用 `v1.0 包 + v6c 卷`，一切正常（[QUICKSTART.md](QUICKSTART.md) §4 的默认路径）。
-- **想跑 v7 卷** → 需要数据集 v1.1（64 条）。**目前没有分发版本**；若你只有 v1.0 包，
-  评测会在开跑前被 §3.2 那条闸拦住，你会明确看到「缺 9 条」，不会拿到一张假成绩单。
+- **只想复现 headline（C-032）** → `v1.0 包 + v6c 卷`（[QUICKSTART.md](QUICKSTART.md) §4 的默认路径）。
+  用 `v1.1 包`也可以：它是超集，55 条逐字节相同。
+- **想跑 v7 卷** → 用 `v1.1 包`，64 条齐。
 
 ---
 
@@ -164,15 +187,17 @@ cd <REPO>/feagpt_repro
 
 | 现象 | 原因 | 规避 |
 |---|---|---|
-| `SHA256SUMS.txt` 用 `sha256sum -c` 失败 | 里面记的是打包机的绝对路径 | 手工 `sha256sum <file>` 比对（§3.1） |
-| **`check_claims.py` 在 clone 里红几项，sha 值对不上** | **行尾**：仓库无 `.gitattributes`，`core.autocrlf` 在 checkout 时把 LF 转 CRLF，而本仓工作区是**逐文件混合态** | 见 §6.1 —— **这不是你的环境问题，且暂无单一配置能全绿** |
+| `SHA256SUMS.txt` 用 `sha256sum -c` 失败 | **已修**（2026-10-31）：Release 附件改用裸文件名。仅 `v1.0` 包**内**自带的那份仍是打包机绝对路径 | 用 Release 附件里的那份（§3.1） |
+| `check_claims.py` 在 clone 里红几项，sha 值对不上 | **已修**（2026-10-31 / T-D3）：仓库加了 `.gitattributes`，行尾统一 CRLF，7 处活锚点重算 | 见 §6.1；重新 clone 即可 |
 | 缺 `node_modules` ⇒ `S-39`/`S-43` 红 | 自检里有一项要 `node --print-prompt-sha`，依赖 `ajv` | `npm install`（见 §6.1） |
 | 空目录能骗过前置闸 | **已修**（2026-10-30）：`require_dataset` 现在查 `spec.json` 实存与覆盖 | 升级到含该修的版本 |
 
-### 6.1 ★ 关于行尾与 sha256（务必先读，能省你几小时）
+### 6.1 ★ 关于行尾与 sha256（2026-10-31 已修，历史备查）
 
 这个项目的一部分证据是 **sha256 锚定**的（成绩单 `provenance.*_sha256`、`check_claims` 的声称值、`S-57` 的卷指纹）。
-而**仓库里没有 `.gitattributes`**，`core.autocrlf` 会在 checkout 时把 LF 转成 CRLF。实测（T-B1）：
+
+**2026-10-31 之前**仓库没有 `.gitattributes`，`core.autocrlf` 会在 checkout 时把 LF 转成 CRLF，
+而工作区本身是逐文件混合态。实测（T-B1）：
 
 ```
 入库文件总数 : 1511
@@ -180,19 +205,23 @@ cd <REPO>/feagpt_repro
 两侧 sha 不同: 931      ← 本机是 LF 的那批，clone 后被转成 CRLF
 ```
 
-⇒ **本仓工作区是逐文件混合态**：老文件多为 CRLF，后来用脚本新写的多为 LF。
-**因此不存在一种统一的 `core.autocrlf` 设置能让全部锚点同时对上** ——
-关掉它（得到全 LF）会弄坏 CRLF 那一批（实测：卷指纹 `caf0f6c3…` 立刻变 `6e7437b1…`，`S-57` 转红）；
-打开它（得到全 CRLF）会弄坏 LF 那一批（实测：`S-59` 的修正表 sha 对不上）。
+那时的结论是「不存在单一 `core.autocrlf` 设置能让全部锚点对上」：关掉（全 LF）会弄坏 CRLF 那一批，
+打开（全 CRLF）会弄坏 LF 那一批 —— 两条路各红一项、且不是同一项。
 
-**给你的建议（按目的选）**：
+**现已修复（T-D3，方案 A 统一 CRLF）**：仓库加了 `.gitattributes`（`* text=auto eol=crlf`，`*.sh` 例外），
+955 个文本文件规范化为 CRLF，7 处受影响的活锚点重算。验收是**从 GitHub 匿名 clone** 后
+`_b1_eol_scan.py` 报 **0 差异**（1550/1550 文件逐字节相同），且 clone 里 `S-57` 与 `S-59` **同时绿**。
 
-| 你想做什么 | 该怎么做 |
-|---|---|
-| **验证 headline 数字能不能复现**（最重要、也是唯一稳的） | 什么都不用管 —— 直接按 [QUICKSTART.md](QUICKSTART.md) §4 跑。判分**只读内容、不校验 sha**，实测 `23/25 (92.0%)` 逐字可复现 |
-| **跑 `check_claims` 全套自检** | 先 `npm install`（解 `S-39`/`S-43`）；**其余 sha 类红项目前无法在非维护者环境全绿**，请把这些红项当**已知限制**读，不要据此判断"仓库坏了"或"数字不可信" |
-| **要一个能全绿的干净环境** | 等**档 2**（加 `.gitattributes` 固定行尾 + 重算全部 sha 锚点）—— 这是一次"全链重新封存"，维护者尚未排期 |
+⇒ **你 clone 下来的字节与维护者本机一致**，sha 类判据不再需要「当已知限制读」。
+
+**仍然存在的红项只有 3 个，原因都不是行尾**（2026-10-31 在 `383860f` 的干净 clone 里实测）：
+
+| 红项 | 真正原因 | 解法 |
+|---|---|---|
+| `S-39` | `node --print-prompt-sha` 无输出（缺 `node_modules`） | `npm install` |
+| `S-43` | 同上 | 同上 |
+| `S-61` | `.git/hooks` 不入库，新 clone 没有 pre-commit hook | `"$PY" check_commit.py --install-hook` |
 
 > **一句判断**：行尾问题影响的是**证据的可移植性**，不是**数字的正确性**。
-> 不要因为 sha 对不上就怀疑成绩 —— 复现数字那条路是通的、而且已经逐字验过。
+> 现在这条也通了——如果你 clone 后仍见 sha 对不上，先确认克隆的是 `9020ba5` 之后的提交。
 
