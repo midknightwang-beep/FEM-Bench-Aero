@@ -1,0 +1,49 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d50",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "c37862f9992c06293fe92da62cb2089598f880c58be398e10cd226055512c979",
+ "clarify": null,
+ "spec": {
+  "name": "open_hole_tension_400x200_d50",
+  "description": "400×200×2mm 2024-T3 中心开孔(Ø50)板两端 4000 N 面内拉伸",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 400,
+    "width": 200,
+    "thickness": 2,
+    "hole_d": 50
+   }
+  },
+  "mesh": {
+   "size_chord": 4,
+   "size_span": 4
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 4000,
+   "direction": [
+    1,
+    0,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 497
+}

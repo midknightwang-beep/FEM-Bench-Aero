@@ -1,0 +1,57 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "c37862f9992c06293fe92da62cb2089598f880c58be398e10cd226055512c979",
+ "clarify": null,
+ "spec": {
+  "name": "开孔拉伸板",
+  "description": "400×200×2mm 中心开孔拉伸板，CFRP 铺层补强，两端 4000N 面内拉伸",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 400,
+    "width": 200,
+    "thickness": 2,
+    "hole_d": 40
+   }
+  },
+  "mesh": {
+   "size_chord": 4,
+   "size_span": 4
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 4000,
+   "direction": [
+    1,
+    0,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/structure/params/layup must be number",
+    "/ must match \"then\" schema"
+   ]
+  }
+ ],
+ "raw_len": 647
+}

@@ -1,0 +1,7 @@
+{
+ "task_id": "L3_naca4412_wingbox_taper060",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "error": "gateway_network_error",
+ "turns_used": 1
+}

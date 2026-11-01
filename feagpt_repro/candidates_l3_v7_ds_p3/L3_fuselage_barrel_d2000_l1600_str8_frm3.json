@@ -1,0 +1,53 @@
+{
+ "task_id": "L3_fuselage_barrel_d2000_l1600_str8_frm3",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "d9c0b02d041190891abd7c01147eb30094a754e27d823aeed6599951a0eb870e",
+ "clarify": null,
+ "spec": {
+  "name": "fuselage_barrel_pressure_shear_moment",
+  "description": "机身柱壳段：直径 2000 mm、长度 1600 mm，壳厚 3 mm，8 根 blade 长桁、3 个普通框，内压+端剪+端弯组合载荷",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "fuselage_barrel",
+   "params": {
+    "diameter": 2000,
+    "length": 1600,
+    "thickness": 3,
+    "n_stringers": 8,
+    "n_frames": 3
+   }
+  },
+  "mesh": {
+   "size_chord": 25,
+   "size_span": 25
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.05,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {
+   "end_shear": 50000,
+   "end_moment": 50000000
+  }
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 789
+}

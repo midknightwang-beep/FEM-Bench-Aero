@@ -23,7 +23,7 @@ NC-23..25 W5a' CLAIMS 自检（artifact 缺失 / eval_runs 未追踪 / 官方·�
 输出：reports/negative_controls_<n>.json（**入库**，R25；不再写 eval_runs/ 工作目录）；
 全部秒级（spec_fidelity 快通道，不起求解器）。
 """
-import json, os, sys, argparse
+import json, os, sys, re, argparse
 
 try:  # P1-3（专家第五轮）：GBK 控制台直跑不因中文/符号输出崩
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -40,7 +40,30 @@ L2_TASK = 'L2_naca4412_wingbox'
 
 
 def latest_scorecard():
-    """W5a'：负控要咬最新那份成绩单——不再硬编码 eval_runs/ 路径（否则官方入库后负控检查的是旧文件）。"""
+    """取**对外 headline（C-032）引用的那份**成绩单。
+
+    ★ F-5 兑现（T-PSA 收口，2026-11-01）：原实现是 `max(cands, key=os.path.getmtime)`。
+    后果不是理论上的——本轮一口气新写了 8 份实验成绩单（`_p3/_p4/_p5`），它们立刻成为
+    「最新」，而它们没跑过 MSR ⇒ NC-36「最新成绩单必须有 msr」当场改咬（实测 `msrFalse`）。
+    ⇒ **判据不能依赖时间戳**：换成绩单的代价不该是负控全红一次。
+    改为「CLAIMS 里 C-032 的 artifact 列第一份 `baseline_scorecard_*.json`」——确定性、
+    且语义就是「对外 headline 的那份」。mtime 仅作兜底，且兜底时打印出来（不静默）。
+    """
+    root = os.path.dirname(HERE)
+    claims_p = os.path.join(root, 'FEM-Bench-Aero', 'CLAIMS.md')
+    try:
+        txt = open(claims_p, encoding='utf-8').read()
+        m = re.search(r'^\|\s*C-032\s*\|.*?$', txt, re.M)
+        if m:
+            hit = re.search(r'(feagpt_repro/reports/baseline_scorecard_[A-Za-z0-9_.-]+\.json)',
+                            m.group(0))
+            if hit:
+                p = os.path.join(root, hit.group(1).replace('/', os.sep))
+                if os.path.exists(p):
+                    return p
+                print(f'  [warn] C-032 引用的成绩单不存在：{hit.group(1)} ⇒ 退回 mtime 兜底')
+    except Exception as exc:                       # CLAIMS 读不了不得静默跳过
+        print(f'  [warn] 读 CLAIMS 失败（{exc}）⇒ 退回 mtime 兜底')
     d = os.path.join(HERE, 'reports')
     cands = []
     if os.path.isdir(d):
@@ -2378,6 +2401,28 @@ def main():
                     'actual': f'msr={has_msr} present={present} else分支={else36}', 'ok': ok36})
     print(f"  [{'ok ' if ok36 else 'BAD!'}] NC-36 语义项不静默消失                              "
           f"expect=msr/S-19,S-20/else actual=msr{has_msr}/{len(present)}项/else{else36}")
+
+    # NC-70（F-5 兑现）：负控读的成绩单必须是 **C-032 引用的那一份**，不得按 mtime 漂。
+    # 起因：T-PSA 收口时新写了 8 份实验成绩单（`_p3/_p4/_p5`），它们更「新」但没有 MSR
+    #   ⇒ NC-36 当场改咬（`msrFalse`）。判据一旦依赖时间戳，**做实验的代价就是负控全红一次**。
+    # 这条不读时间：把「实际返回值」和「CLAIMS 里 C-032 artifact 列的那份」逐字比对，
+    #   当前磁盘上确实存在更新的实验成绩单 ⇒ 若有人把实现改回 mtime，这条立刻红。
+    _root70 = os.path.dirname(HERE)
+    try:
+        _txt70 = open(os.path.join(_root70, 'FEM-Bench-Aero', 'CLAIMS.md'), encoding='utf-8').read()
+        _m70 = re.search(r'^\|\s*C-032\s*\|.*?$', _txt70, re.M)
+        _want70 = re.search(r'(feagpt_repro/reports/baseline_scorecard_[A-Za-z0-9_.-]+\.json)',
+                            _m70.group(0)).group(1) if _m70 else None
+    except Exception:
+        _want70 = None
+    _got70 = os.path.relpath(latest_scorecard(), _root70).replace(os.sep, '/')
+    ok70 = (_want70 is not None) and (_got70 == _want70)
+    results.append({'id': 'NC-70',
+                    'desc': '负控读的成绩单锚定 C-032 引用，不按 mtime 漂（F-5）',
+                    'expect': f'== {_want70}',
+                    'actual': _got70, 'ok': ok70})
+    print(f"  [{'ok ' if ok70 else 'BAD!'}] NC-70 成绩单锚定 C-032 而非 mtime                       "
+          f"expect={_want70} actual={_got70}")
 
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),

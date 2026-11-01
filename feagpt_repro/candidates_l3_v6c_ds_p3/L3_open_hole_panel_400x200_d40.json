@@ -1,0 +1,50 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d40",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "d9c0b02d041190891abd7c01147eb30094a754e27d823aeed6599951a0eb870e",
+ "clarify": null,
+ "spec": {
+  "name": "Open Hole Tensile Plate",
+  "description": "400x200 mm aluminium plate with central 40 mm hole under in-plane tension",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 400,
+    "width": 200,
+    "thickness": 2,
+    "hole_d": 40
+   }
+  },
+  "mesh": {
+   "size_chord": 4,
+   "size_span": 4,
+   "refine_le": true
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 4000,
+   "direction": [
+    1,
+    0,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 718
+}

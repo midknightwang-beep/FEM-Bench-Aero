@@ -1,0 +1,11 @@
+{
+ "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "d9c0b02d041190891abd7c01147eb30094a754e27d823aeed6599951a0eb870e",
+ "clarify": "[\"请提供普通框的具体数量 n_frames\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 794
+}

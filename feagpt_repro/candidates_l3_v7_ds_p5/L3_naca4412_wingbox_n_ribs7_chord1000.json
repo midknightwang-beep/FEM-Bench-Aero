@@ -1,0 +1,60 @@
+{
+ "task_id": "L3_naca4412_wingbox_n_ribs7_chord1000",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "c37862f9992c06293fe92da62cb2089598f880c58be398e10cd226055512c979",
+ "clarify": null,
+ "spec": {
+  "name": "NACA4412 wingbox",
+  "description": "NACA4412 翼盒，弦 1000 mm，展 2000 mm，铝 2024-T3，7 根肋，翼尖 500 N 集中力，根部固支",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "wingbox",
+   "params": {}
+  },
+  "airfoil": {
+   "code": "4412",
+   "chord": 1000,
+   "span": 2000,
+   "skin_thickness": 3,
+   "n_ribs": 7,
+   "rib_thickness": 4,
+   "spar_chordwise": [
+    0.25,
+    0.7
+   ],
+   "n_stringers_per_skin": 0,
+   "tip_chord_ratio": 1,
+   "sweep_deg": 0,
+   "web_chordwise": []
+  },
+  "mesh": {
+   "size_chord": 12,
+   "size_span": 25
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 500,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 867
+}

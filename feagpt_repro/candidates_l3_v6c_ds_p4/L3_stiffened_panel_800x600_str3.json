@@ -1,0 +1,59 @@
+{
+ "task_id": "L3_stiffened_panel_800x600_str3",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "58fca788957c50a7915490e525f92ae7bcc01738ca10754fcd3d45e4e7aa6892",
+ "clarify": null,
+ "spec": {
+  "name": "Stiffened panel with 3 blade stringers under uniform pressure",
+  "description": "加筋壁板 600×800×2 mm，3 根 blade 长桁，四边简支，均布面压 0.0001 MPa",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "stiffened_panel",
+   "params": {
+    "length": 600,
+    "width": 800,
+    "thickness": 2,
+    "n_stringers": 3,
+    "stringer_height": 20,
+    "stringer_thickness": 2.5
+   }
+  },
+  "mesh": {
+   "size_chord": 3,
+   "size_span": 3
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.0001,
+   "direction": [
+    0,
+    0,
+    -1
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/structure/params/stringer_kind must be number",
+    "/ must match \"then\" schema"
+   ]
+  }
+ ],
+ "raw_len": 779
+}

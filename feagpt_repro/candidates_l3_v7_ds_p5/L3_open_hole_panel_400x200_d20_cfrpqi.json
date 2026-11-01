@@ -1,0 +1,33 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20_cfrpqi",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "c37862f9992c06293fe92da62cb2089598f880c58be398e10cd226055512c979",
+ "clarify": null,
+ "spec": null,
+ "turns_used": 3,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/structure/params/layup must be number",
+    "/ must match \"then\" schema"
+   ]
+  },
+  {
+   "turn": 2,
+   "errors": [
+    "/structure/params/layup must be number",
+    "/ must match \"then\" schema"
+   ]
+  },
+  {
+   "turn": 3,
+   "errors": [
+    "/structure/params/layup must be number",
+    "/ must match \"then\" schema"
+   ]
+  }
+ ],
+ "raw_len": 1386
+}

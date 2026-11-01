@@ -1,0 +1,19 @@
+{
+ "task_id": "L3_naca4412_wingbox",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "c37862f9992c06293fe92da62cb2089598f880c58be398e10cd226055512c979",
+ "clarify": "[\"n_ribs\"]",
+ "spec": null,
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/airfoil/n_ribs must be >= 2",
+    "/ must match \"then\" schema"
+   ]
+  }
+ ],
+ "raw_len": 22
+}

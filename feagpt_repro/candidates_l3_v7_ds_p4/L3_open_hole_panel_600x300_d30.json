@@ -1,0 +1,49 @@
+{
+ "task_id": "L3_open_hole_panel_600x300_d30",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "58fca788957c50a7915490e525f92ae7bcc01738ca10754fcd3d45e4e7aa6892",
+ "clarify": null,
+ "spec": {
+  "name": "开孔拉伸板",
+  "description": "600×300 mm 铝板，中心孔直径 30 mm，两端面内拉伸 6000 N",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 600,
+    "width": 300,
+    "thickness": 2,
+    "hole_d": 30
+   }
+  },
+  "mesh": {
+   "size_chord": 4,
+   "size_span": 4
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 6000,
+   "direction": [
+    1,
+    0,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 643
+}

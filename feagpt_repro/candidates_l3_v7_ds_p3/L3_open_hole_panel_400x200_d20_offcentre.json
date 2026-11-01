@@ -1,0 +1,53 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20_offcentre",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "d9c0b02d041190891abd7c01147eb30094a754e27d823aeed6599951a0eb870e",
+ "clarify": null,
+ "spec": {
+  "name": "Open Hole Tension Plate",
+  "description": "开孔拉伸板：400×200×2 mm，偏心孔直径20 mm，孔心(120,60) mm，铝2024-T3，两端均布面内拉伸4000 N",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 400,
+    "width": 200,
+    "thickness": 2,
+    "hole_d": 20,
+    "hole_x": 120,
+    "hole_y": 60
+   }
+  },
+  "mesh": {
+   "size_chord": 4,
+   "size_span": 4,
+   "order": 1,
+   "refine_le": false
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 4000,
+   "direction": [
+    1,
+    0,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 770
+}

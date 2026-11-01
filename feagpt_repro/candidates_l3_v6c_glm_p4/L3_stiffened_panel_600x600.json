@@ -1,0 +1,11 @@
+{
+ "task_id": "L3_stiffened_panel_600x600",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "58fca788957c50a7915490e525f92ae7bcc01738ca10754fcd3d45e4e7aa6892",
+ "clarify": "[\"您要求四边简支，但本规范边界条件仅支持 root_surface + clamp（固支）形式，无法直接表达简支——请确认是否接受将边界条件表达为 clamp 形式，或说明允许的简支实现方式。\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 112
+}

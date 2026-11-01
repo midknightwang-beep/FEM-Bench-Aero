@@ -1,0 +1,52 @@
+{
+ "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "c37862f9992c06293fe92da62cb2089598f880c58be398e10cd226055512c979",
+ "clarify": null,
+ "spec": {
+  "name": "Fuselage Barrel with Stringers and Frames",
+  "description": "机身柱壳段：直径1600mm，长度1600mm，壳厚3mm，8根blade长桁，内压0.05MPa+端部剪力50kN+端部弯矩50kN·m，材料铝2024-T3。",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "fuselage_barrel",
+   "params": {
+    "diameter": 1600,
+    "length": 1600,
+    "thickness": 3,
+    "n_stringers": 8
+   }
+  },
+  "mesh": {
+   "size_chord": 25,
+   "size_span": 25
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.05,
+   "direction": [
+    0,
+    0,
+    1
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {
+   "end_shear": 50000,
+   "end_moment": 50000000
+  }
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 785
+}

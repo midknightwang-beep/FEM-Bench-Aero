@@ -1,0 +1,11 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "d9c0b02d041190891abd7c01147eb30094a754e27d823aeed6599951a0eb870e",
+ "clarify": "[\"开孔直径 hole_d 是多少？\",\"孔心位置（hole_x、hole_y）是否位于板中心？\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 62
+}

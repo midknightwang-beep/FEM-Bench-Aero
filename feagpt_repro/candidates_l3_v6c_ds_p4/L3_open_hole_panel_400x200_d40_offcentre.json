@@ -1,0 +1,51 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d40_offcentre",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "58fca788957c50a7915490e525f92ae7bcc01738ca10754fcd3d45e4e7aa6892",
+ "clarify": null,
+ "spec": {
+  "name": "open_hole_tension_plate",
+  "description": "开孔拉伸板 400×200×2 mm，孔心 (120,60)，直径 40 mm，铝 2024-T3，两端 4000 N 面内拉伸",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 400,
+    "width": 200,
+    "thickness": 2,
+    "hole_d": 40,
+    "hole_x": 120,
+    "hole_y": 60
+   }
+  },
+  "mesh": {
+   "size_chord": 4,
+   "size_span": 4
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 4000,
+   "direction": [
+    1,
+    0,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 727
+}

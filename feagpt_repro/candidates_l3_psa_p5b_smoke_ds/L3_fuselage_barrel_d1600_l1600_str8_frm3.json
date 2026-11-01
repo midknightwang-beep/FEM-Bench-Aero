@@ -1,0 +1,53 @@
+{
+ "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "f5b020c2892229af2b704042ccbd4cc74281573c3c003f1c0c389e83406c93d0",
+ "clarify": null,
+ "spec": {
+  "name": "fuselage_barrel_pressure_shear_moment",
+  "description": "机身柱壳段在内压、端部剪力与端部弯矩组合作用下的结构分析",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "fuselage_barrel",
+   "params": {
+    "diameter": 1600,
+    "length": 1600,
+    "thickness": 3,
+    "n_stringers": 8,
+    "n_frames": 0
+   }
+  },
+  "mesh": {
+   "size_chord": 25,
+   "size_span": 25
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.05,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {
+   "end_shear": 50000,
+   "end_moment": 50000000
+  }
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 749
+}

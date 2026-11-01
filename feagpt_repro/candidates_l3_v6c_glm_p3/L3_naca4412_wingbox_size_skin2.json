@@ -1,0 +1,71 @@
+{
+ "task_id": "L3_naca4412_wingbox_size_skin2",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "d9c0b02d041190891abd7c01147eb30094a754e27d823aeed6599951a0eb870e",
+ "clarify": null,
+ "spec": {
+  "name": "naca4412_wingbox_5rib",
+  "description": "NACA4412 铝翼盒，5 道翼肋，根部固支，翼尖 500 N 集中力弯曲工况。",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "wingbox",
+   "params": {}
+  },
+  "airfoil": {
+   "code": "4412",
+   "chord": 1000,
+   "span": 2000,
+   "skin_thickness": 2,
+   "n_ribs": 5,
+   "rib_thickness": 4,
+   "spar_chordwise": [
+    0.25,
+    0.7
+   ],
+   "n_stringers_per_skin": 0,
+   "tip_chord_ratio": 1,
+   "sweep_deg": 0,
+   "web_chordwise": []
+  },
+  "mesh": {
+   "size_chord": 12,
+   "size_span": 25,
+   "order": 1
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 500,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/airfoil must have required property 'n_stringers_per_skin'",
+    "/airfoil must have required property 'tip_chord_ratio'",
+    "/airfoil must have required property 'sweep_deg'",
+    "/ must match \"then\" schema"
+   ]
+  }
+ ],
+ "raw_len": 647
+}

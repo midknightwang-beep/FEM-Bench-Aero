@@ -797,7 +797,9 @@ def index_consistency(index_path, nc_json_path, headline_claim):
           `{headline_claim}`；**除非**该行带显式历史标记（historical/历史/上一代/superseded/不是当前）。
           不含 claim id 的行不判（如「当前 headline 见 §1」这类纯指针）。
       (b) 负控编号与 artifact 对齐：负控行的 `NC-x..y` 必须与最新 `negative_controls_<N>.json`
-          实读一致——上界 == 最大 NC 号、区间内无缺号、`= N/N` 的分母 == 实读条数、分子 == 分母。
+          实读一致——**逐条覆盖**（每条 id 要么落在某区间内、要么被显式点名，跳号不误报）、
+          **区间不得虚报**（区间里声称的编号必须真存在）、`= N/N` 分母 == 实读条数、分子 == 分母。
+          ★ 2026-11-01 之前用的「上界 == 最大 NC 号」是错代理：它假设编号连续，而编号一直跳号。
     """
     if not headline_claim:
         return False, 'headline claim 不是恰好 1 条（S-29 会先报），S-44 无从比对'
@@ -867,14 +869,52 @@ def index_consistency(index_path, nc_json_path, headline_claim):
                     probs.append(f'分子 {a} ≠ 分母 {b}')
                 if b != total:
                     probs.append(f'总数 {b} ≠ artifact {total} 条')
-            if mx is not None and hi != mx:
-                probs.append(f'主区间上界 NC-{hi} ≠ artifact 最大 NC-{mx}')
-            miss = [n for n in range(lo or 0, (hi or 0) + 1) if n not in set(nums)]
-            if miss:
-                probs.append('主区间内缺号 ' + ','.join('NC-%d' % n for n in miss))
+            # ★★ 2026-11-01（T-PSA，F-5 同族）：原判据是「主区间上界 == artifact 最大 NC 编号」，
+            #   它把「上界」当成「最新一条」的代理，隐含要求 **NC 编号连续**。实测编号一直是跳号的
+            #   （PC-1 + NC-1..67 + NC-15b，**从无 NC-68/NC-69**），本轮新增 NC-70 后该代理立刻把
+            #   「编号不连续」误报成「INDEX 漏报最新一条」——INDEX 本身是对的（已写 `NC-23..67 + NC-70`）。
+            #   ⇒ 改为**逐条覆盖**：artifact 每条 id 必须被清单里某 `NC-a..b` 区间覆盖，或在清单里被
+            #   **显式点名**（`NC-70` / `NC-15b` / `PC-1`）。不依赖连续性，且**比原判据更严**：
+            #   原判据只看上界，中间漏掉一条不会红；现在逐条查，漏哪条报哪条。
+            # ★★★ 覆盖只许从**结构化清单段**读：该行正文在括号里逐条描述每条负控
+            #   （`**NC-49 四向**`…`**NC-67 五向**`），若全行扫，「提及」就被当成「点名」，
+            #   覆盖永远成立（实测：把主区间上界 67→66 后 NC-67 靠正文提及仍判覆盖 ⇒ NC-49 的
+            #   N-2 向由「红」退化为「漏判」）。清单段 = `C-0xx：` 之后、第一个 `（`/`(` 之前。
+            mm3 = re.search(r'C-0\d{2}\s*[:：]([^（(]*)', ln)
+            seg = mm3.group(1) if mm3 else None
+            if seg is None:
+                probs.append('找不到 `C-0xx：` 开头的结构化清单段'
+                             '（不得回退到全行扫描 —— 正文「提及」不是「点名」）')
+                rs, lo, hi, named = [], None, None, set()
+                uncovered = []
+            else:
+                rs = [(int(a), int(b)) for a, b in re.findall(r'NC-(\d+)\.\.(\d+)', seg)]
+                lo, hi = max(rs, key=lambda t: t[1]) if rs else (None, None)
+                if not rs:
+                    probs.append('清单段里没有任何 `NC-a..b` 区间')
+                named = set(re.findall(r'(?:NC-\d+[a-z]?|PC-\d+)', seg))
+                have = set(ids)
+
+                def _covered(s):
+                    if s in named:                   # 显式点名（含 NC-15b 这类带字母的）
+                        return True
+                    mm2 = re.match(r'^NC-(\d+)$', s)
+                    return bool(mm2) and any(a <= int(mm2.group(1)) <= b for a, b in rs)
+
+                uncovered = [s for s in ids if s and not _covered(s)]
+                if uncovered:
+                    probs.append('artifact 有但清单未覆盖 ' + ','.join(uncovered))
+                # 反向：清单**声称**存在的编号（任一区间内）必须真的在 artifact 里 ——
+                # 防「把区间写成 NC-23..70 把跳号抹平」这种编数。
+                ghost = sorted({n for a, b in rs for n in range(a, b + 1)
+                                if f'NC-{n}' not in have})
+                if ghost:
+                    probs.append('区间声称但 artifact 无 ' + ','.join('NC-%d' % n for n in ghost))
             ok = ok and not probs
+            cov_txt = ('n/a（无清单段，不假装验证过）' if seg is None
+                       else f'{total - len(uncovered)}/{total}')
             det.append(f'(b) L{i} 主区间 NC-{lo}..{hi} / 总数 {tms[-1][1] if tms else "?"}；'
-                       f'artifact 最大 NC-{mx}、共 {total} 条'
+                       f'artifact 最大 NC-{mx}、共 {total} 条；逐条覆盖 {cov_txt}'
                        + ('' if not probs else ' ⇒ ' + '；'.join(probs)))
     return ok, '；'.join(det)
 

@@ -1,0 +1,570 @@
+{
+ "n_cases": 69,
+ "n_ok": 68,
+ "all_ok": false,
+ "ids": [
+  "PC-1",
+  "NC-1",
+  "NC-3",
+  "NC-4",
+  "NC-5",
+  "NC-6",
+  "NC-2",
+  "NC-7",
+  "NC-8",
+  "NC-9",
+  "NC-10",
+  "NC-11",
+  "NC-12",
+  "NC-13",
+  "NC-14",
+  "NC-15",
+  "NC-15b",
+  "NC-16",
+  "NC-17",
+  "NC-18",
+  "NC-19",
+  "NC-20",
+  "NC-21",
+  "NC-22",
+  "NC-23",
+  "NC-24",
+  "NC-25",
+  "NC-26",
+  "NC-27",
+  "NC-28",
+  "NC-29",
+  "NC-30",
+  "NC-31",
+  "NC-32",
+  "NC-33",
+  "NC-34",
+  "NC-35",
+  "NC-37",
+  "NC-38",
+  "NC-39",
+  "NC-40",
+  "NC-41",
+  "NC-42",
+  "NC-43",
+  "NC-44",
+  "NC-45",
+  "NC-46",
+  "NC-47",
+  "NC-48",
+  "NC-49",
+  "NC-50",
+  "NC-51",
+  "NC-52",
+  "NC-53",
+  "NC-54",
+  "NC-55",
+  "NC-56",
+  "NC-57",
+  "NC-58",
+  "NC-59",
+  "NC-60",
+  "NC-61",
+  "NC-62",
+  "NC-63",
+  "NC-64",
+  "NC-65",
+  "NC-66",
+  "NC-67",
+  "NC-36"
+ ],
+ "results": [
+  {
+   "id": "PC-1",
+   "desc": "gold spec",
+   "expect": "PASS",
+   "actual": "PASS",
+   "ok": true
+  },
+  {
+   "id": "NC-1",
+   "desc": "rib_thickness 4->8",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-3",
+   "desc": "n_stringers_per_skin 0->3",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-4",
+   "desc": "mesh.size_chord 12->20",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-5",
+   "desc": "load.magnitude 500->600",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-6",
+   "desc": "E 73100->60000",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-2",
+   "desc": "L2 问对填错 8.0",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-7",
+   "desc": "L2 静默默认",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-8",
+   "desc": "L3 已接入任务层（L3 行数 == nl_human 行数 64）",
+   "expect": "==64",
+   "actual": "64",
+   "ok": true
+  },
+  {
+   "id": "NC-9",
+   "desc": "删 bc",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-10",
+   "desc": "删 extra.end_shear",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-11",
+   "desc": "包装候选拒绝契约",
+   "expect": "raise",
+   "actual": "raise ok",
+   "ok": true
+  },
+  {
+   "id": "NC-12",
+   "desc": "family=unknown 拒绝",
+   "expect": "raise",
+   "actual": "raise ok",
+   "ok": true
+  },
+  {
+   "id": "NC-13",
+   "desc": "L3 删 mesh/load/bc/extra",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-14",
+   "desc": "工程层口径四探针",
+   "expect": "4/4",
+   "actual": "配置键错值豁免=OK; 死字段错值豁免=OK; web_chordwise 编值照罚=OK; 判层字段错闸不松=OK",
+   "ok": true
+  },
+  {
+   "id": "NC-15",
+   "desc": "澄清问错族键 n_stringers_per_skin",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true,
+   "task": "L3_naca4412_wingbox",
+   "detail": {
+    "wrong_keys_hit": null,
+    "alias_hits": {
+     "n_ribs": []
+    }
+   }
+  },
+  {
+   "id": "NC-15b",
+   "desc": "澄清问对别名（n_ribs）",
+   "expect": "PASS",
+   "actual": "PASS",
+   "ok": true,
+   "task": "L3_naca4412_wingbox"
+  },
+  {
+   "id": "NC-16",
+   "desc": "panel bc.support 自创键",
+   "expect": "FAIL",
+   "actual": "FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-17",
+   "desc": "open_hole 自创键 load.distribution+material.ply_material",
+   "expect": "FAIL/FAIL",
+   "actual": "FAIL/FAIL",
+   "ok": true
+  },
+  {
+   "id": "NC-18",
+   "desc": "MSR 依赖预检（gmsh 缺失 => 环境退出 rc=2）",
+   "expect": "guard present",
+   "actual": "present",
+   "ok": true
+  },
+  {
+   "id": "NC-19",
+   "desc": "exam 集与 split 语义一致（R15/R36）",
+   "expect": "empty",
+   "actual": "[]",
+   "ok": true
+  },
+  {
+   "id": "NC-20",
+   "desc": "L3 任务 NL 必须给坐标系+方向向量（R21）",
+   "expect": "empty",
+   "actual": "[]",
+   "ok": true
+  },
+  {
+   "id": "NC-21",
+   "desc": "MSR 分母不含澄清题（R23；核对卷=tasks_v6c.jsonl）",
+   "expect": "empty",
+   "actual": "[]",
+   "ok": true
+  },
+  {
+   "id": "NC-22",
+   "desc": "成绩单 exam.msr（MSR 未合并，skip）",
+   "expect": "present",
+   "actual": "skip（无 msr_section）",
+   "ok": true
+  },
+  {
+   "id": "NC-23",
+   "desc": "CLAIMS artifact 缺失 ⇒ check_claims FAIL",
+   "expect": "rc!=0 + 报「不存在」",
+   "actual": "rc=1",
+   "ok": true
+  },
+  {
+   "id": "NC-24",
+   "desc": "CLAIMS artifact 在 eval_runs/（未追踪）⇒ FAIL（R25）",
+   "expect": "rc!=0 + 报 eval_runs",
+   "actual": "rc=1",
+   "ok": true
+  },
+  {
+   "id": "NC-25",
+   "desc": "官方/诊断同一 artifact 路径 ⇒ FAIL（R27）",
+   "expect": "rc!=0 + 报 R27",
+   "actual": "rc=1",
+   "ok": true
+  },
+  {
+   "id": "NC-26",
+   "desc": "缺 gold 数据集 ⇒ 前置闸硬报错（防静默算成 0/11）",
+   "expect": "bad=raise / good=None",
+   "actual": "bad=raise / good=None",
+   "ok": true
+  },
+  {
+   "id": "NC-27",
+   "desc": "文本计数漂移（C-010 任务层行数 −25 vs artifact 实读）⇒ 语义检查 FAIL",
+   "expect": "rc!=0 + 报 S-01",
+   "actual": "hit=True rc=1 锚点=192",
+   "ok": true
+  },
+  {
+   "id": "NC-28",
+   "desc": "候选未覆盖全卷 ⇒ 成绩单标记不可当正式成绩（R31）",
+   "expect": "bad=3>0 / good=0",
+   "actual": "bad=3 / good=0",
+   "ok": true
+  },
+  {
+   "id": "NC-29",
+   "desc": "v6(25) 与 C-021(11) 混比被拒（R30）",
+   "expect": "cross=拒 / same=可",
+   "actual": "cross=拒(5 理由) / same=可",
+   "ok": true
+  },
+  {
+   "id": "NC-30",
+   "desc": "R32/R41 审计闸：exam 0 违规 + 非 exam 白名单逐字相等 + 反向验证（R33）",
+   "expect": "exam_rc=0 / viol==白名单 / mutated=1 + 抓到 web_chordwise 且归 [dev]",
+   "actual": "exam_rc=0 all_rc=0 viol=['L3_stiffened_panel_800x600', 'L3_stiffened_panel_800x600_str3'] hit=1 mut_rc=0",
+   "ok": true
+  },
+  {
+   "id": "NC-31",
+   "desc": "生成器 SYS prompt 键名表齐全（R34）",
+   "expect": "missing=0 / 禁键有明示",
+   "actual": "missing=[] banned_hint=True",
+   "ok": true
+  },
+  {
+   "id": "NC-32",
+   "desc": "T1 leave-one-out（检索库不含目标自身，R40）",
+   "expect": "源码过滤 + 报告无自命中",
+   "actual": "src=True flag=True self=0",
+   "ok": true
+  },
+  {
+   "id": "NC-33",
+   "desc": "成绩单口径字符串由考卷生成（R38）",
+   "expect": "stratum + 无 W4d + by_split 不含 exam",
+   "actual": "exam_def含stratum=True W4d旧串=False by_split混入exam=[] note=True",
+   "ok": true
+  },
+  {
+   "id": "NC-34",
+   "desc": "官方文档不引用 eval_runs/ 具体文件（R37）",
+   "expect": "empty",
+   "actual": "[]",
+   "ok": true
+  },
+  {
+   "id": "NC-35",
+   "desc": "同条数不同 task-id 集必须拒绝比较（R39）",
+   "expect": "cross=拒 / same=可",
+   "actual": "cross=拒(2 理由) / same=可",
+   "ok": true
+  },
+  {
+   "id": "NC-37",
+   "desc": "契约试建闸咬得住：gold 全可建 / 删必填键必拒（W5c）",
+   "expect": "real=0 / 注入自创键 mutated=1",
+   "actual": "real_rc=0 hit=True mut_rc=1",
+   "ok": true
+  },
+  {
+   "id": "NC-38",
+   "desc": "第二个 headline 必须被 R42/S-29 拒绝",
+   "expect": "hit + rc!=0 + 报 S-29",
+   "actual": "hit=True rc=1 S-29=True",
+   "ok": true
+  },
+  {
+   "id": "NC-39",
+   "desc": "T1+ 地板缺节/缺字段命中率必须被 R44/S-32 拒绝",
+   "expect": "fwd=True / 两向变异=False",
+   "actual": "正向=过 删节=红 删命中率=红",
+   "ok": true
+  },
+  {
+   "id": "NC-40",
+   "desc": "分母不闭合/缺构成必须被 R47/S-33 拒绝",
+   "expect": "fwd=True / 两向变异=False",
+   "actual": "正向=过 复现旧bug=红 缺分母字段=红",
+   "ok": true
+  },
+  {
+   "id": "NC-41",
+   "desc": "第二模型抢 headline 必须被 R48/S-34 拒绝",
+   "expect": "hit + rc!=0 + 报 S-34",
+   "actual": "hit=True rc=1 S-34=True",
+   "ok": true
+  },
+  {
+   "id": "NC-42",
+   "desc": "双尺度分裂被隐藏必须被 R49/S-35 拒绝",
+   "expect": "fwd=True / 删 verdict_split=False",
+   "actual": "正向=过 删split=红",
+   "ok": true
+  },
+  {
+   "id": "NC-43",
+   "desc": "顶层 model 与 provenance 不一致必须被 R51/S-36 拒绝",
+   "expect": "fwd=True / 两向变异=False",
+   "actual": "正向=过 顶层改glm=红 删prov.model=红",
+   "ok": true
+  },
+  {
+   "id": "NC-44",
+   "desc": "分母混类/未落盘必须被 R52/S-37 拒绝",
+   "expect": "fwd=True / 两向变异=False",
+   "actual": "正向=过 混入unresolved=红 删audit=红",
+   "ok": true
+  },
+  {
+   "id": "NC-45",
+   "desc": "prompt 盲填授权/注入答案键必须被 R50/S-38 拒绝",
+   "expect": "fwd=True / 两向变异=False",
+   "actual": "正向=过 写回盲填=红 注入答案键=红",
+   "ok": true
+  },
+  {
+   "id": "NC-46",
+   "desc": "MSR 条件口径未声明/排除项未点名必须被 R54/S-40 拒绝",
+   "expect": "fwd=True / 三向变异=False",
+   "actual": "正向=过 删口径=红 不点名=红 点名清空=红",
+   "ok": true
+  },
+  {
+   "id": "NC-47",
+   "desc": "榜单缺三列/分母不等却出Δ/dev未定位 必须被 R55/R56 拒绝",
+   "expect": "fwd=True / 四向变异=False",
+   "actual": "正向=过 缺字段级列=红 MSR硬填可减=红 dev不闭合=红 翻转清空=红",
+   "ok": true
+  },
+  {
+   "id": "NC-48",
+   "desc": "消融判采纳但 prompt 未换 / 缺 decision 必须被 R57/S-43 拒绝",
+   "expect": "fwd=True / 两向变异=False / 合法采纳=True",
+   "actual": "正向=过 采纳但未换=红 采纳且已换=过 缺decision=红",
+   "ok": true
+  },
+  {
+   "id": "NC-49",
+   "desc": "INDEX 的 headline 指向/负控编号漂移必须被 R58/S-44 拒绝",
+   "expect": "fwd=True / 三向变异=False",
+   "actual": "正向=过 N-1回退=红 N-2回退=红 去历史标记=红",
+   "ok": true
+  },
+  {
+   "id": "NC-50",
+   "desc": "收口顺序反（记录过期 / 文件时间反序）必须被 R59/S-45 拒绝",
+   "expect": "fwd=True / 两向变异=False",
+   "actual": "正向=过 记录mtime过期=红 文件时间反序=红",
+   "ok": true
+  },
+  {
+   "id": "NC-51",
+   "desc": "dataset 命令用裸 python / 缺 PY= 必须被 R60/S-46 拒绝",
+   "expect": "fwd=True / 两向变异=False",
+   "actual": "正向=过 裸python=红 缺PY=红",
+   "ok": true
+  },
+  {
+   "id": "NC-52",
+   "desc": "求解锁机制被删 / 残留锁必须被 R61/S-47 拒绝",
+   "expect": "fwd=True / 两向变异=False",
+   "actual": "正向=过 抹掉锁逻辑=红 残留锁=红",
+   "ok": true
+  },
+  {
+   "id": "NC-53",
+   "desc": "C-003 计数漂移/构成不闭合/分母丢失必须被 R62/S-48 拒绝",
+   "expect": "fwd=True / 四向变异=False",
+   "actual": "正向=过 field-1=红 scalar-2=红 d36+1=红 删分母=红",
+   "ok": true
+  },
+  {
+   "id": "NC-54",
+   "desc": "C-001/2/4/5/036 计数漂移、对外表分母混写/陈旧、协议写死计数必须被拒",
+   "expect": "fwd=T / 十向变异=F 且原因命中",
+   "actual": "S-49 正向=过 C001-1=红 minJ改=红 C004-1=红 删dup=红 删C036=红 ‖ S-50 正向=过 分母55=红·分母 删列=红·口径 手改=红·陈旧 ‖ S-51 正向=过 写死三元组=红 写死负控=红",
+   "ok": true
+  },
+  {
+   "id": "NC-55",
+   "desc": "S-52 三向独立证伪：当前卷不一致 / 已发布 NL 被改写 / 跨版改老行",
+   "expect": "fwd=T / 三向=F 且原因分别命中「不一致」「已发布 NL」「只许」",
+   "actual": "fwd=T ‖ (a)卷不一致=红·不一致 (b)NL改写=红·已发布NL (c)跨版改老行=红·只许",
+   "ok": true
+  },
+  {
+   "id": "NC-56",
+   "desc": "S-53 四向独立证伪：缺一块 / 掩码过期 / 允许相减 / 只报一侧分",
+   "expect": "fwd=T / 四向=F 且原因分别命中「缺 clarify_informative」「掩码与现算不一致」「delta_allowed」「passed 不是整数」",
+   "actual": "fwd=T ‖ (a)缺一块=红·缺块 (b)掩码过期=红·不一致 (c)允许相减=红·delta (d)只报一侧=红·passed",
+   "ok": true
+  },
+  {
+   "id": "NC-57",
+   "desc": "T-A11a 回归判据工具五向：自比 PASS / 改值 / 删键 / 越界新增 / 前缀不放行",
+   "expect": "fwd=PASS 且四向各自因「正确原因」变红",
+   "actual": "五向全中（fwd PASS / 改值 CHANGED / 删键 REMOVED / 越界新增 ADDED / 前缀不放行）",
+   "ok": true
+  },
+  {
+   "id": "NC-58",
+   "desc": "T-A11b S-54 闸五向：正向不误报 / 四桶不闭合 / 手改分母 / 判失败无原因 / env 回分母",
+   "expect": "fwd=过 且四向各自因「正确原因」变红",
+   "actual": "五向全中（正向过 / 四桶 / 分母 / 无原因 / env 回分母）",
+   "ok": true
+  },
+  {
+   "id": "NC-59",
+   "desc": "T-A12a S-56 闸六向：正向不误报 / 硬编码版本 / 硬编码范围 / CLAIMS 标题带范围 / 裸解释器 / 写死当前卷名",
+   "expect": "fwd=过 且五向各自因「正确原因」变红",
+   "actual": "六向全中（正向过 / 版本 / 范围 / CLAIMS 标题 / 裸解释器 / 卷名）",
+   "ok": true
+  },
+  {
+   "id": "NC-60",
+   "desc": "T-A12b S-57 闸五向：正向不误报 / exam 有违规 / all 混 exam 违规 / dev 违规无 reason / artifact sha 过期",
+   "expect": "fwd=过 且四向各自因「正确原因」变红",
+   "actual": "五向全中（正向 / exam 违规 / 伪造 exam 违规 / dev 无 reason / sha 过期）",
+   "ok": true
+  },
+  {
+   "id": "NC-61",
+   "desc": "T-A12b S-54 新增三断言：N-26 总账不得退回 counted / exam_full 必须有 excl_solver / n_unresolved 同名不同义须有说明",
+   "expect": "fwd=过 且三向各自因「正确原因」变红",
+   "actual": "四向全中（正向 / N-26 总账 / R52 excl_solver / 同名不同义）",
+   "ok": true
+  },
+  {
+   "id": "NC-62",
+   "desc": "T-A13a L2 跑分器：全对即全过 / 只写中文不写键名须红 / 澄清题给 spec 须红 / 缺候选不得静默排除 / 双口径通过数闭合",
+   "expect": "fwd=过 且四向各自因「正确原因」变红",
+   "actual": "五向全中（正向 64/45/19 闭合 / 只写中文红 / 给 spec 红 / 缺候选 partial / 通过数闭合）",
+   "ok": true
+  },
+  {
+   "id": "NC-63",
+   "desc": "T-A13c L2 多模型并列：每块须自闭合、两侧报分、顶层与块同源",
+   "expect": "并列正常须绿；四向各自因「正确原因」变红",
+   "actual": "五向全中（并列正常绿 / 一侧缺失红 / 块内不闭合红 / 顶层不同源红 / 顶层不一致红）",
+   "ok": true
+  },
+  {
+   "id": "NC-64",
+   "desc": "T-A13d 澄清判据边界（N-28/R70）：ASCII 标识符按 token 边界，中文按子串",
+   "expect": "假通过与假红两条通道都关；两向不得过严；中文零变化",
+   "actual": "六向全中（假通过已关/两向不过严/假红已修/中文不变/thickness 已关）",
+   "ok": true
+  },
+  {
+   "id": "NC-65",
+   "desc": "T-P1a 判分元数据修正表闸（R71/S-59）：修正表必须自洽、不过期、不制造新错、且留痕",
+   "expect": "正向不误报；过期/新错/未覆盖/未留痕四向各自因正确原因变红",
+   "actual": "五向全中（正向×2 不误报 / 过期必红 / 新错必红 / 未覆盖必红 / 未留痕必红）",
+   "ok": true
+  },
+  {
+   "id": "NC-66",
+   "desc": "T-A14 L2 族分层闭合闸（R72/S-60）：族级必须落盘、闭合、按族可加、两层不换义",
+   "expect": "正向不误报；删族级/Σn/Σpassed/不可加/同名换义/无对象 六向各自因正确原因变红",
+   "actual": "六向全中（正向不误报 / 删族级必红 / Σn 不符 / Σpassed 不符 / 按族不可加 / 顶层同名换义 / 全 not_run 无对象）",
+   "ok": true
+  },
+  {
+   "id": "NC-67",
+   "desc": "T-C1 前置闸查「数据在」而非「目录在」：空目录/无 spec/覆盖不全必须红（D-6：旧实现被 mkdir 骗过，静默产出 exam 3/25 假成绩）",
+   "expect": "①缺失 ②空目录 ③有文件无spec ④覆盖不全（须报条数） 各自因正确原因变红；⑤真实数据 None",
+   "actual": "五向全中（①缺失/②空目录/③有文件无 spec/④缺 50 条/⑤正向 None）",
+   "ok": true
+  },
+  {
+   "id": "NC-36",
+   "desc": "语义项不得静默消失：缺 MSR ⇒ S-19/S-20 必须失败而非消失（R29）",
+   "expect": "msr 齐 + S-19/S-20 在场 + 源码有 else 分支",
+   "actual": "msr=False present=['S-19', 'S-20'] else分支=True",
+   "ok": false
+  }
+ ],
+ "gate_message": "红线条 R6：负控未全绿，不得跑 LLM 基线。"
+}

@@ -1,0 +1,11 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "c37862f9992c06293fe92da62cb2089598f880c58be398e10cd226055512c979",
+ "clarify": "[\"孔直径 hole_d 未给出，请提供中心孔直径（mm）\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 43
+}

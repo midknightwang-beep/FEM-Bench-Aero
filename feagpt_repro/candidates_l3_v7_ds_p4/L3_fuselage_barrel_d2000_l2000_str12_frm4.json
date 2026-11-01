@@ -1,0 +1,53 @@
+{
+ "task_id": "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "58fca788957c50a7915490e525f92ae7bcc01738ca10754fcd3d45e4e7aa6892",
+ "clarify": null,
+ "spec": {
+  "name": "fuselage_barrel_press_shear_bend",
+  "description": "Aluminum fuselage barrel under internal pressure, end shear, and end bending moment.",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "fuselage_barrel",
+   "params": {
+    "diameter": 2000,
+    "length": 2000,
+    "thickness": 3,
+    "n_stringers": 12,
+    "n_frames": 4
+   }
+  },
+  "mesh": {
+   "size_chord": 25,
+   "size_span": 25
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.05,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {
+   "end_shear": 50000,
+   "end_moment": 50000000
+  }
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 801
+}

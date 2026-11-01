@@ -1,0 +1,11 @@
+{
+ "task_id": "L3_open_hole_panel_400x200_d20",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "c37862f9992c06293fe92da62cb2089598f880c58be398e10cd226055512c979",
+ "clarify": "[\"孔径 hole_d 未给出（开孔板必须给出孔直径，如为中心孔还需确认孔心位置）\"]",
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 55
+}

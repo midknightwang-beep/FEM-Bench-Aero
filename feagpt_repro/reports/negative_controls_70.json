@@ -1,6 +1,6 @@
 {
- "n_cases": 69,
- "n_ok": 69,
+ "n_cases": 70,
+ "n_ok": 70,
  "all_ok": true,
  "ids": [
   "PC-1",
@@ -71,7 +71,8 @@
   "NC-65",
   "NC-66",
   "NC-67",
-  "NC-36"
+  "NC-36",
+  "NC-70"
  ],
  "results": [
   {
@@ -226,7 +227,7 @@
    "id": "NC-19",
    "desc": "exam 集与 split 语义一致（R15/R36）",
    "expect": "empty",
-   "actual": "[] / v11 9/9 为留出（split_v2 与 stratum 不同名，属已知口径）",
+   "actual": "[]",
    "ok": true
   },
   {
@@ -238,7 +239,7 @@
   },
   {
    "id": "NC-21",
-   "desc": "MSR 分母不含澄清题（R23；核对卷=tasks_v7.jsonl）",
+   "desc": "MSR 分母不含澄清题（R23；核对卷=tasks_v6c.jsonl）",
    "expect": "empty",
    "actual": "[]",
    "ok": true
@@ -563,6 +564,13 @@
    "desc": "语义项不得静默消失：缺 MSR ⇒ S-19/S-20 必须失败而非消失（R29）",
    "expect": "msr 齐 + S-19/S-20 在场 + 源码有 else 分支",
    "actual": "msr=True present=['S-19', 'S-20'] else分支=True",
+   "ok": true
+  },
+  {
+   "id": "NC-70",
+   "desc": "负控读的成绩单锚定 C-032 引用，不按 mtime 漂（F-5）",
+   "expect": "== feagpt_repro/reports/baseline_scorecard_L3_v6c_p2.json",
+   "actual": "feagpt_repro/reports/baseline_scorecard_L3_v6c_p2.json",
    "ok": true
   }
  ],
