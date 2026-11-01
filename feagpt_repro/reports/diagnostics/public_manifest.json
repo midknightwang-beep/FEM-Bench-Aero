@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-01T21:55:44+08:00",
- "source_head": "53781f43bd1f2b501ac2f5783a46efa25d021ab6",
+ "generated_at": "2026-11-01T21:59:59+08:00",
+ "source_head": "9ddbee6f68083d4a10b43e41add2b18308b11d4c",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
  "n_total": 2332,
- "bytes_total": 89407853,
+ "bytes_total": 89409732,
  "n_keep": 1901,
- "bytes_keep": 14776823,
+ "bytes_keep": 14776961,
  "categories": {
   "KEEP:根目录仓库配置": {
    "n": 2,
@@ -13,7 +13,7 @@
   },
   "内部记忆/应用": {
    "n": 27,
-   "bytes": 563685
+   "bytes": 565426
   },
   "根目录内部材料": {
    "n": 46,
@@ -37,7 +37,7 @@
   },
   "KEEP:代码与证据": {
    "n": 1789,
-   "bytes": 11031981
+   "bytes": 11032119
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
