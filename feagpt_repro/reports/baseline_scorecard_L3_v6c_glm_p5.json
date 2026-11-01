@@ -69,7 +69,8 @@
    "clarify_ok": 3,
    "spec_pass": 20,
    "spec_fail": 2
-  }
+  },
+  "msr": "20/22"
  },
  "exam_v11": {
   "n": 0,
@@ -131,7 +132,8 @@
    "spec_fail": 6,
    "clarify_ok": 1
   },
-  "note": "开发集，不进对外（R15）"
+  "note": "开发集，不进对外（R15）",
+  "msr": "23/29"
  },
  "sfr_all": {
   "pass": 43,
@@ -1357,5 +1359,1066 @@
   "criterion": ">= 10 pp 才算 LLM 真有增量（专家 6.3.1）；n_exam<20 ⇒ underpowered 不得判 PASS（R12）",
   "verdict": "PASS",
   "verdict_split": null
- }
+ },
+ "msr_section": {
+  "note": "全链 MSR（R14/R16/R23，W5a 修正）：契约闸+ccx 求解+关1+关4+fidelity+spec_fidelity 全 PASS；分母 = spec-required 且非澄清题（R23：澄清/未收敛候选不计，编造归 FPR）；依赖预检不过即环境退出；失败分层 env/contract/model/solver，env 不计模型失败。",
+  "provenance": {
+   "tasks_path": "reports/papers/tasks_v6c.jsonl",
+   "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
+   "candidates_dir": "candidates_l3_v6c_glm_p5",
+   "reuse_source": null
+  },
+  "n_not_run": 0,
+  "msr": "43/51",
+  "msr_pct": 84.3,
+  "exam_msr": "20/22",
+  "exam_msr_pct": 90.9,
+  "exam_v11_msr": "0/0",
+  "exam_v11_msr_pct": null,
+  "exam_full_msr": "20/22",
+  "exam_full_msr_pct": 90.9,
+  "exam_full_denominator_audit": null,
+  "exam_full_closure": {
+   "units": "counted（MSR 可计分子集；任务语境的 34 见顶层 exam_denominator_closure）",
+   "exam_legacy": 22,
+   "exam_v11": 0,
+   "exam_full": 22,
+   "dev": 29,
+   "closure_sum": 51,
+   "ok": true
+  },
+  "exam_by_family": {
+   "fuselage_barrel": {
+    "msr": "1/1",
+    "pass": 1,
+    "n": 1,
+    "pct": 100.0
+   },
+   "open_hole_panel": {
+    "msr": "3/4",
+    "pass": 3,
+    "n": 4,
+    "pct": 75.0
+   },
+   "wingbox": {
+    "msr": "16/17",
+    "pass": 16,
+    "n": 17,
+    "pct": 94.1
+   }
+  },
+  "exam_by_stratum": {
+   "boundary": {
+    "msr": "6/6",
+    "pass": 6,
+    "n": 6,
+    "pct": 100.0
+   },
+   "extrapolation": {
+    "msr": "9/11",
+    "pass": 9,
+    "n": 11,
+    "pct": 81.8
+   },
+   "interpolation": {
+    "msr": "5/5",
+    "pass": 5,
+    "n": 5,
+    "pct": 100.0
+   }
+  },
+  "n_solver_excluded": 0,
+  "solver_task_ids": [],
+  "solver_in_exam": [],
+  "solver_in_dev": [],
+  "exam_msr_excl_solver": "20/22",
+  "exam_msr_excl_solver_pct": 90.9,
+  "exam_full_msr_excl_solver": "20/22",
+  "exam_full_msr_excl_solver_pct": 90.9,
+  "dev_msr_excl_solver": "23/29",
+  "dev_msr_excl_solver_pct": 79.3,
+  "msr_excl_solver": "43/51",
+  "msr_excl_solver_pct": 84.3,
+  "full_msr_excl_solver": "43/51",
+  "full_msr_excl_solver_pct": 84.3,
+  "dev_msr": "23/29",
+  "dev_msr_pct": 79.3,
+  "by_split": {
+   "boundary_holdout": {
+    "msr": "6/6",
+    "pass": 6,
+    "n": 6
+   },
+   "extrapolation_test": {
+    "msr": "9/11",
+    "pass": 9,
+    "n": 11
+   },
+   "interpolation_test": {
+    "msr": "5/5",
+    "pass": 5,
+    "n": 5
+   },
+   "train": {
+    "msr": "10/12",
+    "pass": 10,
+    "n": 12
+   },
+   "val": {
+    "msr": "13/17",
+    "pass": 13,
+    "n": 17
+   }
+  },
+  "denominator_audit": {
+   "n_tasks_total": 55,
+   "n_counted": 51,
+   "n_clarify_excluded": 4,
+   "n_unresolved_excluded": 0,
+   "n_notrun_excluded": 0,
+   "n_env_excluded": 0,
+   "n_unknown_excluded": 0,
+   "n_solver_excluded": 0,
+   "n_counted_excl_solver": 51,
+   "unresolved_task_ids": [],
+   "clarify_task_ids": [
+    "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+    "L3_naca4412_wingbox",
+    "L3_open_hole_panel_400x200_d20",
+    "L3_stiffened_panel_600x600_str3"
+   ],
+   "closure_ok": true,
+   "closure_solver_ok": true,
+   "closure": "55 = counted 51 + clarify 4 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 51 = solver 0 + counted_excl_solver 51"
+  },
+  "exam_denominator_audit": {
+   "n_tasks_total": 25,
+   "n_counted": 22,
+   "n_clarify_excluded": 3,
+   "n_unresolved_excluded": 0,
+   "n_notrun_excluded": 0,
+   "n_env_excluded": 0,
+   "n_unknown_excluded": 0,
+   "n_solver_excluded": 0,
+   "n_counted_excl_solver": 22,
+   "unresolved_task_ids": [],
+   "clarify_task_ids": [
+    "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+    "L3_naca4412_wingbox",
+    "L3_stiffened_panel_600x600_str3"
+   ],
+   "closure_ok": true,
+   "closure_solver_ok": true,
+   "closure": "25 = counted 22 + clarify 3 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 22 = solver 0 + counted_excl_solver 22"
+  },
+  "n_denominator": 51,
+  "n_clarify_excluded": 4,
+  "n_unresolved": 0,
+  "n_unresolved_note": "本字段是**任务层**（spec-required 但未产出 spec，含「澄清判错」）；顶层 scorecard.n_unresolved 是**候选层**（category=no_output）。同名不同义，引用时必须写清是哪一层。",
+  "n_unresolved_excluded": 0,
+  "n_notrun_excluded": 0,
+  "n_env_excluded": 0,
+  "n_tasks_total": 55,
+  "denominator_note": "R52：n_counted + clarify + unresolved + notrun + env + unknown = n_tasks_total（层A）；n_counted = n_solver_excluded + n_counted_excl_solver（层B，solver 仍在原始分母内）。n_clarify_excluded 只含 expected_clarifications 题，**不得**混入未收敛/no_output。",
+  "msr_definition": "conditional：分母 = 产出了 spec 且非 expected_clarifications 的题；模型侧无输出记 TSR fail / FPR，不计入 MSR（W5a 原设计，避免双记）。⇒ **跨成绩单比 MSR 前必须先对齐分母与 SFR（R54）**，分母不同时 pct 不得直减、不得据此排名。",
+  "n_no_spec_excluded_ids": [],
+  "failure_class_counts": {
+   "model": 8
+  },
+  "gate_fail_counts": {
+   "fidelity_disp": 4,
+   "spec_fidelity": 4,
+   "pipeline": 4
+  },
+  "per_task": [
+   {
+    "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
+    "msr_pass": null,
+    "denominator": false,
+    "reason": "clarify task (expected_clarifications) — R23: 编造归 FPR，不入 MSR"
+   },
+   {
+    "task_id": "L3_fuselage_barrel_d1800_l2000_str8_frm3",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 231.5,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_fuselage_barrel_d2000_l1600_str8_frm3",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 193.2,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 286.0,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_fuselage_barrel_d2000_l2000_str8_frm3",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 265.3,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 250.3,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox",
+    "msr_pass": null,
+    "denominator": false,
+    "reason": "clarify task (expected_clarifications) — R23: 编造归 FPR，不入 MSR"
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_n_ribs3_chord1000",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 9.8,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_n_ribs3_chord800",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.1,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_n_ribs5_chord800",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 6.6,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_n_ribs7_chord1000",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 9.0,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_n_ribs7_chord800",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.7,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_n_ribs9_chord1000",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 9.6,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_recombination_algorithm3",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.0,
+    "fidelity_dev_pct": 0.0242
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_skin1p5",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.8,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_skin2",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.2,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_skin4",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.6,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_span1600",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.1,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_span2400",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.7,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_span2400_skin2",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.8,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_span3000",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 10.6,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_size_span3000_skin1p5",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 10.9,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_str3",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 11.6,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_str3_T",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 39.5,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_str5",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 13.3,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep10",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.8,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep20",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.0,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep20_taper060",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 11.4,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep30",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.7,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep30_taper080",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.4,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep35",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 9.3,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep40",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 9.0,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_sweep40_taper040",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 20.7,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_taper040",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 20.8,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_taper060",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 11.2,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_taper080",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.4,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_taper090",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.9,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_web1",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": false,
+     "spec_fidelity": false
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.4,
+    "fidelity_dev_pct": 25.896,
+    "failure_class": "model",
+    "failure_gates": {
+     "fidelity_disp": {
+      "field": "scalars.max_disp",
+      "expected": "2.964576 ±1.0%",
+      "actual": "2.196869"
+     },
+     "spec_fidelity": {
+      "field": "spec_fidelity (field-level, mandatory)",
+      "expected": "all graded fields equal (float tol 1e-6)",
+      "actual": "24/26 fields",
+      "n_fail": 2,
+      "n_fields": 26,
+      "failed": [
+       {
+        "field": "extra.end_torque",
+        "expected": 1000000.0,
+        "actual": "<missing>",
+        "pass": false
+       },
+       {
+        "field": "extra.torque_axis_dof",
+        "expected": 3,
+        "actual": "<missing>",
+        "pass": false
+       }
+      ]
+     }
+    },
+    "failure_detail": "scalars.max_disp 2.964576 ±1.0% 2.196869 spec_fidelity (field-level, mandatory) all graded fields equal (float tol 1e-6) 24/26 fields [{\"field\": \"extra.end_torque\", \"expected\": 1000000.0, \"actual\": \"<missing>\", \"pass\": false}, {\"field\": \"extra.torque_axis_dof\", \"expected\": 3, \"actual\": \"<missing>\", \"pass\": false}]"
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_web1_offcentre",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": false,
+     "spec_fidelity": false
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.9,
+    "fidelity_dev_pct": 28.197,
+    "failure_class": "model",
+    "failure_gates": {
+     "fidelity_disp": {
+      "field": "scalars.max_disp",
+      "expected": "3.060804 ±1.0%",
+      "actual": "2.197748"
+     },
+     "spec_fidelity": {
+      "field": "spec_fidelity (field-level, mandatory)",
+      "expected": "all graded fields equal (float tol 1e-6)",
+      "actual": "24/26 fields",
+      "n_fail": 2,
+      "n_fields": 26,
+      "failed": [
+       {
+        "field": "extra.end_torque",
+        "expected": 1000000.0,
+        "actual": "<missing>",
+        "pass": false
+       },
+       {
+        "field": "extra.torque_axis_dof",
+        "expected": 3,
+        "actual": "<missing>",
+        "pass": false
+       }
+      ]
+     }
+    },
+    "failure_detail": "scalars.max_disp 3.060804 ±1.0% 2.197748 spec_fidelity (field-level, mandatory) all graded fields equal (float tol 1e-6) 24/26 fields [{\"field\": \"extra.end_torque\", \"expected\": 1000000.0, \"actual\": \"<missing>\", \"pass\": false}, {\"field\": \"extra.torque_axis_dof\", \"expected\": 3, \"actual\": \"<missing>\", \"pass\": false}]"
+   },
+   {
+    "task_id": "L3_naca4412_wingbox_web2",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": false,
+     "spec_fidelity": false
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 9.7,
+    "fidelity_dev_pct": 26.4441,
+    "failure_class": "model",
+    "failure_gates": {
+     "fidelity_disp": {
+      "field": "scalars.max_disp",
+      "expected": "2.855791 ±1.0%",
+      "actual": "2.100603"
+     },
+     "spec_fidelity": {
+      "field": "spec_fidelity (field-level, mandatory)",
+      "expected": "all graded fields equal (float tol 1e-6)",
+      "actual": "24/26 fields",
+      "n_fail": 2,
+      "n_fields": 26,
+      "failed": [
+       {
+        "field": "extra.end_torque",
+        "expected": 1000000.0,
+        "actual": "<missing>",
+        "pass": false
+       },
+       {
+        "field": "extra.torque_axis_dof",
+        "expected": 3,
+        "actual": "<missing>",
+        "pass": false
+       }
+      ]
+     }
+    },
+    "failure_detail": "scalars.max_disp 2.855791 ±1.0% 2.100603 spec_fidelity (field-level, mandatory) all graded fields equal (float tol 1e-6) 24/26 fields [{\"field\": \"extra.end_torque\", \"expected\": 1000000.0, \"actual\": \"<missing>\", \"pass\": false}, {\"field\": \"extra.torque_axis_dof\", \"expected\": 3, \"actual\": \"<missing>\", \"pass\": false}]"
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d20",
+    "msr_pass": null,
+    "denominator": false,
+    "reason": "clarify task (expected_clarifications) — R23: 编造归 FPR，不入 MSR"
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d20_cfrp090s",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "pipeline": false
+    },
+    "pipeline_rc": 1,
+    "wall_seconds": 2.4,
+    "fidelity_dev_pct": null,
+    "failure_class": "model",
+    "failure_gates": {
+     "pipeline": {
+      "field": "run_pipeline",
+      "expected": "rc=0",
+      "actual": "rc=1",
+      "detail": "  ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp090s\\open_hole_tension_layup_400x200\\open_hole_tension_layup_400x200.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp090s\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+     }
+    },
+    "failure_detail": "run_pipeline rc=0 rc=1   ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp090s\\open_hole_tension_layup_400x200\\open_hole_tension_layup_400x200.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp090s\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "pipeline": false
+    },
+    "pipeline_rc": 1,
+    "wall_seconds": 2.1,
+    "fidelity_dev_pct": null,
+    "failure_class": "model",
+    "failure_gates": {
+     "pipeline": {
+      "field": "run_pipeline",
+      "expected": "rc=0",
+      "actual": "rc=1",
+      "detail": "    ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s\\open_hole_layup_tension_400x200\\open_hole_layup_tension_400x200.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+     }
+    },
+    "failure_detail": "run_pipeline rc=0 rc=1     ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s\\open_hole_layup_tension_400x200\\open_hole_layup_tension_400x200.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "pipeline": false
+    },
+    "pipeline_rc": 1,
+    "wall_seconds": 2.2,
+    "fidelity_dev_pct": null,
+    "failure_class": "model",
+    "failure_gates": {
+     "pipeline": {
+      "field": "run_pipeline",
+      "expected": "rc=0",
+      "actual": "rc=1",
+      "detail": "**\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s_d40\\open_hole_tension_layup_400x200\\open_hole_tension_layup_400x200.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s_d40\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+     }
+    },
+    "failure_detail": "run_pipeline rc=0 rc=1 **\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s_d40\\open_hole_tension_layup_400x200\\open_hole_tension_layup_400x200.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s_d40\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d20_cfrpqi",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "pipeline": false
+    },
+    "pipeline_rc": 1,
+    "wall_seconds": 1.9,
+    "fidelity_dev_pct": null,
+    "failure_class": "model",
+    "failure_gates": {
+     "pipeline": {
+      "field": "run_pipeline",
+      "expected": "rc=0",
+      "actual": "rc=1",
+      "detail": "      ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrpqi\\open_hole_layup_tension_400x200\\open_hole_layup_tension_400x200.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrpqi\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+     }
+    },
+    "failure_detail": "run_pipeline rc=0 rc=1       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrpqi\\open_hole_layup_tension_400x200\\open_hole_layup_tension_400x200.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrpqi\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d20_offcentre",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 8.5,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d40",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.8,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d40_offcentre",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 7.6,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_open_hole_panel_400x200_d50",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 11.6,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_open_hole_panel_600x300_d30",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 20.5,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_open_hole_panel_600x300_d60",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 14.9,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_stiffened_panel_600x600",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 215.4,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_stiffened_panel_600x600_str3",
+    "msr_pass": null,
+    "denominator": false,
+    "reason": "clarify task (expected_clarifications) — R23: 编造归 FPR，不入 MSR"
+   },
+   {
+    "task_id": "L3_stiffened_panel_800x600",
+    "msr_pass": true,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": true,
+     "spec_fidelity": true
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 109.4,
+    "fidelity_dev_pct": 0.0
+   },
+   {
+    "task_id": "L3_stiffened_panel_800x600_str3",
+    "msr_pass": false,
+    "denominator": true,
+    "gates": {
+     "mesh_quality": true,
+     "semantics": true,
+     "fidelity_disp": false,
+     "spec_fidelity": false
+    },
+    "pipeline_rc": 0,
+    "wall_seconds": 78.3,
+    "fidelity_dev_pct": 47.5179,
+    "failure_class": "model",
+    "failure_gates": {
+     "fidelity_disp": {
+      "field": "scalars.max_disp",
+      "expected": "0.028976 ±1.0%",
+      "actual": "0.042745"
+     },
+     "spec_fidelity": {
+      "field": "spec_fidelity (field-level, mandatory)",
+      "expected": "all graded fields equal (float tol 1e-6)",
+      "actual": "12/14 fields",
+      "n_fail": 2,
+      "n_fields": 14,
+      "failed": [
+       {
+        "field": "params.length",
+        "expected": 800.0,
+        "actual": 600,
+        "pass": false
+       },
+       {
+        "field": "params.width",
+        "expected": 600.0,
+        "actual": 800,
+        "pass": false
+       }
+      ]
+     }
+    },
+    "failure_detail": "scalars.max_disp 0.028976 ±1.0% 0.042745 spec_fidelity (field-level, mandatory) all graded fields equal (float tol 1e-6) 12/14 fields [{\"field\": \"params.length\", \"expected\": 800.0, \"actual\": 600, \"pass\": false}, {\"field\": \"params.width\", \"expected\": 600.0, \"actual\": 800, \"pass\": false}]"
+   }
+  ]
+ },
+ "msr": "43/51",
+ "msr_pct": 84.3
 }
