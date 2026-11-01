@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-01T22:48:52+08:00",
- "source_head": "5635232679dce458b1d5ea22da336d7f2dd63c17",
+ "generated_at": "2026-11-01T23:33:07+08:00",
+ "source_head": "f5aec2817332949ade4778ec2cad03cc243026a3",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 2334,
- "bytes_total": 89468305,
- "n_keep": 1903,
- "bytes_keep": 14828297,
+ "n_total": 2342,
+ "bytes_total": 89575603,
+ "n_keep": 1911,
+ "bytes_keep": 14934488,
  "categories": {
   "KEEP:根目录仓库配置": {
    "n": 2,
@@ -13,7 +13,7 @@
   },
   "内部记忆/应用": {
    "n": 27,
-   "bytes": 572663
+   "bytes": 573770
   },
   "根目录内部材料": {
    "n": 46,
@@ -21,7 +21,7 @@
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
-   "bytes": 3718049
+   "bytes": 3723114
   },
   "KEEP:根目录必需": {
    "n": 3,
@@ -36,8 +36,8 @@
    "bytes": 51098052
   },
   "KEEP:代码与证据": {
-   "n": 1791,
-   "bytes": 11077041
+   "n": 1799,
+   "bytes": 11178167
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -218,6 +218,7 @@
   "feagpt_repro/_f3_public_exempt_selftest.py",
   "feagpt_repro/_f9_artifact_freshness.py",
   "feagpt_repro/_gate3_t1.log",
+  "feagpt_repro/_l27_degenerate_scan.py",
   "feagpt_repro/_m4_probe/README.md",
   "feagpt_repro/_m4_probe/bad.json",
   "feagpt_repro/_manifest_b6.log",
@@ -1766,6 +1767,7 @@
   "feagpt_repro/reports/archive/negative_controls_68.json",
   "feagpt_repro/reports/archive/negative_controls_69.json",
   "feagpt_repro/reports/archive/negative_controls_70.json",
+  "feagpt_repro/reports/archive/negative_controls_71.json",
   "feagpt_repro/reports/baseline_scorecard_L1_smoke.json",
   "feagpt_repro/reports/baseline_scorecard_L3_v4.json",
   "feagpt_repro/reports/baseline_scorecard_L3_v5_rescore.json",
@@ -1819,6 +1821,11 @@
   "feagpt_repro/reports/diagnostics/f7_attr_evidence.json",
   "feagpt_repro/reports/diagnostics/gen_v6c_dsv4pro_run.log",
   "feagpt_repro/reports/diagnostics/judge_diff_a13d.json",
+  "feagpt_repro/reports/diagnostics/l27_scan_deg_family.json",
+  "feagpt_repro/reports/diagnostics/l27_scan_deg_global.json",
+  "feagpt_repro/reports/diagnostics/l27_scan_real.json",
+  "feagpt_repro/reports/diagnostics/l27_scan_resid_k1.json",
+  "feagpt_repro/reports/diagnostics/l27_scan_resid_k2.json",
   "feagpt_repro/reports/diagnostics/model_diff_v6c_dsv4pro.json",
   "feagpt_repro/reports/diagnostics/model_diff_v6c_dsv4pro.md",
   "feagpt_repro/reports/diagnostics/model_diff_v6c_p2_glm_vs_ds.json",
@@ -1879,6 +1886,7 @@
   "feagpt_repro/reports/diagnostics/task_f3_report.md",
   "feagpt_repro/reports/diagnostics/task_f7_contract.md",
   "feagpt_repro/reports/diagnostics/task_f7_report.md",
+  "feagpt_repro/reports/diagnostics/task_l27_report.md",
   "feagpt_repro/reports/diagnostics/task_p1a_contract.md",
   "feagpt_repro/reports/diagnostics/task_prompt_schema_align_contract.md",
   "feagpt_repro/reports/diagnostics/task_prompt_schema_align_report.md",
@@ -1895,7 +1903,7 @@
   "feagpt_repro/reports/l2_scores_v7_glm.json",
   "feagpt_repro/reports/msr_l3_v4.json",
   "feagpt_repro/reports/msr_l3_v5_rescore.json",
-  "feagpt_repro/reports/negative_controls_71.json",
+  "feagpt_repro/reports/negative_controls_72.json",
   "feagpt_repro/reports/papers/SHA256SUMS",
   "feagpt_repro/reports/papers/nl_human_v4.jsonl",
   "feagpt_repro/reports/papers/nl_human_v5.jsonl",
@@ -2736,6 +2744,30 @@
   },
   "feagpt_repro/reports/diagnostics/d6_bundle_evidence.json": {
    "n": 2,
+   "markers": [
+    "{{USER}}"
+   ]
+  },
+  "feagpt_repro/reports/diagnostics/l27_scan_deg_family.json": {
+   "n": 1,
+   "markers": [
+    "{{USER}}"
+   ]
+  },
+  "feagpt_repro/reports/diagnostics/l27_scan_deg_global.json": {
+   "n": 1,
+   "markers": [
+    "{{USER}}"
+   ]
+  },
+  "feagpt_repro/reports/diagnostics/l27_scan_resid_k1.json": {
+   "n": 1,
+   "markers": [
+    "{{USER}}"
+   ]
+  },
+  "feagpt_repro/reports/diagnostics/l27_scan_resid_k2.json": {
+   "n": 1,
    "markers": [
     "{{USER}}"
    ]
