@@ -1,0 +1,56 @@
+{
+ "task_id": "L3_stiffened_panel_600x600",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "prompt_sha256": "73e779808d67cdadd441fc0be961005426386ac2a11f8a256f4c62896081fbd8",
+ "clarify": null,
+ "spec": {
+  "name": "stiffened_panel_plate_600_pressure",
+  "description": "600x600x2mm 铝 2024-T3 四边简支素板，受 0.0001 MPa 均布面压（-z 方向）。",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "stiffened_panel",
+   "params": {
+    "length": 600,
+    "width": 600,
+    "thickness": 2,
+    "n_stringers": 0
+   }
+  },
+  "mesh": {
+   "size_chord": 3,
+   "size_span": 3
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.0001,
+   "direction": [
+    0,
+    0,
+    -1
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/bc 不允许的键 \"edge_support\"，请删除。bc 允许键: root_surface/clamp（如 {\"root_surface\":\"root\",\"clamp\":true}）"
+   ]
+  }
+ ],
+ "raw_len": 705
+}

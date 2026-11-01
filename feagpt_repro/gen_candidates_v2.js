@@ -145,6 +145,20 @@ async function main() {
   const only = (get('--only', '') || '').split(',').filter(Boolean);
   // T-A13a：L2 呈现开关（默认关 = 与旧行为一致；开了才遮 name）
   const MASK_NAME = argv.includes('--mask-name');
+  // ---------------------------------------------------------------------
+  // T-PSA（2026-11-01）：影子 prompt 入口。
+  // ★ 只给 L3 用，**不改上面的 SYS 常量一个字节** —— 常量 sha 是 R53/S-39 的锚点，
+  //   改常量会让四份 prompt-v2 代成绩单立刻与源码不等（S-39 必红）。
+  //   本入口用于「先量化收益、后决定是否正式切换」：不传参时行为与旧版逐字节一致。
+  // ★ 不接 L2：L2 的正确做法是 SYS + 追加段，用外部文件会把追加段丢掉 ⇒ 直接拒。
+  // ---------------------------------------------------------------------
+  const sysFile = get('--sys-file', '');
+  let SYS_FROM_FILE = null;
+  if (sysFile) {
+    SYS_FROM_FILE = fs.readFileSync(sysFile, 'utf8');
+    console.log(`[影子 prompt] ${sysFile} sha256=${crypto.createHash('sha256')
+      .update(SYS_FROM_FILE, 'utf8').digest('hex').slice(0, 16)}…（SYS 常量未变）`);
+  }
   fs.mkdirSync(outDir, { recursive: true });
 
   const ajv = new Ajv({ allErrors: true, strict: false });
@@ -169,14 +183,20 @@ async function main() {
     sel = tasks.filter(t => only.includes(t.task_id));
   }
   sel = sel.slice(0, limit);
+  if (SYS_FROM_FILE && sel.some(t => t.input_level === 'L2')) {
+    console.error('--sys-file 不能用于 L2（会把 L2 追加段丢掉）⇒ 请用 --levels L3 或 L1');
+    process.exit(2);
+  }
   console.log(`生成 ${sel.length} 条候选（levels=${levels} splits=${splits.length ? splits : '全部'}, max_turns=${maxTurns}）`);
 
   for (const t of sel) {
     const outFile = path.join(outDir, `${t.task_id}.json`);
     if (fs.existsSync(outFile)) { console.log(`跳过（已存在）: ${t.task_id}`); continue; }
     process.stdout.write(`生成 ${t.task_id} … `);
-    const sysPrompt = t.input_level === 'L2' ? SYS_L2 : SYS;
-    const promptSha = t.input_level === 'L2' ? PROMPT_SHA_L2 : PROMPT_SHA;
+    const sysPrompt = SYS_FROM_FILE || (t.input_level === 'L2' ? SYS_L2 : SYS);
+    const promptSha = SYS_FROM_FILE
+      ? crypto.createHash('sha256').update(SYS_FROM_FILE, 'utf8').digest('hex')
+      : (t.input_level === 'L2' ? PROMPT_SHA_L2 : PROMPT_SHA);
     const messages = [{ role: 'system', content: sysPrompt },
                       { role: 'user', content: buildUser(t, MASK_NAME) }];
     const valHistory = [];

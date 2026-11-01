@@ -888,6 +888,70 @@ hit = [a for a in al if a in text]  # ★ a in text —— 无边界
 **这是错的**，探针 P6 当场推翻（假红修复会让数字**上升**）。⇒ 任何「这次改动只会更严」的直觉都要用探针证伪，
 **双向性**是这类通道的常态。
 
+---
+
+### N-29（**高，4 条 CFRP 题结构性不可解**）`schema_task.json` 把 `layup` 声明成 `number`，与 gold 真值（dict）冲突 ⇒ 无解闭环
+
+**发现于** T-PSA（prompt 与 schema 对齐）执行途中，2026-11-01。**与 T-PSA 不是同一件事**，方向相反：T-PSA 是让 prompt 服从 schema，本条是 schema 自身声明错。
+
+#### 现象
+
+`task_b1kpi_report.md` §4 记「唯一未收敛：`L3_open_hole_panel_400x200_d20_cfrp45s_d40`（C-033），3 轮都卡在 `/structure/params/layup must be number`」。
+本轮把它当单题异常去查，实测是**4 条题 × 2 模型共 8 条全部命中**，不是单题。
+
+#### 三方对照（全部实读）
+
+| 来源 | `layup` 的形态 | 取法 |
+|---|---|---|
+| `schema_task.json:394-396` | `{"type": "number"}` | 直接读 |
+| gold `modeling/open_hole_panel_400x200_d20_cfrp45s_d40/spec.json` | **dict**：`plies[4]{angle,thickness}` + `material{E1,E2,E3,nu12,nu13,nu23,G12,G13,G23,name}` | 直接读 |
+| `tasks.jsonl` 的 8 条 CFRP（L1/L2） | **dict**（8/8） | 直接读 |
+| `gen_candidates_v2.js:34`（SYS prompt） | 教模型写 **dict** | 直接读 |
+| `evaluate.py:100-101` `GRADED_FIELDS['open_hole_panel']` | **含 `layup`** ⇒ `_field_equal` 对 dict 走 `==`，**真判** | 直接读 |
+
+⇒ **照 prompt 写 dict 被 schema 拒；照 schema 写 number 被评分器判 FAIL。两个出口都是错的。**
+
+#### 实测：两条「逃法」，都过闸、都必 FAIL
+
+| 模型 | 4 条候选的最终 `layup` | ajv 重放 | 评分后果 |
+|---|---|---|---|
+| glm v7 | **改成整数**（4 / 4 / 4 / 2）—— 铺层角度与单层厚全丢 | 全部 `ajv=true` | gold 是 dict ⇒ `_field_equal(int, dict)` False ⇒ **spec_fidelity FAIL** |
+| ds v7 | **直接删掉 `layup` 键** | 3 条 `ajv=true`，1 条（`cfrp45s_d40`）`spec=null` 3 轮耗尽 | 单边缺 ⇒ `cv='<missing>'` ⇒ **FAIL** |
+
+⇒ 闸把「写对」判红、把「写错」判绿，模型只能二选一，**4 条题拿 0 分是被 schema 逼出来的，不是能力问题**。
+
+> 口径更正：B1KPI 报告说「唯一未收敛」只对 ds 成立。glm 那 4 条是**收敛到错误答案**（turns 2/2/2/3，全部过闸），不是「没收敛」。两种表现同一个根因。
+
+#### 引入历史（`git log -L394,396`）
+
+`28e66bb`（W4e/W4f 专家第四轮整改）**新增**了这一项：之前 `open_hole_panel.params` 的 properties 里**根本没有 `layup`**。
+加它的目的应是「让 `layup` 出现在 properties 里、免得被 `additionalProperties:false` 拒」——**但类型随手写了 `number`，补了键没补类型**。
+
+#### 同族
+
+与 **N-19**（v1.1 元数据被当判分字段 ⇒ 9 条题不可解）同族：**schema/元数据的一处声明，让题目在结构上不可解，而报告会把它读成「模型不行」**。
+与 N-26（恒真式）也不同族：那条是闸失效判绿，本条是闸**有效但判错对象**。
+
+#### 三个选项
+
+| 选项 | 做法 | 代价 | 风险 |
+|---|---|---|---|
+| **A（最小修 bug）** | `layup` → `{"type": "object"}` | 动约束解码器 ⇒ 4 条题行为变 ⇒ 必须重跑；S-39 链条同样要走 | 低。只松开类型，不放宽 `required`，不会让别的题变容易 |
+| **B（把 layup 子树写全）** | `object` + `required:[plies,material]` + `plies.items.{angle,thickness}` + `material` 10 键（与 prompt 第 34 行逐字一致） | 同上，但约束更紧 | 中。约束越紧，模型越容易在细节上失败 —— 但那时失败是**可归因的**（真·能力问题） |
+| **C（不动，另立单）** | 保持现状 | 零 | 4 条题继续固定拿 0 分，且对外表必须注明「4/64 结构性不可解」，否则 TSR 被低估 |
+
+**明确不可取**：在 prompt 里教模型「`layup` 写数字」——那是把 4 条题正式判死，且与数据集真值矛盾。
+
+#### 建议
+
+1. **选 A**（先让题可解，把「不可解」这个污染项从能力评测里摘出去），**若选 A 后仍大面积失败，再升到 B**。
+2. **必须与 T-PSA 阶段 2 的同一轮重跑合并**：两者都要全量重生成，跑两次是双倍成本。归因仍可分离——`layup` 只影响 4 条 CFRP 题，其余 60 条不含该键，**按族切一刀就能把两处改动的效果分开**。
+3. 无论选哪个，`CLAIMS.md` / 对外表都要先写清「4 条 CFRP 题在旧 schema 下结构性不可解」，否则 C-033 的 TSR 会被当成模型弱项读。
+
+#### 待拍板
+
+**A / B / C，以及是否与 T-PSA 阶段 2 合并重跑。** 未拍板前本文件不动 `schema_task.json` 一个字节。
+
 ## 3. 门禁与工作区实况（本轮 pre-flight 原始结果）
 
 ```

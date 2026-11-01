@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-01T08:35:02+08:00",
- "source_head": "8828aa074415b01cfb53880b8c076bb126bc8584",
+ "generated_at": "2026-11-01T08:50:21+08:00",
+ "source_head": "58625a08ec41646fca9fb36bda069be65d7e35fa",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 1566,
- "bytes_total": 87783496,
- "n_keep": 1135,
- "bytes_keep": 13187605,
+ "n_total": 1577,
+ "bytes_total": 87823459,
+ "n_keep": 1146,
+ "bytes_keep": 13221651,
  "categories": {
   "KEEP:根目录仓库配置": {
    "n": 2,
@@ -13,11 +13,11 @@
   },
   "内部记忆/应用": {
    "n": 27,
-   "bytes": 551365
+   "bytes": 552605
   },
   "根目录内部材料": {
    "n": 46,
-   "bytes": 11135772
+   "bytes": 11140449
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
@@ -36,8 +36,8 @@
    "bytes": 51098052
   },
   "KEEP:代码与证据": {
-   "n": 1023,
-   "bytes": 9450442
+   "n": 1034,
+   "bytes": 9484488
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -232,6 +232,7 @@
   "feagpt_repro/_probe_models.js",
   "feagpt_repro/_probe_overclarify_p1.py",
   "feagpt_repro/_probe_w5b4_fail_fields.py",
+  "feagpt_repro/_psa_build_prompt.py",
   "feagpt_repro/_regress_b6.log",
   "feagpt_repro/_regress_scorecard.py",
   "feagpt_repro/_regress_task_a11a.py",
@@ -432,6 +433,14 @@
   "feagpt_repro/candidates_l2_v7_smoke/L2_open_hole_panel_400x200_d30.json",
   "feagpt_repro/candidates_l2_v7_smoke_masked/L2_naca4412_wingbox.json",
   "feagpt_repro/candidates_l2_v7_smoke_masked/L2_open_hole_panel_400x200_d30.json",
+  "feagpt_repro/candidates_l3_psa_smoke_bplus_glm/L3_fuselage_barrel_d1800_l2000_str8_frm3.json",
+  "feagpt_repro/candidates_l3_psa_smoke_bplus_glm/L3_naca4412_wingbox_n_ribs3_chord1000.json",
+  "feagpt_repro/candidates_l3_psa_smoke_bplus_glm/L3_open_hole_panel_400x200_d20_offcentre.json",
+  "feagpt_repro/candidates_l3_psa_smoke_bplus_glm/L3_stiffened_panel_600x600.json",
+  "feagpt_repro/candidates_l3_psa_smoke_glm/L3_fuselage_barrel_d1800_l2000_str8_frm3.json",
+  "feagpt_repro/candidates_l3_psa_smoke_glm/L3_naca4412_wingbox_n_ribs3_chord1000.json",
+  "feagpt_repro/candidates_l3_psa_smoke_glm/L3_open_hole_panel_400x200_d20_offcentre.json",
+  "feagpt_repro/candidates_l3_psa_smoke_glm/L3_stiffened_panel_600x600.json",
   "feagpt_repro/candidates_l3_v2/L3_fuselage_barrel_d1600_l1600_str8_frm3.json",
   "feagpt_repro/candidates_l3_v2/L3_fuselage_barrel_d1800_l2000_str8_frm3.json",
   "feagpt_repro/candidates_l3_v2/L3_fuselage_barrel_d2000_l1600_str8_frm3.json",
@@ -1114,6 +1123,8 @@
   "feagpt_repro/reports/diagnostics/task_f7_contract.md",
   "feagpt_repro/reports/diagnostics/task_f7_report.md",
   "feagpt_repro/reports/diagnostics/task_p1a_contract.md",
+  "feagpt_repro/reports/diagnostics/task_prompt_schema_align_contract.md",
+  "feagpt_repro/reports/diagnostics/task_prompt_schema_align_report.md",
   "feagpt_repro/reports/diagnostics/task_r1_contract.md",
   "feagpt_repro/reports/diagnostics/task_r1_report.md",
   "feagpt_repro/reports/diagnostics/w5b4_defect_analysis_v6b.md",
