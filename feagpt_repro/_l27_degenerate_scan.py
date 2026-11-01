@@ -41,11 +41,11 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
-from score_baseline import (clarify_key_pool, clarify_mention_split,      # noqa: E402
-                            judge_clarify_field_level)
+from score_baseline import (CLARIFY_DEGEN_KMAX, clarify_key_pool,        # noqa: E402
+                            clarify_mention_split, judge_clarify_field_level)
 
 TASKS = os.path.join(HERE, 'tasks', 'tasks.jsonl')
-KMAX = 3          # 见文件头「阈值依据」；改它必须同时改自检的边界两向
+KMAX = CLARIFY_DEGEN_KMAX   # 阈值只有一处定义（score_baseline）；改它必须同时改自检边界两向
 
 
 def load_tasks(path=TASKS):
@@ -80,14 +80,15 @@ def scan(cand_dir, tasks, pool, kmax=KMAX, label=None):
         exp = list(t.get('expected_clarifications') or [])
         if not exp:
             continue                      # 无缺项的题不属 L2-7
-        ok_old, _ = judge_clarify_field_level(txt, t)
+        ok_old, _ = judge_clarify_field_level(txt, t, degen_check=False)   # 接入前的口径
+        ok_new, _ = judge_clarify_field_level(txt, t, degen_check=True)    # 接入后的口径
         K, Q, ctx = clarify_mention_split(txt, pool)
         degen = len(K) >= kmax
         rows.append({'task_id': t['task_id'], 'family': t['family'],
                      'expected': exp, 'K': K, 'Q': Q, 'ctx': ctx,
                      'nK': len(K), 'degen': degen,
                      'pass_old': ok_old,
-                     'pass_new': ok_old and not degen,
+                     'pass_new': ok_new,
                      'text': txt})
         hist[len(K)] += 1
     flip = [r for r in rows if r['pass_old'] and not r['pass_new']]

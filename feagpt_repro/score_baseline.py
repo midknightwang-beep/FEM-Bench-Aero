@@ -351,6 +351,33 @@ def clarify_key_pool(tasks):
     return sorted(pool)
 
 
+# 穷举式退化判据的阈值（T-L27）。**唯一的定义处** —— `_l27_degenerate_scan.py` 从这里 import，
+# 不得各自写一个 3（T-D3：规则只有一处，第二处实现就是 bug）。
+CLARIFY_DEGEN_KMAX = 3
+
+_DEFAULT_TASKS = os.path.join(HERE, 'tasks', 'tasks.jsonl')
+_POOL_CACHE = {'path': None, 'pool': []}
+
+
+def _clarify_pool_cached(tasks_path=None):
+    """判分用的跨题键池（延迟加载 + 按路径缓存）。
+
+    ★ 为什么要跨全部任务：**「有没有穷举」只有跨题才可判**。单看一条题，无法区分
+      「这个键名是本题缺项」还是「这个键名是别处的常见参数、被顺带押上了」。
+    ★ 读不到任务文件时返回 []（判据静默不生效），**不抛异常**：判分主路径不应因
+      一个加固判据的辅助文件缺失而崩掉。
+    """
+    p = tasks_path or _DEFAULT_TASKS
+    if _POOL_CACHE['path'] != p:
+        try:
+            rows = [json.loads(l) for l in open(p, encoding='utf-8') if l.strip()]
+            _POOL_CACHE['pool'] = clarify_key_pool(rows)
+        except Exception:
+            _POOL_CACHE['pool'] = []
+        _POOL_CACHE['path'] = p
+    return _POOL_CACHE['pool']
+
+
 def clarify_mention_split(text, pool):
     """把文本拆成「提及」与「索要」。返回 (K, Q, ctx)。
 
@@ -397,8 +424,13 @@ def clarify_mention_split(text, pool):
     return K, Q, ctx
 
 
-def judge_clarify_field_level(text, task):
+def judge_clarify_field_level(text, task, degen_check=True):
     """字段级澄清判分（R17）。返回 (ok, detail)。
+
+    ★ `degen_check=False` 只关掉 T-L27 的**穷举式退化**判据，其余一切不变。
+      存在的理由：任何「加固会不会改成绩」的问题都必须能**当场量**，
+      而量法只能是「同一段文本走两遍判据」——不能让问的人自己复制一份旧实现来比。
+      生产调分一律用默认值 True（`score_l2` / `judge_l3_candidate` 都不传这个参数）。
 
     规则（预注册于 RUBRIC.md）：
       - 必须【命中 expected 字段的别名】（clarify_aliases[field] 之一，含正确键名或语义短语）；
@@ -442,6 +474,25 @@ def judge_clarify_field_level(text, task):
     detail['alias_hits'] = per_field
     if not ok_all:
         detail['note'] = '存在 expected 字段未被任何别名命中'
+        return False, detail
+
+    # ★ T-L27（2026-11-01，老王拍板接入）：**穷举式退化**判据。
+    #   上面旧判据只要求「命中 expected」；而 expected 的键名来自一个**跨题可见的小池**
+    #   （13 个纯 ASCII 键名），把池全列一遍必然命中 ⇒ 2026-11-01 实测一个完全不看题面的
+    #   固定字符串在 L2 拿 64/64 = 100%（按族列举同样 100%，最小族池只有 3）。
+    #   判据：命中 >= CLARIFY_DEGEN_KMAX 个池内键 ⇒ 视为「放弃针对性的穷举」，判 FAIL。
+    #   阈值依据：真实候选 138 条里当前 PASS 的 |K| 上界 = 2；最小族池 = 3
+    #   ⇒ 3 = 实测上界 + 1，且恰好等于「列满最小族」的下界。改它必须同时改
+    #   `_l27_degenerate_scan.py --self-test` 的两条边界向（否则会静默改历史成绩）。
+    pool = _clarify_pool_cached()
+    if degen_check and pool:
+        K, _Q, _ctx = clarify_mention_split(text, pool)
+        if len(K) >= CLARIFY_DEGEN_KMAX:
+            detail['mentioned_keys'] = K
+            detail['note'] = ('澄清文本列举了 %d 个跨题已知键名（>= %d）⇒ 穷举式退化回答'
+                              '（T-L27；判据只要求命中 expected，不要求把候选池全列一遍）'
+                              % (len(K), CLARIFY_DEGEN_KMAX))
+            return False, detail
     return ok_all, detail
 
 

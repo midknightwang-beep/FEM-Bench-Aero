@@ -2472,6 +2472,68 @@ def main():
     print(f"  [{'ok ' if _f9_ok else 'BAD!'}] NC-71 产物新鲜度闸可证伪（F-9）                        "
           f"{_f9_detail}")
 
+    # NC-72（T-L27）：**L2 的穷举式退化判据必须既能红、又真的接在判分上**。
+    # 起因：2026-11-01 实测一个完全不看题面的固定字符串（把跨题 13 个键名写一句）在 L2
+    #   拿 64/64 = 100%；按族穷举同样 100%（最小族池只有 3）。判据 = `|K| >= CLARIFY_DEGEN_KMAX`。
+    # ★ 四向，缺一不可：
+    #   ① 原样自检 6/6；
+    #   ② 阈值放宽一格（kmax-1）⇒ 自检里「|K|=kmax-1 不得红」那一向必须 BAD
+    #      —— 这一向守的是「别把阈值悄悄改成 2 去改历史成绩」；
+    #   ③ 阈值放宽到永不触发（999）⇒ 自检里三条「必须红」的向必须 BAD；
+    #   ④ **判据真的接在判分上**：同一段穷举文本，degen_check=True 判 False、
+    #      degen_check=False 判 True。只跑检测器绿 = 只证明有个工具，不证明判分变了。
+    #   ⑤ 反向（防过度收紧）：|K|=2 的真实形态，两个口径都必须 True。
+    _l27_ok = False
+    _l27_detail = ''
+    try:
+        import io as _io72
+        import contextlib as _ctx72
+        import _l27_degenerate_scan as _l27
+        from score_baseline import (CLARIFY_DEGEN_KMAX, clarify_key_pool,
+                                    judge_clarify_field_level)
+
+        def _run_l27(kmax):
+            _b = _io72.StringIO()
+            with _ctx72.redirect_stdout(_b):
+                _rc = _l27.self_test(kmax)
+            return _rc, _b.getvalue()
+
+        _rc1, _o1 = _run_l27(CLARIFY_DEGEN_KMAX)
+        _rc2, _o2 = _run_l27(CLARIFY_DEGEN_KMAX - 1)
+        _rc3, _o3 = _run_l27(999)
+        _bad = lambda s: s.count('[BAD!]')
+
+        _tasks72 = _l27.load_tasks()
+        _pool72 = clarify_key_pool(_tasks72)
+        _t72 = {'task_id': 'nc72', 'expected_clarifications': [_pool72[0]],
+                'clarify_aliases': {}, 'clarify_wrong_keys': []}
+        _deg_txt = '请提供以下参数：' + '、'.join(_pool72) + '，缺一不可。'
+        _real_txt = '题面给出了 %s，但缺少 %s，请提供。' % (_pool72[1], _pool72[0])
+        _on, _ = judge_clarify_field_level(_deg_txt, _t72, degen_check=True)
+        _off, _ = judge_clarify_field_level(_deg_txt, _t72, degen_check=False)
+        _ron, _ = judge_clarify_field_level(_real_txt, _t72, degen_check=True)
+        _roff, _ = judge_clarify_field_level(_real_txt, _t72, degen_check=False)
+
+        _l27_ok = (_rc1 == 0 and '6/6' in _o1 and _bad(_o1) == 0
+                   and _rc2 != 0 and _bad(_o2) >= 1
+                   and _rc3 != 0 and _bad(_o3) >= 1
+                   and (_on is False) and (_off is True)
+                   and (_ron is True) and (_roff is True))
+        _l27_detail = ('原样 rc=%d/6向BAD%d；kmax-1 rc=%d/BAD%d；kmax=999 rc=%d/BAD%d；'
+                       '穷举文本 新判=%-5s 旧判=%-5s；真实|K|=2 新判=%-5s 旧判=%-5s'
+                       % (_rc1, _bad(_o1), _rc2, _bad(_o2), _rc3, _bad(_o3),
+                          _on, _off, _ron, _roff))
+    except Exception as _e72:
+        _l27_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e72,)
+    results.append({'id': 'NC-72',
+                    'desc': 'L2 穷举式退化判据可证伪（T-L27）：自检 6/6，阈值两向变异须红，'
+                            '同一穷举文本两个口径须一个 False 一个 True',
+                    'expect': 'rc=0/6向；kmax-1 与 999 两向均红；穷举文本 新判False/旧判True；'
+                              '|K|=2 真实形态两口径都 True',
+                    'actual': _l27_detail, 'ok': _l27_ok})
+    print(f"  [{'ok ' if _l27_ok else 'BAD!'}] NC-72 L2 穷举式退化判据可证伪（T-L27）               "
+          f"{_l27_detail}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],
