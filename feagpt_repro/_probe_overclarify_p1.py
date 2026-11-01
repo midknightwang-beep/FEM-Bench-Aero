@@ -45,23 +45,14 @@ def load_tasks():
 
 
 def known_keys(tasks):
-    ks = set()
-    for r in tasks.values():
-        for k in (r.get('expected_clarifications') or []):
-            ks.add(k)
-        for k in (r.get('clarify_wrong_keys') or []):
-            ks.add(k)
-        al = r.get('clarify_aliases') or {}
-        vals = []
-        if isinstance(al, dict):
-            for v in al.values():
-                vals.extend(v if isinstance(v, list) else [v])
-        elif isinstance(al, list):
-            vals = al
-        for a in vals:
-            if isinstance(a, str):
-                ks.add(a)
-    return sorted(k for k in ks if re.fullmatch(r'[A-Za-z0-9_]+', k))
+    """跨题已知键池（纯 ASCII）。
+
+    ★ T-L27（2026-11-01）：本函数原先是这里的一份**拷贝**，判分侧（`score_baseline`）
+      在 T-L27 里也需要同一个池 ⇒ 两处实现会漂移。改为直接调 `clarify_key_pool`，
+      规则只有一处。行为等价（同样的三处来源 + 同样的 ASCII 过滤），已用重跑产物逐字节比对。
+    """
+    from score_baseline import clarify_key_pool
+    return clarify_key_pool(list(tasks.values()))
 
 
 def cand_text(c):

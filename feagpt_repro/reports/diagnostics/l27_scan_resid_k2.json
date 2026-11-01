@@ -1,0 +1,36 @@
+{
+ "kmax": 3,
+ "pool": [
+  "hole_d",
+  "length",
+  "n_frames",
+  "n_ribs",
+  "n_stringers",
+  "n_stringers_per_skin",
+  "rib_thickness",
+  "skin_thickness",
+  "stringer_height",
+  "sweep_deg",
+  "thickness",
+  "tip_chord_ratio",
+  "width"
+ ],
+ "pool_size": 13,
+ "results": [
+  {
+   "label": "resid_k2",
+   "cand_dir": "C:\\Users\\22207\\AppData\\Local\\Temp/deg_k2",
+   "kmax": 3,
+   "pool_size": 13,
+   "n_scored": 64,
+   "nK_hist": {
+    "2": 64
+   },
+   "n_degen": 0,
+   "n_pass_old": 25,
+   "n_pass_new": 25,
+   "n_flip": 0,
+   "flips": []
+  }
+ ]
+}

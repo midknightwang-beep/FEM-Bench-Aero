@@ -295,6 +295,108 @@ def _n_questions(cand):
         return 1
 
 
+# ---------------------------------------------------------------------------
+# T-L27（2026-11-01）：「提及」≠「索要」的判定 —— 判据只许一处实现
+# ---------------------------------------------------------------------------
+# 背景：`judge_clarify_field_level` 只要求「文本里出现 expected 键名」且「不含 wrong_keys」。
+# L2 的 64 条**既无 `clarify_aliases` 也无 `clarify_wrong_keys`** ⇒ 该判据实际退化为
+# 「13 个键名里出现该题那一个」⇒ **一个完全不看题面的固定字符串可拿 64/64 = 100%**
+# （T-L27 实测，见 reports/diagnostics/task_l27_report.md）。
+#
+# 抗退化的正确方向不是「多问就罚」（P-1 已裁定：会误伤「题面给了 X 却缺 Y」这种好澄清），
+# 而是把「提及」与「索要」分开，再要求「被索要的键不得是额外键」。
+_ASCII_ID = re.compile(r'[A-Za-z0-9_]+$')
+
+# 索要谓语：出现即表示「该句在向用户要东西」
+ASK_CUES = ('缺失', '缺少', '缺', '未给出', '未提供', '未指定', '未明确', '没有给出',
+            '请提供', '请给出', '请补充', '请确认', '请明确', '请说明', '请补', '需要',
+            '补充', '提供', '给出', '确认', '告我', '告诉')
+# 上下文谓语：只说明「题面给了什么」，不是索要。**必须排在 ASK 之前**按位置切，
+# 不能先剔词再判（「题面给出了 A 但缺少 B」同句里两类都有）。
+CTX_CUES = ('给出了', '已给出', '已提供', '题面给', '已包含', '已知', '给定了', '已含', '给定',
+            '给了')
+
+# 分句符：**不含顿号**。退化解「请提供：a、b、c」若按顿号切，会变成三个无谓语分句 ⇒ Q 空 ⇒ 漏判。
+# ★ 括号也算分句符：真实候选常写「…未给出（题面给出了 A/B/C，但未给根数），请提供 D」——
+#   括号内是上下文、括号外才是索要。不切括号时，遮蔽掉「给出了」后句子仍被括号外的
+#   「未给出」占住，括号内的 A/B/C 会被误算进 Q（T-L27 实测 1 条假阳性）。
+_CLAUSE_SEP = re.compile(r'[。；;|｜，,\n（）()【】]')
+
+
+def clarify_key_pool(tasks):
+    """跨题已知键池（**纯 ASCII**）。
+
+    来源 = 全部 task 的 `expected_clarifications` ∪ `clarify_wrong_keys` ∪ `clarify_aliases`。
+    中文别名一律过滤（R69/R70 边界）：中文没有 token 边界，「提到了某个中文词」无法与
+    「解释性措辞」区分（P-1 实测 4/4 假阳性）。池只用来判「这个 ASCII 标识符出现了没有」。
+    """
+    pool = set()
+    for t in tasks:
+        for k in (t.get('expected_clarifications') or []):
+            if isinstance(k, str) and _ASCII_ID.fullmatch(k):
+                pool.add(k)
+        for k in (t.get('clarify_wrong_keys') or []):
+            if isinstance(k, str) and _ASCII_ID.fullmatch(k):
+                pool.add(k)
+        al = t.get('clarify_aliases') or {}
+        vals = []
+        if isinstance(al, dict):
+            for v in al.values():
+                vals.extend(v if isinstance(v, list) else [v])
+        elif isinstance(al, list):
+            vals = al
+        for v in vals:
+            if isinstance(v, str) and _ASCII_ID.fullmatch(v):
+                pool.add(v)
+    return sorted(pool)
+
+
+def clarify_mention_split(text, pool):
+    """把文本拆成「提及」与「索要」。返回 (K, Q, ctx)。
+
+    K   = 文本中按 token 边界命中的池内键（全部提及）
+    Q   = 只出现在**索要位置之后**的键（真正被要的）
+    ctx = 出现在上下文位置的键（题面已给、被引用来说明矛盾的那批）
+
+    位置切分规则：每个分句先把**上下文谓语等长遮蔽**（`给出了`/`已提供`/`题面给`… → 空格），
+    再在遮蔽后的串里找**最靠左**的索要谓语位置 p；键的出现位置 > p ⇒ 进 Q，否则进 ctx。
+    无索要谓语的分句 ⇒ 该句所有键只进 ctx。
+    ★ 为什么要遮蔽而不是「先剔上下文词再判」：`ASK_CUES` 里含 `给出`/`提供`/`确认`，
+      而「题面**给出了** A」正好含 `给出` —— 不遮蔽的话整句会被当成「在索要 A」，
+      把「指出题面矛盾」这种**好澄清**判成多问（P-1 的 4 条假阳性就是这一类）。
+    ★ 遮蔽用等长空格，位置坐标不变 ⇒ 键位置与谓语位置可比。
+    """
+    K, Q, ctx = [], [], []
+    for cl in _CLAUSE_SEP.split(text or ''):
+        if not cl.strip():
+            continue
+        hits = [(m.start(), k) for k in pool
+                for m in [re.search(r'(?<![A-Za-z0-9_])' + re.escape(k) + r'(?![A-Za-z0-9_])', cl)]
+                if m]
+        if not hits:
+            continue
+        hits.sort()
+        for _, k in hits:
+            if k not in K:
+                K.append(k)
+        masked = cl
+        for c in sorted(CTX_CUES, key=len, reverse=True):
+            if c in masked:
+                masked = masked.replace(c, ' ' * len(c))
+        asks = [masked.find(c) for c in ASK_CUES if c in masked]
+        p = min(asks) if asks else -1
+        if p < 0:
+            for _, k in hits:
+                if k not in ctx:
+                    ctx.append(k)
+            continue
+        for pos, k in hits:
+            tgt = Q if pos > p else ctx
+            if k not in tgt:
+                tgt.append(k)
+    return K, Q, ctx
+
+
 def judge_clarify_field_level(text, task):
     """字段级澄清判分（R17）。返回 (ok, detail)。
 

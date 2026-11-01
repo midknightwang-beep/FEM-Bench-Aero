@@ -1,0 +1,1381 @@
+{
+ "kmax": 3,
+ "pool": [
+  "hole_d",
+  "length",
+  "n_frames",
+  "n_ribs",
+  "n_stringers",
+  "n_stringers_per_skin",
+  "rib_thickness",
+  "skin_thickness",
+  "stringer_height",
+  "sweep_deg",
+  "thickness",
+  "tip_chord_ratio",
+  "width"
+ ],
+ "pool_size": 13,
+ "results": [
+  {
+   "label": "deg_global",
+   "cand_dir": "C:\\Users\\22207\\AppData\\Local\\Temp/deg_g",
+   "kmax": 3,
+   "pool_size": 13,
+   "n_scored": 64,
+   "nK_hist": {
+    "13": 64
+   },
+   "n_degen": 64,
+   "n_pass_old": 64,
+   "n_pass_new": 0,
+   "n_flip": 64,
+   "flips": [
+    {
+     "task_id": "L2_fuselage_barrel_d1600_l1600_str8_frm3",
+     "expected": [
+      "n_frames"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_fuselage_barrel_d1800_l2000_str8_frm3",
+     "expected": [
+      "thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_fuselage_barrel_d2000_l1600_str8_frm3",
+     "expected": [
+      "n_stringers"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_fuselage_barrel_d2000_l1800_str8_frm3",
+     "expected": [
+      "n_stringers"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_fuselage_barrel_d2000_l2000_str12_frm4",
+     "expected": [
+      "n_frames"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_fuselage_barrel_d2000_l2000_str8_frm3",
+     "expected": [
+      "thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+     "expected": [
+      "n_stringers"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox",
+     "expected": [
+      "rib_thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_n_ribs3_chord1000",
+     "expected": [
+      "n_stringers_per_skin"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_n_ribs3_chord800",
+     "expected": [
+      "stringer_height"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_n_ribs5_chord800",
+     "expected": [
+      "tip_chord_ratio"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_n_ribs6_chord1000",
+     "expected": [
+      "sweep_deg"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_n_ribs7_chord1000",
+     "expected": [
+      "sweep_deg"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_n_ribs7_chord800",
+     "expected": [
+      "skin_thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_n_ribs9_chord1000",
+     "expected": [
+      "n_ribs"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_recombination_algorithm3",
+     "expected": [
+      "rib_thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_size_chord900",
+     "expected": [
+      "stringer_height"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_size_skin1p5",
+     "expected": [
+      "n_stringers_per_skin"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_size_skin2",
+     "expected": [
+      "stringer_height"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_size_skin2p5",
+     "expected": [
+      "skin_thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_size_skin4",
+     "expected": [
+      "tip_chord_ratio"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_size_span1600",
+     "expected": [
+      "sweep_deg"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_size_span2400",
+     "expected": [
+      "skin_thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_size_span2400_skin2",
+     "expected": [
+      "n_ribs"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_size_span3000",
+     "expected": [
+      "rib_thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_size_span3000_skin1p5",
+     "expected": [
+      "n_stringers_per_skin"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_str3",
+     "expected": [
+      "stringer_height"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_str3_T",
+     "expected": [
+      "tip_chord_ratio"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_str4",
+     "expected": [
+      "rib_thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_str5",
+     "expected": [
+      "sweep_deg"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_sweep10",
+     "expected": [
+      "skin_thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_sweep20",
+     "expected": [
+      "n_ribs"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_sweep20_taper060",
+     "expected": [
+      "rib_thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_sweep30",
+     "expected": [
+      "n_stringers_per_skin"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_sweep30_taper080",
+     "expected": [
+      "stringer_height"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_sweep35",
+     "expected": [
+      "tip_chord_ratio"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_sweep40",
+     "expected": [
+      "sweep_deg"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_sweep40_taper040",
+     "expected": [
+      "skin_thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_taper040",
+     "expected": [
+      "n_ribs"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_taper060",
+     "expected": [
+      "rib_thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_taper070",
+     "expected": [
+      "skin_thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_taper080",
+     "expected": [
+      "n_stringers_per_skin"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_taper090",
+     "expected": [
+      "stringer_height"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_web1",
+     "expected": [
+      "tip_chord_ratio"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_web1_offcentre",
+     "expected": [
+      "sweep_deg"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_naca4412_wingbox_web2",
+     "expected": [
+      "skin_thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_open_hole_panel_400x200_d20",
+     "expected": [
+      "length"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_open_hole_panel_400x200_d20_cfrp090s",
+     "expected": [
+      "hole_d"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_open_hole_panel_400x200_d20_cfrp45s",
+     "expected": [
+      "thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_open_hole_panel_400x200_d20_cfrp45s_d40",
+     "expected": [
+      "width"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_open_hole_panel_400x200_d20_cfrpqi",
+     "expected": [
+      "length"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_open_hole_panel_400x200_d20_offcentre",
+     "expected": [
+      "hole_d"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_open_hole_panel_400x200_d30",
+     "expected": [
+      "hole_d"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_open_hole_panel_400x200_d40",
+     "expected": [
+      "thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_open_hole_panel_400x200_d40_offcentre",
+     "expected": [
+      "width"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_open_hole_panel_400x200_d50",
+     "expected": [
+      "length"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_open_hole_panel_500x250_d45",
+     "expected": [
+      "hole_d"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_open_hole_panel_600x300_d30",
+     "expected": [
+      "hole_d"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_open_hole_panel_600x300_d60",
+     "expected": [
+      "thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_stiffened_panel_600x600",
+     "expected": [
+      "n_stringers"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_stiffened_panel_600x600_str3",
+     "expected": [
+      "thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_stiffened_panel_700x600_str4",
+     "expected": [
+      "n_stringers"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_stiffened_panel_800x600",
+     "expected": [
+      "n_stringers"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    },
+    {
+     "task_id": "L2_stiffened_panel_800x600_str3",
+     "expected": [
+      "thickness"
+     ],
+     "K": [
+      "hole_d",
+      "length",
+      "n_frames",
+      "n_ribs",
+      "n_stringers",
+      "n_stringers_per_skin",
+      "rib_thickness",
+      "skin_thickness",
+      "stringer_height",
+      "sweep_deg",
+      "thickness",
+      "tip_chord_ratio",
+      "width"
+     ]
+    }
+   ]
+  }
+ ]
+}
