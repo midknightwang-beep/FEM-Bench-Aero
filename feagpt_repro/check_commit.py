@@ -31,8 +31,35 @@ G1  未追踪文件必须全部在名单里                      （否则可能
 G2  名单里的条目必须处于「未追踪」状态              （已入库 ⇒ 名单腐化，该删这行）
 G3  名单里的路径必须真实存在                        （文件没了 ⇒ 名单腐化，该删这行）
 G4  除名单外，任何改动都不得停在「未暂存」状态      （Y 位非空 ⇒ 漏 add，T-C1 事故本体）
-G5  【仅提交前】暂存区不得为空                      （防空提交；--audit 下不判）
+G5  【仅提交前】暂存区为空时**只报事实、不判红**    （F-8；理由见下面「G5 为什么不再硬红」）
 G6  【仅提交前】暂存区不得包含名单内文件            （防误把「不入库」的东西提交）
+
+G5 为什么不再硬红（F-8，2026-11-01 实测）
+----------------------------------------
+旧版 G5 = 「暂存区不得为空」，本意防空提交。**它把正常操作误判成事故**：改提交信息时
+`git commit --amend -F msg` 的暂存区本来就该是空的，T-F7 与 2026-11-01 各撞一次，
+每次都只能 `git reset --soft HEAD~1` + 重提来绕。
+
+三条实测证据（`$TEMP/g5probe`，Git 2.x / Windows）：
+
+  ① **hook 内无法识别 amend**：`git commit --amend` 与普通 `git commit` 在 pre-commit
+     hook 里的环境变量**逐字节相同**（`env | sort` 逐行 diff 无差异，`GIT_REFLOG_ACTION`
+     之类的线索根本不存在），索引树也都等于 HEAD 树 ⇒ 二者在 hook 看来完全同构。
+  ② **普通空提交 git 自己就拒绝**：干净工作区下 `git commit -m x` ⇒ `rc=1`
+     「nothing to commit, working tree clean」⇒ G5 对这件事是**冗余**的。
+  ③ **唯一被 git 放行的是显式 `--allow-empty`**（实测 `rc=0` 直接建成提交）。
+
+⇒ 代价最小且诚实的做法：G5 退回「报事实」。今天仍然成立的那部分是
+**`--allow-empty` 不再被拦**，而它是显式参数（不是手滑能撞出来的），且在输出里被点名。
+
+G5 放宽后的边界（R69：放宽必须有边界）
+--------------------------------------
+- **G4 仍硬红**：真正的事故形态（有改动没 add）没有放宽，G5 的放宽不影响它。
+- warn 必须写明 why（含实测依据），不得只印「暂存区为空」让人自己去猜。
+- warn **不得被说成「全绿」**：结论行会把 warn 条数单独印出来。
+- 若要重新把它变成硬闸，正确做法不是在 pre-commit 里猜，而是移到 **post-commit**
+  用 `git reflog -1 --format=%gs` 认 amend（实测能区分：`commit (amend): …` vs
+  `commit: …`）—— 但那要新增一个 hook 触发点，且 hook 不入库（R74 的老风险），本轮不做。
 
 边界（R69：放宽必须有边界）
 --------------------------
@@ -44,7 +71,7 @@ G6  【仅提交前】暂存区不得包含名单内文件            （防误�
 
 退出码
 ------
-0 全过 ／ 1 有判据红 ／ 2 环境错误（不在 git 仓库、白名单缺失/损坏）
+0 全过（**含只有 warn 的情况**）／ 1 有判据红 ／ 2 环境错误（不在 git 仓库、白名单缺失/损坏）
 """
 from __future__ import annotations
 
@@ -203,8 +230,17 @@ def run_checks(root: Path, allow_path: Path, mode: str):
         if not g0_failed:
             v.append(("G6", None, "not_run（--audit 不检查暂存内容）"))
     else:
-        v.append(("G5", bool(staged),
-                  f"暂存区 {len(staged)} 个文件" if staged else "暂存区为空（空提交）"))
+        if staged:
+            v.append(("G5", True, f"暂存区 {len(staged)} 个文件"))
+        else:
+            # ★ F-8（2026-11-01）：这里**不能**判红 —— `git commit --amend` 改提交信息时
+            #   暂存区本来就该是空的，而 amend 与「真空提交」在 pre-commit hook 内
+            #   完全同构（环境变量逐字节相同、索引树都等于 HEAD 树，实测见文件头）。
+            #   普通空提交 git 自己会 rc=1 拒绝，唯一被放行的是显式 `--allow-empty`。
+            v.append(("G5", "warn",
+                      "暂存区为空（不判红，F-8）—— 若你是在改提交信息（commit --amend）这是正常的；"
+                      "若你以为改了文件，去看 G4：有改动没 add 会红。"
+                      "本闸唯一不再拦的是显式 --allow-empty（git 放行、hook 内与 amend 不可区分）"))
         if not g0_failed:
             g6_bad = sorted(p for p in staged if norm(p) in allow_norm)
             v.append(("G6", not g6_bad,
@@ -249,18 +285,39 @@ def _write_allow(repo: Path, items):
 def self_test() -> int:
     probes = []
 
-    def probe(name, setup, mode, expect_ids_red, expect_ids_green=()):
+    def probe(name, setup, mode, expect_ids_red, expect_ids_green=(),
+              expect_warn=(), expect_msg=None, forbid_msg=None):
         with tempfile.TemporaryDirectory() as td:
             repo = _mk_repo(Path(td) / "r")
             allow = setup(repo)
             v, rc = run_checks(repo, allow, mode)
             red = {g for (g, ok, _) in v if ok is False}
-            ok = (expect_ids_red <= red) and (not (set(expect_ids_green) & red))
+            warn = {g for (g, ok, _) in v if ok == "warn"}
+            msgs = [m for (_, _, m) in v]
+            ok = (expect_ids_red <= red) and (not (set(expect_ids_green) & red)) \
+                and (set(expect_warn) <= warn)
             detail = "红=" + (",".join(sorted(red)) or "无")
+            if warn:
+                detail += " warn=" + ",".join(sorted(warn))
             if expect_ids_red and not (expect_ids_red <= red):
                 detail += " 缺红=" + ",".join(sorted(expect_ids_red - red))
             if set(expect_ids_green) & red:
                 detail += " 误红=" + ",".join(sorted(set(expect_ids_green) & red))
+            if not (set(expect_warn) <= warn):
+                detail += " 缺warn=" + ",".join(sorted(set(expect_warn) - warn))
+            if expect_msg is not None:
+                hit = any(expect_msg in m for m in msgs)
+                ok &= hit
+                if not hit:
+                    detail += " 缺文案:" + expect_msg
+            if forbid_msg is not None:
+                bad = [m for m in msgs if forbid_msg in m]
+                ok &= not bad
+                if bad:
+                    detail += " 不该出现的文案:" + forbid_msg
+            if rc != (0 if not red else 1):
+                ok = False
+                detail += f" rc不符({rc})"
             probes.append((name, ok, detail))
 
     def s_clean(repo):
@@ -322,14 +379,22 @@ def self_test() -> int:
         allow = _write_allow(repo, [])
         return allow
 
-    probe("正向：干净暂存 + 名单内未追踪", s_clean, "pre", set(), {"G0", "G1", "G2", "G3", "G4", "G5", "G6"})
+    probe("正向：干净暂存 + 名单内未追踪", s_clean, "pre", set(),
+          {"G0", "G1", "G2", "G3", "G4", "G5", "G6"},
+          # G5 走 ok 分支：印真实个数、且**不许**出现 warn 的措辞。
+          # 不写死个数（=2：a.txt + 被 _write_allow 暂存的白名单），否则改夹具就假红。
+          expect_msg="个文件", forbid_msg="不判红")
     probe("G4 改了没 add（T-C1 事故）", s_forgot_add, "pre", {"G4"}, {"G1", "G2", "G3", "G5", "G6"})
     probe("G1 名单外未追踪", s_stray_untracked, "pre", {"G1"}, {"G4"})
     probe("G6 名单内文件被暂存", s_staged_allowlisted, "pre", {"G6"}, {"G1", "G4"})
     probe("G2 名单腐化（已入库）", s_allowlist_rotted_tracked, "pre", {"G2"}, {"G1", "G3"})
     probe("G3 名单腐化（文件没了）", s_allowlist_rotted_gone, "pre", {"G3"}, {"G1", "G2"})
     probe("G0 条目缺 reason", s_no_reason, "pre", {"G0"}, {"G1"})
-    probe("G5 空暂存区", s_empty_staged, "pre", {"G5"}, {"G1", "G4", "G6"})
+    # ★ F-8：旧版这里断言「G5 红」。实测 amend 与真空提交在 hook 内不可区分 ⇒ 改成
+    #   「一条都不许红 + G5 必须是 warn + 文案必须点出为什么（含『不可区分』与 --allow-empty）」。
+    probe("G5 空暂存区 ⇒ warn 不红（F-8）", s_empty_staged, "pre", set(),
+          {"G0", "G1", "G2", "G3", "G4", "G5", "G6"},
+          expect_warn={"G5"}, expect_msg="不可区分")
     probe("--audit 下 G5/G6 不判", s_stray_untracked, "audit", {"G1"}, {"G5", "G6"})
 
     print("check_commit.py 自检（%d 向）" % len(probes))
@@ -417,11 +482,25 @@ def main() -> int:
     verdicts, rc = run_checks(root, allow_path, mode)
 
     print(f"check_commit.py  [{mode}]  仓库={root}")
+    n_warn = 0
     for gid, ok, msg in verdicts:
-        tag = "ok  " if ok else ("skip" if ok is None else "BAD!")
+        if ok is True:
+            tag = "ok  "
+        elif ok is False:
+            tag = "BAD!"
+        elif ok == "warn":
+            tag = "warn"
+            n_warn += 1
+        else:
+            tag = "skip"
         print(f"  [{tag}] {gid}  {msg}")
     if rc == 0:
-        print("\n结论：通过 —— 提交内容完整，未夹带白名单内文件")
+        if n_warn:
+            # R69 边界③：有 warn 时**不得**说成「全绿」——warn 不是通过，是「这件事本闸不管了」
+            print(f"\n结论：无判据红 —— 但有 {n_warn} 条 warn（见上），"
+                  f"不等于「全绿」，只是本闸对这些情形不再判定")
+        else:
+            print("\n结论：通过 —— 提交内容完整，未夹带白名单内文件")
     else:
         print("\n结论：不通过 —— 修正后再提交（不要用 --no-verify 绕过）")
     return rc

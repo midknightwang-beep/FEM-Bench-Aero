@@ -80,6 +80,20 @@ python -m venv .venv
 > 下文用 `$PY` 指代你刚建的解释器，例如
 > `PY=.venv/bin/python`（Linux/macOS）或 `PY=.venv/Scripts/python.exe`（Windows Git Bash）。
 
+### 3.5（可选）Node 依赖 —— 只有跑证据自检 `check_claims.py` 时才需要
+
+§4 复现 headline **完全不需要** Node。但如果你想自己验一遍「仓库里的数字与 sha 没被改过」
+（`check_claims.py`），其中两项（`S-39` / `S-43`）要用
+`node gen_candidates_v2.js --print-prompt-sha` 算 prompt 的 sha256，而它依赖 `ajv`：
+
+```bash
+cd repo/feagpt_repro
+npm install          # 只装 package-lock.json 里锁定的依赖（ajv 等）
+```
+
+没装就红这两项，报的是 `node --print-prompt-sha` 相关错误 —— **不是你 clone 错了，也不是数字错了**。
+（这两项红了不影响 §4 的 `23/25 (92.0%)`：判分只读内容，不校验 sha。）
+
 ---
 
 ## 4. 复现 headline（**这一步验证的就是项目的核心主张**）
@@ -153,7 +167,7 @@ export FEAGPT_CCX=/path/to/ccx          # Windows Git Bash: export FEAGPT_CCX="C
 | ~~本仓库没有公开远端地址~~ | **已发布**（2026-10-31） | 直接 clone：`https://github.com/midknightwang-beep/FEM-Bench-Aero.git` |
 | ~~数据包没有公开下载地址~~ | **已发布**（2026-10-31） | Release 页见 §2 与 [DATA.md](DATA.md) §2 |
 | ~~`check_claims.py` 在 clone 里红几项，sha 值对不上~~ | **已修**（2026-10-31 / T-D3）：仓库加了 `.gitattributes`，行尾统一 CRLF，7 处活锚点重算 | 重新 clone 即可。行尾不再造成 sha 不一致（详见 [DATA.md](DATA.md) §6.1） |
-| `check_claims.py` 的 `S-39`/`S-43` 红 | 缺 `node_modules`（有一项要 `node --print-prompt-sha`，依赖 `ajv`） | `npm install` 即可 |
+| `check_claims.py` 的 `S-39`/`S-43` 红 | 缺 `node_modules`（有一项要 `node --print-prompt-sha`，依赖 `ajv`） | 按 **§3.5** 跑 `npm install` 即可 |
 | `check_claims.py` 还红 `C-013`/`S-46`/`S-51`/`S-56`/`S-61` | 这五项的**对象不在公开集里**（外部归档的数据包清单、被脱敏的 `PY=`、按发布决定移出的 `AGENTS.md`/`CLAUDE.md`、以及不分发的 `.git/hooks`）—— 不是你的环境错 | 加 `--public` 重跑：它们会标 `exempt` 并写明原因，**不计入通过数**（R75）。**加了之后仍然红的项才是要处理的** |
 | `fetch_data.py` 对不上 sha256 | 包没下全，或下的是另一个版本 | 用 Release 里的 `SHA256SUMS.txt` 跑 `sha256sum -c`，见 [DATA.md](DATA.md) §3.1 |
 
