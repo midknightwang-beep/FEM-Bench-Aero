@@ -31,13 +31,27 @@ HANDOFF = os.path.join(ROOT, '_handoff')
 DATA_TGZ = os.path.join(HANDOFF, 'release', 'FEM-Bench-Aero-v1.1-data.tar.gz')
 
 # 「落后但只改了这些文件」⇒ metadata_only（黄）。谓词精确：**任何代码改动落在包里没有的提交上，必然红**。
-DEFAULT_DOC_ONLY = {
-    'feagpt_repro/reports/diagnostics/task_d6_report.md',
-    'feagpt_repro/reports/diagnostics/d6_bundle_evidence.json',
-    'FEM-Bench-Aero/ROADMAP.md',
-    '.workbuddy/memory/MEMORY.md',
-    '.workbuddy/memory/' + '2026-10-31.md',
-}
+#
+# ★ T-B1KPI 收口时撞到：首版是**手抄名单**，还写死了 `2026-10-31.md` ⇒ 第二天（11-01）的日志
+#   不在名单里就判红，而 `reports/check_claims.json` 从来不在名单里 ⇒ **每一轮收口都会红一次**，
+#   这条放宽对实际工作流等于无效。与 T-F7 的根因同一个：默认拒绝 + 手抄名单必然漏。
+#   改成结构性规则：**看目录 + 扩展名，不看具体文件名、不写日期**。
+#   判据仍然严格 —— `.py`/`.sh` 永远不是 metadata；`feagpt_repro/reports/` 之外的 `.json`
+#   （`schema_task.json` / `manifest.json` 这类会改被测行为的配置）也永远不是。
+METADATA_EXT = ('.md', '.json', '.jsonl', '.log')
+
+
+def is_metadata(rel):
+    """改它不会让「包代表不了代码状态」。只有两类目录 + 看板，其余一律不算。"""
+    p = rel.replace('\\', '/')
+    if os.path.splitext(p)[1].lower() not in METADATA_EXT:
+        return False
+    if p.startswith('feagpt_repro/reports/'):      # 证据目录：只有产物，没有配置，也没有代码
+        return True
+    if p.startswith('.workbuddy/memory/'):         # 日志 / 记忆（实测全是 .md）
+        return True
+    return p == 'FEM-Bench-Aero/ROADMAP.md'        # 看板
+
 
 # 判据文件自身不得包含被检测词（T-D4 自指教训）：下面这几处检测动作都是调 git 完成的，
 # 不在本文件里写死「坏包长什么样」的字面量。
@@ -79,8 +93,11 @@ def _eol_text(repo):
 
 def run_checks(bundle_path, repo=ROOT, with_data=None, strict=False,
                doc_only=None, quiet=False):
-    """返回 (fails, warns, info)。fails/warns 都是 [(code, 原因)]。"""
-    doc_only = set(DEFAULT_DOC_ONLY if doc_only is None else doc_only)
+    """返回 (fails, warns, info)。fails/warns 都是 [(code, 原因)]。
+
+    `doc_only` 只在自检里显式传（夹具的路径不是真实仓库路径）；真实运行走 `is_metadata()`。
+    """
+    is_doc = (lambda rel: rel in doc_only) if doc_only is not None else is_metadata
     fails, warns, info = [], [], {}
     say = (lambda *a: None) if quiet else print
 
@@ -233,7 +250,7 @@ def run_checks(bundle_path, repo=ROOT, with_data=None, strict=False,
         else:
             rc2, changed, _ = _git(['diff', '--name-only', main_sha, src_head], cwd=repo)
             names = [n for n in changed.splitlines() if n.strip()]
-            outside = sorted(set(names) - doc_only)
+            outside = sorted(n for n in set(names) if not is_doc(n))
             info['freshness']['changed'] = names
             info['freshness']['changed_outside_doc_only'] = outside
             if outside:
@@ -340,10 +357,13 @@ def self_test():
     with tempfile.TemporaryDirectory() as td:
         # 关键：**包必须「在当时的 HEAD 上」打出来**，所以要在提交之间打，不能事后用 sha 打
         # （事后 `--branches <sha>` 里 main 仍指向最新提交 ⇒ behind_by 恒为 0，③④ 两向会退化成空操作）。
-        doc = 'DOC.md'
-        steps = [{'a.py': 'x=1\n', doc: 'd1\n'},       # 提交 0
-                 {'a.py': 'x=2\n', doc: 'd2\n'},       # 提交 1：改代码
-                 {'a.py': 'x=2\n', doc: 'd3\n'}]       # 提交 2：只改文档（HEAD）
+        # 路径必须长成**真实形状**：不传 `doc_only` 时靠 `is_metadata()` 的「目录 + 扩展名」
+        # 判定，用 `a.py`/`DOC.md` 这种裸名测不出规则对不对（T-D6「夹具不真」同族）。
+        code = 'feagpt_repro/a.py'
+        doc = 'feagpt_repro/reports/diagnostics/DOC.md'
+        steps = [{code: 'x=1\n', doc: 'd1\n'},       # 提交 0
+                 {code: 'x=2\n', doc: 'd2\n'},       # 提交 1：改代码
+                 {code: 'x=2\n', doc: 'd3\n'}]       # 提交 2：只改文档（HEAD）
         bundles = {}
 
         def snap(i, repo_path):
@@ -354,11 +374,10 @@ def self_test():
             bundles[i] = bundle_of(td, repo_path, name, 'HEAD', '--branches')
 
         repo, shas = mk_repo(td, steps, on_commit=snap)
-        doc_only = {doc}
         good, mid, old = bundles[2], bundles[1], bundles[0]
 
         # ① 好包须绿（防过严）：打在当前 HEAD 上
-        f, w, info = run_checks(good, repo=repo, doc_only=doc_only, quiet=True)
+        f, w, info = run_checks(good, repo=repo, quiet=True)
         results.append(('① 好包须绿', not f and not w, [x[0] for x in f] + [x[0] for x in w],
                         'behind=%s' % info.get('freshness', {}).get('behind_by')))
 
@@ -368,25 +387,25 @@ def self_test():
             blob = fh.read()
         with open(trunc, 'wb') as fh:
             fh.write(blob[:max(0, len(blob) - 4096)])
-        f, w, _ = run_checks(trunc, repo=repo, doc_only=doc_only, quiet=True)
+        f, w, _ = run_checks(trunc, repo=repo, quiet=True)
         ids = [x[0] for x in f]
         results.append(('② 截断包须红', ('C1' in ids or 'C3' in ids), ids, ''))
 
         # ③ 落后且改了代码 ⇒ 红（新鲜度判据真的能红）：包打在提交 0，之后 a.py 改过
-        f, w, info = run_checks(old, repo=repo, doc_only=doc_only, quiet=True)
+        f, w, info = run_checks(old, repo=repo, quiet=True)
         ids = [x[0] for x in f]
         results.append(('③ 落后改代码须红', 'C9' in ids, ids,
                         'behind=%s' % info.get('freshness', {}).get('behind_by')))
 
         # ④ 落后但只改文档 ⇒ 黄（R75 的边界：放宽只在这个谓词下成立，且不得变红）
-        f, w, info = run_checks(mid, repo=repo, doc_only=doc_only, quiet=True)
+        f, w, info = run_checks(mid, repo=repo, quiet=True)
         ids = [x[0] for x in f]
         wids = [x[0] for x in w]
         results.append(('④ 落后仅改文档须黄', (not ids) and 'C9' in wids, ids + wids,
                         'behind=%s' % info.get('freshness', {}).get('behind_by')))
 
         # ⑤ 红的原因要分得开：截断包的红不能是「找不到文件」那种环境错
-        f, w, _ = run_checks(trunc, repo=repo, doc_only=doc_only, quiet=True)
+        f, w, _ = run_checks(trunc, repo=repo, quiet=True)
         msgs = ' '.join(m for _, m in f)
         results.append(('⑤ 红的原因对得上', ('verify' in msgs or 'clone' in msgs or '读不出' in msgs),
                         [x[0] for x in f], ''))
@@ -397,10 +416,27 @@ def self_test():
         #    有 6 个 tag 时它选不出来（真库上实测 clone 出空仓库、C3b 才红）。
         #    ⇒ 所以 ⑥ 只断言 C2b，C3b 是「有时会一起红」的附加信号。
         nohead = bundle_of(td, repo, 'nohead.bundle', '--branches')
-        f, w, info = run_checks(nohead, repo=repo, doc_only=doc_only, quiet=True)
+        f, w, info = run_checks(nohead, repo=repo, quiet=True)
         ids = [x[0] for x in f]
         results.append(('⑥ 无 HEAD 包须红', 'C2b' in ids, ids,
                         'files=%s' % info.get('files')))
+
+    # ⑦ 分类规则自证：`is_metadata()` 是「包能不能代表代码状态」的唯一判据，
+    #    它被悄悄改宽（把 .py 也放行）不会有任何东西报 ⇒ 用一组正反例钉住。
+    #    两处特别要钉：**任意日期**的日志都为真（防再写死名单）、`reports/` 下的 `.sh` 为假
+    #    （诊断脚本是代码，不能因为它躺在报告目录里就豁免）。
+    cases = [
+        ('feagpt_repro/reports/check_claims.json', True, '证据 json'),
+        ('feagpt_repro/reports/diagnostics/task_x.md', True, '报告 md'),
+        ('.workbuddy/memory/2099-12-31.md', True, '任意日期日志'),
+        ('FEM-Bench-Aero/ROADMAP.md', True, '看板'),
+        ('feagpt_repro/_d6_bundle_verify.py', False, '代码'),
+        ('feagpt_repro/reports/diagnostics/run_xval_v11.sh', False, 'reports 下的 .sh 仍是代码'),
+        ('FEM-Bench-Aero/schema_task.json', False, 'schema 会改被测行为'),
+        ('FEM-Bench-Aero/manifest.json', False, 'manifest 同上'),
+    ]
+    wrong = ['%s（期望 %s）' % (p, exp) for p, exp, _ in cases if is_metadata(p) != exp]
+    results.append(('⑦ 分类规则正反例', not wrong, wrong, '%d 例' % len(cases)))
 
     print('=== _d6_bundle_verify --self-test ===')
     good = True

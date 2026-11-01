@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-10-31T22:28:38+08:00",
- "source_head": "3007ca19a563264e0278dc4bbb3bfb6dbd214d4c",
+ "generated_at": "2026-11-01T08:10:26+08:00",
+ "source_head": "f46eef875bda2d7b5ad3a5bb800e488d50837ec4",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 1557,
- "bytes_total": 87641889,
- "n_keep": 1127,
- "bytes_keep": 13058589,
+ "n_total": 1566,
+ "bytes_total": 87766891,
+ "n_keep": 1135,
+ "bytes_keep": 13176909,
  "categories": {
   "KEEP:根目录仓库配置": {
    "n": 2,
    "bytes": 3215
   },
   "内部记忆/应用": {
-   "n": 26,
-   "bytes": 538774
+   "n": 27,
+   "bytes": 545456
   },
   "根目录内部材料": {
    "n": 46,
@@ -21,7 +21,7 @@
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
-   "bytes": 3692587
+   "bytes": 3701461
   },
   "KEEP:根目录必需": {
    "n": 3,
@@ -36,8 +36,8 @@
    "bytes": 51098052
   },
   "KEEP:代码与证据": {
-   "n": 1015,
-   "bytes": 9332795
+   "n": 1023,
+   "bytes": 9442241
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -168,6 +168,7 @@
   "feagpt_repro/_audit_clarify_meta.py",
   "feagpt_repro/_b1_compare.py",
   "feagpt_repro/_b1_eol_scan.py",
+  "feagpt_repro/_b1_repair_kpi.py",
   "feagpt_repro/_bridge_v3/eval_runs/L3_fuselage_barrel_d1600_l1600_str8_frm3/evaluation.json",
   "feagpt_repro/_bridge_v3/eval_runs/L3_fuselage_barrel_d1800_l2000_str8_frm3/evaluation.json",
   "feagpt_repro/_bridge_v3/eval_runs/L3_fuselage_barrel_d2000_l1600_str8_frm3/evaluation.json",
@@ -208,6 +209,7 @@
   "feagpt_repro/_d3_fix_anchors.py",
   "feagpt_repro/_d3_normalize_eol.py",
   "feagpt_repro/_d4_public_set.py",
+  "feagpt_repro/_d6_bundle_verify.py",
   "feagpt_repro/_diag_dev_reversal.py",
   "feagpt_repro/_diag_model_diff.py",
   "feagpt_repro/_diag_prompt_ablation.py",
@@ -1034,6 +1036,7 @@
   "feagpt_repro/reports/check_claims.json",
   "feagpt_repro/reports/check_forms_v11.json",
   "feagpt_repro/reports/contract_audit_v6c.json",
+  "feagpt_repro/reports/diagnostics/b1_repair_kpi.json",
   "feagpt_repro/reports/diagnostics/bootstrap_v6c_dsv4pro_run.log",
   "feagpt_repro/reports/diagnostics/bootstrap_v6c_run.log",
   "feagpt_repro/reports/diagnostics/bridge_w5c_B_v6b_oldcand.json",
@@ -1044,6 +1047,7 @@
   "feagpt_repro/reports/diagnostics/clarify_meta_audit_v6c.md",
   "feagpt_repro/reports/diagnostics/clarify_meta_audit_v7.json",
   "feagpt_repro/reports/diagnostics/clarify_meta_audit_v7.md",
+  "feagpt_repro/reports/diagnostics/d6_bundle_evidence.json",
   "feagpt_repro/reports/diagnostics/data_pack_volume_gap.json",
   "feagpt_repro/reports/diagnostics/dev_reversal_v6c_p2.json",
   "feagpt_repro/reports/diagnostics/dev_reversal_v6c_p2.md",
@@ -1086,6 +1090,8 @@
   "feagpt_repro/reports/diagnostics/task_a14_report.md",
   "feagpt_repro/reports/diagnostics/task_b1_contract.md",
   "feagpt_repro/reports/diagnostics/task_b1_report.md",
+  "feagpt_repro/reports/diagnostics/task_b1kpi_contract.md",
+  "feagpt_repro/reports/diagnostics/task_b1kpi_report.md",
   "feagpt_repro/reports/diagnostics/task_c1_contract.md",
   "feagpt_repro/reports/diagnostics/task_c1_report.md",
   "feagpt_repro/reports/diagnostics/task_d2_contract.md",
@@ -1099,6 +1105,8 @@
   "feagpt_repro/reports/diagnostics/task_d5_report.md",
   "feagpt_repro/reports/diagnostics/task_d5b_contract.md",
   "feagpt_repro/reports/diagnostics/task_d5b_report.md",
+  "feagpt_repro/reports/diagnostics/task_d6_contract.md",
+  "feagpt_repro/reports/diagnostics/task_d6_report.md",
   "feagpt_repro/reports/diagnostics/task_f2_contract.md",
   "feagpt_repro/reports/diagnostics/task_f2_report.md",
   "feagpt_repro/reports/diagnostics/task_f3_contract.md",
@@ -1211,6 +1219,7 @@
    ".workbuddy/memory/2026-10-29.md",
    ".workbuddy/memory/2026-10-30.md",
    ".workbuddy/memory/2026-10-31.md",
+   ".workbuddy/memory/2026-11-01.md",
    ".workbuddy/memory/MEMORY.md",
    ".workbuddy/memory/MEMORY_ARCHIVE_20261024_full.md",
    ".workbuddy/memory/MEMORY_ARCHIVE_20261027_pre_compact.md",
@@ -1955,6 +1964,12 @@
    "markers": [
     "{{DATA_ARCHIVE}}",
     "{{VENV_PY}}"
+   ]
+  },
+  "feagpt_repro/reports/diagnostics/d6_bundle_evidence.json": {
+   "n": 2,
+   "markers": [
+    "{{USER}}"
    ]
   },
   "feagpt_repro/reports/diagnostics/run_xval_v11.sh": {
