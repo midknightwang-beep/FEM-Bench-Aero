@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-01T21:59:59+08:00",
- "source_head": "9ddbee6f68083d4a10b43e41add2b18308b11d4c",
+ "generated_at": "2026-11-01T22:42:05+08:00",
+ "source_head": "99293953ceff048f001c7a26e077df217a7c7701",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 2332,
- "bytes_total": 89409732,
- "n_keep": 1901,
- "bytes_keep": 14776961,
+ "n_total": 2334,
+ "bytes_total": 89464563,
+ "n_keep": 1903,
+ "bytes_keep": 14826964,
  "categories": {
   "KEEP:根目录仓库配置": {
    "n": 2,
@@ -13,7 +13,7 @@
   },
   "内部记忆/应用": {
    "n": 27,
-   "bytes": 565426
+   "bytes": 570254
   },
   "根目录内部材料": {
    "n": 46,
@@ -21,7 +21,7 @@
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
-   "bytes": 3711635
+   "bytes": 3717293
   },
   "KEEP:根目录必需": {
    "n": 3,
@@ -36,8 +36,8 @@
    "bytes": 51098052
   },
   "KEEP:代码与证据": {
-   "n": 1789,
-   "bytes": 11032119
+   "n": 1791,
+   "bytes": 11076464
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -216,6 +216,7 @@
   "feagpt_repro/_diff_judge_a13d.py",
   "feagpt_repro/_eval_b6.log",
   "feagpt_repro/_f3_public_exempt_selftest.py",
+  "feagpt_repro/_f9_artifact_freshness.py",
   "feagpt_repro/_gate3_t1.log",
   "feagpt_repro/_m4_probe/README.md",
   "feagpt_repro/_m4_probe/bad.json",
@@ -1764,6 +1765,7 @@
   "feagpt_repro/reports/archive/negative_controls_67.json",
   "feagpt_repro/reports/archive/negative_controls_68.json",
   "feagpt_repro/reports/archive/negative_controls_69.json",
+  "feagpt_repro/reports/archive/negative_controls_70.json",
   "feagpt_repro/reports/baseline_scorecard_L1_smoke.json",
   "feagpt_repro/reports/baseline_scorecard_L3_v4.json",
   "feagpt_repro/reports/baseline_scorecard_L3_v5_rescore.json",
@@ -1893,7 +1895,7 @@
   "feagpt_repro/reports/l2_scores_v7_glm.json",
   "feagpt_repro/reports/msr_l3_v4.json",
   "feagpt_repro/reports/msr_l3_v5_rescore.json",
-  "feagpt_repro/reports/negative_controls_70.json",
+  "feagpt_repro/reports/negative_controls_71.json",
   "feagpt_repro/reports/papers/SHA256SUMS",
   "feagpt_repro/reports/papers/nl_human_v4.jsonl",
   "feagpt_repro/reports/papers/nl_human_v5.jsonl",
