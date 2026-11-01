@@ -2424,6 +2424,54 @@ def main():
     print(f"  [{'ok ' if ok70 else 'BAD!'}] NC-70 成绩单锚定 C-032 而非 mtime                       "
           f"expect={_want70} actual={_got70}")
 
+    # NC-71（F-9 长期解）：**产物新鲜度闸必须能被证伪**。
+    # 起因：F-9 是「两个分发产物都会过期，且过期无声」—— 快照侧原先**一条判据都没有**
+    #   （旧快照 `--check` 唯一的红项是「P4b 脱敏不可逆」，读起来像数据/脱敏问题，
+    #   实际原因是快照落后）。新闸 `_f9_artifact_freshness.py` 的谓词是
+    #   「落后区间里改过的文件必须全是 metadata」，而这句话**极容易被写成恒真** ——
+    #   把什么都当 metadata，判据就永不红，且外观和正常通过一模一样（N-26 恒真式同族）。
+    # 所以这一向**不能只断言「自检绿」**（那只是自检自证）。必须断言改坏谓词后自检会红：
+    #   ① 原样：7 向全过；
+    #   ② `is_metadata` 恒 True（全算 metadata）⇒ ③「落后改代码须红」必须变 BAD；
+    #   ③ `is_metadata` 恒 False（全算代码）⇒ ②「落后仅文档须黄」必须变 BAD。
+    # ★ 用真规则判、不另造夹具：`self_test()` 内部自带临时 git 仓库与真 bundle。
+    _f9_ok = False
+    _f9_detail = ''
+    try:
+        import io as _io
+        import contextlib as _ctx
+        import _f9_artifact_freshness as _f9
+
+        def _run_f9():
+            _buf = _io.StringIO()
+            with _ctx.redirect_stdout(_buf):
+                _rc = _f9.self_test()
+            return _rc, _buf.getvalue()
+
+        _rc1, _o1 = _run_f9()
+        _orig_is_meta = _f9.is_metadata
+        try:
+            _f9.is_metadata = lambda _r: True
+            _rc2, _o2 = _run_f9()
+            _f9.is_metadata = lambda _r: False
+            _rc3, _o3 = _run_f9()
+        finally:
+            _f9.is_metadata = _orig_is_meta          # 异常也必须还原，否则污染后续负控
+        _bad = lambda s: s.count('[BAD!]')
+        _f9_ok = ((_rc1 == 0) and ('7/7' in _o1) and (_bad(_o1) == 0)
+                  and (_rc2 == 2) and (_bad(_o2) >= 1)
+                  and (_rc3 == 2) and (_bad(_o3) >= 1))
+        _f9_detail = ('原样 rc=%d/7向BAD%d；全meta rc=%d/BAD%d；全代码 rc=%d/BAD%d'
+                      % (_rc1, _bad(_o1), _rc2, _bad(_o2), _rc3, _bad(_o3)))
+    except Exception as _e71:
+        _f9_detail = '跑不起来：%r（闸不可用 = 无闸）' % (_e71,)
+    results.append({'id': 'NC-71',
+                    'desc': '产物新鲜度闸可证伪（F-9）：原样 7/7，坏掉 metadata 谓词后自检须红',
+                    'expect': 'rc=0/7向；变异两向均 rc=2 且至少 1 向 BAD',
+                    'actual': _f9_detail, 'ok': _f9_ok})
+    print(f"  [{'ok ' if _f9_ok else 'BAD!'}] NC-71 产物新鲜度闸可证伪（F-9）                        "
+          f"{_f9_detail}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],
