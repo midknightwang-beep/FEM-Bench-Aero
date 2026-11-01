@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-01T15:28:43+08:00",
- "source_head": "8636a0f152aab936095ed2a37d27faf38fe16dae",
+ "generated_at": "2026-11-01T21:55:44+08:00",
+ "source_head": "53781f43bd1f2b501ac2f5783a46efa25d021ab6",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
  "n_total": 2332,
- "bytes_total": 89117400,
+ "bytes_total": 89407853,
  "n_keep": 1901,
- "bytes_keep": 14492212,
+ "bytes_keep": 14776823,
  "categories": {
   "KEEP:根目录仓库配置": {
    "n": 2,
@@ -13,15 +13,15 @@
   },
   "内部记忆/应用": {
    "n": 27,
-   "bytes": 561306
+   "bytes": 563685
   },
   "根目录内部材料": {
    "n": 46,
-   "bytes": 11155128
+   "bytes": 11158591
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
-   "bytes": 3707116
+   "bytes": 3711635
   },
   "KEEP:根目录必需": {
    "n": 3,
@@ -37,7 +37,7 @@
   },
   "KEEP:代码与证据": {
    "n": 1789,
-   "bytes": 10751889
+   "bytes": 11031981
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -2785,6 +2785,12 @@
    "n": 1,
    "markers": [
     "{{DATA_ARCHIVE_WIN}}"
+   ]
+  },
+  "feagpt_repro/reports/diagnostics/task_prompt_schema_align_report.md": {
+   "n": 1,
+   "markers": [
+    "{{REPO_ROOT}}"
    ]
   },
   "feagpt_repro/reports/diagnostics/w5b4_defect_analysis_v6b.md": {
