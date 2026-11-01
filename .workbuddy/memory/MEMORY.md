@@ -13,7 +13,7 @@
 - 🚨 **Abaqus 在 agent 内必失败** = 沙箱注入 `tsbx.dll` ⇒ 只能 WorkBuddy 外 cmd 跑 bat。
 - venv：数据集/求解/负控都要 venv，**只有 `check_claims` 可用系统 python**（纯文本/JSON 解析）。
 - 不许并行 ccx/abaqus ⇒ `solver.run()` 全局锁 `.solve.lock`（R61）。单次累计删 ≥50 文件会被沙箱拒（N-22）⇒ 分批 ≤40。
-- 提交前必跑 `_d3_normalize_eol.py`（dry-run → `--apply`）：仓库统一 CRLF（`*.sh` 除外），Write 产物默认 LF。
+- 提交前必跑 `_d3_normalize_eol.py`（dry-run → `--apply`）：仓库统一 CRLF（`*.sh` 除外），Write 产物默认 LF。**★ 新文件的顺序是 `git add` → `--apply` → 提交**：规范化器只扫 `git ls-files`（已追踪），新文件在 add 前**根本不在扫描范围**，而它复验报「待处理 0」、`git status` 也干净（`text=auto` 归一后无差异）⇒ **双重假绿**，只有跨仓库 clone 的 C7 看得见（2026-11-01 实测，F-12）。
 - **提交一律 `git add <具体路径>`，不用 `git add -A`**（根目录白名单 md 会被收进来，G2/G6 每天拦一次）。
 
 ## 验证纪律
