@@ -1,0 +1,17 @@
+{
+ "task_id": "G_pan_strh_w",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "stringer_height",
+  "reason": "长桁高 700 mm 超过板宽 600 mm，加筋板参数超出合法范围。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 108
+}

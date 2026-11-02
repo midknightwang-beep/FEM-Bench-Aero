@@ -66,6 +66,51 @@ const L2_ADDENDUM = `
 const SYS_L2 = SYS + '\n' + L2_ADDENDUM;
 const PROMPT_SHA_L2 = crypto.createHash('sha256').update(SYS_L2, 'utf8').digest('hex');
 
+// ---------------------------------------------------------------------------
+// T-B2B5（2026-11-02）越界拒答题 —— 第三份 SYS：SYS + 追加段
+// ★★ 同 L2 的纪律：**SYS 一个字节都不许动**（R53/S-39 的 sha 锚点）。
+//    所以这里是追加，不是改写；SYS_REFUSE 的 sha 只锚这一套独立小卷
+//    （tasks_refuse_v1.jsonl），不进入任何 v7 成绩。
+//
+// 为什么必须显式告诉模型「越界要拒」：现有 SYS 只说「用户给的每个数值必须
+// 逐字段采用」，于是面对一个做不出来的请求，最省事的做法就是照抄数值产出一个
+// spec —— 而它会被 schema 放行（step_type 是自由字符串）、被求解器静默忽略，
+// 四道闸全绿却答非所问。拒答不是能力问题，是**被问到才会做的事**。
+// ---------------------------------------------------------------------------
+const REFUSE_ADDENDUM = `
+★★ 本次任务类型：越界判定题（**以下六条优先于上文全部表述**）
+1. 你拿到的是一段工程建模请求。其中**有一部分是当前建模与求解能力做不到的**，
+   分两类：
+   · **几何越界**（该族参数合法范围装不下）：
+     - 柱壳：长桁数在 1..4 之间（只能是 0 或 >= 5）；框数 < 2；长桁高 >= 半径；
+       框高 >= 半径；非 blade 剖面（柱壳只支持 blade）。
+     - 开孔板：孔直径 <= 0；孔心使孔不在板内（含贴边）；孔直径 / 板宽 >= 1/3；
+       板长 < 2 倍孔直径。
+     - 加筋板：长桁数 < 0；长桁高 >= 板宽；板厚或板长 <= 0。
+     - 翼盒：中间腹板位置不在前后梁之间（含正好落在梁上）；腹板落在长桁站位上。
+   · **能力越界**（求解器只有线性静力、小变形、金属弹性/铺层线弹性）：
+     模态/固有频率、屈曲特征值、瞬态与冲击、接触、塑性/屈服后、疲劳寿命、
+     热-结构耦合、复合材料失效准则（Hashin/Tsai-Wu 等）—— 一个都做不了。
+2. 请求越界时**必须显式拒绝**，只输出：
+   {"refuse": {"type": "geometry"|"capability", "blocked_by": "<单个标识符>", "reason": "<一句话>"}}
+   ★ blocked_by **只能写一个**标识符，且必须是最直接卡住它的那一个：
+     几何越界写参数键名，只能从这些里选：n_stringers / n_frames / stringer_height /
+     frame_height / stringer_kind / hole_d / hole_x / hole_y / length / width /
+     thickness / web_chordwise；
+     能力越界写该分析类型的关键字，只能从这些里选：frequency / buckle / dynamic /
+     contact / plastic / fatigue / thermal / failure。
+   ★ **写多个标识符视为穷举，按错误处理**（这条是硬要求：拒绝的理由必须唯一）。
+3. 请求**没有**越界时，按上文正常输出完整 spec JSON —— **不许拒绝**。
+   把一个本来做得出来的请求拒掉，与静默建错同样是错。
+4. 本次任务**不涉及缺失信息**：请求里的参数都已给全，不要输出 {"clarify":[...]}。
+   「参数越界」与「参数缺失」不同：越界是给了一个做不出来的值，不是没给值。
+5. 判断越界要**用上面第 1 条的规则去核参数值**，不要凭感觉；但也不要把
+   「没见过的组合」当成越界 —— 范围之内的一律要建。
+6. 只输出一个 JSON 对象（spec 或 {"refuse":{...}}），不要输出其他文字。`;
+
+const SYS_REFUSE = SYS + '\n' + REFUSE_ADDENDUM;
+const PROMPT_SHA_REFUSE = crypto.createHash('sha256').update(SYS_REFUSE, 'utf8').digest('hex');
+
 // --mask-name：把 spec.name 换成中性 ID。N-17 的 19 条泄漏源就是 name 本身
 // （name=open_hole_panel_400x200_d30 而省略的正是 hole_d）；遮掉它，题才真的在考「会不会问」。
 // 只改**发给模型的呈现**，不改 tasks.jsonl（R65 冻结件）。
@@ -121,6 +166,9 @@ function extractJSON(text) {
   if (!m) return { clarify: text.trim(), spec: null };
   let obj;
   try { obj = JSON.parse(m[0]); } catch (e) { return { clarify: null, spec: null, parse_error: String(e) }; }
+  // T-B2B5：拒答块先于 clarify 判定 —— 两者都是「不给 spec」，但用途完全不同，
+  // 混在一起会让「拒对了」与「答不上来」看起来一样。
+  if (obj.refuse) return { clarify: null, refuse: obj.refuse, spec: null };
   if (obj.clarify) return { clarify: JSON.stringify(obj.clarify), spec: null };
   return { clarify: null, spec: obj };
 }
@@ -133,6 +181,8 @@ async function main() {
   if (argv.includes('--print-prompt-sha')) { console.log(PROMPT_SHA); return; }
   // T-A13a：L2 用的是另一份 SYS（SYS + 追加段），sha 必须单独报，不能与 L3 混用（R53）
   if (argv.includes('--print-prompt-sha-l2')) { console.log(PROMPT_SHA_L2); return; }
+  // T-B2B5：越界拒答卷同理会多一份 SYS，sha 单独报（R53 同纪律）
+  if (argv.includes('--print-prompt-sha-refuse')) { console.log(PROMPT_SHA_REFUSE); return; }
   const tasksPath = get('--tasks', 'tasks/tasks.jsonl');
   const levels = (get('--levels', 'L3')).split(',');
   const splits = (get('--split', '')).split(',').filter(Boolean);
@@ -193,14 +243,16 @@ async function main() {
     const outFile = path.join(outDir, `${t.task_id}.json`);
     if (fs.existsSync(outFile)) { console.log(`跳过（已存在）: ${t.task_id}`); continue; }
     process.stdout.write(`生成 ${t.task_id} … `);
-    const sysPrompt = SYS_FROM_FILE || (t.input_level === 'L2' ? SYS_L2 : SYS);
+    const sysPrompt = SYS_FROM_FILE || (t.input_level === 'L2' ? SYS_L2
+      : t.input_level === 'REFUSE' ? SYS_REFUSE : SYS);
     const promptSha = SYS_FROM_FILE
       ? crypto.createHash('sha256').update(SYS_FROM_FILE, 'utf8').digest('hex')
-      : (t.input_level === 'L2' ? PROMPT_SHA_L2 : PROMPT_SHA);
+      : (t.input_level === 'L2' ? PROMPT_SHA_L2
+        : t.input_level === 'REFUSE' ? PROMPT_SHA_REFUSE : PROMPT_SHA);
     const messages = [{ role: 'system', content: sysPrompt },
                       { role: 'user', content: buildUser(t, MASK_NAME) }];
     const valHistory = [];
-    let answer = '', spec = null, clarify = null, turnsUsed = 0;
+    let answer = '', spec = null, clarify = null, refuse = null, turnsUsed = 0;
 
     for (let turn = 1; turn <= maxTurns; turn++) {
       turnsUsed = turn;
@@ -225,6 +277,7 @@ async function main() {
       }
       const r = extractJSON(answer);
       if (r.parse_error) { valHistory.push({ turn, errors: ['JSON parse: ' + r.parse_error] }); }
+      else if (r.refuse) { refuse = r.refuse; break; }
       else if (r.clarify && !r.spec) { clarify = r.clarify; break; }
       else {
         spec = r.spec;
@@ -233,7 +286,11 @@ async function main() {
         //   ⇒ 修复循环会把「你缺 n_frames」当成错误推回给模型，等于**逼它编造**，
         //   直接污染被测行为（R20 判"静默编造"就再也测不出来了）。
         //   L2 下任何 spec 输出都由打分器记为 fabricated（judge_l3_candidate 的 ec 分支）。
-        if (t.input_level === 'L2') break;
+        // ★★ T-B2B5 同一条理由：越界题的"正确答案"是拒绝，修复循环会把
+        //   「你给的 spec 不合法」推回去，等于诱导它继续改 spec 而不是改口拒答。
+        //   所以 kind==='refuse' 的题一次成型；对照题（kind==='build'）仍走完整
+        //   修复循环，与 L3 口径一致才可比。
+        if (t.input_level === 'L2' || t.kind === 'refuse') break;
         const ok = validate(spec);
         const cerr = ok ? contractErrors(spec) : [];
         if (ok && !cerr.length) break;
@@ -262,13 +319,15 @@ async function main() {
     }
     if (spec === undefined) continue;   // LLM 错误已写盘
     const row = { task_id: t.task_id, input_level: t.input_level, model: model.id,
+                  kind: t.kind || null,
                   prompt_sha256: promptSha,
-                  clarify, spec, turns_used: turnsUsed,
+                  clarify, refuse, spec, turns_used: turnsUsed,
                   validation_history: valHistory, raw_len: answer.length };
     // T-A13a：L2 额外落一条「呈现方式」，否则事后无法分辨这批候选是遮了 name 还是没遮
     if (t.input_level === 'L2') row.presentation = MASK_NAME ? 'spec_json_masked_name' : 'spec_json_raw_name';
     fs.writeFileSync(outFile, JSON.stringify(row, null, 1));
-    console.log(clarify ? `[CLARIFY] ${clarify.slice(0, 70)}` :
+    console.log(refuse ? `[REFUSE] ${JSON.stringify(refuse).slice(0, 70)}` :
+                clarify ? `[CLARIFY] ${clarify.slice(0, 70)}` :
                 spec ? `[spec] turns=${turnsUsed} fam=${(spec.structure || {}).family || '?'}` : `[UNRESOLVED] turns=${turnsUsed}`);
   }
   console.log('完成 -> ' + outDir);
@@ -278,4 +337,4 @@ if (require.main === module) {
   main().catch(e => { console.error('FATAL:', e.message); process.exit(2); });
 }
 module.exports = { relaxedSchema, contractErrors, extractJSON, buildUser, maskName,
-                   PROMPT_SHA, PROMPT_SHA_L2, SYS, SYS_L2 };
+                   PROMPT_SHA, PROMPT_SHA_L2, PROMPT_SHA_REFUSE, SYS, SYS_L2, SYS_REFUSE };

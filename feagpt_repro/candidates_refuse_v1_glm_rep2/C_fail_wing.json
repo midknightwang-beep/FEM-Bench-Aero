@@ -1,0 +1,17 @@
+{
+ "task_id": "C_fail_wing",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "failure",
+  "reason": "求解器仅支持线弹性静力分析，无法执行 Hashin 复合材料失效准则及首层失效载荷计算。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 117
+}

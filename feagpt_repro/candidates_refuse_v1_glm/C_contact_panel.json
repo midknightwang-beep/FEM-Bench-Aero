@@ -1,0 +1,17 @@
+{
+ "task_id": "C_contact_panel",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "contact",
+  "reason": "请求涉及板与刚性平面接触，超出线性静力小变形求解能力，无法考虑接触影响。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 103
+}

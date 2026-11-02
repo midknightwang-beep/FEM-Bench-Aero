@@ -1,0 +1,17 @@
+{
+ "task_id": "C_buckle_panel",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "buckle",
+  "reason": "求解器仅支持线性静力分析，屈曲特征值与屈曲模态属于特征值屈曲分析，超出能力范围"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 105
+}

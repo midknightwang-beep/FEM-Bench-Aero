@@ -1,0 +1,17 @@
+{
+ "task_id": "G_pan_t0",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "thickness",
+  "reason": "板厚为 0 mm，属于越界的非法几何参数（板厚必须 > 0）。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 104
+}

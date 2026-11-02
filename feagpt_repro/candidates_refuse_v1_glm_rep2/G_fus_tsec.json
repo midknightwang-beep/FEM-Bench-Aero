@@ -1,0 +1,17 @@
+{
+ "task_id": "G_fus_tsec",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "stringer_kind",
+  "reason": "柱壳仅支持 blade 剖面长桁，无法建模 T 型剖面。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 99
+}

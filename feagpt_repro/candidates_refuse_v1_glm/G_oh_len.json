@@ -1,0 +1,17 @@
+{
+ "task_id": "G_oh_len",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "length",
+  "reason": "板长 50 mm 小于孔直径 30 mm 的 2 倍（60 mm），超出开孔板几何合法范围"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 115
+}

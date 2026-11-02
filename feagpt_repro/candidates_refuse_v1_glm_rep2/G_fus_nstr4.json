@@ -1,0 +1,51 @@
+{
+ "task_id": "G_fus_nstr4",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "fuselage_barrel_1600",
+  "description": "直径1600mm、长1600mm铝柱壳，4长桁3框，内压与端剪端弯联合工况线性静力分析",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "E": 73100,
+   "nu": 0.33,
+   "density": 2.78e-9,
+   "yield": 345
+  },
+  "structure": {
+   "family": "fuselage_barrel",
+   "params": {
+    "diameter": 1600,
+    "length": 1600,
+    "thickness": 3,
+    "n_stringers": 4,
+    "n_frames": 3
+   }
+  },
+  "mesh": {
+   "size": 25
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.05
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {
+   "type": "linear_static"
+  },
+  "extra": {
+   "end_shear": 50000,
+   "end_moment": 50000000
+  }
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 492
+}

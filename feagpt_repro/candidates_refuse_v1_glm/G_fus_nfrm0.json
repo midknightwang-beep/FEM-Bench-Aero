@@ -1,0 +1,17 @@
+{
+ "task_id": "G_fus_nfrm0",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "n_frames",
+  "reason": "柱壳求解器要求至少设置 2 个框，而请求明确不设框（框数 0），超出该族参数合法范围。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 115
+}

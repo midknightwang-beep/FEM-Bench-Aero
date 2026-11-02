@@ -1,0 +1,17 @@
+{
+ "task_id": "C_fail_panel",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "failure",
+  "reason": "Tsai-Wu 首层失效判定属于复合材料失效准则分析，超出线性静力求解能力。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 111
+}

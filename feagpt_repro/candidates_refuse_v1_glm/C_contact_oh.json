@@ -1,0 +1,17 @@
+{
+ "task_id": "C_contact_oh",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "contact",
+  "reason": "求解器不支持接触分析，无法模拟销钉与孔壁的接触传载。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 93
+}

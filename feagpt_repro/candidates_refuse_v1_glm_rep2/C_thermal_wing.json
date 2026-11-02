@@ -1,0 +1,17 @@
+{
+ "task_id": "C_thermal_wing",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "thermal",
+  "reason": "热-结构耦合分析超出求解器能力（仅线性静力、小变形、弹性）"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 96
+}

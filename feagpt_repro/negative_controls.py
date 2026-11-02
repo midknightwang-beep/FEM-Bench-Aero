@@ -2587,6 +2587,94 @@ def main():
     print(f"  [{'ok ' if _d3_ok else 'BAD!'}] NC-73 行尾规范化器看得见未追踪文件（F-12）        "
           f"{_d3_detail}")
 
+    # NC-74（T-B2B5）：**越界拒答的判据必须能挡住「穷举」和「静默建错」两种打法**。
+    # 起因（2026-11-02 立项）：判分侧原本只有 spec_pass / clarify_ok / fabricated 六类，
+    #   没有「拒答」这一档；而「越界被拒」与「信息缺失被澄清」在旧判据里都是「没给 spec」
+    #   ⇒ 分不清「判断对了」与「答不上来」。B2/B5 要的正是这一档。
+    # ★ 这一条守的不是「有个工具」，是**三条会让分数虚高的路各走不通**：
+    #   ① 全拒：见谁都拒 ⇒ 越界题能蒙一部分，但对照题全 over_refuse ⇒ 不得单独引用；
+    #   ② 穷举：blocked_by 把整个 anchor 池列一遍 ⇒ 必须判 refuse_multi 而不是「命中了一个」
+    #      （L2-7 的根因就是「命中小池任一个就算对」，这里换成**单值严格匹配**）；
+    #   ③ 静默建错：越界题照抄数值产出 spec ⇒ 必须判 silent_build（本卷最严重的错）。
+    # ★ 四向，缺一不可：
+    #   ① 原样自检 10 向全过且 T1..T10 都在输出里（守「把自检整段删掉、return True」）；
+    #   ② 变异「blocked_by 退化成子串匹配」⇒ T4（穷举）必须红；
+    #   ③ 变异「越界题给 spec 也判 correct」⇒ T6 必须红；
+    #   ④ 变异「对照题拒答分支删掉」⇒ T8 必须红。
+    _b2_ok = False
+    _b2_detail = ''
+    try:
+        import io as _io74
+        import contextlib as _ctx74
+        import judge_refuse as _jr
+
+        def _run_jr():
+            _b = _io74.StringIO()
+            with _ctx74.redirect_stdout(_b):
+                _rc = 0 if _jr.self_test() else 1
+            return _rc, _b.getvalue()
+
+        # ★ 期望向数必须与判分器当前的向数**一致**：这里写成 T1..T12 是刻意的 ——
+        #   若判分器自检减少一向，这条会红（删断言式退化的防线）。加向时要同步改这里，
+        #   而那正是「有人动过判据」的时刻。
+        _want74 = tuple('T%d' % i for i in range(1, 13))
+        _rc1, _o1 = _run_jr()
+
+        # ② 穷举防线退化：子串命中就算 exact
+        _orig_by = _jr.judge_blocked_by
+        try:
+            _jr.judge_blocked_by = (lambda raw, anchor:
+                                    'exact' if isinstance(raw, str) and anchor in raw.lower()
+                                    else 'missing')
+            _rc2, _o2 = _run_jr()
+        finally:
+            _jr.judge_blocked_by = _orig_by
+
+        # ③ 静默建错被洗成正确
+        _orig_rt = _jr.judge_refuse_task
+
+        def _bad_refuse_task(cand, task):
+            _v, _d = _orig_rt(cand, task)
+            return ('refuse_correct' if _v == 'silent_build' else _v), _d
+        try:
+            _jr.judge_refuse_task = _bad_refuse_task
+            _rc3, _o3 = _run_jr()
+        finally:
+            _jr.judge_refuse_task = _orig_rt
+
+        # ④ 过拒被漏掉：对照题的 refuse 分支删掉
+        _orig_bt = _jr.judge_build_task
+        try:
+            _jr.judge_build_task = (lambda cand, task, path:
+                                    _orig_bt({k: v for k, v in cand.items() if k != 'refuse'},
+                                             task, path))
+            _rc4, _o4 = _run_jr()
+        finally:
+            _jr.judge_build_task = _orig_bt
+
+        _b2_ok = (_rc1 == 0
+                  and all(w in _o1 for w in _want74)
+                  and '[BAD]' not in _o1
+                  and _rc2 != 0 and 'T4' in _o2 and '[BAD]' in _o2
+                  and _rc3 != 0 and 'T6' in _o3 and '[BAD]' in _o3
+                  and _rc4 != 0 and 'T8' in _o4 and '[BAD]' in _o4)
+        _b2_detail = ('原样 rc=%d/T1-T12 齐全/BAD%d；子串化 rc=%d/T4红%s；'
+                      '静默建错洗白 rc=%d/T6红%s；过拒漏判 rc=%d/T8红%s'
+                      % (_rc1, _o1.count('[BAD]'),
+                         _rc2, '是' if ('T4' in _o2 and '[BAD]' in _o2) else '否',
+                         _rc3, '是' if ('T6' in _o3 and '[BAD]' in _o3) else '否',
+                         _rc4, '是' if ('T8' in _o4 and '[BAD]' in _o4) else '否'))
+    except Exception as _e74:
+        _b2_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e74,)
+    results.append({'id': 'NC-74',
+                    'desc': '越界拒答判据可证伪（T-B2B5）：自检 10 向全过，'
+                            '穷举/静默建错/过拒三条路径各改坏一次须各自红在对应项',
+                    'expect': '原样 rc=0 且 T1..T10 齐全、零 BAD；'
+                              '子串化须红在 T4、静默建错洗白须红在 T6、过拒漏判须红在 T8',
+                    'actual': _b2_detail, 'ok': _b2_ok})
+    print(f"  [{'ok ' if _b2_ok else 'BAD!'}] NC-74 越界拒答判据可证伪（T-B2B5）             "
+          f"{_b2_detail}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],
