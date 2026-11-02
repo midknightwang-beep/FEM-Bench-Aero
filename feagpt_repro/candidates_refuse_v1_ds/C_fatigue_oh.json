@@ -1,0 +1,17 @@
+{
+ "task_id": "C_fatigue_oh",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "fatigue",
+  "reason": "当前求解器仅支持线性静力分析，无法进行疲劳寿命估算。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 99
+}

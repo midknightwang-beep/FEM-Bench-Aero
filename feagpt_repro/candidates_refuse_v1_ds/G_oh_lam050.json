@@ -1,0 +1,45 @@
+{
+ "task_id": "G_oh_lam050",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "open_hole_panel_center",
+  "description": "400×200×2 mm 铝板中心孔直径 100 mm，端部均布拉力 0.05 MPa，一端固支",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "E": 73100,
+   "nu": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 400,
+    "width": 200,
+    "thickness": 2,
+    "hole_d": 100
+   }
+  },
+  "mesh": {
+   "size": 10
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.05
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 431
+}

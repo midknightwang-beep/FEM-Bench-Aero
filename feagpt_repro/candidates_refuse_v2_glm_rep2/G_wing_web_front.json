@@ -1,0 +1,17 @@
+{
+ "task_id": "G_wing_web_front",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "web_chordwise",
+  "reason": "中间腹板位于 10% 弦向，落在前梁（25%）之外，不在前后梁之间，翼盒几何无法建立。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 114
+}

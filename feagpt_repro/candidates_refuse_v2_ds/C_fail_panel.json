@@ -1,0 +1,17 @@
+{
+ "task_id": "C_fail_panel",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "failure",
+  "reason": "Tsai-Wu 首层失效判据属于复合材料失效准则，当前求解器仅支持线弹性静力分析，无法进行失效准则判定。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 145
+}

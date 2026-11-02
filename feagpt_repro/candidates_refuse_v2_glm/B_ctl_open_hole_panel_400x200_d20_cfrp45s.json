@@ -1,0 +1,7 @@
+{
+ "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrp45s",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "error": "HTTP 502",
+ "turns_used": 2
+}

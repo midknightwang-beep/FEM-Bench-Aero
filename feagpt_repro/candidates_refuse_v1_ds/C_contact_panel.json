@@ -1,0 +1,17 @@
+{
+ "task_id": "C_contact_panel",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "contact",
+  "reason": "当前求解器仅支持线性静力小变形分析，无法考虑板与刚性平面的接触影响。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 107
+}

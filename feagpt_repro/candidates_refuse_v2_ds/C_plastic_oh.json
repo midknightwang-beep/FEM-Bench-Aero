@@ -1,0 +1,17 @@
+{
+ "task_id": "C_plastic_oh",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "plastic",
+  "reason": "求解器仅支持线弹性分析，无法计算孔边屈服后的塑性重分布。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 121
+}

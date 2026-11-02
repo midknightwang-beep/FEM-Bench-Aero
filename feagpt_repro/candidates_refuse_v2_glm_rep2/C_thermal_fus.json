@@ -1,0 +1,17 @@
+{
+ "task_id": "C_thermal_fus",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "thermal",
+  "reason": "热-结构耦合（升温热应力分析）超出当前线性静力求解器能力，无法建模"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 100
+}

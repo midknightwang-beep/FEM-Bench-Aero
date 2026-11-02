@@ -1,0 +1,17 @@
+{
+ "task_id": "G_oh_lam040",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "hole_d",
+  "reason": "孔直径 80 mm 超过板宽的 1/3（80/200=0.4 ≥ 1/3），超出开孔板可建模的几何范围。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 122
+}

@@ -1,0 +1,17 @@
+{
+ "task_id": "G_pan_strh_w",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "stringer_height",
+  "reason": "长桁高 700 mm 超过板宽 600 mm（要求长桁高小于板宽），几何无法建模。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 114
+}

@@ -1,0 +1,17 @@
+{
+ "task_id": "C_contact_panel",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "contact",
+  "reason": "求解器仅支持线性静力小变形，无法处理板与刚性平面之间的接触非线性。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 106
+}

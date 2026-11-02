@@ -1,0 +1,17 @@
+{
+ "task_id": "G_wing_web_str",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "n_stringers_per_skin",
+  "reason": "翼盒每侧长桁数为1，低于翼盒可建长桁数下限。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 100
+}

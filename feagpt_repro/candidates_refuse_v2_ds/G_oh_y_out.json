@@ -1,0 +1,17 @@
+{
+ "task_id": "G_oh_y_out",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "hole_y",
+  "reason": "孔心 y=198 mm 使孔边缘距板边 198-15=183 mm 但距对边 200-198-15=-13 mm，孔超出板外，不在板内。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 138
+}

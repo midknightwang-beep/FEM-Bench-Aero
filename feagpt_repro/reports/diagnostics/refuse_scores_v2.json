@@ -1,0 +1,358 @@
+{
+ "generated_at": "2026-11-02T21:22:33+08:00",
+ "purpose": "T-B2B5 越界拒绝 + 对照集：多模型并列（不同分母不相减）",
+ "tasks": "tasks_refuse_v1.jsonl",
+ "n_tasks": 60,
+ "denominators": {
+  "refuse": 40,
+  "build": 20
+ },
+ "by_model": {
+  "glm-5.3-flash": {
+   "candidates": "candidates_refuse_v2_glm",
+   "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+   "refuse": {
+    "total": 40,
+    "counted": 40,
+    "pass": 38,
+    "pct": 95.0,
+    "ci95_wilson": [
+     83.5,
+     98.6
+    ],
+    "verdicts": {
+     "refuse_correct": 38,
+     "refuse_wrong": 1,
+     "silent_build": 1
+    }
+   },
+   "build": {
+    "total": 20,
+    "counted": 19,
+    "pass": 16,
+    "pct": 84.2,
+    "ci95_wilson": [
+     62.4,
+     94.5
+    ],
+    "verdicts": {
+     "build_correct": 16,
+     "build_fail": 3,
+     "ctl_llm_error": 1
+    }
+   },
+   "kpi": {
+    "refusal_pct": 95.0,
+    "target_pct": 95.0,
+    "target_met": true,
+    "over_refuse_pct": 0.0,
+    "over_refuse_floor_pct": 10.0,
+    "quotable_alone": true,
+    "build_correct_pct": 84.2,
+    "by_type": {
+     "geometry": {
+      "n": 24,
+      "pass": 22,
+      "pct": 91.7
+     },
+     "capability": {
+      "n": 16,
+      "pass": 16,
+      "pct": 100.0
+     }
+    },
+    "by_anchor": {
+     "buckle": {
+      "n": 2,
+      "pass": 2
+     },
+     "contact": {
+      "n": 2,
+      "pass": 2
+     },
+     "dynamic": {
+      "n": 2,
+      "pass": 2
+     },
+     "failure": {
+      "n": 2,
+      "pass": 2
+     },
+     "fatigue": {
+      "n": 2,
+      "pass": 2
+     },
+     "frame_height": {
+      "n": 1,
+      "pass": 1
+     },
+     "frequency": {
+      "n": 2,
+      "pass": 2
+     },
+     "hole_d": {
+      "n": 4,
+      "pass": 4
+     },
+     "hole_x": {
+      "n": 2,
+      "pass": 1
+     },
+     "hole_y": {
+      "n": 1,
+      "pass": 1
+     },
+     "length": {
+      "n": 2,
+      "pass": 2
+     },
+     "n_frames": {
+      "n": 2,
+      "pass": 2
+     },
+     "n_stringers": {
+      "n": 4,
+      "pass": 4
+     },
+     "plastic": {
+      "n": 2,
+      "pass": 2
+     },
+     "stringer_height": {
+      "n": 2,
+      "pass": 2
+     },
+     "stringer_kind": {
+      "n": 1,
+      "pass": 1
+     },
+     "thermal": {
+      "n": 2,
+      "pass": 2
+     },
+     "thickness": {
+      "n": 1,
+      "pass": 1
+     },
+     "web_chordwise": {
+      "n": 4,
+      "pass": 3
+     }
+    }
+   },
+   "excluded_ids": [
+    "B_ctl_open_hole_panel_400x200_d20_cfrp45s"
+   ]
+  },
+  "deepseek-v4-pro": {
+   "candidates": "candidates_refuse_v2_ds",
+   "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+   "refuse": {
+    "total": 40,
+    "counted": 40,
+    "pass": 35,
+    "pct": 87.5,
+    "ci95_wilson": [
+     73.9,
+     94.5
+    ],
+    "verdicts": {
+     "refuse_correct": 35,
+     "refuse_wrong": 1,
+     "silent_build": 4
+    }
+   },
+   "build": {
+    "total": 20,
+    "counted": 20,
+    "pass": 12,
+    "pct": 60.0,
+    "ci95_wilson": [
+     38.7,
+     78.1
+    ],
+    "verdicts": {
+     "build_correct": 12,
+     "build_fail": 5,
+     "over_refuse": 3
+    }
+   },
+   "kpi": {
+    "refusal_pct": 87.5,
+    "target_pct": 95.0,
+    "target_met": false,
+    "over_refuse_pct": 15.0,
+    "over_refuse_floor_pct": 10.0,
+    "quotable_alone": false,
+    "build_correct_pct": 60.0,
+    "by_type": {
+     "geometry": {
+      "n": 24,
+      "pass": 19,
+      "pct": 79.2
+     },
+     "capability": {
+      "n": 16,
+      "pass": 16,
+      "pct": 100.0
+     }
+    },
+    "by_anchor": {
+     "buckle": {
+      "n": 2,
+      "pass": 2
+     },
+     "contact": {
+      "n": 2,
+      "pass": 2
+     },
+     "dynamic": {
+      "n": 2,
+      "pass": 2
+     },
+     "failure": {
+      "n": 2,
+      "pass": 2
+     },
+     "fatigue": {
+      "n": 2,
+      "pass": 2
+     },
+     "frame_height": {
+      "n": 1,
+      "pass": 1
+     },
+     "frequency": {
+      "n": 2,
+      "pass": 2
+     },
+     "hole_d": {
+      "n": 4,
+      "pass": 2
+     },
+     "hole_x": {
+      "n": 2,
+      "pass": 2
+     },
+     "hole_y": {
+      "n": 1,
+      "pass": 1
+     },
+     "length": {
+      "n": 2,
+      "pass": 1
+     },
+     "n_frames": {
+      "n": 2,
+      "pass": 2
+     },
+     "n_stringers": {
+      "n": 4,
+      "pass": 4
+     },
+     "plastic": {
+      "n": 2,
+      "pass": 2
+     },
+     "stringer_height": {
+      "n": 2,
+      "pass": 2
+     },
+     "stringer_kind": {
+      "n": 1,
+      "pass": 0
+     },
+     "thermal": {
+      "n": 2,
+      "pass": 2
+     },
+     "thickness": {
+      "n": 1,
+      "pass": 1
+     },
+     "web_chordwise": {
+      "n": 4,
+      "pass": 3
+     }
+    }
+   },
+   "excluded_ids": []
+  }
+ },
+ "problems": [],
+ "prompt_sha_by_model": {
+  "glm-5.3-flash": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+  "deepseek-v4-pro": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e"
+ },
+ "prompt_sha_consistent": true,
+ "delta_allowed": {
+  "refuse": true,
+  "build": false
+ },
+ "why_no_delta": {
+  "build": "分母不等（glm-5.3-flash=19 / deepseek-v4-pro=20）⇒ 不得相减；并列可以，但必须单列分母口径并点名排除项（R54）"
+ },
+ "cross_model": {
+  "compared": [
+   "glm-5.3-flash",
+   "deepseek-v4-pro"
+  ],
+  "n_disagree": 9,
+  "disagree": [
+   {
+    "task_id": "G_fus_tsec",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_oh_lam040",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_oh_lam050",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_oh_len",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_oh_x_neg",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_wrong",
+    "deepseek-v4-pro": "refuse_correct"
+   },
+   {
+    "task_id": "B_ctl_fuselage_barrel_d1800_l2000_str8_frm3",
+    "kind": "build",
+    "glm-5.3-flash": "build_correct",
+    "deepseek-v4-pro": "over_refuse"
+   },
+   {
+    "task_id": "B_ctl_fuselage_barrel_d2000_l2000_str8_frm3",
+    "kind": "build",
+    "glm-5.3-flash": "build_correct",
+    "deepseek-v4-pro": "over_refuse"
+   },
+   {
+    "task_id": "B_ctl_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+    "kind": "build",
+    "glm-5.3-flash": "build_correct",
+    "deepseek-v4-pro": "over_refuse"
+   },
+   {
+    "task_id": "B_ctl_stiffened_panel_800x600",
+    "kind": "build",
+    "glm-5.3-flash": "build_correct",
+    "deepseek-v4-pro": "build_fail"
+   }
+  ]
+ }
+}

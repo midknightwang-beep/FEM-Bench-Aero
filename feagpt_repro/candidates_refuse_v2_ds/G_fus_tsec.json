@@ -1,0 +1,46 @@
+{
+ "task_id": "G_fus_tsec",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "fuselage_barrel_T_stringer",
+  "description": "柱壳结构：直径1600mm、长1600mm、壁厚3mm，8根T型长桁（缘条宽20mm），3个框，铝2024-T3，内压0.05MPa，根部固支",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "E": 73100,
+   "nu": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "fuselage_barrel",
+   "params": {
+    "diameter": 1600,
+    "length": 1600,
+    "thickness": 3,
+    "n_stringers": 8,
+    "n_frames": 3
+   }
+  },
+  "mesh": {
+   "size": 25
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.05
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 648
+}

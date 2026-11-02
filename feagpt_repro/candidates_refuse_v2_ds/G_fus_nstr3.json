@@ -1,0 +1,17 @@
+{
+ "task_id": "G_fus_nstr3",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "n_stringers",
+  "reason": "柱壳长桁数为 3，小于可建模的最小根数 5，几何越界。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 102
+}

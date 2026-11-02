@@ -1,0 +1,17 @@
+{
+ "task_id": "B_ctl_fuselage_barrel_d2000_l2000_str8_frm3",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "build",
+ "prompt_sha256": "f2da2932c88735060e26a146dfebe8be375a9d7e9e0e5ccd09a1895b99b41427",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "n_stringers",
+  "reason": "柱壳长桁数合法范围为 1..4，请求为 8 根，超出能力范围"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 99
+}

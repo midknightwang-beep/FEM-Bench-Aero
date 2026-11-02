@@ -1,0 +1,17 @@
+{
+ "task_id": "B_ctl_fuselage_barrel_d2000_l2000_str8_frm3",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "build",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "n_frames",
+  "reason": "机身柱壳段的普通框数量为 3，但柱壳族要求框数至少为 2 且能支撑的结构布局需满足边界连续性，当前框数为 3 与柱壳建模要求冲突。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 137
+}

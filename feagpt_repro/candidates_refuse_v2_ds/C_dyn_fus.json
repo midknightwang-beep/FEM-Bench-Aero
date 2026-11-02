@@ -1,0 +1,17 @@
+{
+ "task_id": "C_dyn_fus",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "dynamic",
+  "reason": "阶跃载荷与0–50 ms位移时程属于瞬态动力学分析，当前求解器仅支持线性静力小变形分析。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 117
+}

@@ -1,0 +1,17 @@
+{
+ "task_id": "G_pan_t0",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "thickness",
+  "reason": "加筋板板厚 0 mm 非法（板厚必须 > 0），无法建立实体/壳模型"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 107
+}

@@ -318,6 +318,99 @@ def run(cand_dir, tasks_path=None, limit=None):
 
 
 # ---------------------------------------------------------------------------
+# 多模型并列（R54 / R77）
+#   ★ 三条硬约束，任一不成立就写进 problems，**不允许产出好看的数**：
+#     ① 两模型 prompt sha 必须相同 —— 不同 prompt 的分数不可比（R53）；
+#     ② 每块自身必须闭合（total == counted + 排除）；
+#     ③ 只禁「分母不等」的那一项相减，**不做一刀切**（R54 禁的是跨分母，不是跨模型）。
+# ---------------------------------------------------------------------------
+def _prompt_sha_of(cand_dir):
+    """从候选文件里读模型自带的 prompt sha —— 不另算一套（第二处实现就是 bug）。"""
+    for p in sorted(glob.glob(os.path.join(cand_dir, '*.json'))):
+        try:
+            d = json.loads(io.open(p, encoding='utf-8').read())
+        except Exception:
+            continue
+        if d.get('prompt_sha256'):
+            return d['prompt_sha256']
+    return ''
+
+
+def _close_block(summary):
+    """块内闭合自检：分母、判类和、分子三处都要对得上。"""
+    probs = []
+    for kind in COUNTED_KINDS:
+        b = summary[kind]
+        v = b['verdicts']
+        excl = sum(n for k, n in v.items() if k in ('llm_error', 'ctl_llm_error'))
+        if b['total'] != b['counted'] + excl:
+            probs.append('%s: total %d != counted %d + 排除 %d'
+                         % (kind, b['total'], b['counted'], excl))
+        if sum(v.values()) != b['total']:
+            probs.append('%s: verdicts 加和 %d != total %d'
+                         % (kind, sum(v.values()), b['total']))
+        if b['pass'] > b['counted']:
+            probs.append('%s: pass %d > counted %d' % (kind, b['pass'], b['counted']))
+    return probs
+
+
+def build_multi(pairs, tasks_path=None):
+    """pairs = [(tag, cand_dir), ...] → 多模型并列 artifact。"""
+    import datetime
+    tasks_path = tasks_path or TASKS
+    tasks = load_tasks(tasks_path)
+    art = {
+        'generated_at': datetime.datetime.now().astimezone().isoformat(timespec='seconds'),
+        'purpose': 'T-B2B5 越界拒绝 + 对照集：多模型并列（不同分母不相减）',
+        'tasks': os.path.basename(tasks_path),
+        'n_tasks': len(tasks),
+        'denominators': {k: sum(1 for t in tasks if t['kind'] == k) for k in COUNTED_KINDS},
+        'by_model': {},
+        'problems': [],
+    }
+    rows_by, shas, ns = {}, {}, {}
+    for tag, d in pairs:
+        rows, summary, _ = run(d, tasks_path)
+        rows_by[tag], shas[tag] = rows, _prompt_sha_of(d)
+        art['by_model'][tag] = {
+            'candidates': os.path.basename(os.path.normpath(d)),
+            'prompt_sha256': shas[tag],
+            'refuse': summary['refuse'],
+            'build': summary['build'],
+            'kpi': summary['kpi'],
+            'excluded_ids': [r['task_id'] for r in rows
+                             if r['verdict'] in ('llm_error', 'ctl_llm_error')],
+        }
+        ns[tag] = {k: summary[k]['counted'] for k in COUNTED_KINDS}
+        art['problems'] += ['%s %s' % (tag, p) for p in _close_block(summary)]
+
+    art['prompt_sha_by_model'] = shas
+    art['prompt_sha_consistent'] = len(set(v for v in shas.values() if v)) <= 1
+    if not art['prompt_sha_consistent']:
+        art['problems'].append('两模型 prompt sha 不同 ⇒ 不同 prompt 的分数不可比（R53）')
+
+    tags = [t for t, _ in pairs]
+    art['delta_allowed'], art['why_no_delta'] = {}, {}
+    for kind in COUNTED_KINDS:
+        vals = [ns[t][kind] for t in tags]
+        unequal = len(set(vals)) > 1
+        art['delta_allowed'][kind] = not unequal
+        if unequal:
+            art['why_no_delta'][kind] = ('分母不等（%s）⇒ 不得相减；'
+                                         '并列可以，但必须单列分母口径并点名排除项（R54）'
+                                         % ' / '.join('%s=%d' % (t, ns[t][kind]) for t in tags))
+
+    if len(tags) == 2:
+        a, b = tags
+        ra = {r['task_id']: r for r in rows_by[a]}
+        rb = {r['task_id']: r for r in rows_by[b]}
+        dis = [{'task_id': tid, 'kind': ra[tid]['kind'],
+                a: ra[tid]['verdict'], b: rb[tid]['verdict']}
+               for tid in ra if ra[tid]['counted'] != rb[tid]['counted']]
+        art['cross_model'] = {'compared': [a, b], 'n_disagree': len(dis), 'disagree': dis}
+    return art, rows_by, tasks
+
+
 def self_test():
     """八向自检：每一档判类各喂一个构造候选，且断言**判对的理由也对**。"""
     ok = True
@@ -443,11 +536,71 @@ def main():
     ap.add_argument('--compare', default='',
                     help='第二遍候选目录：逐题比判类，量化采样抖动')
     ap.add_argument('--limit', type=int, default=0)
+    ap.add_argument('--model-dir', action='append', default=[],
+                    help='多模型并列：tag=候选目录（可多次），配合 --multi')
+    ap.add_argument('--multi', default='', help='多模型并列 artifact 的落盘路径')
     ap.add_argument('--self-test', action='store_true')
     args = ap.parse_args()
 
     if args.self_test:
         return 0 if self_test() else 1
+
+    if args.multi:
+        pairs = []
+        for s in args.model_dir:
+            if '=' not in s:
+                print('--model-dir 格式应为 tag=目录：%s' % s)
+                return 2
+            tag, d = s.split('=', 1)
+            if not os.path.isdir(d):
+                print('候选目录不存在：%s' % d)
+                return 2
+            pairs.append((tag, d))
+        if len(pairs) < 2:
+            print('--multi 至少需要两个 --model-dir')
+            return 2
+        art, _, _ = build_multi(pairs, args.tasks)
+
+        tags = [t for t, _ in pairs]
+        hdr = '%-22s %-14s %-14s %-12s %s' % ('模型', '拒答(越界)', '过拒(对照)',
+                                              '可单独引用', '分母 越界/对照')
+        print('== 多模型并列：越界拒绝 + 对照集 ==')
+        print(hdr)
+        print('-' * 78)
+        for t in tags:
+            m = art['by_model'][t]
+            r, b, k = m['refuse'], m['build'], m['kpi']
+            print('%-22s %-14s %-14s %-12s %d/%d'
+                  % (t,
+                     '%d/%d %.1f%%' % (r['pass'], r['counted'], r['pct']),
+                     '%d/%d %.1f%%' % (b['verdicts'].get('over_refuse', 0),
+                                       b['counted'], k['over_refuse_pct']),
+                     '是' if k['quotable_alone'] else '**否**',
+                     r['counted'], b['counted']))
+        print()
+        for kind, why in art['why_no_delta'].items():
+            print('⚠ %s：%s' % (kind, why))
+        if not art['prompt_sha_consistent']:
+            print('⚠ prompt sha 不一致：%s' % art['prompt_sha_by_model'])
+        for t in tags:
+            ex = art['by_model'][t]['excluded_ids']
+            if ex:
+                print('   排除项（%s，%d 条）：%s' % (t, len(ex), ', '.join(ex)))
+        if 'cross_model' in art and art['cross_model']['n_disagree']:
+            print('   逐题分歧 %d 条：%s'
+                  % (art['cross_model']['n_disagree'],
+                     ', '.join(d['task_id'] for d in art['cross_model']['disagree'])))
+        if art['problems']:
+            print()
+            for p in art['problems']:
+                print('[PROBLEM] %s' % p)
+
+        with io.open(args.multi, 'w', encoding='utf-8', newline='\n') as f:
+            f.write(json.dumps(art, ensure_ascii=False, indent=1))
+        print()
+        print('已写 %s' % args.multi)
+        return 0 if not art['problems'] else 1
+
     if not args.candidates:
         print('需要 --candidates 目录（或 --self-test）')
         return 2

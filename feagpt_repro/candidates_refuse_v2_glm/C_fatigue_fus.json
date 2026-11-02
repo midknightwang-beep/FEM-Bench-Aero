@@ -1,0 +1,17 @@
+{
+ "task_id": "C_fatigue_fus",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "fatigue",
+  "reason": "疲劳寿命估算超出求解器能力（仅支持线性静力小变形弹性分析）"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 102
+}

@@ -1,0 +1,17 @@
+{
+ "task_id": "G_oh_x_out",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "hole_x",
+  "reason": "孔心 x=395 mm、孔半径 15 mm 使孔超出 400 mm 板长（孔不在板内）"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 113
+}

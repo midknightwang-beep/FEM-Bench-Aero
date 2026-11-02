@@ -1,0 +1,64 @@
+{
+ "task_id": "B_ctl_stiffened_panel_800x600",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "build",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "stiffened_panel_600x800_pressure",
+  "description": "600×800×2 mm 铝 2024-T3 素板，四边简支，受 0.0001 MPa 均布面压线性静力分析",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "stiffened_panel",
+   "params": {
+    "length": 800,
+    "width": 600,
+    "thickness": 2,
+    "n_stringers": 0
+   }
+  },
+  "mesh": {
+   "size_chord": 3,
+   "size_span": 3
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.0001,
+   "direction": [
+    0,
+    0,
+    -1
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'yield_strength'",
+    "/mesh must have required property 'size_chord'",
+    "/mesh must have required property 'size_span'",
+    "/mesh 不允许的键 \"size\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le",
+    "/analysis 不允许的键 \"type\"，请删除。analysis 允许键: solver/step_type/incremental/initial_increment/total_time/outputs（建议直接写 {}）"
+   ]
+  }
+ ],
+ "raw_len": 516
+}

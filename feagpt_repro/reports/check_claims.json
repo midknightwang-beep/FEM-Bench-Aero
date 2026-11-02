@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
  "n_active_claims": 34,
- "n_artifacts": 70,
+ "n_artifacts": 72,
  "n_fail": 0,
  "n_fail_structural": 0,
  "n_fail_semantic": 0,
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793623442/1793623442；check 1793623919 vs 负控 1793623442",
+   "actual": "C-019 mtime 记录/实际 = 1793623442/1793623442；check 1793623930 vs 负控 1793623442",
    "ok": true,
    "skip": false
   },
@@ -1027,6 +1027,30 @@
    "size": 45695,
    "sha256": "86b417137a26de096a068d63af2c70afc1fe7e9eb6ca1fb679f6181e9d2485d8",
    "mtime": 1793623703
+  },
+  {
+   "claim_id": "C-042",
+   "artifact": "feagpt_repro/reports/diagnostics/refuse_scores_v2.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 6975,
+   "sha256": "354208b00b6aec94e3360a93beb989bb1505212a6016be80d1912bbaa42c66c5",
+   "mtime": 1793626568
+  },
+  {
+   "claim_id": "C-042",
+   "artifact": "feagpt_repro/reports/diagnostics/refuse_stability_v2_glm.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 25236,
+   "sha256": "8b4e18af0f39d06a0004c8c32ea7fb27a1e200e4678097687e425d93bfc3a790",
+   "mtime": 1793626568
   },
   {
    "claim_id": "C-042",

@@ -1,0 +1,17 @@
+{
+ "task_id": "G_wing_web_rear",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "afba8f622b76a32f09e4bfa5a1434870c9fec36ab0aa947de9c26dced160d33e",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "web_chordwise",
+  "reason": "90% 弦向处的中间腹板位于前后梁（25%–70%）之外，超出翼盒参数合法范围。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 111
+}
