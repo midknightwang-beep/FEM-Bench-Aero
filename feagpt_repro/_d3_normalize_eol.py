@@ -10,12 +10,22 @@
   crlf = raw.replace(b'\\r\\n', b'\\n').replace(b'\\n', b'\\r\\n')
   即「先归一到 LF、再全部转 CRLF」；末尾无换行的情形天然保留（末尾不是 \\n 就不会被加 \\r）。
 
-自检（--self-test）：五向，全部在内存里做，不落盘
+扫描源（F-12，2026-11-01）：
+  `git ls-files --cached --others --exclude-standard` —— **已追踪 + 未追踪（不含 ignore）**。
+  为什么必须含未追踪：只扫已追踪时，**每一个新写出的文件都会漏一次**，而且漏得毫无征兆 ——
+  工具自己复验报「待处理 0」、`git status --porcelain` 也干净（`text=auto` 归一后工作区与索引
+  无差异）⇒ **两个检查都说没事**，只有跨仓库 clone 的 C7 才看得见。本轮 `_f9_artifact_freshness.py`
+  就是这样红的（同一天还复现两次：`cat >>` 追加日志、`newline=''` 写回 md）。
+  ⇒ 正确顺序是 `git add` → `--apply` → 提交；而工具不再依赖这个顺序。
+
+自检（--self-test）：六向，全部在内存/临时目录里做，不落主仓库
   T1 幂等：对已是 CRLF 的内容再转一次，字节不变
   T2 无损：转完再归一回 LF，必须与原 LF 版逐字节相等
   T3 末行：不以 \\n 结尾的内容，转换后仍不以 \\n 结尾（不得凭空多出换行）
   T4 空文件：长度为 0 必须原样返回（不得变成 b'\\r\\n'）
   T5 mixed：混行的内容必须被统一成纯 CRLF，且行数不变
+  T6 未追踪可见（F-12）：临时仓库里写一个 LF 文件但**不 add**，
+     T6a 它必须进入扫描集；T6b 负向（退回只扫已追踪）必须扫不到；T6c 真跑 --apply 后字节必须变 CRLF
 """
 from __future__ import annotations
 
@@ -99,15 +109,81 @@ def self_test() -> bool:
     else:
         print(f'  [FAIL] T2 无损: {back!r} != {lf!r}')
         ok = False
+    return self_test_untracked() and ok
+
+
+def scan_files(repo: str, include_untracked: bool = True):
+    """返回 (待扫文件列表, 已追踪数, 未追踪数)。
+
+    `include_untracked=False` 只给自检做负向用（复现 F-12 的旧行为），CLI 不暴露。
+    """
+    def ls(args):
+        out = subprocess.run(['git', '-c', 'core.quotepath=false', 'ls-files'] + args,
+                             cwd=repo, capture_output=True, text=True, encoding='utf-8')
+        if out.returncode != 0:
+            raise SystemExit(f'git ls-files {" ".join(args)} 失败: {out.stderr}')
+        return [f for f in out.stdout.split('\n') if f.strip()]
+
+    cached = ls(['--cached'])
+    if not include_untracked:
+        return cached, len(cached), 0
+    cset = set(cached)
+    others = [f for f in ls(['--others', '--exclude-standard']) if f not in cset]
+    return cached + others, len(cached), len(others)
+
+
+def self_test_untracked() -> bool:
+    """T6：未追踪文件必须被扫到（F-12）。
+
+    判据落在**根因**（扫描源含不含未追踪）而不是只落在后果（字节变没变）——
+    只断后果的话，将来若有人给「已追踪」另开一条补救路径，自检仍会绿而洞还在。
+    """
+    import os
+    import shutil
+    import tempfile
+
+    ok = True
+    tmp = tempfile.mkdtemp(prefix='d3_untracked_')
+    try:
+        subprocess.run(['git', 'init', '-q'], cwd=tmp, capture_output=True)
+        with open(os.path.join(tmp, '.gitattributes'), 'w', newline='') as fh:
+            fh.write('* text=auto eol=crlf\n')
+        # 规则文件必须**已追踪**（真实仓库就是这样）—— 否则它自己也算未追踪，
+        # 夹具就多出一个成员，断言 untracked==1 会假红（F-9 自检撞过同一个坑）。
+        subprocess.run(['git', 'add', '.gitattributes'], cwd=tmp, capture_output=True)
+        target = os.path.join(tmp, 'new_file.txt')
+        with open(target, 'wb') as fh:
+            fh.write(b'alpha\nbeta\n')          # LF，且**不 add**
+
+        files, n_cached, n_untracked = scan_files(tmp)
+        if 'new_file.txt' in files and n_untracked == 1:
+            print('  [ok  ] T6a 未追踪文件进入扫描集（F-12）')
+        else:
+            print(f'  [FAIL] T6a 未追踪未进入扫描集: files={files} '
+                  f'cached={n_cached} untracked={n_untracked}')
+            ok = False
+
+        # 负向：退回「只扫已追踪」（= 修之前的实现）必须扫不到它。
+        old_files, _, _ = scan_files(tmp, include_untracked=False)
+        if 'new_file.txt' not in old_files:
+            print('  [ok  ] T6b 负向：只扫已追踪时该文件确实扫不到（证明 T6a 会红）')
+        else:
+            print('  [FAIL] T6b 负向失效：只扫已追踪竟然也扫到了')
+            ok = False
+
+        # 后果：真跑 --apply，字节必须变成 CRLF（命令行路径也要走通）
+        r = subprocess.run([sys.executable, os.path.abspath(__file__),
+                            '--repo', tmp, '--apply'],
+                           capture_output=True, text=True, encoding='utf-8')
+        raw = open(target, 'rb').read()
+        if r.returncode == 0 and raw == b'alpha\r\nbeta\r\n':
+            print('  [ok  ] T6c --apply 后未追踪文件真的被改成 CRLF')
+        else:
+            print(f'  [FAIL] T6c rc={r.returncode} 字节={raw!r} 输出={r.stdout[-400:]}')
+            ok = False
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
     return ok
-
-
-def tracked(repo: str):
-    out = subprocess.run(['git', '-c', 'core.quotepath=false', 'ls-files'], cwd=repo,
-                         capture_output=True, text=True, encoding='utf-8')
-    if out.returncode != 0:
-        raise SystemExit(f'git ls-files 失败: {out.stderr}')
-    return [f for f in out.stdout.split('\n') if f.strip()]
 
 
 def main():
@@ -123,11 +199,12 @@ def main():
 
     import os
     repo = args.repo
-    files = tracked(repo)
+    files, n_cached, n_untracked = scan_files(repo)
     attrs = eol_attrs(repo, files)
     stat = {'lf': 0, 'mixed': 0, 'crlf': 0, 'flat': 0, 'binary': 0, 'empty': 0, 'missing': 0}
     changed = 0
     forced_lf = 0
+    touched = []
     fails = []
     for f in files:
         p = os.path.join(repo, f)
@@ -148,6 +225,7 @@ def main():
                 if new.replace(b'\r\n', b'\n') != raw.replace(b'\r\n', b'\n'):
                     fails.append((f, '转 LF 后内容不等')); continue
                 changed += 1; forced_lf += 1
+                touched.append((f, 'CRLF->LF'))
                 if args.apply:
                     with open(p, 'wb') as fh:
                         fh.write(new)
@@ -161,11 +239,18 @@ def main():
         if new.replace(b'\r\n', b'\n') != raw.replace(b'\r\n', b'\n'):
             fails.append((f, '转换后归一回 LF 与原文不等')); continue
         changed += 1
+        touched.append((f, 'LF->CRLF'))
         if args.apply:
             with open(p, 'wb') as fh:
                 fh.write(new)
-    print(f'被追踪文件 {len(files)}；分类 {stat}')
+    print(f'扫描 {len(files)} 个（已追踪 {n_cached} + 未追踪 {n_untracked}）；分类 {stat}')
     print(f'{"已处理" if args.apply else "待处理(dry-run)"}: {changed} 个（其中属性要求 LF 的 {forced_lf} 个）')
+    # 必须点名 —— 「待处理 N 个」不说是谁，等于还得另找一条路去查，
+    # 而 F-12 的教训正是「两条检查都说没事」；明细是第三条、也是最直接的那条。
+    for f, how in touched[:10]:
+        print(f'   {how}  {f}')
+    if len(touched) > 10:
+        print(f'   …… 另有 {len(touched) - 10} 个未列出')
     if fails:
         print(f'!! 校验失败 {len(fails)} 个（一律未写）:')
         for f, why in fails[:10]:

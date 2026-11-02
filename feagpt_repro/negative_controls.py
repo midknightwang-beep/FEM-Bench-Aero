@@ -2534,6 +2534,59 @@ def main():
     print(f"  [{'ok ' if _l27_ok else 'BAD!'}] NC-72 L2 穷举式退化判据可证伪（T-L27）               "
           f"{_l27_detail}")
 
+    # NC-73（F-12）：**行尾规范化器的扫描源必须能看见未追踪文件**。
+    # 起因（2026-11-01 实测三次）：`_d3_normalize_eol.py` 只扫 `git ls-files`（已追踪）⇒
+    #   **每个新写出来的文件都会漏一次**；更糟的是它漏得毫无征兆 —— 工具自己复验报
+    #   「待处理 0」、`git status --porcelain` 也干净（`text=auto` 归一后工作区与索引无差异）
+    #   ⇒ 两个检查都说没事，只有跨仓库 clone 的 C7 才看得见（当天连撞两次：`cat >>` 追加日志、
+    #   `newline=''` 写回 md）。
+    # ★ 三向，缺一不可：
+    #   ① 原样：T6 三向（a 未追踪可见 / b 负向 / c --apply 真改写）必须在，且零 FAIL；
+    #   ② 变异「扫描源退回只扫已追踪」（= 修之前的实现）⇒ 自检必须红且红在 T6a；
+    #   ③ 断言 T6a/T6b/T6c 三个名字都在输出里 —— 守「把自检整段删掉、`return True`」这种
+    #      删断言式退化（只断言 rc=0 的话，删光自检反而更绿）。
+    _d3_ok = False
+    _d3_detail = ''
+    try:
+        import io as _io73
+        import contextlib as _ctx73
+        import _d3_normalize_eol as _d3
+
+        def _run_d3():
+            _b = _io73.StringIO()
+            with _ctx73.redirect_stdout(_b):
+                _rc = _d3.self_test()
+            return (0 if _rc else 1), _b.getvalue()
+
+        _rc1, _o1 = _run_d3()
+        _orig_scan = _d3.scan_files
+        try:
+            _d3.scan_files = (lambda repo, include_untracked=True:
+                              _orig_scan(repo, include_untracked=False))
+            _rc2, _o2 = _run_d3()
+        finally:
+            _d3.scan_files = _orig_scan           # 异常也必须还原，否则污染后续负控
+        _want73 = ('T6a', 'T6b', 'T6c')
+        _d3_ok = (_rc1 == 0
+                  and all(w in _o1 for w in _want73)
+                  and 'FAIL' not in _o1
+                  and _rc2 != 0
+                  and ('T6a' in _o2)
+                  and ('FAIL' in _o2))
+        _d3_detail = ('原样 rc=%d/T6三向齐全/FAIL%d；变异(只扫已追踪) rc=%d/T6a红%s'
+                      % (_rc1, _o1.count('[FAIL]'), _rc2,
+                         '是' if ('T6a' in _o2 and 'FAIL' in _o2) else '否'))
+    except Exception as _e73:
+        _d3_detail = '跑不起来：%r（闸不可用 = 无闸）' % (_e73,)
+    results.append({'id': 'NC-73',
+                    'desc': '行尾规范化器看得见未追踪文件（F-12）：T6 三向齐全，'
+                            '退回只扫已追踪后自检须红在 T6a',
+                    'expect': 'rc=0 且 T6a/T6b/T6c 都在输出里、零 FAIL；'
+                              '变异后 rc!=0 且 T6a 判红',
+                    'actual': _d3_detail, 'ok': _d3_ok})
+    print(f"  [{'ok ' if _d3_ok else 'BAD!'}] NC-73 行尾规范化器看得见未追踪文件（F-12）        "
+          f"{_d3_detail}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],
