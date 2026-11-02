@@ -2675,6 +2675,81 @@ def main():
     print(f"  [{'ok ' if _b2_ok else 'BAD!'}] NC-74 越界拒答判据可证伪（T-B2B5）             "
           f"{_b2_detail}")
 
+    # NC-75（T-B2RULES）：**addendum 的规则文字必须由规则表渲染，且表本身可证伪**。
+    # 起因（2026-11-02）：T-B2B5 v1 手写「长桁数在 1..4 之间」，而代码是「1..4 **越界**」。
+    #   一句话把越界集合写成合法域 ⇒ deepseek 把 v7 里合法的 8 根柱壳题 6/6 全拒，
+    #   过拒率被推到 30%，「可单独引用」判否。glm 同句下 0/20 —— 不是读对，是没按字面核。
+    # ★ 这一条守的不是「表存在」，是三条绕过路各走不通：
+    #   ① **手改 js 区块**（绕过表直接改文案）⇒ diff 必须红；
+    #   ② **表漏一条规则** ⇒ 反向覆盖（F:*）必须红 —— 这条不吃「表自己说有 N 条」，
+    #      而是从族模块源码里现取 raise 字面，缺了才红（T-F7 教训：名单不读名单）；
+    #   ③ **表的方向/阈值写反** ⇒ 双向实测必须红（inside 取越界值那一向）。
+    #   ★ 还有一向是自检自己的完整性：T0..T6 必须都在输出里，
+    #     守「把 self_test 整段删掉、只 return True」。
+    _rl_ok = False
+    _rl_detail = ''
+    try:
+        import io as _io75
+        import contextlib as _ctx75
+        import shutil as _sh75
+        import tempfile as _tf75
+        import _b2_refuse_rules as _rl
+
+        # ① 原样：自检 T0..T6 齐全且 rc=0；js 区块与渲染结果逐字节一致
+        _b75 = _io75.StringIO()
+        with _ctx75.redirect_stdout(_b75):
+            _rc1 = 0 if _rl.self_test() else 1
+        _o1 = _b75.getvalue()
+        _miss = [t for t in ('T%d' % i for i in range(7)) if t not in _o1]
+        _same1, _ = _rl.diff_block()
+
+        # ② 手改 js 区块一个字符 ⇒ diff 必须红（守「禁止手改区块」）
+        _tmp = os.path.join(_tf75.gettempdir(), '_nc75_block.js')
+        _sh75.copyfile(_rl.JS_PATH, _tmp)
+        with _io75.open(_tmp, encoding='utf-8') as _f75:
+            _txt = _f75.read()
+        with _io75.open(_tmp, 'w', encoding='utf-8', newline='') as _f75:
+            _f75.write(_txt.replace('长桁数为 1/2/3/4', '长桁数为 1/2/3/4/5', 1))
+        _same2, _ = _rl.diff_block(_tmp)
+
+        # ③ 删一条规则 ⇒ 反向覆盖必须红
+        _saved3 = _rl.RULES
+        try:
+            _rl.RULES = [r for r in _saved3 if r.rid != 'fus_pos']
+            _pass3, _p3, _ = _rl.check(verbose=False)
+        finally:
+            _rl.RULES = _saved3
+        _hit3 = any('[F:fuselage_barrel]' in p for p in _p3)
+
+        # ④ 方向反：把 band 的 inside 换成越界值 ⇒ 必须红在 inside 那一向
+        _r75 = _rl.RULE_BY_ID['fus_nstr_band']
+        try:
+            _rl.RULES = [_rl.GeomRule(_r75.rid, _r75.family, _r75.param, _r75.label,
+                                      outside=_r75.outside,
+                                      inside=({'n_stringers': 2},),
+                                      expect_all=_r75.expect_all, kind=_r75.kind)]
+            _pass4, _p4, _ = _rl.check(verbose=False)
+        finally:
+            _rl.RULES = _saved3
+        _hit4 = any('[fus_nstr_band] inside' in p for p in _p4)
+
+        _rl_ok = (_rc1 == 0 and not _miss and _same1
+                  and (not _same2) and (not _pass3) and _hit3
+                  and (not _pass4) and _hit4)
+        _rl_detail = ('自检rc=%d 缺向=%s 区块一致=%s | 手改区块→diff红=%s | '
+                      '删规则→覆盖红=%s | 方向反→inside红=%s'
+                      % (_rc1, _miss or '无', _same1, not _same2, _hit3, _hit4))
+    except Exception as _e75:
+        _rl_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e75,)
+    results.append({'id': 'NC-75',
+                    'desc': '越界规则表可证伪（T-B2RULES）：自检 T0..T6 齐全、'
+                            'js 区块与渲染结果逐字节一致，手改区块/漏规则/方向写反各须红',
+                    'expect': '原样 rc=0 且 T0..T6 齐全、区块一致；'
+                              '手改区块须 diff 红、删规则须 F:* 红、方向反须 inside 红',
+                    'actual': _rl_detail, 'ok': _rl_ok})
+    print(f"  [{'ok ' if _rl_ok else 'BAD!'}] NC-75 越界规则表可证伪（T-B2RULES）             "
+          f"{_rl_detail}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],

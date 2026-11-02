@@ -1,0 +1,17 @@
+{
+ "task_id": "G_wing_web_on_spar",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "web_chordwise",
+  "reason": "中间腹板位于 25% 弦向，正好落在前梁位置，前后梁之间装不下该中间腹板。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 108
+}

@@ -368,13 +368,17 @@ build_controls = _build_controls
 
 
 # ---------------------------------------------------------------------------
-def _spec_dict(case):
-    """把「基线 + 覆盖」还原成一个完整 spec dict（复核时用，也是题面的来源）。"""
-    fam = case['family']
+def spec_of(fam, override, name):
+    """「基线 + 一处覆盖」→ 完整 spec dict。
+
+    ★ 只此一份实现：``_b2_refuse_rules.py`` 的探针也用这个函数造 spec。
+      规则表如果自己再抄一份基线构造，两处就会漂（T-D3：规则只有一处，
+      第二处实现就是 bug）。
+    """
     params = dict(BASE_PARAMS[fam])
     af = dict(BASE_AF)
     extra = {}
-    for k, v in case.get('override', {}).items():
+    for k, v in dict(override or {}).items():
         if k in params or k in ('diameter', 'stringer_height', 'stringer_thickness',
                                 'frame_height', 'frame_thickness', 'hole_x',
                                 'hole_y', 'hole_d', 'n_frames', 'n_stringers',
@@ -385,7 +389,7 @@ def _spec_dict(case):
             af[k] = v
         else:
             extra[k] = v
-    d = {'name': case['id'], 'description': case['id'],
+    d = {'name': name, 'description': name,
          'material': {'name': 'Aluminium 2024-T3'},
          'structure': {'family': fam, 'params': params},
          'mesh': dict(MESH_BY_FAMILY[fam]),
@@ -398,6 +402,11 @@ def _spec_dict(case):
         d['extra'] = {'end_shear': 50000.0, 'end_moment': 5e7,
                       'shear_axis': [1.0, 0.0, 0.0], 'moment_axis': [0.0, 1.0, 0.0]}
     return d
+
+
+def _spec_dict(case):
+    """把「基线 + 覆盖」还原成一个完整 spec dict（复核时用，也是题面的来源）。"""
+    return spec_of(case['family'], case.get('override', {}), case['id'])
 
 
 def _refuse_geometry(case):

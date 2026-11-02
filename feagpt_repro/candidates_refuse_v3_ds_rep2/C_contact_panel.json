@@ -1,0 +1,17 @@
+{
+ "task_id": "C_contact_panel",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "contact",
+  "reason": "求解器不支持接触分析，无法考虑板与刚性平面的接触影响"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 99
+}

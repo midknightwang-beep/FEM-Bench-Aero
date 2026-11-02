@@ -1,0 +1,1026 @@
+{
+ "candidates": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\candidates_refuse_v3_glm",
+ "tasks": "tasks_refuse_v1.jsonl",
+ "n_tasks": 60,
+ "summary": {
+  "refuse": {
+   "total": 40,
+   "counted": 40,
+   "pass": 38,
+   "pct": 95.0,
+   "ci95_wilson": [
+    83.5,
+    98.6
+   ],
+   "verdicts": {
+    "refuse_correct": 38,
+    "refuse_wrong": 1,
+    "silent_build": 1
+   }
+  },
+  "build": {
+   "total": 20,
+   "counted": 20,
+   "pass": 14,
+   "pct": 70.0,
+   "ci95_wilson": [
+    48.1,
+    85.5
+   ],
+   "verdicts": {
+    "build_correct": 14,
+    "build_fail": 5,
+    "ctl_no_output": 1
+   }
+  },
+  "kpi": {
+   "refusal_pct": 95.0,
+   "target_pct": 95.0,
+   "target_met": true,
+   "over_refuse_pct": 0.0,
+   "over_refuse_floor_pct": 10.0,
+   "quotable_alone": true,
+   "build_correct_pct": 70.0,
+   "by_type": {
+    "geometry": {
+     "n": 24,
+     "pass": 22,
+     "pct": 91.7
+    },
+    "capability": {
+     "n": 16,
+     "pass": 16,
+     "pct": 100.0
+    }
+   },
+   "by_anchor": {
+    "buckle": {
+     "n": 2,
+     "pass": 2
+    },
+    "contact": {
+     "n": 2,
+     "pass": 2
+    },
+    "dynamic": {
+     "n": 2,
+     "pass": 2
+    },
+    "failure": {
+     "n": 2,
+     "pass": 2
+    },
+    "fatigue": {
+     "n": 2,
+     "pass": 2
+    },
+    "frame_height": {
+     "n": 1,
+     "pass": 1
+    },
+    "frequency": {
+     "n": 2,
+     "pass": 2
+    },
+    "hole_d": {
+     "n": 4,
+     "pass": 4
+    },
+    "hole_x": {
+     "n": 2,
+     "pass": 1
+    },
+    "hole_y": {
+     "n": 1,
+     "pass": 1
+    },
+    "length": {
+     "n": 2,
+     "pass": 2
+    },
+    "n_frames": {
+     "n": 2,
+     "pass": 2
+    },
+    "n_stringers": {
+     "n": 4,
+     "pass": 4
+    },
+    "plastic": {
+     "n": 2,
+     "pass": 2
+    },
+    "stringer_height": {
+     "n": 2,
+     "pass": 2
+    },
+    "stringer_kind": {
+     "n": 1,
+     "pass": 1
+    },
+    "thermal": {
+     "n": 2,
+     "pass": 2
+    },
+    "thickness": {
+     "n": 1,
+     "pass": 1
+    },
+    "web_chordwise": {
+     "n": 4,
+     "pass": 3
+    }
+   }
+  }
+ },
+ "rows": [
+  {
+   "task_id": "G_fus_nstr1",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "n_stringers",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "n_stringers",
+    "blocked_by": "n_stringers",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "柱壳长桁数为1时无法建模（仅支持0或>=5根长桁）"
+   }
+  },
+  {
+   "task_id": "G_fus_nstr3",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "n_stringers",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "n_stringers",
+    "blocked_by": "n_stringers",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "柱壳长桁数为 3，处于建不出的 1–4 区间，只能建 0 根或 >=5 根长桁。"
+   }
+  },
+  {
+   "task_id": "G_fus_nstr4",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "n_stringers",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "n_stringers",
+    "blocked_by": "n_stringers",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "柱壳长桁数为4（1~4根均建不出），仅支持0根或≥5根。"
+   }
+  },
+  {
+   "task_id": "G_fus_nfrm1",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "n_frames",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "n_frames",
+    "blocked_by": "n_frames",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "框数 1 低于最小值 2，柱壳模型无法建立"
+   }
+  },
+  {
+   "task_id": "G_fus_nfrm0",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "n_frames",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "n_frames",
+    "blocked_by": "n_frames",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "框数为0，低于柱壳建模要求的最少2个框，无法建模。"
+   }
+  },
+  {
+   "task_id": "G_fus_strh_r",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "stringer_height",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "stringer_height",
+    "blocked_by": "stringer_height",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "长桁高 900 mm 超过柱壳半径 800 mm，几何无法建立"
+   }
+  },
+  {
+   "task_id": "G_fus_frmh_r",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "frame_height",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "frame_height",
+    "blocked_by": "frame_height",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "框高 900 mm 超过柱壳半径 800 mm，几何越界无法建模。"
+   }
+  },
+  {
+   "task_id": "G_fus_tsec",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "stringer_kind",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "stringer_kind",
+    "blocked_by": "stringer_kind",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "柱壳仅支持 blade 剖面长桁，T 型剖面建不出"
+   }
+  },
+  {
+   "task_id": "G_oh_d0",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "hole_d",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "hole_d",
+    "blocked_by": "hole_d",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "开孔板要求孔直径必须为正值，hole_d=0 无法按开孔板建模。"
+   }
+  },
+  {
+   "task_id": "G_oh_dneg",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "hole_d",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "hole_d",
+    "blocked_by": "hole_d",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "孔直径为负值(-10 mm)，几何上无法定义开孔。"
+   }
+  },
+  {
+   "task_id": "G_oh_lam040",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "hole_d",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "hole_d",
+    "blocked_by": "hole_d",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "孔直径 80 mm 达到板宽 200 mm 的 0.4 倍，超过孔直径/板宽 < 1/3 的限制，无法建模。"
+   }
+  },
+  {
+   "task_id": "G_oh_lam050",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "hole_d",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "hole_d",
+    "blocked_by": "hole_d",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "孔直径100 mm相对板宽200 mm占比达0.5，超过孔径/板宽<1/3的允许范围，无法建模"
+   }
+  },
+  {
+   "task_id": "G_oh_len",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "length",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "length",
+    "blocked_by": "length",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "板长50mm小于2倍孔直径60mm，开孔板几何越界，无法建模"
+   }
+  },
+  {
+   "task_id": "G_oh_x_out",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "hole_x",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "hole_x",
+    "blocked_by": "hole_x",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "孔心 x=395 mm 使孔（半径15 mm）超出板长 400 mm 边界，孔不在板内。"
+   }
+  },
+  {
+   "task_id": "G_oh_x_neg",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "hole_x",
+   "verdict": "refuse_wrong",
+   "counted": false,
+   "detail": {
+    "anchor": "hole_x",
+    "blocked_by": "hole_y",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "孔心 y=100 mm 位于 200 mm 宽板边，孔将贴边越出板外，无法建模",
+    "note": "blocked_by 没命中该题的 anchor"
+   }
+  },
+  {
+   "task_id": "G_oh_y_out",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "hole_y",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "hole_y",
+    "blocked_by": "hole_y",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "孔心 y=198 mm 加上半径 15 mm 已超出板宽 200 mm，孔不在板内，无法建模"
+   }
+  },
+  {
+   "task_id": "G_pan_nstr_neg",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "n_stringers",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "n_stringers",
+    "blocked_by": "n_stringers",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "长桁数为 -1，为负值，超出加筋板可建模范围"
+   }
+  },
+  {
+   "task_id": "G_pan_strh_w",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "stringer_height",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "stringer_height",
+    "blocked_by": "stringer_height",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "长桁高 700 mm 大于板宽 600 mm，超出该族可建模范围"
+   }
+  },
+  {
+   "task_id": "G_pan_t0",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "thickness",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "thickness",
+    "blocked_by": "thickness",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "板厚为 0，非法几何参数，无法建立加筋板模型。"
+   }
+  },
+  {
+   "task_id": "G_pan_len0",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "length",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "length",
+    "blocked_by": "length",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "板长 0 mm 非法，长度必须大于 0，无法建模。"
+   }
+  },
+  {
+   "task_id": "G_wing_web_front",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "web_chordwise",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "web_chordwise",
+    "blocked_by": "web_chordwise",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "10% 弦向的中间腹板位于前梁（25%）之前，不在前后梁之间，无法建模。"
+   }
+  },
+  {
+   "task_id": "G_wing_web_rear",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "web_chordwise",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "web_chordwise",
+    "blocked_by": "web_chordwise",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "中间腹板位于 90% 弦向，超出了前后梁 25%–70% 之间的合法区间，几何无法建模。"
+   }
+  },
+  {
+   "task_id": "G_wing_web_str",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "web_chordwise",
+   "verdict": "silent_build",
+   "counted": false,
+   "detail": {
+    "note": "越界请求却产出了 spec（schema 放行、求解器静默忽略 ⇒ 四道闸看不见）",
+    "spec_family": "wingbox"
+   }
+  },
+  {
+   "task_id": "G_wing_web_on_spar",
+   "kind": "refuse",
+   "refuse_type": "geometry",
+   "anchor": "web_chordwise",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "web_chordwise",
+    "blocked_by": "web_chordwise",
+    "type": "geometry",
+    "type_ok": true,
+    "reason": "中间腹板位置 25% 弦向正好落在前梁上，无法建模"
+   }
+  },
+  {
+   "task_id": "C_modal_wing",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "frequency",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "frequency",
+    "blocked_by": "frequency",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "模态/固有频率分析超出求解器仅支持线性静力的能力范围"
+   }
+  },
+  {
+   "task_id": "C_modal_fus",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "frequency",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "frequency",
+    "blocked_by": "frequency",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "模态/固有频率分析超出当前仅支持线性静力的求解能力"
+   }
+  },
+  {
+   "task_id": "C_buckle_panel",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "buckle",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "buckle",
+    "blocked_by": "buckle",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "线性屈曲特征值与屈曲模态分析超出当前仅支持线性静力求解器的能力。"
+   }
+  },
+  {
+   "task_id": "C_buckle_wing",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "buckle",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "buckle",
+    "blocked_by": "buckle",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "屈曲特征值分析超出线性静力求解能力，无法给出蒙皮剪切屈曲临界载荷系数。"
+   }
+  },
+  {
+   "task_id": "C_dyn_wing",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "dynamic",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "dynamic",
+    "blocked_by": "dynamic",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "瞬态冲击时程响应超出现有求解器能力（仅支持线性静力），无法给出 20 ms 半正弦冲击的位移时程"
+   }
+  },
+  {
+   "task_id": "C_dyn_fus",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "dynamic",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "dynamic",
+    "blocked_by": "dynamic",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "0–50 ms 阶跃载荷的瞬态时程响应超出求解器仅支持线性静力小变形的能力范围"
+   }
+  },
+  {
+   "task_id": "C_contact_panel",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "contact",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "contact",
+    "blocked_by": "contact",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "请求包含板与刚性平面的接触分析，超出线性静力求解器能力，无法建模。"
+   }
+  },
+  {
+   "task_id": "C_contact_oh",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "contact",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "contact",
+    "blocked_by": "contact",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "求解器仅支持线性静力，无法处理销钉与孔壁的接触传载分析"
+   }
+  },
+  {
+   "task_id": "C_plastic_oh",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "plastic",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "plastic",
+    "blocked_by": "plastic",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "求解器仅支持线弹性静力分析，无法进行塑性屈服后重分布计算。"
+   }
+  },
+  {
+   "task_id": "C_plastic_panel",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "plastic",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "plastic",
+    "blocked_by": "plastic",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "求解器仅支持线弹性静力分析，无法进行弹塑性本构计算和塑性应变分布求解。"
+   }
+  },
+  {
+   "task_id": "C_fatigue_oh",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "fatigue",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "fatigue",
+    "blocked_by": "fatigue",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "疲劳寿命估算超出线性静力求解器能力，无法处理循环载荷下的疲劳分析。"
+   }
+  },
+  {
+   "task_id": "C_fatigue_fus",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "fatigue",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "fatigue",
+    "blocked_by": "fatigue",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "疲劳寿命估算超出线性静力求解器能力，无法提供循环次数。"
+   }
+  },
+  {
+   "task_id": "C_thermal_wing",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "thermal",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "thermal",
+    "blocked_by": "thermal",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "求解器仅支持线性静力与线弹性材料，无法进行热-结构耦合分析以计算热应力分布。"
+   }
+  },
+  {
+   "task_id": "C_thermal_fus",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "thermal",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "thermal",
+    "blocked_by": "thermal",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "热-结构耦合（热应力/热变形）在线性静力求解器能力之外，无法建模求解。"
+   }
+  },
+  {
+   "task_id": "C_fail_wing",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "failure",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "failure",
+    "blocked_by": "failure",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "当前求解器只支持线弹性静力分析，无法执行 Hashin 复合材料失效准则计算。"
+   }
+  },
+  {
+   "task_id": "C_fail_panel",
+   "kind": "refuse",
+   "refuse_type": "capability",
+   "anchor": "failure",
+   "verdict": "refuse_correct",
+   "counted": true,
+   "detail": {
+    "anchor": "failure",
+    "blocked_by": "failure",
+    "type": "capability",
+    "type_ok": true,
+    "reason": "复合材料失效准则（Tsai-Wu 首层失效）超出求解器线性静力能力范围，无法执行。"
+   }
+  },
+  {
+   "task_id": "B_ctl_fuselage_barrel_d1800_l2000_str8_frm3",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_correct",
+   "counted": true,
+   "detail": {
+    "n_fields": 17,
+    "n_fail": 0,
+    "failed_fields": []
+   }
+  },
+  {
+   "task_id": "B_ctl_fuselage_barrel_d2000_l1600_str8_frm3",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_correct",
+   "counted": true,
+   "detail": {
+    "n_fields": 17,
+    "n_fail": 0,
+    "failed_fields": []
+   }
+  },
+  {
+   "task_id": "B_ctl_fuselage_barrel_d2000_l1800_str8_frm3",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_correct",
+   "counted": true,
+   "detail": {
+    "n_fields": 17,
+    "n_fail": 0,
+    "failed_fields": []
+   }
+  },
+  {
+   "task_id": "B_ctl_fuselage_barrel_d2000_l2000_str12_frm4",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_correct",
+   "counted": true,
+   "detail": {
+    "n_fields": 17,
+    "n_fail": 0,
+    "failed_fields": []
+   }
+  },
+  {
+   "task_id": "B_ctl_fuselage_barrel_d2000_l2000_str8_frm3",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_correct",
+   "counted": true,
+   "detail": {
+    "n_fields": 17,
+    "n_fail": 0,
+    "failed_fields": []
+   }
+  },
+  {
+   "task_id": "B_ctl_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_correct",
+   "counted": true,
+   "detail": {
+    "n_fields": 17,
+    "n_fail": 0,
+    "failed_fields": []
+   }
+  },
+  {
+   "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrp090s",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_fail",
+   "counted": false,
+   "detail": {
+    "n_fields": 18,
+    "n_fail": 1,
+    "failed_fields": [
+     "params.layup"
+    ]
+   }
+  },
+  {
+   "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrp45s",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_fail",
+   "counted": false,
+   "detail": {
+    "n_fields": 18,
+    "n_fail": 1,
+    "failed_fields": [
+     "params.layup"
+    ]
+   }
+  },
+  {
+   "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrp45s_d40",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_fail",
+   "counted": false,
+   "detail": {
+    "n_fields": 19,
+    "n_fail": 2,
+    "failed_fields": [
+     "params.layup",
+     "material.ply_material (not in gold)"
+    ]
+   }
+  },
+  {
+   "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrpqi",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "ctl_no_output",
+   "counted": false,
+   "detail": {
+    "note": "refuse / spec / clarify 都空"
+   }
+  },
+  {
+   "task_id": "B_ctl_open_hole_panel_400x200_d20_offcentre",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_correct",
+   "counted": true,
+   "detail": {
+    "n_fields": 18,
+    "n_fail": 0,
+    "failed_fields": []
+   }
+  },
+  {
+   "task_id": "B_ctl_open_hole_panel_400x200_d30",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_correct",
+   "counted": true,
+   "detail": {
+    "n_fields": 18,
+    "n_fail": 0,
+    "failed_fields": []
+   }
+  },
+  {
+   "task_id": "B_ctl_stiffened_panel_600x600",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_correct",
+   "counted": true,
+   "detail": {
+    "n_fields": 14,
+    "n_fail": 0,
+    "failed_fields": []
+   }
+  },
+  {
+   "task_id": "B_ctl_stiffened_panel_800x600",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_fail",
+   "counted": false,
+   "detail": {
+    "n_fields": 14,
+    "n_fail": 2,
+    "failed_fields": [
+     "params.length",
+     "params.width"
+    ]
+   }
+  },
+  {
+   "task_id": "B_ctl_stiffened_panel_800x600_str3",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_fail",
+   "counted": false,
+   "detail": {
+    "n_fields": 14,
+    "n_fail": 2,
+    "failed_fields": [
+     "params.length",
+     "params.width"
+    ]
+   }
+  },
+  {
+   "task_id": "B_ctl_naca4412_wingbox_n_ribs3_chord1000",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_correct",
+   "counted": true,
+   "detail": {
+    "n_fields": 24,
+    "n_fail": 0,
+    "failed_fields": []
+   }
+  },
+  {
+   "task_id": "B_ctl_naca4412_wingbox_n_ribs3_chord800",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_correct",
+   "counted": true,
+   "detail": {
+    "n_fields": 24,
+    "n_fail": 0,
+    "failed_fields": []
+   }
+  },
+  {
+   "task_id": "B_ctl_naca4412_wingbox_n_ribs5_chord800",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_correct",
+   "counted": true,
+   "detail": {
+    "n_fields": 24,
+    "n_fail": 0,
+    "failed_fields": []
+   }
+  },
+  {
+   "task_id": "B_ctl_naca4412_wingbox_n_ribs6_chord1000",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_correct",
+   "counted": true,
+   "detail": {
+    "n_fields": 24,
+    "n_fail": 0,
+    "failed_fields": []
+   }
+  },
+  {
+   "task_id": "B_ctl_naca4412_wingbox_n_ribs7_chord1000",
+   "kind": "build",
+   "refuse_type": null,
+   "anchor": null,
+   "verdict": "build_correct",
+   "counted": true,
+   "detail": {
+    "n_fields": 24,
+    "n_fail": 0,
+    "failed_fields": []
+   }
+  }
+ ],
+ "stability": {
+  "n_compared": 60,
+  "n_skipped_missing": 0,
+  "n_agree": 59,
+  "agree_pct": 98.3,
+  "flips": [
+   {
+    "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrpqi",
+    "verdict_a": "ctl_no_output",
+    "verdict_b": "build_fail",
+    "blocked_by_a": null,
+    "blocked_by_b": null
+   }
+  ],
+  "refusal_pct_a": 95.0,
+  "refusal_pct_b": 95.0,
+  "note": "两遍总准确率相同**不等于**结果相同：见 flips。本卷 n=40，翻转 1 条 = 2.5 pp。"
+ },
+ "candidates_b": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\candidates_refuse_v3_glm_rep2"
+}

@@ -1,0 +1,377 @@
+{
+ "generated_at": "2026-11-02T22:16:34+08:00",
+ "purpose": "T-B2B5 越界拒绝 + 对照集：多模型并列（不同分母不相减）",
+ "tasks": "tasks_refuse_v1.jsonl",
+ "n_tasks": 60,
+ "denominators": {
+  "refuse": 40,
+  "build": 20
+ },
+ "by_model": {
+  "glm-5.3-flash": {
+   "candidates": "candidates_refuse_v3_glm",
+   "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+   "refuse": {
+    "total": 40,
+    "counted": 40,
+    "pass": 38,
+    "pct": 95.0,
+    "ci95_wilson": [
+     83.5,
+     98.6
+    ],
+    "verdicts": {
+     "refuse_correct": 38,
+     "refuse_wrong": 1,
+     "silent_build": 1
+    }
+   },
+   "build": {
+    "total": 20,
+    "counted": 20,
+    "pass": 14,
+    "pct": 70.0,
+    "ci95_wilson": [
+     48.1,
+     85.5
+    ],
+    "verdicts": {
+     "build_correct": 14,
+     "build_fail": 5,
+     "ctl_no_output": 1
+    }
+   },
+   "kpi": {
+    "refusal_pct": 95.0,
+    "target_pct": 95.0,
+    "target_met": true,
+    "over_refuse_pct": 0.0,
+    "over_refuse_floor_pct": 10.0,
+    "quotable_alone": true,
+    "build_correct_pct": 70.0,
+    "by_type": {
+     "geometry": {
+      "n": 24,
+      "pass": 22,
+      "pct": 91.7
+     },
+     "capability": {
+      "n": 16,
+      "pass": 16,
+      "pct": 100.0
+     }
+    },
+    "by_anchor": {
+     "buckle": {
+      "n": 2,
+      "pass": 2
+     },
+     "contact": {
+      "n": 2,
+      "pass": 2
+     },
+     "dynamic": {
+      "n": 2,
+      "pass": 2
+     },
+     "failure": {
+      "n": 2,
+      "pass": 2
+     },
+     "fatigue": {
+      "n": 2,
+      "pass": 2
+     },
+     "frame_height": {
+      "n": 1,
+      "pass": 1
+     },
+     "frequency": {
+      "n": 2,
+      "pass": 2
+     },
+     "hole_d": {
+      "n": 4,
+      "pass": 4
+     },
+     "hole_x": {
+      "n": 2,
+      "pass": 1
+     },
+     "hole_y": {
+      "n": 1,
+      "pass": 1
+     },
+     "length": {
+      "n": 2,
+      "pass": 2
+     },
+     "n_frames": {
+      "n": 2,
+      "pass": 2
+     },
+     "n_stringers": {
+      "n": 4,
+      "pass": 4
+     },
+     "plastic": {
+      "n": 2,
+      "pass": 2
+     },
+     "stringer_height": {
+      "n": 2,
+      "pass": 2
+     },
+     "stringer_kind": {
+      "n": 1,
+      "pass": 1
+     },
+     "thermal": {
+      "n": 2,
+      "pass": 2
+     },
+     "thickness": {
+      "n": 1,
+      "pass": 1
+     },
+     "web_chordwise": {
+      "n": 4,
+      "pass": 3
+     }
+    }
+   },
+   "excluded_ids": []
+  },
+  "deepseek-v4-pro": {
+   "candidates": "candidates_refuse_v3_ds",
+   "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+   "refuse": {
+    "total": 40,
+    "counted": 40,
+    "pass": 33,
+    "pct": 82.5,
+    "ci95_wilson": [
+     68.1,
+     91.3
+    ],
+    "verdicts": {
+     "refuse_correct": 33,
+     "silent_build": 7
+    }
+   },
+   "build": {
+    "total": 20,
+    "counted": 20,
+    "pass": 10,
+    "pct": 50.0,
+    "ci95_wilson": [
+     29.9,
+     70.1
+    ],
+    "verdicts": {
+     "build_correct": 10,
+     "build_fail": 5,
+     "over_refuse": 5
+    }
+   },
+   "kpi": {
+    "refusal_pct": 82.5,
+    "target_pct": 95.0,
+    "target_met": false,
+    "over_refuse_pct": 25.0,
+    "over_refuse_floor_pct": 10.0,
+    "quotable_alone": false,
+    "build_correct_pct": 50.0,
+    "by_type": {
+     "geometry": {
+      "n": 24,
+      "pass": 17,
+      "pct": 70.8
+     },
+     "capability": {
+      "n": 16,
+      "pass": 16,
+      "pct": 100.0
+     }
+    },
+    "by_anchor": {
+     "buckle": {
+      "n": 2,
+      "pass": 2
+     },
+     "contact": {
+      "n": 2,
+      "pass": 2
+     },
+     "dynamic": {
+      "n": 2,
+      "pass": 2
+     },
+     "failure": {
+      "n": 2,
+      "pass": 2
+     },
+     "fatigue": {
+      "n": 2,
+      "pass": 2
+     },
+     "frame_height": {
+      "n": 1,
+      "pass": 1
+     },
+     "frequency": {
+      "n": 2,
+      "pass": 2
+     },
+     "hole_d": {
+      "n": 4,
+      "pass": 1
+     },
+     "hole_x": {
+      "n": 2,
+      "pass": 2
+     },
+     "hole_y": {
+      "n": 1,
+      "pass": 1
+     },
+     "length": {
+      "n": 2,
+      "pass": 1
+     },
+     "n_frames": {
+      "n": 2,
+      "pass": 1
+     },
+     "n_stringers": {
+      "n": 4,
+      "pass": 4
+     },
+     "plastic": {
+      "n": 2,
+      "pass": 2
+     },
+     "stringer_height": {
+      "n": 2,
+      "pass": 2
+     },
+     "stringer_kind": {
+      "n": 1,
+      "pass": 1
+     },
+     "thermal": {
+      "n": 2,
+      "pass": 2
+     },
+     "thickness": {
+      "n": 1,
+      "pass": 1
+     },
+     "web_chordwise": {
+      "n": 4,
+      "pass": 2
+     }
+    }
+   },
+   "excluded_ids": []
+  }
+ },
+ "problems": [],
+ "prompt_sha_by_model": {
+  "glm-5.3-flash": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+  "deepseek-v4-pro": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9"
+ },
+ "prompt_sha_consistent": true,
+ "delta_allowed": {
+  "refuse": true,
+  "build": true
+ },
+ "why_no_delta": {},
+ "cross_model": {
+  "compared": [
+   "glm-5.3-flash",
+   "deepseek-v4-pro"
+  ],
+  "n_disagree": 13,
+  "disagree": [
+   {
+    "task_id": "G_fus_nfrm0",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_oh_d0",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_oh_lam040",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_oh_lam050",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_oh_len",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_oh_x_neg",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_wrong",
+    "deepseek-v4-pro": "refuse_correct"
+   },
+   {
+    "task_id": "G_wing_web_front",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_wing_web_rear",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_wing_web_str",
+    "kind": "refuse",
+    "glm-5.3-flash": "silent_build",
+    "deepseek-v4-pro": "refuse_correct"
+   },
+   {
+    "task_id": "B_ctl_fuselage_barrel_d2000_l1800_str8_frm3",
+    "kind": "build",
+    "glm-5.3-flash": "build_correct",
+    "deepseek-v4-pro": "over_refuse"
+   },
+   {
+    "task_id": "B_ctl_fuselage_barrel_d2000_l2000_str12_frm4",
+    "kind": "build",
+    "glm-5.3-flash": "build_correct",
+    "deepseek-v4-pro": "over_refuse"
+   },
+   {
+    "task_id": "B_ctl_fuselage_barrel_d2000_l2000_str8_frm3",
+    "kind": "build",
+    "glm-5.3-flash": "build_correct",
+    "deepseek-v4-pro": "over_refuse"
+   },
+   {
+    "task_id": "B_ctl_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+    "kind": "build",
+    "glm-5.3-flash": "build_correct",
+    "deepseek-v4-pro": "over_refuse"
+   }
+  ]
+ }
+}

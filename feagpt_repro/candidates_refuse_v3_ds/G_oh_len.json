@@ -1,0 +1,45 @@
+{
+ "task_id": "G_oh_len",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "open_hole_panel",
+  "description": "开孔板中心孔拉伸",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "E": 73100,
+   "nu": 0.33,
+   "density": 2.78e-9,
+   "yield": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 50,
+    "width": 200,
+    "thickness": 2,
+    "hole_d": 30
+   }
+  },
+  "mesh": {
+   "size": 10
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.05
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 373
+}

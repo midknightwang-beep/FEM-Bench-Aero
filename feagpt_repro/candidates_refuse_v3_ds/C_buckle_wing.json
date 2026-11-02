@@ -1,0 +1,17 @@
+{
+ "task_id": "C_buckle_wing",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "buckle",
+  "reason": "请求蒙皮剪切屈曲临界载荷系数，求解器只支持线性静力，不能做屈曲特征值分析。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 109
+}

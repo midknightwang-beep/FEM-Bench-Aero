@@ -1,0 +1,75 @@
+{
+ "task_id": "B_ctl_naca4412_wingbox_n_ribs3_chord1000",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "build",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "wingbox_4412_tip_force",
+  "description": "NACA4412 翼盒悬臂翼尖集中力线性静力分析",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "wingbox",
+   "params": {}
+  },
+  "airfoil": {
+   "code": "4412",
+   "chord": 1000,
+   "span": 2000,
+   "skin_thickness": 3,
+   "n_ribs": 3,
+   "rib_thickness": 4,
+   "spar_chordwise": [
+    0.25,
+    0.7
+   ],
+   "web_chordwise": [],
+   "n_stringers_per_skin": 0,
+   "tip_chord_ratio": 1,
+   "sweep_deg": 0
+  },
+  "mesh": {
+   "size_chord": 12,
+   "size_span": 25
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 500,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/airfoil must have required property 'tip_chord_ratio'",
+    "/airfoil must have required property 'sweep_deg'",
+    "/ must match \"then\" schema",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'yield_strength'",
+    "/analysis 不允许的键 \"type\"，请删除。analysis 允许键: solver/step_type/incremental/initial_increment/total_time/outputs（建议直接写 {}）"
+   ]
+  }
+ ],
+ "raw_len": 621
+}

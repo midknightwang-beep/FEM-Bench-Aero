@@ -1,0 +1,17 @@
+{
+ "task_id": "C_fatigue_oh",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "fatigue",
+  "reason": "疲劳寿命估算超出线性静力求解器能力，无法处理循环载荷下的疲劳分析。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 100
+}

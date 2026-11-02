@@ -1,0 +1,17 @@
+{
+ "task_id": "G_oh_d0",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "hole_d",
+  "reason": "开孔板要求孔直径 > 0，孔直径为 0 已越界（不打孔应按无孔板建模，不属于开孔板族）。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 108
+}

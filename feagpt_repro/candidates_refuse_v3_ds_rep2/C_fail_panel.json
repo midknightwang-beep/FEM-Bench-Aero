@@ -1,0 +1,17 @@
+{
+ "task_id": "C_fail_panel",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "failure",
+  "reason": "求解器只支持线弹性静力分析，无法执行 Tsai-Wu 首层失效准则判断。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 109
+}

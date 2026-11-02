@@ -1,0 +1,17 @@
+{
+ "task_id": "G_fus_nfrm1",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "n_frames",
+  "reason": "柱壳框数必须 >= 2，而请求只设 1 个框，无法建模。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 94
+}

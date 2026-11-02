@@ -1,0 +1,17 @@
+{
+ "task_id": "G_fus_strh_r",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "stringer_height",
+  "reason": "长桁高 900 mm 超过柱壳半径 800 mm，几何无法建立"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 110
+}

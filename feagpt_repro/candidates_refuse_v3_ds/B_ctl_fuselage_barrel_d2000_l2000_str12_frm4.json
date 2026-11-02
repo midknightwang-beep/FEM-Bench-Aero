@@ -1,0 +1,24 @@
+{
+ "task_id": "B_ctl_fuselage_barrel_d2000_l2000_str12_frm4",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "build",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "n_frames",
+  "reason": "柱壳的框数 < 2，无法建立结构模型。"
+ },
+ "spec": null,
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "JSON parse: SyntaxError: Expected ',' or '}' after property value in JSON at position 263 (line 6 column 2)"
+   ]
+  }
+ ],
+ "raw_len": 111
+}

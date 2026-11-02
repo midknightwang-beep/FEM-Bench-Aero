@@ -1,0 +1,17 @@
+{
+ "task_id": "G_oh_y_out",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "hole_y",
+  "reason": "孔心 y=198 mm 使孔边距仅 2 mm，孔不在板内（孔直径 30 mm，板宽 200 mm，孔心须在 y∈[15,185] 内）"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 137
+}

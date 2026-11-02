@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
  "n_active_claims": 34,
- "n_artifacts": 72,
+ "n_artifacts": 74,
  "n_fail": 0,
  "n_fail_structural": 0,
  "n_fail_semantic": 0,
@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_74.json）",
-   "expect": "74/74",
-   "actual": "74/74",
+   "desc": "C-019 负控通过数（源 negative_controls_75.json）",
+   "expect": "75/75",
+   "actual": "75/75",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "74",
-   "actual": "74",
+   "expect": "75",
+   "actual": "75",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 6.15",
-   "actual": "6.15",
+   "expect": "全部 = 6.16",
+   "actual": "6.16",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "74/74",
-   "actual": "74/74",
+   "expect": "75/75",
+   "actual": "75/75",
    "ok": true,
    "skip": false
   },
@@ -366,7 +366,7 @@
    "id": "S-44",
    "desc": "官方导航文件 INDEX 的 headline 指向与负控编号必须与 artifact 一致（R58）",
    "expect": "含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致",
-   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L26 主区间 NC-70..74 / 总数 74；artifact 最大 NC-74、共 74 条；逐条覆盖 74/74",
+   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L26 主区间 NC-70..75 / 总数 75；artifact 最大 NC-75、共 75 条；逐条覆盖 75/75",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793623442/1793623442；check 1793623930 vs 负控 1793623442",
+   "actual": "C-019 mtime 记录/实际 = 1793629229/1793629229；check 1793630338 vs 负控 1793629229",
    "ok": true,
    "skip": false
   },
@@ -712,9 +712,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 48239,
-   "sha256": "a77ba5cbbdd5b022b03acd6a8866a07a4b97598db405006265d826c796b4be21",
-   "mtime": 1793623703
+   "size": 48754,
+   "sha256": "982a66ace244f677d7f4759936b76c6fed3582d338a22c8d39384c157a556258",
+   "mtime": 1793629794
   },
   {
    "claim_id": "C-027",
@@ -1030,6 +1030,42 @@
   },
   {
    "claim_id": "C-042",
+   "artifact": "feagpt_repro/reports/diagnostics/refuse_scores_v3.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 7344,
+   "sha256": "8defe676bfd63b540c9f64017d83f80679b5d62a2e6e31239186c343160c8f2e",
+   "mtime": 1793630029
+  },
+  {
+   "claim_id": "C-042",
+   "artifact": "feagpt_repro/reports/diagnostics/refuse_stability_v3_glm.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 24716,
+   "sha256": "4074ed36b1527fe80656499a5ebf5f72d74efdd68af76349293a3462e984463c",
+   "mtime": 1793630029
+  },
+  {
+   "claim_id": "C-042",
+   "artifact": "feagpt_repro/reports/diagnostics/refuse_stability_v3_ds.json",
+   "exists": true,
+   "git_tracked": true,
+   "external": false,
+   "ok": true,
+   "problems": [],
+   "size": 26899,
+   "sha256": "da4473b14ad2412fa528ee46b869644280b115c905969d58f8838f94a90fe505",
+   "mtime": 1793630029
+  },
+  {
+   "claim_id": "C-042",
    "artifact": "feagpt_repro/reports/diagnostics/refuse_scores_v2.json",
    "exists": true,
    "git_tracked": true,
@@ -1038,18 +1074,6 @@
    "problems": [],
    "size": 6975,
    "sha256": "354208b00b6aec94e3360a93beb989bb1505212a6016be80d1912bbaa42c66c5",
-   "mtime": 1793626568
-  },
-  {
-   "claim_id": "C-042",
-   "artifact": "feagpt_repro/reports/diagnostics/refuse_stability_v2_glm.json",
-   "exists": true,
-   "git_tracked": true,
-   "external": false,
-   "ok": true,
-   "problems": [],
-   "size": 25236,
-   "sha256": "8b4e18af0f39d06a0004c8c32ea7fb27a1e200e4678097687e425d93bfc3a790",
    "mtime": 1793626568
   },
   {
@@ -1354,15 +1378,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_74.json",
+   "artifact": "feagpt_repro/reports/negative_controls_75.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 18954,
-   "sha256": "d3122b595445d344ab96a9ad7f9e9f4760be3f4397e574474326516c2bbe61a2",
-   "mtime": 1793623442
+   "size": 19461,
+   "sha256": "2c05eec345f0ebb1cd91daebf0e08256764b57a628799c82e05adc35f4cdfa22",
+   "mtime": 1793629229
   }
  ]
 }
