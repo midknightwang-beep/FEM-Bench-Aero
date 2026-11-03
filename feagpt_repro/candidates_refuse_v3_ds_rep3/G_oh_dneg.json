@@ -1,0 +1,17 @@
+{
+ "task_id": "G_oh_dneg",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "hole_d",
+  "reason": "孔直径 -10 mm 为负值，必须大于 0。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 92
+}

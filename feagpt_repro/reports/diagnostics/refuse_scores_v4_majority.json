@@ -1,0 +1,3214 @@
+{
+ "generated_at": "2026-11-03T23:02:01+0800",
+ "purpose": "T-B2B5 v4：越界拒答卷 k=3 多数表决（两模型并列）。**与 v3 的单遍口径不可混比**：v3 每模型只跑一遍，本表每模型跑三遍取多数；单遍数字仅作为稳定性证据保留在 per_rep。",
+ "tasks": "tasks_refuse_v1.jsonl",
+ "n_tasks": 60,
+ "denominators": {
+  "refuse": 40,
+  "build": 20
+ },
+ "by_model": {
+  "glm-5.3-flash": {
+   "candidates_per_rep": [
+    "candidates_refuse_v3_glm",
+    "candidates_refuse_v3_glm_rep2",
+    "candidates_refuse_v3_glm_rep3"
+   ],
+   "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+   "per_rep": [
+    {
+     "candidates": "candidates_refuse_v3_glm",
+     "refuse_pct": 95.0,
+     "over_refuse_pct": 0.0,
+     "build_correct_pct": 70.0,
+     "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9"
+    },
+    {
+     "candidates": "candidates_refuse_v3_glm_rep2",
+     "refuse_pct": 95.0,
+     "over_refuse_pct": 0.0,
+     "build_correct_pct": 70.0,
+     "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9"
+    },
+    {
+     "candidates": "candidates_refuse_v3_glm_rep3",
+     "refuse_pct": 95.0,
+     "over_refuse_pct": 0.0,
+     "build_correct_pct": 70.0,
+     "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9"
+    }
+   ],
+   "stability": {
+    "n_tasks": 60,
+    "pairs": [
+     {
+      "a": 1,
+      "b": 2,
+      "n_agree": 59,
+      "pct": 98.3
+     },
+     {
+      "a": 1,
+      "b": 3,
+      "n_agree": 58,
+      "pct": 96.7
+     },
+     {
+      "a": 2,
+      "b": 3,
+      "n_agree": 59,
+      "pct": 98.3
+     }
+    ],
+    "n_all_agree": 58,
+    "all_agree_pct": 96.7
+   },
+   "refuse": {
+    "total": 40,
+    "counted": 40,
+    "pass": 38,
+    "pct": 95.0,
+    "ci95_wilson": [
+     83.5,
+     98.6
+    ],
+    "verdicts": {
+     "refuse_correct": 38,
+     "refuse_wrong": 1,
+     "silent_build": 1
+    }
+   },
+   "build": {
+    "total": 20,
+    "counted": 20,
+    "pass": 14,
+    "pct": 70.0,
+    "ci95_wilson": [
+     48.1,
+     85.5
+    ],
+    "verdicts": {
+     "build_correct": 14,
+     "build_fail": 6
+    }
+   },
+   "kpi": {
+    "refusal_pct": 95.0,
+    "target_pct": 95.0,
+    "target_met": true,
+    "over_refuse_pct": 0.0,
+    "over_refuse_floor_pct": 10.0,
+    "quotable_alone": true,
+    "build_correct_pct": 70.0,
+    "by_type": {
+     "geometry": {
+      "n": 24,
+      "pass": 22,
+      "pct": 91.7
+     },
+     "capability": {
+      "n": 16,
+      "pass": 16,
+      "pct": 100.0
+     }
+    },
+    "by_anchor": {
+     "buckle": {
+      "n": 2,
+      "pass": 2
+     },
+     "contact": {
+      "n": 2,
+      "pass": 2
+     },
+     "dynamic": {
+      "n": 2,
+      "pass": 2
+     },
+     "failure": {
+      "n": 2,
+      "pass": 2
+     },
+     "fatigue": {
+      "n": 2,
+      "pass": 2
+     },
+     "frame_height": {
+      "n": 1,
+      "pass": 1
+     },
+     "frequency": {
+      "n": 2,
+      "pass": 2
+     },
+     "hole_d": {
+      "n": 4,
+      "pass": 4
+     },
+     "hole_x": {
+      "n": 2,
+      "pass": 1
+     },
+     "hole_y": {
+      "n": 1,
+      "pass": 1
+     },
+     "length": {
+      "n": 2,
+      "pass": 2
+     },
+     "n_frames": {
+      "n": 2,
+      "pass": 2
+     },
+     "n_stringers": {
+      "n": 4,
+      "pass": 4
+     },
+     "plastic": {
+      "n": 2,
+      "pass": 2
+     },
+     "stringer_height": {
+      "n": 2,
+      "pass": 2
+     },
+     "stringer_kind": {
+      "n": 1,
+      "pass": 1
+     },
+     "thermal": {
+      "n": 2,
+      "pass": 2
+     },
+     "thickness": {
+      "n": 1,
+      "pass": 1
+     },
+     "web_chordwise": {
+      "n": 4,
+      "pass": 3
+     }
+    }
+   },
+   "undecided": [],
+   "rows": [
+    {
+     "task_id": "G_fus_nstr1",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "n_stringers",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_fus_nstr3",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "n_stringers",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_fus_nstr4",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "n_stringers",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_fus_nfrm1",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "n_frames",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_fus_nfrm0",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "n_frames",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_fus_strh_r",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "stringer_height",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_fus_frmh_r",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "frame_height",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_fus_tsec",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "stringer_kind",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_oh_d0",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "hole_d",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_oh_dneg",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "hole_d",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_oh_lam040",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "hole_d",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_oh_lam050",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "hole_d",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_oh_len",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "length",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_oh_x_out",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "hole_x",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_oh_x_neg",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "hole_x",
+     "verdict": "refuse_wrong",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_wrong",
+      "refuse_wrong",
+      "silent_build"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "no_refuse"
+      ],
+      "counts": {
+       "refuse": 2,
+       "no_refuse": 1,
+       "invalid": 0
+      },
+      "level2": {
+       "refuse_wrong": 2
+      }
+     }
+    },
+    {
+     "task_id": "G_oh_y_out",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "hole_y",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_pan_nstr_neg",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "n_stringers",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_pan_strh_w",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "stringer_height",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_pan_t0",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "thickness",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_pan_len0",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "length",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_wing_web_front",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "web_chordwise",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_wing_web_rear",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "web_chordwise",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_wing_web_str",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "web_chordwise",
+     "verdict": "silent_build",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "silent_build",
+      "silent_build",
+      "silent_build"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_wing_web_on_spar",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "web_chordwise",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_modal_wing",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "frequency",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_modal_fus",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "frequency",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_buckle_panel",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "buckle",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_buckle_wing",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "buckle",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_dyn_wing",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "dynamic",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_dyn_fus",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "dynamic",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_contact_panel",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "contact",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_contact_oh",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "contact",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_plastic_oh",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "plastic",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_plastic_panel",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "plastic",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_fatigue_oh",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "fatigue",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_fatigue_fus",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "fatigue",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_thermal_wing",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "thermal",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_thermal_fus",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "thermal",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_fail_wing",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "failure",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_fail_panel",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "failure",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_fuselage_barrel_d1800_l2000_str8_frm3",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_fuselage_barrel_d2000_l1600_str8_frm3",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_fuselage_barrel_d2000_l1800_str8_frm3",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_fuselage_barrel_d2000_l2000_str12_frm4",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_fuselage_barrel_d2000_l2000_str8_frm3",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrp090s",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_fail",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "build_fail",
+      "build_fail",
+      "build_fail"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrp45s",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_fail",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "build_fail",
+      "build_fail",
+      "build_fail"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrp45s_d40",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_fail",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "build_fail",
+      "build_fail",
+      "build_fail"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrpqi",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_fail",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "ctl_no_output",
+      "build_fail",
+      "build_fail"
+     ],
+     "vote_detail": {
+      "bins": [
+       "invalid",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "counts": {
+       "refuse": 0,
+       "no_refuse": 2,
+       "invalid": 1
+      },
+      "level2": {
+       "build_fail": 2
+      }
+     }
+    },
+    {
+     "task_id": "B_ctl_open_hole_panel_400x200_d20_offcentre",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_open_hole_panel_400x200_d30",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_stiffened_panel_600x600",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_stiffened_panel_800x600",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_fail",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "build_fail",
+      "build_fail",
+      "build_fail"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_stiffened_panel_800x600_str3",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_fail",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "build_fail",
+      "build_fail",
+      "build_fail"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_naca4412_wingbox_n_ribs3_chord1000",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_naca4412_wingbox_n_ribs3_chord800",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_naca4412_wingbox_n_ribs5_chord800",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_naca4412_wingbox_n_ribs6_chord1000",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_naca4412_wingbox_n_ribs7_chord1000",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    }
+   ]
+  },
+  "deepseek-v4-pro": {
+   "candidates_per_rep": [
+    "candidates_refuse_v3_ds",
+    "candidates_refuse_v3_ds_rep2",
+    "candidates_refuse_v3_ds_rep3"
+   ],
+   "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+   "per_rep": [
+    {
+     "candidates": "candidates_refuse_v3_ds",
+     "refuse_pct": 82.5,
+     "over_refuse_pct": 25.0,
+     "build_correct_pct": 50.0,
+     "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9"
+    },
+    {
+     "candidates": "candidates_refuse_v3_ds_rep2",
+     "refuse_pct": 85.0,
+     "over_refuse_pct": 10.0,
+     "build_correct_pct": 65.0,
+     "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9"
+    },
+    {
+     "candidates": "candidates_refuse_v3_ds_rep3",
+     "refuse_pct": 85.0,
+     "over_refuse_pct": 5.0,
+     "build_correct_pct": 65.0,
+     "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9"
+    }
+   ],
+   "stability": {
+    "n_tasks": 60,
+    "pairs": [
+     {
+      "a": 1,
+      "b": 2,
+      "n_agree": 49,
+      "pct": 81.7
+     },
+     {
+      "a": 1,
+      "b": 3,
+      "n_agree": 50,
+      "pct": 83.3
+     },
+     {
+      "a": 2,
+      "b": 3,
+      "n_agree": 53,
+      "pct": 88.3
+     }
+    ],
+    "n_all_agree": 46,
+    "all_agree_pct": 76.7
+   },
+   "refuse": {
+    "total": 40,
+    "counted": 40,
+    "pass": 35,
+    "pct": 87.5,
+    "ci95_wilson": [
+     73.9,
+     94.5
+    ],
+    "verdicts": {
+     "refuse_correct": 35,
+     "silent_build": 5
+    }
+   },
+   "build": {
+    "total": 20,
+    "counted": 20,
+    "pass": 13,
+    "pct": 65.0,
+    "ci95_wilson": [
+     43.3,
+     81.9
+    ],
+    "verdicts": {
+     "build_correct": 13,
+     "build_fail": 5,
+     "over_refuse": 1,
+     "undecided": 1
+    }
+   },
+   "kpi": {
+    "refusal_pct": 87.5,
+    "target_pct": 95.0,
+    "target_met": false,
+    "over_refuse_pct": 5.0,
+    "over_refuse_floor_pct": 10.0,
+    "quotable_alone": true,
+    "build_correct_pct": 65.0,
+    "by_type": {
+     "geometry": {
+      "n": 24,
+      "pass": 19,
+      "pct": 79.2
+     },
+     "capability": {
+      "n": 16,
+      "pass": 16,
+      "pct": 100.0
+     }
+    },
+    "by_anchor": {
+     "buckle": {
+      "n": 2,
+      "pass": 2
+     },
+     "contact": {
+      "n": 2,
+      "pass": 2
+     },
+     "dynamic": {
+      "n": 2,
+      "pass": 2
+     },
+     "failure": {
+      "n": 2,
+      "pass": 2
+     },
+     "fatigue": {
+      "n": 2,
+      "pass": 2
+     },
+     "frame_height": {
+      "n": 1,
+      "pass": 1
+     },
+     "frequency": {
+      "n": 2,
+      "pass": 2
+     },
+     "hole_d": {
+      "n": 4,
+      "pass": 1
+     },
+     "hole_x": {
+      "n": 2,
+      "pass": 2
+     },
+     "hole_y": {
+      "n": 1,
+      "pass": 1
+     },
+     "length": {
+      "n": 2,
+      "pass": 1
+     },
+     "n_frames": {
+      "n": 2,
+      "pass": 2
+     },
+     "n_stringers": {
+      "n": 4,
+      "pass": 4
+     },
+     "plastic": {
+      "n": 2,
+      "pass": 2
+     },
+     "stringer_height": {
+      "n": 2,
+      "pass": 2
+     },
+     "stringer_kind": {
+      "n": 1,
+      "pass": 1
+     },
+     "thermal": {
+      "n": 2,
+      "pass": 2
+     },
+     "thickness": {
+      "n": 1,
+      "pass": 1
+     },
+     "web_chordwise": {
+      "n": 4,
+      "pass": 3
+     }
+    }
+   },
+   "undecided": [
+    "B_ctl_open_hole_panel_400x200_d20_cfrp45s"
+   ],
+   "rows": [
+    {
+     "task_id": "G_fus_nstr1",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "n_stringers",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_fus_nstr3",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "n_stringers",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_fus_nstr4",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "n_stringers",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_fus_nfrm1",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "n_frames",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_fus_nfrm0",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "n_frames",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "silent_build",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "refuse",
+       "refuse"
+      ],
+      "counts": {
+       "refuse": 2,
+       "no_refuse": 1,
+       "invalid": 0
+      },
+      "level2": {
+       "refuse_correct": 2
+      }
+     }
+    },
+    {
+     "task_id": "G_fus_strh_r",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "stringer_height",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_fus_frmh_r",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "frame_height",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "silent_build",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "no_refuse",
+       "refuse"
+      ],
+      "counts": {
+       "refuse": 2,
+       "no_refuse": 1,
+       "invalid": 0
+      },
+      "level2": {
+       "refuse_correct": 2
+      }
+     }
+    },
+    {
+     "task_id": "G_fus_tsec",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "stringer_kind",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_oh_d0",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "hole_d",
+     "verdict": "silent_build",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "silent_build",
+      "refuse_correct",
+      "silent_build"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "refuse",
+       "no_refuse"
+      ],
+      "counts": {
+       "refuse": 1,
+       "no_refuse": 2,
+       "invalid": 0
+      },
+      "level2": {
+       "silent_build": 2
+      }
+     }
+    },
+    {
+     "task_id": "G_oh_dneg",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "hole_d",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_oh_lam040",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "hole_d",
+     "verdict": "silent_build",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "silent_build",
+      "silent_build",
+      "silent_build"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_oh_lam050",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "hole_d",
+     "verdict": "silent_build",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "silent_build",
+      "silent_build",
+      "silent_build"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_oh_len",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "length",
+     "verdict": "silent_build",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "silent_build",
+      "silent_build",
+      "silent_build"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_oh_x_out",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "hole_x",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_oh_x_neg",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "hole_x",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "silent_build"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "no_refuse"
+      ],
+      "counts": {
+       "refuse": 2,
+       "no_refuse": 1,
+       "invalid": 0
+      },
+      "level2": {
+       "refuse_correct": 2
+      }
+     }
+    },
+    {
+     "task_id": "G_oh_y_out",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "hole_y",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_pan_nstr_neg",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "n_stringers",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_pan_strh_w",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "stringer_height",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_pan_t0",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "thickness",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_pan_len0",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "length",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "G_wing_web_front",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "web_chordwise",
+     "verdict": "silent_build",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "silent_build",
+      "silent_build",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "refuse"
+      ],
+      "counts": {
+       "refuse": 1,
+       "no_refuse": 2,
+       "invalid": 0
+      },
+      "level2": {
+       "silent_build": 2
+      }
+     }
+    },
+    {
+     "task_id": "G_wing_web_rear",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "web_chordwise",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "silent_build",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "refuse",
+       "refuse"
+      ],
+      "counts": {
+       "refuse": 2,
+       "no_refuse": 1,
+       "invalid": 0
+      },
+      "level2": {
+       "refuse_correct": 2
+      }
+     }
+    },
+    {
+     "task_id": "G_wing_web_str",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "web_chordwise",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "silent_build",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "no_refuse",
+       "refuse"
+      ],
+      "counts": {
+       "refuse": 2,
+       "no_refuse": 1,
+       "invalid": 0
+      },
+      "level2": {
+       "refuse_correct": 2
+      }
+     }
+    },
+    {
+     "task_id": "G_wing_web_on_spar",
+     "kind": "refuse",
+     "refuse_type": "geometry",
+     "anchor": "web_chordwise",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "silent_build"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "no_refuse"
+      ],
+      "counts": {
+       "refuse": 2,
+       "no_refuse": 1,
+       "invalid": 0
+      },
+      "level2": {
+       "refuse_correct": 2
+      }
+     }
+    },
+    {
+     "task_id": "C_modal_wing",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "frequency",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_modal_fus",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "frequency",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_buckle_panel",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "buckle",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_buckle_wing",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "buckle",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_dyn_wing",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "dynamic",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_dyn_fus",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "dynamic",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_contact_panel",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "contact",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_contact_oh",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "contact",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_plastic_oh",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "plastic",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_plastic_panel",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "plastic",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_fatigue_oh",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "fatigue",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_fatigue_fus",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "fatigue",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_thermal_wing",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "thermal",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_thermal_fus",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "thermal",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_fail_wing",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "failure",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "C_fail_panel",
+     "kind": "refuse",
+     "refuse_type": "capability",
+     "anchor": "failure",
+     "verdict": "refuse_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "refuse_correct",
+      "refuse_correct",
+      "refuse_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_fuselage_barrel_d1800_l2000_str8_frm3",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_fuselage_barrel_d2000_l1600_str8_frm3",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_fuselage_barrel_d2000_l1800_str8_frm3",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "over_refuse",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "counts": {
+       "refuse": 1,
+       "no_refuse": 2,
+       "invalid": 0
+      },
+      "level2": {
+       "build_correct": 2
+      }
+     }
+    },
+    {
+     "task_id": "B_ctl_fuselage_barrel_d2000_l2000_str12_frm4",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "over_refuse",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "over_refuse",
+      "over_refuse",
+      "over_refuse"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "refuse",
+       "refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_fuselage_barrel_d2000_l2000_str8_frm3",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "over_refuse",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "counts": {
+       "refuse": 1,
+       "no_refuse": 2,
+       "invalid": 0
+      },
+      "level2": {
+       "build_correct": 2
+      }
+     }
+    },
+    {
+     "task_id": "B_ctl_fuselage_barrel_d2000_l2000_t2_str8_frm3",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "over_refuse",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "counts": {
+       "refuse": 1,
+       "no_refuse": 2,
+       "invalid": 0
+      },
+      "level2": {
+       "build_correct": 2
+      }
+     }
+    },
+    {
+     "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrp090s",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_fail",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "build_fail",
+      "build_fail",
+      "build_fail"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrp45s",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "undecided",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "build_fail",
+      "ctl_no_output",
+      "ctl_no_output"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "invalid",
+       "invalid"
+      ],
+      "counts": {
+       "refuse": 0,
+       "no_refuse": 1,
+       "invalid": 2
+      },
+      "note": "无过半票（invalid 占比过高或平票）"
+     }
+    },
+    {
+     "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrp45s_d40",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_fail",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "build_fail",
+      "build_fail",
+      "build_fail"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrpqi",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_fail",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "over_refuse",
+      "build_fail",
+      "build_fail"
+     ],
+     "vote_detail": {
+      "bins": [
+       "refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "counts": {
+       "refuse": 1,
+       "no_refuse": 2,
+       "invalid": 0
+      },
+      "level2": {
+       "build_fail": 2
+      }
+     }
+    },
+    {
+     "task_id": "B_ctl_open_hole_panel_400x200_d20_offcentre",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_open_hole_panel_400x200_d30",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_stiffened_panel_600x600",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_stiffened_panel_800x600",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_fail",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "build_fail",
+      "build_fail",
+      "build_fail"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_stiffened_panel_800x600_str3",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_fail",
+     "counted": false,
+     "counted_from_table": true,
+     "votes": [
+      "build_fail",
+      "over_refuse",
+      "build_fail"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "refuse",
+       "no_refuse"
+      ],
+      "counts": {
+       "refuse": 1,
+       "no_refuse": 2,
+       "invalid": 0
+      },
+      "level2": {
+       "build_fail": 2
+      }
+     }
+    },
+    {
+     "task_id": "B_ctl_naca4412_wingbox_n_ribs3_chord1000",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_naca4412_wingbox_n_ribs3_chord800",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_naca4412_wingbox_n_ribs5_chord800",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_naca4412_wingbox_n_ribs6_chord1000",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    },
+    {
+     "task_id": "B_ctl_naca4412_wingbox_n_ribs7_chord1000",
+     "kind": "build",
+     "refuse_type": null,
+     "anchor": null,
+     "verdict": "build_correct",
+     "counted": true,
+     "counted_from_table": true,
+     "votes": [
+      "build_correct",
+      "build_correct",
+      "build_correct"
+     ],
+     "vote_detail": {
+      "bins": [
+       "no_refuse",
+       "no_refuse",
+       "no_refuse"
+      ],
+      "unanimous": true
+     }
+    }
+   ]
+  }
+ },
+ "problems": [],
+ "prompt_sha_by_model": {
+  "glm-5.3-flash": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+  "deepseek-v4-pro": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9"
+ },
+ "prompt_sha_consistent": true,
+ "delta_allowed": {
+  "refuse": true,
+  "build": true
+ },
+ "why_no_delta": {},
+ "cross_model": {
+  "compared": [
+   "glm-5.3-flash",
+   "deepseek-v4-pro"
+  ],
+  "n_disagree": 9,
+  "disagree": [
+   {
+    "task_id": "G_oh_d0",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_oh_lam040",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_oh_lam050",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_oh_len",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_oh_x_neg",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_wrong",
+    "deepseek-v4-pro": "refuse_correct"
+   },
+   {
+    "task_id": "G_wing_web_front",
+    "kind": "refuse",
+    "glm-5.3-flash": "refuse_correct",
+    "deepseek-v4-pro": "silent_build"
+   },
+   {
+    "task_id": "G_wing_web_str",
+    "kind": "refuse",
+    "glm-5.3-flash": "silent_build",
+    "deepseek-v4-pro": "refuse_correct"
+   },
+   {
+    "task_id": "B_ctl_fuselage_barrel_d2000_l2000_str12_frm4",
+    "kind": "build",
+    "glm-5.3-flash": "build_correct",
+    "deepseek-v4-pro": "over_refuse"
+   },
+   {
+    "task_id": "B_ctl_open_hole_panel_400x200_d20_cfrp45s",
+    "kind": "build",
+    "glm-5.3-flash": "build_fail",
+    "deepseek-v4-pro": "undecided"
+   }
+  ]
+ },
+ "n_problems": 0
+}

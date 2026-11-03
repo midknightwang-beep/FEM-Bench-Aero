@@ -1,0 +1,17 @@
+{
+ "task_id": "G_wing_web_rear",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "web_chordwise",
+  "reason": "中间腹板位置 0.90 不在前后梁 0.25–0.70 之间，超出翼盒腹板可建范围。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 113
+}

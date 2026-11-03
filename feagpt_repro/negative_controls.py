@@ -2816,6 +2816,126 @@ def main():
     print(f"  [{'ok ' if _rsc_ok else 'BAD!'}] NC-76 进度看板自洽闸可证伪（T-R2）             "
           f"{_rsc_detail}")
 
+    # -----------------------------------------------------------------------
+    # NC-77（T-B2B5 v4）k 遍多数表决可证伪
+    #   ① 自检不是装饰：T1..T12 **都在输出里**且 BAD=0（把 self_test 删掉反而更绿 —— NC-76 同教训）；
+    #   ② **自比 A==A**：同一目录当三遍跑，必须**逐条等于**单遍 —— 多数表决不得无端改判；
+    #      这一条是「新闸先自比」的直接用法，没有它，k=3 与单遍的差异就说不清是聚合还是 bug；
+    #   ③ 四个变异各须**红在指定自检项**（不是「反正红了」）；
+    #   ④ 端到端真跑，题数守恒、分母 40/20 不变（分母变小是「好看」的最常见来源）。
+    # -----------------------------------------------------------------------
+    _maj_ok = False
+    _maj_detail = ''
+    try:
+        import io as _io77
+        import subprocess as _sp77
+        import tempfile as _tf77
+
+        _MAJ = os.path.join(HERE, 'judge_refuse_majority.py')
+        _py = sys.executable
+        _tmp = _tf77.gettempdir()
+
+        def _run77(args):
+            _p = _sp77.run([_py] + args, capture_output=True, text=True, cwd=HERE,
+                           encoding='utf-8', errors='replace')
+            return _p.returncode, (_p.stdout or '') + (_p.stderr or '')
+
+        # ① 原样自检：项齐全 + rc=0 + 无 FAIL
+        _rc0, _o0 = _run77([_MAJ, '--self-test'])
+        _miss77 = [t for t in ('T%d' % i for i in range(1, 13))
+                   if not re.search(r'\b%s\b' % t, _o0)]
+        _n77 = len(re.findall(r'^\s*\[(?:ok  |FAIL)\]\s*T', _o0, re.M))
+        _nfail0 = len(re.findall(r'\[FAIL\]', _o0))
+
+        # ③ 四个变异：锚点**从源码现取**（写死会随重构静默失效 —— 负控五条 ②）
+        _src = _io77.open(_MAJ, encoding='utf-8').read()
+        _muts = [
+            ("'refuse_multi', 'over_refuse')", "'refuse_multi')", 'T7',
+             'over_refuse 挪出 refuse 类'),
+            ("        if cnt[b] * 2 > n:", "        if cnt[b] > 0:", 'T6',
+             '一级不过半也算赢（平票默认当拒）'),
+            ("    return J.VERDICT_TABLE.get(v, (None, False, None))[1]",
+             "    return v in ('refuse_correct', 'build_correct', 'undecided')", 'T10',
+             'undecided 白送分'),
+            ("    'refuse': ['refuse_multi', 'refuse_wrong', 'refuse_correct'],",
+             "    'refuse': ['refuse_correct', 'refuse_wrong', 'refuse_multi'],", 'T5b',
+             '二级平票不取保守'),
+        ]
+        _hits77 = []
+        _anch77 = []
+        for _i, (_a, _b, _want, _desc) in enumerate(_muts, 1):
+            if _src.count(_a) != 1:
+                _anch77.append('%d(锚点%d处)' % (_i, _src.count(_a)))
+                _hits77.append('%s 锚点缺' % _desc)
+                continue
+            _p77 = os.path.join(HERE, '_nc77_mut%d.py' % _i)
+            with _io77.open(_p77, 'w', encoding='utf-8', newline='') as _f:
+                _f.write(_src.replace(_a, _b, 1))
+            try:
+                _rc, _o = _run77([_p77, '--self-test'])
+                _red = sorted(set(re.findall(r'\[FAIL\]\s*(T\d+[a-z]?)', _o)))
+                if _rc != 0 and _want in _red:
+                    _hits77.append('%s->%s' % (_desc, _want))
+                else:
+                    _hits77.append('%s 未红在%s(rc=%d,实际红=%s)'
+                                   % (_desc, _want, _rc, ','.join(_red) or '无'))
+            finally:
+                try:
+                    os.remove(_p77)
+                except OSError:
+                    pass
+
+        # ② 自比 A==A + ④ 端到端
+        _d0 = os.path.join(HERE, 'candidates_refuse_v3_glm')
+        _selfsame = False
+        _e2e = ''
+        if os.path.isdir(_d0):
+            _j1 = os.path.join(_tmp, '_nc77_single.json')
+            _j3 = os.path.join(_tmp, '_nc77_triple.json')
+            _run77([os.path.join(HERE, 'judge_refuse.py'), '--candidates', _d0, '--json', _j1])
+            _run77([_MAJ, '--reps', '%s,%s,%s' % (_d0, _d0, _d0), '--json', _j3])
+            _s1 = json.loads(_io77.open(_j1, encoding='utf-8').read())
+            _s3 = json.loads(_io77.open(_j3, encoding='utf-8').read())
+            _v1 = {r['task_id']: r['verdict'] for r in _s1['rows']}
+            _v3 = {r['task_id']: r['verdict'] for r in _s3['rows']}
+            _same_rows = set(_v1) == set(_v3) and all(_v1[k] == _v3[k] for k in _v1)
+            # ★ judge_refuse 的输出是 {rows, summary} 两层，别写成顶层 ['refuse']
+            #   （首版就这么写错，NC-77 直接 KeyError —— 反而是这个负控先抓住了它）
+            _same_kpi = (_s1['summary']['refuse']['pct'] == _s3['summary']['refuse']['pct'] and
+                         _s1['summary']['kpi']['over_refuse_pct']
+                         == _s3['summary']['kpi']['over_refuse_pct'])
+            _selfsame = bool(_same_rows and _same_kpi)
+            _e2e = '自比A==A=%s(逐条%d题,KPI %s)' % (
+                _selfsame, len(_v3), '同' if _same_kpi else '异')
+            for _j in (_j1, _j3):
+                try:
+                    os.remove(_j)
+                except OSError:
+                    pass
+        else:
+            _e2e = '自比A==A=未跑（缺 candidates_refuse_v3_glm ⇒ 判红不 skip）'
+
+        _red77 = sum(1 for x in _hits77 if '->' in x)
+        # ★ 不写死「自检项数 == N」：那是规格常量与生成常量混用（N-26 变体）。
+        #   齐全性只认 _miss77（T1..T12 逐个在不在输出里），另加 FAIL=0。
+        _maj_ok = (_rc0 == 0 and not _miss77 and _nfail0 == 0 and
+                   _red77 == len(_muts) and _selfsame)
+        _maj_detail = ('自检rc=%d 项=%d 缺向=%s FAIL=%d 变异=%d/%d %s | %s'
+                       % (_rc0, _n77, _miss77 or '无', _nfail0, _red77, len(_muts),
+                          '; '.join(_hits77), _e2e))
+    except Exception as _e77:
+        _maj_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e77,)
+
+    results.append({'id': 'NC-77',
+                    'desc': 'k 遍多数表决可证伪（T-B2B5 v4）：自检 T1..T12 齐全且零 BAD；'
+                            '四个变异（over_refuse 挪出 refuse 类 / 一级平票默认当拒 / '
+                            'undecided 白送分 / 二级平票不取保守）各须红在 T7/T6/T10/T5b；'
+                            '**自比 A==A**：同一目录当三遍跑必须逐条等于单遍',
+                    'expect': '自检 T1..T12 齐全、零 FAIL；四向变异各自红在指定项；自比 A==A 逐条相同',
+                    'actual': _maj_detail, 'ok': _maj_ok})
+    print(f"  [{'ok ' if _maj_ok else 'BAD!'}] NC-77 k 遍多数表决可证伪（T-B2B5 v4）      "
+          f"{_maj_detail}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],

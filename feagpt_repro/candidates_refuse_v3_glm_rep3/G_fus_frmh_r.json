@@ -1,0 +1,17 @@
+{
+ "task_id": "G_fus_frmh_r",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "geometry",
+  "blocked_by": "frame_height",
+  "reason": "框高 900 mm 不小于柱壳半径 800 mm，超出可建模范围"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 108
+}

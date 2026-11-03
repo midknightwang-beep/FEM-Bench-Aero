@@ -1,0 +1,17 @@
+{
+ "task_id": "C_modal_wing",
+ "input_level": "REFUSE",
+ "model": "deepseek-v4-pro",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "frequency",
+  "reason": "当前求解器仅支持线性静力分析，无法计算固有频率与振型。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 102
+}

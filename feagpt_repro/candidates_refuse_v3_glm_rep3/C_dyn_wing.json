@@ -1,0 +1,17 @@
+{
+ "task_id": "C_dyn_wing",
+ "input_level": "REFUSE",
+ "model": "glm-5.3-flash",
+ "kind": "refuse",
+ "prompt_sha256": "094cd870f2b0da8985b6bcf2b8b0c433c0784d80d95dbf0bfe61b8770303b4b9",
+ "clarify": null,
+ "refuse": {
+  "type": "capability",
+  "blocked_by": "dynamic",
+  "reason": "瞬态冲击时程响应超出线性静力求解能力，无法给出20 ms半正弦冲击的位移时程。"
+ },
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 106
+}
