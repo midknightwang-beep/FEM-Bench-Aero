@@ -25,7 +25,8 @@ R0  适用性：文件在、四段与合计行都能解析出来（**解析不�
 R1  四段权重之和 == 100%
 R2  合计 == Σ(权重 x 完成度)；若合计格带了 x 算式，算式复算值也须等于合计
 R3  「同一天的三个口径」里，分母为 `A` / `A+B+C+D` 的行必须等于对应数；
-    其余行（分母不可复算）必须**显式标 `无算式`**，否则判红
+    分母为 `A+D` 的行按**权重归一**复算 `(wA×pA + wD×pD)/(wA+wD)`，
+    且算式里的四个数与分母**必须与看板一致**（核两端）—— 能算的必须算，不许再标 `无算式`
 R4  每段声明的项数 == 该段明细表的实际行数（§3/§4/§5/§6，按标题里的「段 X」定位）
 R5  每段「完成度是怎么算的」栏里的算式，复算值 == 该段显示的完成度（缺算式判红）
 R6  段 B 的「成绩单 X%」== 它的「达标 a/b」（成绩单得分就是达标率，不许两套）
@@ -34,9 +35,13 @@ R6  段 B 的「成绩单 X%」== 它的「达标 a/b」（成绩单得分就是
 -----------
 - 只判**算术与分母**，不判「完成度估得对不对」。看板自己写着「估算，非 artifact」，
   闸只能保证「估算写得自洽、可复核、可被下一个人重算」。
-- 「算到 30 天关键判据（A+D）」那一行**没有可复核算式**（分母不是四段加权），
-  本闸**不覆盖**它；但它必须在表里显式写 `无算式`，且由本闸在输出里**单列点名**
-  —— 豁免要写出来，不能靠「解析不到就跳过」静默放行。
+- 「算到 A+D 两段」那一行**曾经没有可复核算式**（分母不是四段加权，是人工估）。
+  **2026-11-03 已改为可复算**：定义成「A 与 D 两段的**权重归一**加权完成度」
+  `(25×pA + 10×pD) / 35` —— 这个定义来自追查：`71%` 是 `4c3d58d`（T-D5）引入的，
+  当时 `(25×88% + 10×30%)/35 = 71.4%` **正好复现**，说明它原本就是这个意思，只是
+  从来没把算式写出来、也没人复算过（A 段后来 88→89、D 段 30→100，71 一次没跟）。
+  ⇒ 现在表里必须带算式，R3 逐个数核它与看板一致。**它只含 A、D 两段，不含 B/C，
+  不可当总进度读。**
 - 不读 artifact、不碰任何成绩、不产生对外数字；**不得进入任何对外数字**。
 - 判据不依赖段号/行号/顺序：段与明细表的对应靠标题里的「段 X」字面，不靠 §N。
 
@@ -62,6 +67,12 @@ DEFAULT_ROADMAP = HERE.parent / 'FEM-Bench-Aero' / 'ROADMAP.md'
 SEGS = ('A', 'B', 'C', 'D')
 TOL = 0.6            # 显示取整容差（百分比点）
 NO_EXPR_TOKEN = '无算式'
+
+# A+D 口径的算式形态：`(wA×pA + wD×pD) / (wA+wD)`，`×` 也接受 `x` / `*`。
+# 三个 `%` 可有可无 —— 关键是**四个数与一个分母**，闸要逐个核它们与看板一致（核两端）。
+AD_EXPR = re.compile(
+    r'\(\s*([\d.]+)\s*[×xX*]\s*([\d.]+)\s*%?\s*\+\s*([\d.]+)\s*[×xX*]\s*([\d.]+)\s*%?\s*\)'
+    r'\s*/\s*([\d.]+)')
 
 
 # ----------------------------------------------------------------- 解析
@@ -240,7 +251,7 @@ def run_text(text):
             bad('R2', '合计格的算式复算 %.2f != 显示的 %s%%（算式：%s）'
                 % (v, total['pct'], label))
 
-    # R3 三口径表：可复算的必须对；不可复算的必须显式标「无算式」
+    # R3 三口径表：可复算的必须对；A+D 按权重归一再复算（能算的必须算）
     if not p['calib']:
         bad('R3', '找不到「同一天的三个口径」表')
     uncovered = []
@@ -254,6 +265,29 @@ def run_text(text):
             if row['pct'] is None or abs(row['pct'] - (total['pct'] or 0)) > TOL:
                 bad('R3', '口径「分母=A+B+C+D」写 %s%%，而合计 = %s%%（同一个量的两处声明）'
                     % (row['pct'], total['pct']))
+        elif den == 'A+D':
+            wa, wd = segs['A']['w'] or 0, segs['D']['w'] or 0
+            pa, pd = segs['A']['pct'] or 0, segs['D']['pct'] or 0
+            raw = ' '.join(row['raw'])
+            if NO_EXPR_TOKEN in raw:
+                bad('R3', '口径「分母=A+D」已可复算（权重归一），不得再标「%s」—— 能算的必须算'
+                    % NO_EXPR_TOKEN)
+                continue
+            mm = AD_EXPR.search(raw)
+            if not mm:
+                bad('R3', '口径「分母=A+D」没写可复核算式（期望 `(wA×pA + wD×pD) / (wA+wD)`）')
+                continue
+            a, b, c, d, e = (float(x) for x in mm.groups())
+            if (abs(a - wa) > 0.01 or abs(c - wd) > 0.01 or abs(e - (wa + wd)) > 0.01
+                    or abs(b - pa) > TOL or abs(d - pd) > TOL):
+                bad('R3', '口径「分母=A+D」算式里的数与看板不符：算式 (%.4g×%.4g + %.4g×%.4g)/%.4g，'
+                          '看板 权重 %.4g/%.4g、完成度 %.4g/%.4g'
+                    % (a, b, c, d, e, wa, wd, pa, pd))
+                continue
+            exp = (a * b + c * d) / e if e else None
+            if exp is None or row['pct'] is None or abs(row['pct'] - exp) > TOL:
+                bad('R3', '口径「分母=A+D」写 %s%%，算式复算 = %s%%'
+                    % (row['pct'], 'n/a' if exp is None else '%.2f' % exp))
         elif NO_EXPR_TOKEN not in ' '.join(row['raw']):
             bad('R3', '口径「分母=%s」没有可复核算式，也未显式标「%s」——'
                       '豁免必须写出来，不能靠解析不到就跳过' % (den, NO_EXPR_TOKEN))
@@ -388,11 +422,28 @@ def _mutate(text, kind):
                     raise ValueError('段 C 明细表没有行')
                 return text.replace(rows[-1] + '\n', '', 1), '删掉段 C 明细表最后一行'
         raise ValueError('找不到段 C 小节')
-    if kind == 'no_expr_token':
+    if kind == 'AD_pct':
+        # A+D 口径写错（算式仍在、只是右边/显示值对不上）
         for row in p['calib']:
-            if row['den'] not in ('A', 'A+B+C+D') and NO_EXPR_TOKEN in ' '.join(row['raw']):
-                return text.replace(NO_EXPR_TOKEN, '', 1), '去掉「无算式」标记'
-        raise ValueError('没有标「无算式」的行可改')
+            if row['den'] == 'A+D':
+                mm = re.search(r'([\d.]+)\s*%', row['raw'][2])
+                if not mm:
+                    raise ValueError('A+D 行没写百分比')
+                old = '~%s%%' % mm.group(1)
+                if old not in text:
+                    old = mm.group(0)
+                return (text.replace(old, '~%.0f%%' % (float(mm.group(1)) + 9), 1),
+                        'A+D 口径 +9')
+        raise ValueError('找不到「A+D」口径行')
+    if kind == 'AD_expr':
+        # 删掉 A+D 的算式（百分比还在）—— 能算的必须算，缺算式也要红
+        for row in p['calib']:
+            if row['den'] == 'A+D':
+                mm = AD_EXPR.search(' '.join(row['raw']))
+                if not mm:
+                    raise ValueError('A+D 行没有可删的算式')
+                return text.replace(mm.group(0), '(删掉算式)', 1), '删掉 A+D 算式'
+        raise ValueError('找不到「A+D」口径行')
     raise ValueError('未知变异 %s' % kind)
 
 
@@ -403,7 +454,8 @@ SELFTEST = [
     ('A_pct', 'R2', '段 A 完成度 +5 须红在 R2（合计复算）'),
     ('total_pct', 'R2', '合计显示 -4 须红在 R2'),
     ('calib_full', 'R3', '全量口径 -9 须红在 R3（同一个量的两处声明）'),
-    ('no_expr_token', 'R3', '去掉「无算式」标记须红在 R3（豁免要写出来）'),
+    ('AD_pct', 'R3', 'A+D 口径 +9 须红在 R3（算式复算对不上）'),
+    ('AD_expr', 'R3', '删掉 A+D 算式须红在 R3（能算的必须算，不许退回「无算式」）'),
     ('A_expr', 'R5', '段 A 算式右边改错须红在 R5'),
     ('C_expr', 'R5', '删掉段 C 算式须红在 R5（缺算式也判红）'),
     ('B_pass', 'R6', '段 B 达标 7/8 写成 8/8 须红在 R6'),

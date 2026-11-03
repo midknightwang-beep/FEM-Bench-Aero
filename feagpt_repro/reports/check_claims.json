@@ -133,8 +133,8 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 6.17",
-   "actual": "6.17",
+   "expect": "全部 = 6.18",
+   "actual": "6.18",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793710008/1793710008；check 1793710364 vs 负控 1793710008",
+   "actual": "C-019 mtime 记录/实际 = 1793715318/1793715318；check 1793715374 vs 负控 1793715318",
    "ok": true,
    "skip": false
   },
@@ -502,7 +502,7 @@
    "id": "S-62",
    "desc": "进度看板（ROADMAP §1）的算术必须自洽且可被机器复算（T-R2）",
    "expect": "R1 四段权重和 == 100%；R2 合计 == Σ(权重x完成度) 且合计格里的算式复算值也须等于合计；R3 三口径里分母为 A / A+B+C+D 的行须等于对应数，其余行须显式标「无算式」；R4 每段声明项数 == 明细表行数（扣显式「含 Dxx」合并的行）；R5 每段算式复算 == 显示完成度，缺算式判红；R6 段 B 成绩单得分 == 达标 a/b",
-   "actual": "R1 权重=100 | R2 合计 显示 49.0 vs 复算 49.35 | R4 明细 A=9/B=5/C=8/D=7 | 未覆盖（已显式标「无算式」）：A+D",
+   "actual": "R1 权重=100 | R2 合计 显示 49.0 vs 复算 49.35 | R4 明细 A=9/B=5/C=8/D=7 | 未覆盖（已显式标「无算式」）：无",
    "ok": true,
    "skip": false
   }
@@ -720,9 +720,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 49236,
-   "sha256": "6396858fd988bda15fdd927a6217cd0a4b94df04ea68da86789380e1da1cd8c7",
-   "mtime": 1793710339
+   "size": 49138,
+   "sha256": "916d147bf6a90592077996c80e080e048bf36e70d0e34290fac3458e4d60c44e",
+   "mtime": 1793715403
   },
   {
    "claim_id": "C-027",
@@ -1392,9 +1392,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 19907,
-   "sha256": "0611e2700f23b52ddc7db0c2adcea096b1c9d11857af7f6719cb5bb6c17e062f",
-   "mtime": 1793710008
+   "size": 19929,
+   "sha256": "5ebd6d6b5a37dd46ecb47234e70e1206f50c62f7fa96d88de1bcf9db7df2c9ba",
+   "mtime": 1793715318
   }
  ]
 }
