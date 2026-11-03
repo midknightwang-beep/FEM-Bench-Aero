@@ -2750,6 +2750,71 @@ def main():
     print(f"  [{'ok ' if _rl_ok else 'BAD!'}] NC-75 越界规则表可证伪（T-B2RULES）             "
           f"{_rl_detail}")
 
+    # NC-76（T-R2）：**进度看板的数字必须能被机器复算，且闸本身可证伪**。
+    # 起因（2026-11-03）：ROADMAP §1 的权重 / 完成度 / 合计 / 三口径**没有任何工具读**
+    #   （R58）⇒ 三处漂移「一直都在」而无人报错：A 段「10 项里 8.5」（明细 9 行、
+    #   8.5/10=85% 而显示 88%，自 v2.0 建表起就没对过）、三口径「全量 ~38%」（38 是
+    #   v2.1 的合计，漂了 5 个版本）、B 段「达标 8/8」（与同格 87.5% = 7/8 矛盾）。
+    # 本条守三件事，缺一都不算：
+    #   ① **自检不是装饰**：`--self-test` 必须 rc=0、BAD=0、且 T0..T10 **都在输出里**
+    #      （只断言「rc=0」的话，把 self_test 整段删掉反而更绿）；
+    #   ② **端到端**：变异要**写进临时文件**再走 `check_file()` —— 只调 `run_text()`
+    #      测不到「读盘/编码/路径」这一段（NC-73 同教训）；
+    #   ③ **红的原因要对**：每个变异断言**红在指定判据**（R2/R4/R6），不是「反正红了」。
+    _rsc_ok = False
+    _rsc_detail = ''
+    try:
+        import io as _io76
+        import contextlib as _ctx76
+        import tempfile as _tf76
+        import roadmap_selfcheck as _rsc
+
+        # ① 原样自检：十一向齐全 + 零 BAD
+        _b76 = _io76.StringIO()
+        with _ctx76.redirect_stdout(_b76):
+            _st76 = _rsc.self_test()
+        _o76 = _b76.getvalue()
+        _miss76 = [t for t in ('T%d' % i for i in range(len(_rsc.SELFTEST) + 1)) if t not in _o76]
+
+        # ② 端到端变异：_mutate 的锚点从**解析结果现取**，不写死字面（负控五条 ②）
+        _base76 = _rsc.DEFAULT_ROADMAP.read_text(encoding='utf-8')
+        _cases = [('total_pct', 'R2', '合计显示值 -4'),
+                  ('C_row', 'R4', '删段 C 明细表一行'),
+                  ('B_pass', 'R6', '段 B 达标 7/8 写成 8/8'),
+                  ('no_expr_token', 'R3', '去掉「无算式」标记')]
+        _hits = 0
+        _note = []
+        for _k, _want, _desc in _cases:
+            _mt, _n = _rsc._mutate(_base76, _k)
+            _p76 = os.path.join(_tf76.gettempdir(), '_nc76_%s.md' % _k)
+            with _io76.open(_p76, 'w', encoding='utf-8', newline='') as _f76:
+                _f76.write(_mt)
+            _ok76, _pr76, _ = _rsc.check_file(_p76)
+            _ids76 = sorted({x['id'] for x in _pr76})
+            if (not _ok76) and _want in _ids76:
+                _hits += 1
+            _note.append('%s->%s%s' % (_k, ','.join(_ids76) or '全绿',
+                                       '' if (not _ok76 and _want in _ids76) else '(缺 %s)' % _want))
+            try:
+                os.remove(_p76)
+            except OSError:
+                pass
+
+        _rsc_ok = bool(_st76) and not _miss76 and _hits == len(_cases)
+        _rsc_detail = ('自检rc=%d 缺向=%s 变异%d/%d | %s'
+                       % (0 if _st76 else 1, _miss76 or '无', _hits, len(_cases),
+                          '; '.join(_note)))
+    except Exception as _e76:
+        _rsc_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e76,)
+    results.append({'id': 'NC-76',
+                    'desc': '进度看板自洽闸可证伪（T-R2）：自检 T0..T10 齐全且零 BAD；'
+                            '把合计/明细行/达标分数/「无算式」标记各改坏一次，'
+                            '须分别红在 R2/R4/R6/R3',
+                    'expect': '原样 rc=0 且十一向齐全；四向变异各自红在指定判据',
+                    'actual': _rsc_detail, 'ok': _rsc_ok})
+    print(f"  [{'ok ' if _rsc_ok else 'BAD!'}] NC-76 进度看板自洽闸可证伪（T-R2）             "
+          f"{_rsc_detail}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],

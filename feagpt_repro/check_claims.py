@@ -1986,6 +1986,42 @@ def hook_guard_state(root):
     return ok, f"{head}；{parts}{tail}"
 
 
+def roadmap_selfcheck_state(root):
+    """S-62（T-R2）：进度看板的算术自洽 —— 调 `roadmap_selfcheck.check_file()`。
+
+    为什么这道闸必须存在（R58：无工具读的 = 无闸）
+    ------------------------------------------------
+    `FEM-Bench-Aero/ROADMAP.md` 的 §1 看板写了权重 / 完成度 / 合计 / 「同一天的三个
+    口径」，但**没有任何工具读这些数**。实测（2026-11-03 立项时）三处漂移全都「一直
+    都在」且没人发现：段 A「10 项里 8.5」（明细 9 行、8.5/10=85% 而显示 88%，自 v2.0
+    建表起就没对过）、三口径「全量 ~38%」（38 是 v2.1 的合计，漂了 5 个版本）、段 B
+    「达标 8/8」（与同格 87.5% = 7/8 自相矛盾）。共同点是**数字只被人读、而人只在写
+    那一段时读它**。
+
+    设计约束（与 S-61 同规矩）
+    --------------------------
+      - **缺判据即红**：模块导入失败 / 抛异常都不 skip；
+      - **解析不到也判红**：`R0` 把「格式变了」判成红而不是「看不懂就跳过」——
+        否则改个措辞就能让闸失效（负控五条 ③：锚点缺失判红不 skip）；
+      - **只看算术，不看估得对不对**：完成度本身是估算（看板自称「估算，非 artifact」），
+        闸只保证「写了算式、算式能复算、同一个量两处声明相等」；
+      - 不读 artifact、不碰成绩，**不得进入任何对外数字**。
+    """
+    try:
+        if HERE not in sys.path:
+            sys.path.insert(0, HERE)
+        import roadmap_selfcheck as rsc
+    except Exception as e:  # noqa: BLE001
+        return False, f'无法导入 roadmap_selfcheck.py: {e}（缺判据即红，不 skip）'
+    cand = os.path.join(str(root), 'FEM-Bench-Aero', 'ROADMAP.md')
+    path = cand if os.path.exists(cand) else str(rsc.DEFAULT_ROADMAP)
+    try:
+        ok, probs, info = rsc.check_file(path)
+    except Exception as e:  # noqa: BLE001
+        return False, f'roadmap_selfcheck.check_file 抛异常: {e}'
+    return ok, rsc.detail_str(ok, probs, info)
+
+
 # ---------------------------------------------------------------------------
 # T-F3（R75）：`--public` 显式豁免 —— 只针对「公开分发集里结构上不可能满足」的判据
 # ---------------------------------------------------------------------------
@@ -2754,6 +2790,20 @@ def semantic_checks(root, rows, skip_hook_guard=False, public_mode=False):
         _ok61, _det61 = hook_guard_state(root)
         add('S-61', '提交闸的触发器（pre-commit hook）必须真实存在且指向当前脚本（R74）',
             _S61_EXPECT, _det61, _ok61)
+
+    # S-62（T-R2）：**进度看板的数字必须能被机器复算**。
+    #   §1 看板的权重 / 完成度 / 合计 / 三口径写在散文里，此前**没有任何工具读**
+    #   （R58）⇒ 三处漂移「一直都在」：A 段 10 项 vs 明表 9 行、三口径 ~38% vs 合计
+    #   49%、B 段达标 8/8 vs 同格 87.5%。判据实现独立在 roadmap_selfcheck.py
+    #   （可单独 `--self-test` 十一向，每向断言「红的是哪一条」），本条只做接线。
+    _S62_EXPECT = ('R1 四段权重和 == 100%；R2 合计 == Σ(权重x完成度) 且合计格里的算式'
+                   '复算值也须等于合计；R3 三口径里分母为 A / A+B+C+D 的行须等于对应数，'
+                   '其余行须显式标「无算式」；R4 每段声明项数 == 明细表行数（扣显式「含 Dxx」'
+                   '合并的行）；R5 每段算式复算 == 显示完成度，缺算式判红；'
+                   'R6 段 B 成绩单得分 == 达标 a/b')
+    _ok62, _det62 = roadmap_selfcheck_state(root)
+    add('S-62', '进度看板（ROADMAP §1）的算术必须自洽且可被机器复算（T-R2）',
+        _S62_EXPECT, _det62, _ok62)
 
     return out
 
