@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-02T22:40:15+08:00",
- "source_head": "452534d721d90abf349f02544550cf3d7a321570",
+ "generated_at": "2026-11-03T20:59:30+08:00",
+ "source_head": "ea7544131036c6ab49a2e48da5ad2bf690f3dbb3",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 2938,
- "bytes_total": 90536640,
- "n_keep": 2506,
- "bytes_keep": 15872791,
+ "n_total": 2941,
+ "bytes_total": 90622520,
+ "n_keep": 2509,
+ "bytes_keep": 15959856,
  "categories": {
   "KEEP:根目录仓库配置": {
    "n": 2,
@@ -13,7 +13,7 @@
   },
   "内部记忆/应用": {
    "n": 28,
-   "bytes": 595997
+   "bytes": 594812
   },
   "根目录内部材料": {
    "n": 46,
@@ -21,7 +21,7 @@
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
-   "bytes": 3745533
+   "bytes": 3754594
   },
   "KEEP:根目录必需": {
    "n": 3,
@@ -36,8 +36,8 @@
    "bytes": 51098052
   },
   "KEEP:代码与证据": {
-   "n": 2394,
-   "bytes": 12094051
+   "n": 2397,
+   "bytes": 12172055
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -2354,6 +2354,7 @@
   "feagpt_repro/reports/archive/negative_controls_72.json",
   "feagpt_repro/reports/archive/negative_controls_73.json",
   "feagpt_repro/reports/archive/negative_controls_74.json",
+  "feagpt_repro/reports/archive/negative_controls_75.json",
   "feagpt_repro/reports/baseline_scorecard_L1_smoke.json",
   "feagpt_repro/reports/baseline_scorecard_L3_v4.json",
   "feagpt_repro/reports/baseline_scorecard_L3_v5_rescore.json",
@@ -2486,6 +2487,7 @@
   "feagpt_repro/reports/diagnostics/task_prompt_schema_align_report.md",
   "feagpt_repro/reports/diagnostics/task_r1_contract.md",
   "feagpt_repro/reports/diagnostics/task_r1_report.md",
+  "feagpt_repro/reports/diagnostics/task_r2_report.md",
   "feagpt_repro/reports/diagnostics/w5b4_defect_analysis_v6b.md",
   "feagpt_repro/reports/diagnostics/xval_v11_9cases.json",
   "feagpt_repro/reports/diagnostics/xval_v11_9cases.log",
@@ -2497,7 +2499,7 @@
   "feagpt_repro/reports/l2_scores_v7_glm.json",
   "feagpt_repro/reports/msr_l3_v4.json",
   "feagpt_repro/reports/msr_l3_v5_rescore.json",
-  "feagpt_repro/reports/negative_controls_75.json",
+  "feagpt_repro/reports/negative_controls_76.json",
   "feagpt_repro/reports/papers/SHA256SUMS",
   "feagpt_repro/reports/papers/nl_human_v4.jsonl",
   "feagpt_repro/reports/papers/nl_human_v5.jsonl",
@@ -2525,6 +2527,7 @@
   "feagpt_repro/requirements.txt",
   "feagpt_repro/rerun_solver.py",
   "feagpt_repro/resummarize.py",
+  "feagpt_repro/roadmap_selfcheck.py",
   "feagpt_repro/run_pipeline.py",
   "feagpt_repro/score_baseline.py",
   "feagpt_repro/score_l2.py",
