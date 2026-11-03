@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-11-03T20:59:30+08:00",
- "source_head": "ea7544131036c6ab49a2e48da5ad2bf690f3dbb3",
+ "generated_at": "2026-11-03T22:20:19+08:00",
+ "source_head": "8ff0bf7d3b66d16726803e97c31f62b22461275a",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 2941,
- "bytes_total": 90622520,
+ "n_total": 2942,
+ "bytes_total": 90639596,
  "n_keep": 2509,
- "bytes_keep": 15959856,
+ "bytes_keep": 15966987,
  "categories": {
   "KEEP:根目录仓库配置": {
    "n": 2,
    "bytes": 3215
   },
   "内部记忆/应用": {
-   "n": 28,
-   "bytes": 594812
+   "n": 29,
+   "bytes": 604757
   },
   "根目录内部材料": {
    "n": 46,
@@ -21,7 +21,7 @@
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
-   "bytes": 3754594
+   "bytes": 3757826
   },
   "KEEP:根目录必需": {
    "n": 3,
@@ -37,7 +37,7 @@
   },
   "KEEP:代码与证据": {
    "n": 2397,
-   "bytes": 12172055
+   "bytes": 12175954
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -2595,6 +2595,7 @@
    ".workbuddy/memory/2026-10-31.md",
    ".workbuddy/memory/2026-11-01.md",
    ".workbuddy/memory/2026-11-02.md",
+   ".workbuddy/memory/2026-11-03.md",
    ".workbuddy/memory/MEMORY.md",
    ".workbuddy/memory/MEMORY_ARCHIVE_20261024_full.md",
    ".workbuddy/memory/MEMORY_ARCHIVE_20261027_pre_compact.md",
