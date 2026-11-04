@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-04T20:22:06+08:00",
- "source_head": "fa01b66ca1ad9fed4f1158916e474c5e586021c7",
+ "generated_at": "2026-11-04T20:50:43+08:00",
+ "source_head": "f221333e5769a2a100170b5e25e0336e05382753",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 3070,
- "bytes_total": 90956907,
- "n_keep": 2636,
- "bytes_keep": 16267823,
+ "n_total": 3084,
+ "bytes_total": 91047482,
+ "n_keep": 2650,
+ "bytes_keep": 16358398,
  "categories": {
   "KEEP:根目录仓库配置": {
    "n": 2,
@@ -21,7 +21,7 @@
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
-   "bytes": 3776686
+   "bytes": 3787157
   },
   "KEEP:根目录必需": {
    "n": 3,
@@ -36,8 +36,8 @@
    "bytes": 51098052
   },
   "KEEP:代码与证据": {
-   "n": 2524,
-   "bytes": 12457930
+   "n": 2538,
+   "bytes": 12538034
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -223,6 +223,7 @@
   "feagpt_repro/_gate3_t1.log",
   "feagpt_repro/_l27_degenerate_scan.py",
   "feagpt_repro/_l27b_ec0_probe.py",
+  "feagpt_repro/_l27c_make_l2_informative.py",
   "feagpt_repro/_m4_probe/README.md",
   "feagpt_repro/_m4_probe/bad.json",
   "feagpt_repro/_manifest_b6.log",
@@ -445,6 +446,14 @@
   "feagpt_repro/candidates_l2_v7_smoke/L2_open_hole_panel_400x200_d30.json",
   "feagpt_repro/candidates_l2_v7_smoke_masked/L2_naca4412_wingbox.json",
   "feagpt_repro/candidates_l2_v7_smoke_masked/L2_open_hole_panel_400x200_d30.json",
+  "feagpt_repro/candidates_l2i_v1_ds/L2i_fuselage_barrel_d1600_l1600_str8_frm3.json",
+  "feagpt_repro/candidates_l2i_v1_ds/L2i_naca4412_wingbox_n_ribs3_chord1000.json",
+  "feagpt_repro/candidates_l2i_v1_ds/L2i_open_hole_panel_400x200_d20_cfrp45s_d40.json",
+  "feagpt_repro/candidates_l2i_v1_ds/L2i_stiffened_panel_600x600_str3.json",
+  "feagpt_repro/candidates_l2i_v1_glm/L2i_fuselage_barrel_d1600_l1600_str8_frm3.json",
+  "feagpt_repro/candidates_l2i_v1_glm/L2i_naca4412_wingbox_n_ribs3_chord1000.json",
+  "feagpt_repro/candidates_l2i_v1_glm/L2i_open_hole_panel_400x200_d20_cfrp45s_d40.json",
+  "feagpt_repro/candidates_l2i_v1_glm/L2i_stiffened_panel_600x600_str3.json",
   "feagpt_repro/candidates_l3_det_r1/L3_fuselage_barrel_d1600_l1600_str8_frm3.json",
   "feagpt_repro/candidates_l3_det_r2/L3_fuselage_barrel_d1600_l1600_str8_frm3.json",
   "feagpt_repro/candidates_l3_psa_p4_smoke/L3_naca4412_wingbox_n_ribs3_chord1000.json",
@@ -2479,6 +2488,7 @@
   "feagpt_repro/reports/archive/negative_controls_74.json",
   "feagpt_repro/reports/archive/negative_controls_75.json",
   "feagpt_repro/reports/archive/negative_controls_77.json",
+  "feagpt_repro/reports/archive/negative_controls_78.json",
   "feagpt_repro/reports/baseline_scorecard_L1_smoke.json",
   "feagpt_repro/reports/baseline_scorecard_L3_v4.json",
   "feagpt_repro/reports/baseline_scorecard_L3_v5_rescore.json",
@@ -2538,6 +2548,8 @@
   "feagpt_repro/reports/diagnostics/l27_scan_resid_k1.json",
   "feagpt_repro/reports/diagnostics/l27_scan_resid_k2.json",
   "feagpt_repro/reports/diagnostics/l27b_ec0_probe.json",
+  "feagpt_repro/reports/diagnostics/l2i_v1_scores_ds.json",
+  "feagpt_repro/reports/diagnostics/l2i_v1_scores_glm.json",
   "feagpt_repro/reports/diagnostics/model_diff_v6c_dsv4pro.json",
   "feagpt_repro/reports/diagnostics/model_diff_v6c_dsv4pro.md",
   "feagpt_repro/reports/diagnostics/model_diff_v6c_p2_glm_vs_ds.json",
@@ -2608,6 +2620,7 @@
   "feagpt_repro/reports/diagnostics/task_f7_contract.md",
   "feagpt_repro/reports/diagnostics/task_f7_report.md",
   "feagpt_repro/reports/diagnostics/task_l27_report.md",
+  "feagpt_repro/reports/diagnostics/task_l27c_report.md",
   "feagpt_repro/reports/diagnostics/task_p1a_contract.md",
   "feagpt_repro/reports/diagnostics/task_prompt_schema_align_contract.md",
   "feagpt_repro/reports/diagnostics/task_prompt_schema_align_report.md",
@@ -2626,7 +2639,7 @@
   "feagpt_repro/reports/msr_l3_v4.json",
   "feagpt_repro/reports/msr_l3_v5_rescore.json",
   "feagpt_repro/reports/negative_controls_76.json",
-  "feagpt_repro/reports/negative_controls_78.json",
+  "feagpt_repro/reports/negative_controls_79.json",
   "feagpt_repro/reports/papers/SHA256SUMS",
   "feagpt_repro/reports/papers/nl_human_v4.jsonl",
   "feagpt_repro/reports/papers/nl_human_v5.jsonl",
@@ -2678,6 +2691,7 @@
   "feagpt_repro/tasks/nl_human.jsonl.sha256",
   "feagpt_repro/tasks/tasks.jsonl",
   "feagpt_repro/tasks/tasks.jsonl.sha256",
+  "feagpt_repro/tasks/tasks_l2_informative_v1.jsonl",
   "feagpt_repro/tasks_refuse_v1.jsonl",
   "feagpt_repro/trivial_baselines.py",
   "feagpt_repro/validate_schema.py",
@@ -3553,6 +3567,12 @@
    "n": 2,
    "markers": [
     "{{REPO_ROOT}}",
+    "{{VENV_PY}}"
+   ]
+  },
+  "feagpt_repro/reports/diagnostics/task_l27c_report.md": {
+   "n": 1,
+   "markers": [
     "{{VENV_PY}}"
    ]
   },
