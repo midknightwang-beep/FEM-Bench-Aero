@@ -1,0 +1,90 @@
+{
+ "task_id": "L2i_naca4412_wingbox_n_ribs6_chord1000",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "24cf0978369f7d29ee10d1136ef584eee7c55cc3c6d823b7540d074a6248f9c1",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "naca4412_wingbox_n_ribs6_chord1000",
+  "description": "NACA 4412 翼盒，弦长 1000 mm，展长 2000 mm，6 肋，上下蒙皮各 0 根长桁，铝 2024-T3",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "wingbox",
+   "params": {}
+  },
+  "airfoil": {
+   "code": "4412",
+   "chord": 1000,
+   "span": 2000,
+   "skin_thickness": 3,
+   "n_ribs": 6,
+   "rib_thickness": 4,
+   "spar_chordwise": [
+    0.25,
+    0.7
+   ],
+   "n_stringers_per_skin": 0,
+   "stringer_height": 20,
+   "stringer_thickness": 2.5,
+   "stringer_kind": "blade",
+   "stringer_flange_width": 30,
+   "tip_chord_ratio": 1,
+   "sweep_deg": 0,
+   "web_chordwise": []
+  },
+  "mesh": {
+   "size_chord": 12,
+   "size_span": 25,
+   "algorithm_2d": 6,
+   "element_order": 1,
+   "leading_edge_threshold": 1.6,
+   "min_jacobian": 0.3,
+   "recombination_algorithm": 0,
+   "recombine": true,
+   "refine_at_leading_edge": true
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 500,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {
+   "solver": "auto",
+   "step_type": "static",
+   "incremental": true,
+   "initial_increment": 0.25,
+   "total_time": 1,
+   "outputs": [
+    "U",
+    "S"
+   ]
+  },
+  "extra": {
+   "split_tag": "v11_interior_holdout",
+   "v11_bracket": "肋数 5 ↔ 7（chord1000 的 ribs5/ribs7 两条已在集）",
+   "v11_interior_holdout": true,
+   "v11_template": "naca4412_wingbox"
+  }
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 1545,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_strict_v1+meshfix_v1"
+}

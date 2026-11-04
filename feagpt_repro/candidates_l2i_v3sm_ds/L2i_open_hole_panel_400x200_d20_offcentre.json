@@ -1,0 +1,72 @@
+{
+ "task_id": "L2i_open_hole_panel_400x200_d20_offcentre",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "24cf0978369f7d29ee10d1136ef584eee7c55cc3c6d823b7540d074a6248f9c1",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "open_hole_panel_400x200_d20_offcentre",
+  "description": "开孔板，中心偏置孔，受端部集中力",
+  "material": {
+   "density": 2.78e-9,
+   "name": "Aluminium 2024-T3",
+   "poisson_ratio": 0.33,
+   "yield_strength": 345,
+   "youngs_modulus": 73100
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "hole_d": 20,
+    "hole_x": 120,
+    "hole_y": 60,
+    "length": 400,
+    "thickness": 2,
+    "width": 200
+   }
+  },
+  "mesh": {
+   "algorithm_2d": 6,
+   "element_order": 1,
+   "leading_edge_threshold": 1.6,
+   "min_jacobian": 0.3,
+   "recombination_algorithm": 0,
+   "recombine": true,
+   "refine_at_leading_edge": true,
+   "size_chord": 4,
+   "size_span": 4
+  },
+  "load": {
+   "direction": [
+    1,
+    0,
+    0
+   ],
+   "kind": "tip_force",
+   "magnitude": 4000
+  },
+  "bc": {
+   "clamp": true,
+   "root_surface": "root"
+  },
+  "analysis": {
+   "incremental": true,
+   "initial_increment": 0.25,
+   "outputs": [
+    "U",
+    "S"
+   ],
+   "solver": "auto",
+   "step_type": "static",
+   "total_time": 1
+  },
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 1048,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_strict_v1+meshfix_v1"
+}

@@ -1,0 +1,15 @@
+{
+ "task_id": "L2i_fuselage_barrel_d2000_l2000_str8_frm3",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "24cf0978369f7d29ee10d1136ef584eee7c55cc3c6d823b7540d074a6248f9c1",
+ "clarify": "[\"mesh.size_span 与 mesh.size_chord 在 fuselage_barrel 族中不是合法网格键；本族网格键只能使用 size_chord、size_span，题面已给出 size_chord=25、size_span=25，不存在缺失。\",\"extra.moment_axis 与 extra.shear_axis 不在本族允许键集合内；本族 extra 只允许 end_shear、end_moment。\",\"load.kind=pressure 时 fuselage_barrel 的 pressure 载荷在当前族契约中无法映射为规范载荷，请补充可映射的载荷键或确认是否为 tip_force。\",\"structure.params 中缺少 rib 或 frame 的相关厚度键 frame_thickness，但本族键名总表未要求该键，故不追问。\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 434,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_strict_v1+meshfix_v1"
+}

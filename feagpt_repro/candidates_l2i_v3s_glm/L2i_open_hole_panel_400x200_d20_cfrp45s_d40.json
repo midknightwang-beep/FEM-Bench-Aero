@@ -1,0 +1,102 @@
+{
+ "task_id": "L2i_open_hole_panel_400x200_d20_cfrp45s_d40",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "99466166dc041b37d96e45502f93761aa27138e40dc623a1e49527a381416c4b",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "open_hole_panel_400x200_d20_cfrp45s_d40",
+  "description": "开孔拉伸板 400x200x2，中心孔 d40，CFRP [45/-45/-45/45] 铺层，端部 4000 N 面内拉伸",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 400,
+    "width": 200,
+    "thickness": 2,
+    "hole_d": 40,
+    "layup": {
+     "plies": [
+      {
+       "angle": 45,
+       "thickness": 0.5
+      },
+      {
+       "angle": -45,
+       "thickness": 0.5
+      },
+      {
+       "angle": -45,
+       "thickness": 0.5
+      },
+      {
+       "angle": 45,
+       "thickness": 0.5
+      }
+     ],
+     "material": {
+      "name": "CFRP_T300",
+      "E1": 140000,
+      "E2": 10000,
+      "E3": 10000,
+      "nu12": 0.3,
+      "nu13": 0.3,
+      "nu23": 0.45,
+      "G12": 5000,
+      "G13": 5000,
+      "G23": 4000,
+      "density": 1.6e-9
+     }
+    }
+   }
+  },
+  "mesh": {
+   "size": 4,
+   "element_order": 1,
+   "algorithm_2d": 6,
+   "recombine": true,
+   "recombination_algorithm": 0,
+   "min_jacobian": 0.3,
+   "leading_edge_threshold": 1.6,
+   "refine_at_leading_edge": true
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 4000,
+   "direction": [
+    1,
+    0,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {
+   "solver": "ccx",
+   "step_type": "static",
+   "incremental": true,
+   "initial_increment": 0.25,
+   "total_time": 1,
+   "outputs": [
+    "U",
+    "S"
+   ]
+  },
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 1065,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_strict_v1"
+}

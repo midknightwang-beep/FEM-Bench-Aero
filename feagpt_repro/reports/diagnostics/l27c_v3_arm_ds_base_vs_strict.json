@@ -1,0 +1,451 @@
+{
+ "_note": "T-L27c v3：同一卷同模型，只换 L2 prompt arm（base vs strict）。判类与 pass 全部读 score_l2.py 产物，本脚本不重算判分。",
+ "mode": "ablation",
+ "paper": "tasks_l2_informative_v2.jsonl",
+ "tasks_sha256": "76ee70f6e16dadeefd2f79d9ee3a21d5456f5669bf176d2dba8c7804c4ec4dae",
+ "model": "deepseek-v4-pro",
+ "arm": {
+  "base": {
+   "candidates": "candidates_l2i_v2_ds",
+   "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83"
+  },
+  "strict": {
+   "candidates": "candidates_l2i_v3s_ds",
+   "prompt_sha256": "99466166dc041b37d96e45502f93761aa27138e40dc623a1e49527a381416c4b"
+  }
+ },
+ "n_paired": 16,
+ "passed": {
+  "base": 3,
+  "strict": 8,
+  "pct_base": 18.8,
+  "pct_strict": 50.0
+ },
+ "agreement": {
+  "same_category": 8,
+  "n": 16,
+  "pct": 50.0,
+  "flipped_pass": 5
+ },
+ "matrix": {
+  "clarify_wrong->clarify_wrong": 1,
+  "clarify_wrong->spec_bad": 3,
+  "clarify_wrong->spec_ok": 5,
+  "spec_bad->spec_bad": 4,
+  "spec_ok->spec_ok": 3
+ },
+ "mcnemar": {
+  "base_pass_strict_fail": 0,
+  "base_fail_strict_pass": 5,
+  "p_exact_two_sided": 0.0625,
+  "note": "配对数据用精确 McNemar；b+c==0 时 p=1.0。"
+ },
+ "transcription_errors": {
+  "base_tasks_with_given_key_broken": 4,
+  "strict_tasks_with_given_key_broken": 5,
+  "note": "「题面已给该键、输出却判错」= 转写错误（strict 引导的直接作用面）。"
+ },
+ "clarify_counts": {
+  "base": 9,
+  "strict": 1,
+  "note": "本卷 16 条 expected_clarifications 全为空 ⇒ 任何追问都记错。"
+ },
+ "per_task": [
+  {
+   "task_id": "L2i_fuselage_barrel_d1600_l1600_str8_frm3",
+   "family": "fuselage_barrel",
+   "split_v2": "extrapolation_test",
+   "base_category": "spec_bad",
+   "strict_category": "spec_bad",
+   "base_pass": false,
+   "strict_pass": false,
+   "base_failed_fields": [
+    "mesh.algorithm_2d",
+    "mesh.leading_edge_threshold",
+    "mesh.min_jacobian",
+    "mesh.recombination_algorithm",
+    "mesh.recombine",
+    "mesh.refine_at_leading_edge"
+   ],
+   "strict_failed_fields": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "base_failed_given_keys": [
+    "mesh.algorithm_2d",
+    "mesh.leading_edge_threshold",
+    "mesh.min_jacobian",
+    "mesh.recombination_algorithm",
+    "mesh.recombine",
+    "mesh.refine_at_leading_edge"
+   ],
+   "strict_failed_given_keys": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_fuselage_barrel_d1800_l2000_str8_frm3",
+   "family": "fuselage_barrel",
+   "split_v2": "val",
+   "base_category": "clarify_wrong",
+   "strict_category": "spec_bad",
+   "base_pass": false,
+   "strict_pass": false,
+   "base_failed_fields": [],
+   "strict_failed_fields": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": "[\"material.poisson_ratio 键名不符合规范，应为 material.nu（当前给定 poisson_ratio 无法映射到规范键名）\",\"material.youngs_modulus 键名不符合规范，应为 material.E（当前给定 youngs_modulus 无法映射到规范键名）\"]",
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_fuselage_barrel_d2000_l1800_str8_frm3",
+   "family": "fuselage_barrel",
+   "split_v2": "extrapolation_test",
+   "base_category": "clarify_wrong",
+   "strict_category": "spec_bad",
+   "base_pass": false,
+   "strict_pass": false,
+   "base_failed_fields": [],
+   "strict_failed_fields": [
+    "extra.split_tag",
+    "extra.v11_bracket",
+    "extra.v11_template"
+   ],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [
+    "extra.split_tag",
+    "extra.v11_bracket",
+    "extra.v11_template"
+   ],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": "[\"structure.params 缺少 skin_thickness（蒙皮厚度）\",\"structure.params 缺少 frame_thickness（框厚度）\",\"structure.params 缺少 stringer_height（长桁高度）\",\"structure.params 缺少 stringer_thickness（长桁厚度）\"]",
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_fuselage_barrel_d2000_l2000_str8_frm3",
+   "family": "fuselage_barrel",
+   "split_v2": "train",
+   "base_category": "spec_bad",
+   "strict_category": "spec_bad",
+   "base_pass": false,
+   "strict_pass": false,
+   "base_failed_fields": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "strict_failed_fields": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "base_failed_given_keys": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "strict_failed_given_keys": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_naca4412_wingbox",
+   "family": "wingbox",
+   "split_v2": "train",
+   "base_category": "spec_ok",
+   "strict_category": "spec_ok",
+   "base_pass": true,
+   "strict_pass": true,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_naca4412_wingbox_n_ribs3_chord1000",
+   "family": "wingbox",
+   "split_v2": "boundary_holdout",
+   "base_category": "clarify_wrong",
+   "strict_category": "spec_ok",
+   "base_pass": false,
+   "strict_pass": true,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": "[\"缺失字段: span\"]",
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_naca4412_wingbox_n_ribs6_chord1000",
+   "family": "wingbox",
+   "split_v2": "extrapolation_test",
+   "base_category": "spec_ok",
+   "strict_category": "spec_ok",
+   "base_pass": true,
+   "strict_pass": true,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_naca4412_wingbox_n_ribs7_chord1000",
+   "family": "wingbox",
+   "split_v2": "val",
+   "base_category": "spec_ok",
+   "strict_category": "spec_ok",
+   "base_pass": true,
+   "strict_pass": true,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_open_hole_panel_400x200_d20",
+   "family": "open_hole_panel",
+   "split_v2": "train",
+   "base_category": "clarify_wrong",
+   "strict_category": "spec_ok",
+   "base_pass": false,
+   "strict_pass": true,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": "[\"hole_x\",\"hole_y\"]",
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_open_hole_panel_400x200_d20_cfrp45s",
+   "family": "open_hole_panel",
+   "split_v2": "val",
+   "base_category": "clarify_wrong",
+   "strict_category": "spec_ok",
+   "base_pass": false,
+   "strict_pass": true,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": "[\"hole_x\",\"hole_y\"]",
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_open_hole_panel_400x200_d20_cfrp45s_d40",
+   "family": "open_hole_panel",
+   "split_v2": "extrapolation_test",
+   "base_category": "clarify_wrong",
+   "strict_category": "clarify_wrong",
+   "base_pass": false,
+   "strict_pass": false,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": "[\"hole_x\",\"hole_y\"]",
+   "strict_clarify": "[\"hole_x\",\"hole_y\"]",
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_open_hole_panel_400x200_d20_offcentre",
+   "family": "open_hole_panel",
+   "split_v2": "extrapolation_test",
+   "base_category": "spec_bad",
+   "strict_category": "spec_bad",
+   "base_pass": false,
+   "strict_pass": false,
+   "base_failed_fields": [
+    "mesh.algorithm_2d",
+    "mesh.element_order",
+    "mesh.leading_edge_threshold",
+    "mesh.min_jacobian",
+    "mesh.recombination_algorithm",
+    "mesh.recombine"
+   ],
+   "strict_failed_fields": [
+    "mesh.size (not in gold)"
+   ],
+   "base_failed_given_keys": [
+    "mesh.algorithm_2d",
+    "mesh.element_order",
+    "mesh.leading_edge_threshold",
+    "mesh.min_jacobian",
+    "mesh.recombination_algorithm",
+    "mesh.recombine"
+   ],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [
+    "mesh.size (not in gold)"
+   ],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_stiffened_panel_600x600",
+   "family": "stiffened_panel",
+   "split_v2": "train",
+   "base_category": "clarify_wrong",
+   "strict_category": "spec_bad",
+   "base_pass": false,
+   "strict_pass": false,
+   "base_failed_fields": [],
+   "strict_failed_fields": [
+    "mesh.size (not in gold)"
+   ],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [
+    "mesh.size (not in gold)"
+   ],
+   "base_clarify": "[\"n_stringers 数量缺失（题面结构族为 stiffened_panel，params 中 n_stringers=0 表示素板，但未明确说明无加筋；若确实为素板请确认 n_stringers=0，否则需给出加筋数量）\"]",
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_stiffened_panel_600x600_str3",
+   "family": "stiffened_panel",
+   "split_v2": "extrapolation_test",
+   "base_category": "clarify_wrong",
+   "strict_category": "spec_ok",
+   "base_pass": false,
+   "strict_pass": true,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": "[\"structure.params 缺 stringer_height\",\"structure.params 缺 stringer_thickness\",\"structure.params 缺 stringer_kind\"]",
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_stiffened_panel_700x600_str4",
+   "family": "stiffened_panel",
+   "split_v2": "extrapolation_test",
+   "base_category": "spec_bad",
+   "strict_category": "spec_bad",
+   "base_pass": false,
+   "strict_pass": false,
+   "base_failed_fields": [
+    "mesh.size_chord",
+    "mesh.size_span",
+    "extra.split_tag",
+    "extra.v11_bracket",
+    "extra.v11_interior_holdout",
+    "extra.v11_template"
+   ],
+   "strict_failed_fields": [
+    "extra.split_tag",
+    "extra.v11_bracket",
+    "extra.v11_interior_holdout",
+    "extra.v11_template"
+   ],
+   "base_failed_given_keys": [
+    "extra.split_tag",
+    "extra.v11_bracket",
+    "extra.v11_interior_holdout",
+    "extra.v11_template",
+    "mesh.size_chord",
+    "mesh.size_span"
+   ],
+   "strict_failed_given_keys": [
+    "extra.split_tag",
+    "extra.v11_bracket",
+    "extra.v11_interior_holdout",
+    "extra.v11_template"
+   ],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_stiffened_panel_800x600",
+   "family": "stiffened_panel",
+   "split_v2": "val",
+   "base_category": "clarify_wrong",
+   "strict_category": "spec_ok",
+   "base_pass": false,
+   "strict_pass": true,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": "[\"structure.params 中缺少 stringer_height（长桁高度）\",\"structure.params 中缺少 stringer_thickness（长桁厚度）\",\"structure.params 中缺少 stringer_kind（长桁剖面类型，应为 blade 或 T）\"]",
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  }
+ ]
+}

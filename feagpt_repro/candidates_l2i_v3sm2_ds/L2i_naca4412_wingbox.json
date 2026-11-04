@@ -1,0 +1,15 @@
+{
+ "task_id": "L2i_naca4412_wingbox",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "24cf0978369f7d29ee10d1136ef584eee7c55cc3c6d823b7540d074a6248f9c1",
+ "clarify": "[\"题面缺失 wingbox 族的必需键 stringer_kind（已给出但需确认其取值是否为 'blade' 或 'T'；题面中该键值写为 'blade'，但未确认其是否为合法取值——已按题面保留）\",\"题面缺失 wingbox 族细节键 stringer_flange_width 的合法性依据：题面 stringer_kind='blade'，blade 剖面不应有缘条宽，但题面同时给出 stringer_flange_width=30；需澄清该键是否应保留或删除\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 269,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_strict_v1+meshfix_v1"
+}

@@ -67,6 +67,81 @@ const SYS_L2 = SYS + '\n' + L2_ADDENDUM;
 const PROMPT_SHA_L2 = crypto.createHash('sha256').update(SYS_L2, 'utf8').digest('hex');
 
 // ---------------------------------------------------------------------------
+// T-L27c v3（2026-11-04）：L2「逐键转写」加强段 —— **独立 arm，不是替换**
+// ★ 为什么是 arm：v2 那 16 条实测把失败模式指到了 prompt（glm 12 条 spec_bad 全在
+//   mesh 段「省略/合并」；ds 9 条 clarify_wrong 全在「把 schema 命名/规范意见当澄清
+//   理由」），不是能力。要验这一点必须**只改 prompt 一个变量**（R-A1）。
+// ★ 为什么不能直接改 L2_ADDENDUM：它的 sha = `03129c56…` 是 C-041（v7 两份 L2 成绩单
+//   glm 49/64、ds 36/64）的锚点。改常量 ⇒ 那两份立刻变历史值（S-39 必红）。所以这里
+//   追加、且**只在 --l2-strict 时生效**；不传参时逐字节等于旧版。
+// ★ 内容是**规则**不是 case 清单：不写任何具体题目的键名/取值，否则等于对这 16 条
+//   过拟合（换卷即失效，且违反「判据不能依赖具体值」）。
+// ---------------------------------------------------------------------------
+const L2_STRICT_ADDENDUM = `
+★★ 转写纪律（**最高优先级：与上文任何表述冲突时以本节为准**）
+本题考的是「把题面照原样转写清楚」，不是「按你的理解重写一份更规范的 spec」。
+
+A. **逐键照抄**：题面 JSON 里出现的每个键，输出必须**原样保留**——键名一字不改、
+   一个不省、不合并、不拆分、不换层级。以下都算改坏：
+   - 把两个同级键合成一个（哪怕你觉得它们本就该是一个量）；
+   - 把嵌套键提到外层，或塞进别的块；
+   - 因为「这个键名不符合本领域惯例」就改成你习惯的名字。
+   ★ 键名以**题面**为准，不以你的偏好为准。
+
+B. **不许自创键**：输出的键集合 ⊆（题面已有键 ∪ 上面四族键名总表）。
+   总表外的键一个都不写；extra 块除柱壳的 end_shear / end_moment 外一律 {}。
+
+C. **澄清前先逐键核对题面**（这一步不许跳、不许凭记忆）：对你打算追问的每个字段，
+   先在题面 JSON 里全文检索这个键名，并确认它属于**本题族**的哪一行键名总表。
+   ★ 澄清的**唯一合法理由**是「题面里找不到这个键」。
+   ★ 以下理由一律**不合法**，不得据此追问：
+     - 键名不符合你的命名习惯（题面写什么就认什么，不同名不等于缺失）；
+     - 某个键「按规范应由别处给出」（题面给了就照抄，不给才问）；
+     - 你希望把两个键合成一个更规范的表达（B/A 已禁止）；
+     - 把**别的族/别的块**的键名拿来问本题（先确认它在本族总表那一行里）。
+   ★ 题面按上文规则**故意省略**的键不算缺失（例如中心孔省略孔心坐标、无长桁省略
+     长桁细节键）——这类键追问就是错。
+D. 仍然只输出一个 JSON 对象（spec 或 {"clarify":[...]}），不要输出其他文字。`;
+
+const L2_STRICT = process.argv.includes('--l2-strict');
+
+// ---------------------------------------------------------------------------
+// T-L27c v3 第二跳（2026-11-04）：网格键更正 —— **考的是 SYS 自己的一句错话**
+// ★ 来源：SYS 第 40 行写「网格键 size_chord/size_span（翼盒）、**size（板壳类）**」，
+//   但**四族 gold 的 mesh 段完全一致、全部用 size_chord/size_span，没有任何 gold 有 size**
+//   （实测 `modeling/*/spec.json`，`_l27c_check_mesh_keys.py` 守这条）。
+// ★ 修复确实做过、又被回滚带走：`_psa_fix_mesh_keys.py` 的 `OLD1`（p3 版 SYS 片段）
+//   与 `NEW1`（p4 版）**都含**「板壳类也用这两个键名——**没有 size 这个键**」，
+//   而 `ce225186` 里**没有**这一句。⇒ 2026-11-01 把 SYS 回滚到 `ce225186`（p5c 作废）时，
+//   这句更正**随回滚一起消失，且没有任何闸报错**。
+//   （判据只锚 sha 变没变，不锚「sha 对应的那句话对不对」——见 CONFLICT N-34。）
+// ⇒ 模型按 prompt 写 `size` 被判「自造键」不是模型的锅。
+// ★ 这一跳**只加在实验 arm 里、不动 SYS 常量**：改 SYS 会改 `ce225186`，那是
+//   C-032/C-033/C-040/C-041 的锚点（R53/S-39），动它要老王拍板（R-A6）。
+// ---------------------------------------------------------------------------
+const L2_MESHFIX_ADDENDUM = `
+E. **网格键（本小节覆盖上文「size（板壳类）」那一句）**：四族的网格块**只有**
+   size_chord 与 size_span 两个尺寸键 —— 开孔板与加筋板**也用这两个键名**，
+   **没有 size 这个键**。把题面给的 size_chord / size_span 合并成一个 size，
+   按「自造键」判错。`;
+
+const L2_MESHFIX = process.argv.includes('--l2-meshfix');
+const _L2_PARTS = [SYS_L2]
+  .concat(L2_STRICT ? [L2_STRICT_ADDENDUM] : [])
+  .concat(L2_MESHFIX ? [L2_MESHFIX_ADDENDUM] : []);
+const SYS_L2_EFF = _L2_PARTS.join('\n');
+const _L2_ARM_TAG = [L2_STRICT ? 'strict_v1' : null, L2_MESHFIX ? 'meshfix_v1' : null]
+  .filter(Boolean).join('+') || 'base';
+const PROMPT_SHA_L2_STRICT =
+  crypto.createHash('sha256').update(SYS_L2 + '\n' + L2_STRICT_ADDENDUM, 'utf8').digest('hex');
+const PROMPT_SHA_L2_MESHFIX =
+  crypto.createHash('sha256').update(SYS_L2 + '\n' + L2_MESHFIX_ADDENDUM, 'utf8').digest('hex');
+const PROMPT_SHA_L2_STRICT_MESHFIX =
+  crypto.createHash('sha256').update(SYS_L2 + '\n' + L2_STRICT_ADDENDUM + '\n' + L2_MESHFIX_ADDENDUM,
+    'utf8').digest('hex');
+const PROMPT_SHA_L2_EFF = crypto.createHash('sha256').update(SYS_L2_EFF, 'utf8').digest('hex');
+
+// ---------------------------------------------------------------------------
 // T-B2B5（2026-11-02）越界拒答题 —— 第三份 SYS：SYS + 追加段
 // ★★ 同 L2 的纪律：**SYS 一个字节都不许动**（R53/S-39 的 sha 锚点）。
 //    所以这里是追加，不是改写；SYS_REFUSE 的 sha 只锚这一套独立小卷
@@ -183,7 +258,15 @@ async function main() {
   // 不联网、不调模型）。改了 prompt 却没重生成 ⇒ 成绩单里的 sha 会与这里不等。
   if (argv.includes('--print-prompt-sha')) { console.log(PROMPT_SHA); return; }
   // T-A13a：L2 用的是另一份 SYS（SYS + 追加段），sha 必须单独报，不能与 L3 混用（R53）
+  // ★ 这里**恒打印基准版**（`03129c56…`）：它是 C-041 的锚点，S-39 靠它做漂移闸。
+  //   实验 arm 的 sha 走 --print-prompt-sha-l2-<arm>，两条命令互不干扰。
   if (argv.includes('--print-prompt-sha-l2')) { console.log(PROMPT_SHA_L2); return; }
+  for (const [flag, val] of [['--print-prompt-sha-l2-strict', PROMPT_SHA_L2_STRICT],
+                             ['--print-prompt-sha-l2-meshfix', PROMPT_SHA_L2_MESHFIX],
+                             ['--print-prompt-sha-l2-strict-meshfix', PROMPT_SHA_L2_STRICT_MESHFIX],
+                             ['--print-prompt-sha-l2-eff', PROMPT_SHA_L2_EFF]]) {
+    if (argv.includes(flag)) { console.log(val); return; }
+  }
   // T-B2B5：越界拒答卷同理会多一份 SYS，sha 单独报（R53 同纪律）
   if (argv.includes('--print-prompt-sha-refuse')) { console.log(PROMPT_SHA_REFUSE); return; }
   const tasksPath = get('--tasks', 'tasks/tasks.jsonl');
@@ -198,6 +281,8 @@ async function main() {
   const only = (get('--only', '') || '').split(',').filter(Boolean);
   // T-A13a：L2 呈现开关（默认关 = 与旧行为一致；开了才遮 name）
   const MASK_NAME = argv.includes('--mask-name');
+  // T-L27c v3：本轮 L2 prompt 的 arm 标签，写进每条候选供事后分辨（R-A8 可追溯）
+  const myArmTag = 'l2_' + _L2_ARM_TAG;
   // ---------------------------------------------------------------------
   // T-PSA（2026-11-01）：影子 prompt 入口。
   // ★ 只给 L3 用，**不改上面的 SYS 常量一个字节** —— 常量 sha 是 R53/S-39 的锚点，
@@ -246,11 +331,11 @@ async function main() {
     const outFile = path.join(outDir, `${t.task_id}.json`);
     if (fs.existsSync(outFile)) { console.log(`跳过（已存在）: ${t.task_id}`); continue; }
     process.stdout.write(`生成 ${t.task_id} … `);
-    const sysPrompt = SYS_FROM_FILE || (t.input_level === 'L2' ? SYS_L2
+    const sysPrompt = SYS_FROM_FILE || (t.input_level === 'L2' ? SYS_L2_EFF
       : t.input_level === 'REFUSE' ? SYS_REFUSE : SYS);
     const promptSha = SYS_FROM_FILE
       ? crypto.createHash('sha256').update(SYS_FROM_FILE, 'utf8').digest('hex')
-      : (t.input_level === 'L2' ? PROMPT_SHA_L2
+      : (t.input_level === 'L2' ? PROMPT_SHA_L2_EFF
         : t.input_level === 'REFUSE' ? PROMPT_SHA_REFUSE : PROMPT_SHA);
     const messages = [{ role: 'system', content: sysPrompt },
                       { role: 'user', content: buildUser(t, MASK_NAME) }];
@@ -327,7 +412,11 @@ async function main() {
                   clarify, refuse, spec, turns_used: turnsUsed,
                   validation_history: valHistory, raw_len: answer.length };
     // T-A13a：L2 额外落一条「呈现方式」，否则事后无法分辨这批候选是遮了 name 还是没遮
-    if (t.input_level === 'L2') row.presentation = MASK_NAME ? 'spec_json_masked_name' : 'spec_json_raw_name';
+    if (t.input_level === 'L2') {
+      row.presentation = MASK_NAME ? 'spec_json_masked_name' : 'spec_json_raw_name';
+      // T-L27c v3：标清哪条 prompt 分支产出的 —— 不同 arm 的分数**不可并列**（R53）
+      row.prompt_arm = myArmTag;
+    }
     fs.writeFileSync(outFile, JSON.stringify(row, null, 1));
     console.log(refuse ? `[REFUSE] ${JSON.stringify(refuse).slice(0, 70)}` :
                 clarify ? `[CLARIFY] ${clarify.slice(0, 70)}` :
@@ -340,4 +429,7 @@ if (require.main === module) {
   main().catch(e => { console.error('FATAL:', e.message); process.exit(2); });
 }
 module.exports = { relaxedSchema, contractErrors, extractJSON, buildUser, maskName,
-                   PROMPT_SHA, PROMPT_SHA_L2, PROMPT_SHA_REFUSE, SYS, SYS_L2, SYS_REFUSE };
+                   PROMPT_SHA, PROMPT_SHA_L2, PROMPT_SHA_L2_STRICT, PROMPT_SHA_L2_MESHFIX,
+                   PROMPT_SHA_L2_STRICT_MESHFIX, PROMPT_SHA_REFUSE,
+                   SYS, SYS_L2, SYS_L2_EFF, L2_ADDENDUM, L2_STRICT_ADDENDUM, L2_MESHFIX_ADDENDUM,
+                   SYS_REFUSE };

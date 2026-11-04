@@ -1,0 +1,70 @@
+{
+ "task_id": "L2i_stiffened_panel_800x600",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "24cf0978369f7d29ee10d1136ef584eee7c55cc3c6d823b7540d074a6248f9c1",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "stiffened_panel_800x600",
+  "description": "stiffened_panel 800x600 mm, thickness 2 mm, n_stringers 0, pressure 0.0001 MPa",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "stiffened_panel",
+   "params": {
+    "length": 800,
+    "width": 600,
+    "thickness": 2,
+    "n_stringers": 0
+   }
+  },
+  "mesh": {
+   "size_chord": 3,
+   "size_span": 3,
+   "algorithm_2d": 6,
+   "element_order": 1,
+   "leading_edge_threshold": 1.6,
+   "min_jacobian": 0.3,
+   "recombination_algorithm": 0,
+   "recombine": true,
+   "refine_at_leading_edge": true
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.0001,
+   "direction": [
+    0,
+    0,
+    -1
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {
+   "step_type": "static",
+   "solver": "auto",
+   "incremental": true,
+   "initial_increment": 0.25,
+   "total_time": 1,
+   "outputs": [
+    "U",
+    "S"
+   ]
+  },
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 1061,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_strict_v1+meshfix_v1"
+}

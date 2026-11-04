@@ -3317,6 +3317,223 @@ def main():
     print(f"  [{'ok ' if _l27cv2_ok else 'BAD!'}] NC-80 增卷规则可证伪（T-L27c v2）          "
           f"{_l27cv2_detail}")
 
+    # NC-81（T-L27c v3）「两个 prompt arm 不可混」可证伪
+    #   背景：本轮给 L2 加了一个 `--l2-strict` 分支（逐键转写加强段）。最容易犯的两个错是：
+    #   ① **变量不存在**还当成消融（prompt_sha 根本一样，只是换了个目录名）；
+    #   ② 把两个 arm 的分数并列成「提升 X pp」（R-A6/R53 明令禁止，只能作组内消融）。
+    #   本负控守四件：
+    #     ① 正向：真数据不误报（rc=0 且产物生成）；
+    #     ② 四向变异各红在**指定判据**：(i) 卷不同 / (ii) 模型不同 / (iii) prompt sha 相同 /
+    #        (iv) 删一条 task —— 其中 (iv) 是「A⊆B 要核两端」的落地：只比 n 会让删一条静默通过；
+    #     ③ McNemar 在 b+c==0 时必须回 **1.0**（"两 arm 完全一致" ≠ p=0 ≠ 算不出来），
+    #        且 b/c **定向不能反**（b = base对&strict错）；
+    #     ④ 脚本报的 b/c 必须等于从 per_task 现算的值（核两端，不核一边）。
+    _nc81_ok = False
+    _nc81_detail = ''
+    try:
+        import importlib.util as _ilu81
+        import shutil as _sh81
+
+        _CMP81 = os.path.join(HERE, '_l27c_arm_compare.py')
+        _V81 = os.path.join(HERE, 'tasks', 'tasks_l2_informative_v2.jsonl')
+        _B81 = os.path.join(HERE, 'reports', 'diagnostics', 'l2i_v2_scores_glm.json')
+        _S81 = os.path.join(HERE, 'reports', 'diagnostics', 'l2i_v3s_scores_glm.json')
+
+        def _run81(args):
+            _p = _sp79.run([sys.executable] + args, capture_output=True, text=True, cwd=HERE,
+                           encoding='utf-8', errors='replace')
+            return _p.returncode, (_p.stdout or '') + (_p.stderr or '')
+
+        _miss81 = [p for p in (_CMP81, _V81, _B81, _S81) if not os.path.exists(p)]
+        if _miss81:
+            # 对象缺失判红不 skip（负控五条③）：缺 strict 成绩单时「全绿」等于没判
+            _nc81_detail = '缺对象(判红不skip)：%s' % ', '.join(os.path.basename(x) for x in _miss81)
+        else:
+            _tmp81 = _tf79.mkdtemp()
+            _res81 = {}
+
+            def _variant(tag, mut=None):
+                _bd, _sd = os.path.join(_tmp81, tag, 'b.json'), os.path.join(_tmp81, tag, 's.json')
+                os.makedirs(os.path.dirname(_bd), exist_ok=True)
+                _bo = _js79.load(_io79.open(_B81, encoding='utf-8'))
+                _so = _js79.load(_io79.open(_S81, encoding='utf-8'))
+                if mut:
+                    mut(_bo, _so)
+                for _p, _o in ((_bd, _bo), (_sd, _so)):
+                    _io79.open(_p, 'w', encoding='utf-8').write(
+                        _js79.dumps(_o, ensure_ascii=False, indent=1))
+                _out81 = os.path.join(_tmp81, tag, 'out.json')
+                _rc, _txt = _run81([_CMP81, '--base', _bd, '--strict', _sd,
+                                    '--tasks', _V81, '--out', _out81])
+                _res81[tag] = (_rc, _txt, _out81)
+                return _rc, _txt, _out81
+
+            # ① 正向：真数据必须 rc=0 且真的写出了产物（"没报错" 不等于 "算了"）
+            _rcP, _txtP, _outP = _variant('pos')
+            _pos_ok = (_rcP == 0 and os.path.exists(_outP) and os.path.getsize(_outP) > 0)
+
+            # ② 四向变异
+            def _m_i(_b, _s):
+                _s['tasks_sha256'] = 'deadbeef' + str(_s.get('tasks_sha256') or '')[8:]
+
+            def _m_ii(_b, _s):
+                _s['model'] = 'some-other-model'
+
+            def _m_iii(_b, _s):
+                _s['prompt_sha256'] = _b.get('prompt_sha256')
+
+            def _m_iv(_b, _s):
+                _s['per_task'] = _s['per_task'][:-1]
+
+            _mut81 = [('(i)卷不同', _m_i, '(i)'), ('(ii)模型不同', _m_ii, '(ii)'),
+                      ('(iii)prompt相同', _m_iii, '(iii)'), ('(iv)删一条task', _m_iv, '(iv)')]
+            _hits81 = []
+            for _tag, _fn, _want in _mut81:
+                _rc, _txt, _o = _variant('m%d' % len(_hits81), _fn)
+                if _rc == 2 and _want in _txt:
+                    _hits81.append('%s->红' % _tag)
+                else:
+                    _hits81.append('%s 未红在%s(rc=%s)' % (_tag, _want, _rc))
+
+            # ③ McNemar 语义 + ④ 报的 b/c == 从 per_task 现算
+            _sp81 = _ilu81.spec_from_file_location('_cmp81', _CMP81)
+            _cmp81 = _ilu81.module_from_spec(_sp81)
+            _sp81.loader.exec_module(_cmp81)
+            _mc81 = []   # 每项 = (name, ok, shown)
+            _p00 = _cmp81.mcnemar_exact(0, 0)
+            _mc81.append(('0+0->1.0', _p00 == 1.0, '0+0->%r' % _p00))
+            _p04, _p40 = _cmp81.mcnemar_exact(0, 4), _cmp81.mcnemar_exact(4, 0)
+            _mc81.append(('对称', _p04 == _p40, 'b0c4=%.4f b4c0=%.4f' % (_p04, _p40)))
+            # b=0,c=4 ⇒ 2*(1/16)=0.125（把 b/c 定向写反、或漏乘 2 / 用单侧，都会变）
+            _mc81.append(('0/4->0.125', abs(_p04 - 0.125) < 1e-12, '0/4->%.4f' % _p04))
+
+            _o81 = _js79.load(_io79.open(_outP, encoding='utf-8'))
+            _bb = sum(1 for r in _o81['per_task'] if r['base_pass'] and not r['strict_pass'])
+            _cc = sum(1 for r in _o81['per_task'] if (not r['base_pass']) and r['strict_pass'])
+            _recomputed = (_o81['mcnemar']['base_pass_strict_fail'] == _bb
+                           and _o81['mcnemar']['base_fail_strict_pass'] == _cc)
+            _mc81.append(('b/c复算', _recomputed, 'b/c=%d/%d %s' % (_bb, _cc, '同' if _recomputed else '异')))
+
+            # ⑤ arm 隔离：两份成绩单的 prompt sha 必须真的不同（不是同一个 arm 换个目录名）
+            _isolated = _o81['arm']['base']['prompt_sha256'] != _o81['arm']['strict']['prompt_sha256']
+            _mc81.append(('arm隔离', _isolated, 'arm隔离=%s' % ('是' if _isolated else '否')))
+
+            _red81 = sum(1 for x in _hits81 if x.endswith('->红'))
+            _nc81_ok = (_pos_ok and _red81 == len(_mut81) and all(x[1] for x in _mc81))
+            _nc81_detail = ('正向%s；变异=%d/%d %s；%s'
+                            % ('ok' if _pos_ok else 'FAIL', _red81, len(_mut81),
+                               '; '.join(_hits81),
+                               '; '.join('%s(%s)' % (x[0], x[2]) for x in _mc81)))
+            _sh81.rmtree(_tmp81, ignore_errors=True)
+    except Exception as _e81:
+        _nc81_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e81,)
+
+    results.append({'id': 'NC-81',
+                    'desc': '两个 L2 prompt arm 不可混（T-L27c v3）：正向真数据 rc=0 且产物非空；'
+                            '四向变异各须红在 (i) 卷不同 / (ii) 模型不同 / (iii) prompt sha 相同 / '
+                            '(iv) 删一条 task；McNemar 在 b+c=0 须回 1.0、b/c 定向与复算须一致；'
+                            '两 arm 的 prompt sha 必须真不同',
+                    'expect': '正向 ok；变异 4/4 红在指定项；McNemar 5 项语义全对',
+                    'actual': _nc81_detail, 'ok': _nc81_ok})
+    print(f"  [{'ok ' if _nc81_ok else 'BAD!'}] NC-81 prompt arm 不可混（T-L27c v3）           "
+          f"{_nc81_detail}")
+
+    # NC-82（T-L27c v3）「候选 mesh 键集必须等于 gold」可证伪
+    #   背景：SYS 里一句「size（板壳类）」与四族 gold 全冲突（CONFLICT N-34），
+    #        而这条缺陷**曾经改对过、被回滚带走、全程无闸报错**。本闸判的是**候选产物实际写了哪些键**。
+    #   守四件：
+    #     ① **双向**：base arm 的候选必须红（真有多写 size）、C 臂必须绿。
+    #        恒红的闸与恒绿的闸在这里各被抓一次 —— 只验一向发现不了「闸恒绿」。
+    #     ② 空目录 / 解析不到 gold case 必须**判红不 skip**（前置闸不许被空壳满足）。
+    #     ③ 变异：往 C 臂产物里塞一个 size ⇒ 必须变红（证明闸在读**内容**，不是读目录名）。
+    #     ④ **统计覆盖全部**：base arm 9 条问题题的多余键合计必须是 9，不是「打印那 6 条」的 6。
+    #        这条守的是本轮我自己写出的 bug —— 用 `bad[:6]` 同时做统计与打印，实测把 12 报成 6。
+    _nc82_ok = False
+    _nc82_detail = ''
+    try:
+        import importlib.util as _ilu82
+        import shutil as _sh82
+
+        _MK82 = os.path.join(HERE, '_l27c_check_mesh_keys.py')
+        _C_BASE = os.path.join(HERE, 'candidates_l2i_v2_glm')     # 已知：9 条多写 size
+        _C_FIX = os.path.join(HERE, 'candidates_l2i_v3sm_glm')    # 已知：全绿
+
+        def _run82(args):
+            _p = _sp79.run([sys.executable] + [_MK82] + args, capture_output=True, text=True,
+                           cwd=HERE, encoding='utf-8', errors='replace')
+            return _p.returncode, (_p.stdout or '') + (_p.stderr or '')
+
+        _miss82 = [p for p in (_MK82, _C_BASE, _C_FIX) if not os.path.exists(p)]
+        if _miss82:
+            _nc82_detail = '缺对象(判红不skip)：%s' % ', '.join(os.path.basename(x) for x in _miss82)
+        else:
+            _tmp82 = _tf79.mkdtemp()
+            try:
+                _h82 = []
+
+                # ① 双向正向
+                _rcB, _tB = _run82(['--candidates', _C_BASE])
+                _rcF, _tF = _run82(['--candidates', _C_FIX])
+                _h82.append(('base必红', _rcB == 1 and '多余键' in _tB, 'rc=%d' % _rcB))
+                _h82.append(('C臂必绿', _rcF == 0 and '多余键' not in _tF, 'rc=%d' % _rcF))
+
+                # ② 空目录 / 解析不到的 case ⇒ 判红不 skip
+                _empty82 = os.path.join(_tmp82, 'empty')
+                os.makedirs(_empty82, exist_ok=True)
+                _rcE, _tE = _run82(['--candidates', _empty82])
+                _h82.append(('空目录必红', _rcE == 2 and '空' in _tE, 'rc=%d' % _rcE))
+
+                _ghost82 = os.path.join(_tmp82, 'ghost')
+                os.makedirs(_ghost82, exist_ok=True)
+                _io79.open(os.path.join(_ghost82, 'x.json'), 'w', encoding='utf-8').write(
+                    _js79.dumps({'task_id': 'L1_this_case_does_not_exist',
+                                 'spec': {'mesh': {'size_chord': 1, 'size_span': 2}}},
+                                ensure_ascii=False))
+                _rcG, _tG = _run82(['--candidates', _ghost82])
+                _h82.append(('幽灵case必红', _rcG == 2 and '不存在' in _tG, 'rc=%d' % _rcG))
+
+                # ③ 变异：往 C 臂第一条塞 size ⇒ 必须变红，且红的原因含 size
+                _inj82 = os.path.join(_tmp82, 'inject')
+                _sh82.copytree(_C_FIX, _inj82)
+                _f0 = sorted(f for f in os.listdir(_inj82) if f.endswith('.json'))[0]
+                _p0 = os.path.join(_inj82, _f0)
+                _c0 = _js79.load(_io79.open(_p0, encoding='utf-8'))
+                _c0['spec'] = _c0.get('spec') or {}
+                _c0['spec'].setdefault('mesh', {})['size'] = 5.0
+                _io79.open(_p0, 'w', encoding='utf-8').write(
+                    _js79.dumps(_c0, ensure_ascii=False, indent=1))
+                _rcI, _tI = _run82(['--candidates', _inj82])
+                _h82.append(('注入size必红', _rcI == 1 and "'size'" in _tI, 'rc=%d' % _rcI))
+
+                # ④ 统计覆盖全部：json 里的 n_extra 必须是 9（不是打印那 6 条的 6）
+                _j82 = os.path.join(_tmp82, 'o.json')
+                _run82(['--candidates', _C_BASE, '--json', _j82])
+                _o82 = _js79.load(_io79.open(_j82, encoding='utf-8'))
+                _r0 = _o82['runs'][0]
+                _h82.append(('统计覆盖全部',
+                             _r0['n_bad'] == 9 and _r0['n_extra'] == 9,
+                             'n_bad=%d n_extra=%d（应 9/9，不是 6）'
+                             % (_r0['n_bad'], _r0['n_extra'])))
+
+                _bad82 = [x for x in _h82 if not x[1]]
+                _nc82_ok = not _bad82
+                _nc82_detail = ('; '.join('%s(%s)' % (x[0], x[2]) for x in _h82)
+                                if _nc82_ok else
+                                'FAIL: ' + '; '.join('%s(%s)' % (x[0], x[2]) for x in _bad82))
+            finally:
+                _sh82.rmtree(_tmp82, ignore_errors=True)
+    except Exception as _e82:
+        _nc82_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e82,)
+
+    results.append({'id': 'NC-82',
+                    'desc': '候选 mesh 键集 == gold（T-L27c v3，守 CONFLICT N-34）：'
+                            'base arm 必红且 C 臂必绿（双向）；空目录与解析不到 gold 的 case '
+                            '须 rc=2 判红不 skip；注入 size 须变红；合计统计须覆盖全部问题题',
+                    'expect': '6 项全过（含双向与统计覆盖）',
+                    'actual': _nc82_detail, 'ok': _nc82_ok})
+    print(f"  [{'ok ' if _nc82_ok else 'BAD!'}] NC-82 候选 mesh 键 == gold（T-L27c v3）      "
+          f"{_nc82_detail}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],

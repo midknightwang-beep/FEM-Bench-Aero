@@ -1,0 +1,86 @@
+{
+ "task_id": "L2i_naca4412_wingbox_n_ribs3_chord1000",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "24cf0978369f7d29ee10d1136ef584eee7c55cc3c6d823b7540d074a6248f9c1",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "airfoil": {
+   "chord": 1000,
+   "code": "4412",
+   "n_ribs": 3,
+   "n_stringers_per_skin": 0,
+   "rib_thickness": 4,
+   "skin_thickness": 3,
+   "span": 2000,
+   "spar_chordwise": [
+    0.25,
+    0.7
+   ],
+   "stringer_flange_width": 30,
+   "stringer_height": 20,
+   "stringer_kind": "blade",
+   "stringer_thickness": 2.5,
+   "sweep_deg": 0,
+   "tip_chord_ratio": 1,
+   "web_chordwise": []
+  },
+  "analysis": {
+   "incremental": true,
+   "initial_increment": 0.25,
+   "outputs": [
+    "U",
+    "S"
+   ],
+   "solver": "auto",
+   "step_type": "static",
+   "total_time": 1
+  },
+  "bc": {
+   "clamp": true,
+   "root_surface": "root"
+  },
+  "extra": {
+   "sweep_index": 1
+  },
+  "load": {
+   "direction": [
+    0,
+    1,
+    0
+   ],
+   "kind": "tip_force",
+   "magnitude": 500
+  },
+  "material": {
+   "density": 2.78e-9,
+   "name": "Aluminium 2024-T3",
+   "poisson_ratio": 0.33,
+   "yield_strength": 345,
+   "youngs_modulus": 73100
+  },
+  "mesh": {
+   "algorithm_2d": 6,
+   "element_order": 1,
+   "leading_edge_threshold": 1.6,
+   "min_jacobian": 0.3,
+   "recombination_algorithm": 0,
+   "recombine": true,
+   "refine_at_leading_edge": true,
+   "size_chord": 12,
+   "size_span": 25
+  },
+  "name": "naca4412_wingbox_n_ribs3_chord1000",
+  "structure": {
+   "family": "wingbox",
+   "params": {}
+  }
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 1239,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_strict_v1+meshfix_v1"
+}
