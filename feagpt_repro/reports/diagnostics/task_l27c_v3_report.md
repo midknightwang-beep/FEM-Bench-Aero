@@ -161,7 +161,7 @@ python _l27c_check_mesh_keys.py --self-test                            # 自比 
 |---|---|---|
 | **L3 v7（C-032 来源卷）** | **否** | 复算 `candidates_l3_v7_{glm,ds}` 共 118 个给出 spec 的候选，`spec_fidelity(engineering_layer=True)`：**mesh 段失败 0 条**（glm、ds 均为 0）；复算 FAIL 数 glm 11 / ds 9，与已发布 `sfr_all`（48/59、50/59）**完全吻合** |
 | **L2 v7（64 条）** | **否** | 64 条 `expected_clarifications` **全部非空** ⇒ 题型是「应追问」，不判 spec 保真 |
-| L2 informative 诊断卷（16 条） | **是** | 本轮 C 臂修好后 16/16 / 10/16；本来就未进对外数字 |
+| L2 informative 诊断卷（16 条） | **是** | 本轮 C 臂修好后 glm **16/16（第二遍 14/16）**、ds **10/16（第二遍 8/16）**；本来就未进对外数字 |
 
 **L3 为什么没中招**：L3 是 NL 输入，没有 spec 呈现，模型凭工程常识自己写 `size_chord`/`size_span`，恰好对。而 L2 informative 把 spec 摊开给模型看，模型看到题面写 `size_chord`、SYS 说「板壳类用 size」，一部分模型选择听 SYS ⇒ 改名/合并 ⇒ 被罚。
 
