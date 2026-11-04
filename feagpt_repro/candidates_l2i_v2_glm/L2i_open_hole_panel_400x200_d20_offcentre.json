@@ -1,0 +1,64 @@
+{
+ "task_id": "L2i_open_hole_panel_400x200_d20_offcentre",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "open_hole_panel_400x200_d20_offcentre",
+  "description": "400x200x2 铝 2024-T3 开孔板，孔径 20，孔心偏置 (120,60)，x 向拉伸 4000 N",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "length": 400,
+    "width": 200,
+    "thickness": 2,
+    "hole_d": 20,
+    "hole_x": 120,
+    "hole_y": 60
+   }
+  },
+  "mesh": {
+   "size": 4,
+   "element_order": 1
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 4000,
+   "direction": [
+    1,
+    0,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {
+   "solver": "auto",
+   "step_type": "static",
+   "incremental": true,
+   "initial_increment": 0.25,
+   "total_time": 1,
+   "outputs": [
+    "U",
+    "S"
+   ]
+  },
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 655,
+ "presentation": "spec_json_raw_name"
+}

@@ -1,0 +1,14 @@
+{
+ "task_id": "L2i_open_hole_panel_400x200_d20_cfrp45s",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"缺少 load.magnitude 对应的面内拉伸载荷描述吗？load.kind 为 tip_force 但开孔板应使用面内拉伸，请确认载荷类型与大小。\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 92,
+ "presentation": "spec_json_raw_name"
+}

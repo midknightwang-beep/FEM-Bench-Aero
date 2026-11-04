@@ -1,0 +1,70 @@
+{
+ "task_id": "L2i_fuselage_barrel_d2000_l1800_str8_frm3",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "fuselage_barrel_d2000_l1800_str8_frm3",
+  "description": "直径2000mm、长1800mm、8根长桁3个框的铝合金2024-T3机身柱壳，受内压0.05MPa及端剪50000N、端弯50000000N·mm",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "fuselage_barrel",
+   "params": {
+    "diameter": 2000,
+    "length": 1800,
+    "thickness": 3,
+    "n_stringers": 8,
+    "n_frames": 3
+   }
+  },
+  "mesh": {
+   "size": 25,
+   "element_order": 1,
+   "algorithm_2d": 6,
+   "recombine": true,
+   "recombination_algorithm": 0,
+   "min_jacobian": 0.3
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.05,
+   "direction": [
+    0,
+    0,
+    1
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {
+   "solver": "auto",
+   "step_type": "static",
+   "incremental": true,
+   "initial_increment": 0.25,
+   "total_time": 1,
+   "outputs": [
+    "U",
+    "S"
+   ]
+  },
+  "extra": {
+   "end_shear": 50000,
+   "end_moment": 50000000
+  }
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 790,
+ "presentation": "spec_json_raw_name"
+}

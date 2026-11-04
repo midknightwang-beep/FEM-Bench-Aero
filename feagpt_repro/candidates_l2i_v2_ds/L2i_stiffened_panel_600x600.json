@@ -1,0 +1,14 @@
+{
+ "task_id": "L2i_stiffened_panel_600x600",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"n_stringers 数量缺失（题面结构族为 stiffened_panel，params 中 n_stringers=0 表示素板，但未明确说明无加筋；若确实为素板请确认 n_stringers=0，否则需给出加筋数量）\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 141,
+ "presentation": "spec_json_raw_name"
+}

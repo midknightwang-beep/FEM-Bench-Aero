@@ -1,0 +1,73 @@
+{
+ "task_id": "L2i_fuselage_barrel_d2000_l2000_str8_frm3",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "fuselage_barrel_d2000_l2000_str8_frm3",
+  "description": "铝合金机身筒段，直径 2000mm，长度 2000mm，8 根长桁，3 个框，蒙皮厚 3mm，端部剪力 50000N、端部弯矩 50000000N·mm",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "fuselage_barrel",
+   "params": {
+    "diameter": 2000,
+    "length": 2000,
+    "thickness": 3,
+    "n_stringers": 8,
+    "n_frames": 3
+   }
+  },
+  "mesh": {
+   "size_chord": 25,
+   "size_span": 25,
+   "algorithm_2d": 6,
+   "element_order": 1,
+   "leading_edge_threshold": 1.6,
+   "min_jacobian": 0.3,
+   "recombination_algorithm": 0,
+   "recombine": true,
+   "refine_at_leading_edge": false
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.05,
+   "direction": [
+    0,
+    0,
+    1
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {
+   "step_type": "static",
+   "solver": "auto",
+   "incremental": true,
+   "initial_increment": 0.25,
+   "total_time": 1,
+   "outputs": [
+    "U",
+    "S"
+   ]
+  },
+  "extra": {
+   "end_shear": 50000,
+   "end_moment": 50000000
+  }
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 1165,
+ "presentation": "spec_json_raw_name"
+}

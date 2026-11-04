@@ -3188,6 +3188,135 @@ def main():
     print(f"  [{'ok ' if _l27c_ok else 'BAD!'}] NC-79 改卷链路可证伪（T-L27c）            "
           f"{_l27c_detail}")
 
+    # NC-80（T-L27c v2）「信息完备卷的增卷规则」可证伪
+    #   背景：16 条卷引入了三条**此前不存在**的判据（v1 ⊂ v2 纯增量 / 族内 spec 不重复 /
+    #   条数按族等分）。原型实测过一次漏洞：`verify()` 只遍历 v1 去 v2 里找 ⇒ **删掉 v1 一条
+    #   后没有任何遍历会碰到它 ⇒ 断言返回 []、全绿**。这正是「核了左边忘右边 = 核了一半」。
+    #   故本负控守三件：**基线自身完整性必须单独核**、spec 重复必须红、篡改参数必须红；
+    #   外加两条不变量：成绩单逐字节可复算、成绩单内嵌的卷 sha == 磁盘卷 sha（守行尾陷阱）。
+    _l27cv2_ok = False
+    _l27cv2_detail = ''
+    try:
+        import copy as _cp80
+        import hashlib as _hl80
+        import importlib.util as _ilu80
+
+        _MK80 = os.path.join(HERE, '_l27c_make_l2_informative.py')
+        _V280 = os.path.join(HERE, 'tasks', 'tasks_l2_informative_v2.jsonl')
+        _py80 = sys.executable
+
+        def _run80(args):
+            _p = _sp79.run([_py80] + args, capture_output=True, text=True, cwd=HERE,
+                           encoding='utf-8', errors='replace')
+            return _p.returncode, (_p.stdout or '') + (_p.stderr or '')
+
+        # ① 端到端：新规则不许把**旧行为**弄坏（v1 的 --check 仍须 rc=0）
+        _rcM1, _oM1 = _run80([_MK80, '--check', '--out', os.path.join(HERE, 'tasks', 'tasks_l2_informative_v1.jsonl')])
+        _rcM2, _oM2 = _run80([_MK80, '--check', '--per-family', '4', '--out', _V280])
+        _base_ok = (_rcM1 == 0 and '[ok ]' in _oM1 and _rcM2 == 0
+                    and '[ok ]' in _oM2 and os.path.exists(_V280))
+
+        # ② 三变异（判据本体 = verify()；锚点从数据现取，不写死索引/键名）
+        _mk80 = None
+        _muts80 = []
+        if _base_ok:
+            _sp80 = _ilu80.spec_from_file_location('_mk80', _MK80)
+            _mk80 = _ilu80.module_from_spec(_sp80)
+            _sp80.loader.exec_module(_mk80)
+            _v1_80 = _mk80.load(_mk80.V1)
+            _v2_80 = _mk80.load(_V280)
+            _src80 = _mk80.load(_mk80.SRC)
+
+            def _first_num(d, prefix=''):
+                for _k, _v in d.items():
+                    _p = (prefix + '.' + _k) if prefix else _k
+                    if isinstance(_v, dict):
+                        _r = _first_num(_v, _p)
+                        if _r:
+                            return _r
+                    elif isinstance(_v, (int, float)) and not isinstance(_v, bool):
+                        return _p
+                return None
+
+            # (a) 删基线 v1 一条：只遍历 v1 的写法会**静默全绿**（本卷实测过的漏洞）
+            _muts80.append(('删基线v1一条',
+                            _mk80.verify(_v2_80, _src80, 4,
+                                         [r for r in _v1_80 if r['task_id'] != _v1_80[0]['task_id']]),
+                            '基线 v1 自身条数'))
+            # (b) 族内 spec 重复 ⇒ 两条题实质相同、分母虚增
+            _b80 = _cp80.deepcopy(_v2_80)
+            _b80[1]['input']['spec_normalized'] = _cp80.deepcopy(_b80[0]['input']['spec_normalized'])
+            _muts80.append(('制造spec重复', _mk80.verify(_b80, _src80, 4, _v1_80), 'spec 完全重复'))
+            # (c) 篡改物理参数 ⇒ 题面被改坏（路径现场取，不写死）
+            _c80 = _cp80.deepcopy(_v2_80)
+            _p80 = _first_num(_c80[0]['input']['spec_normalized'])
+            if not _p80:
+                _muts80.append(('篡改物理参数', ['锚点缺失(判红不skip)'], 'spec 与源题'))
+            else:
+                _cur = _c80[0]['input']['spec_normalized']
+                for _seg in _p80.split('.')[:-1]:
+                    _cur = _cur[_seg]
+                _cur[_p80.split('.')[-1]] += 1.0
+                _muts80.append(('篡改物理参数(%s)' % _p80,
+                                _mk80.verify(_c80, _src80, 4, _v1_80), 'spec 与源题'))
+
+        _hits80 = []
+        for _n80, _res80, _want80 in _muts80:
+            if any(_want80 in _x for _x in _res80):
+                _hits80.append('%s->红' % _n80)
+            else:
+                _hits80.append('%s 未红在「%s」(实际=%s)' % (_n80, _want80, (_res80 or ['全绿'])[0][:40]))
+
+        # ③ 两份 16 条成绩单可逐字节复算（"跑出过" ≠ "能复现"）
+        _sm80 = []
+        for _m80 in ('glm', 'ds'):
+            _rf80 = os.path.join(HERE, 'reports', 'diagnostics', 'l2i_v2_scores_%s.json' % _m80)
+            _cd80 = os.path.join(HERE, 'candidates_l2i_v2_%s' % _m80)
+            if not (os.path.exists(_rf80) and os.path.isdir(_cd80)):
+                _sm80.append('%s:缺对象(判红不skip)' % _m80)
+                continue
+            _t80 = _tf79.mkdtemp()
+            _o80 = os.path.join(_t80, 'x.json')
+            _rc80, _oo80 = _run80([os.path.join(HERE, 'score_l2.py'), '--cand', _cd80,
+                                   '--tasks', _V280, '--label', 'l2i_v2_%s' % _m80, '--out', _o80])
+            _eq80 = (_rc80 == 0 and os.path.exists(_o80) and
+                     open(_o80, 'rb').read() == open(_rf80, 'rb').read())
+            _sm80.append('%s:%s' % (_m80, '同' if _eq80 else '异'))
+            _shutil80 = __import__('shutil')
+            _shutil80.rmtree(_t80, ignore_errors=True)
+
+        # ④ 成绩单内嵌的卷 sha 必须等于磁盘卷 sha（★ 行尾规范化会无声改掉它）
+        _sha80 = []
+        _vol_sha = _hl80.sha256(open(_V280, 'rb').read()).hexdigest() if os.path.exists(_V280) else ''
+        for _m80 in ('glm', 'ds'):
+            _rf80 = os.path.join(HERE, 'reports', 'diagnostics', 'l2i_v2_scores_%s.json' % _m80)
+            if not os.path.exists(_rf80):
+                _sha80.append('%s:缺(判红)' % _m80)
+                continue
+            _got = _js79.load(_io79.open(_rf80, encoding='utf-8')).get('tasks_sha256', '')
+            _sha80.append('%s:%s' % (_m80, '同' if _got == _vol_sha else '异(%s≠%s)'
+                                     % (_got[:12], _vol_sha[:12])))
+
+        _red80 = sum(1 for x in _hits80 if x.endswith('->红'))
+        _l27cv2_ok = (_base_ok and _red80 == len(_muts80)
+                      and all(x.endswith(':同') for x in _sm80)
+                      and all(x.endswith(':同') for x in _sha80))
+        _l27cv2_detail = ('v1/v2 --check=%d/%d；变异=%d/%d %s；复算 %s；嵌sha %s'
+                          % (_rcM1, _rcM2, _red80, len(_muts80), '; '.join(_hits80),
+                             ' '.join(_sm80), ' '.join(_sha80)))
+    except Exception as _e80:
+        _l27cv2_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e80,)
+
+    results.append({'id': 'NC-80',
+                    'desc': '信息完备卷的增卷规则可证伪（T-L27c v2）：双卷 --check rc=0（新规则不弄坏旧卷）；'
+                            '三向变异（删基线 v1 一条 / 族内 spec 重复 / 篡改物理参数）各须红在'
+                            '「基线 v1 自身条数」/「spec 完全重复」/「spec 与源题」；'
+                            '16 条成绩单逐字节可复算；成绩单内嵌卷 sha == 磁盘卷 sha',
+                    'expect': '双卷 rc=0；变异 3/3 红在指定项；复算 glm/ds 同；嵌 sha 两侧同',
+                    'actual': _l27cv2_detail, 'ok': _l27cv2_ok})
+    print(f"  [{'ok ' if _l27cv2_ok else 'BAD!'}] NC-80 增卷规则可证伪（T-L27c v2）          "
+          f"{_l27cv2_detail}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],

@@ -1,0 +1,14 @@
+{
+ "task_id": "L2i_fuselage_barrel_d1800_l2000_str8_frm3",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"material.poisson_ratio 键名不符合规范，应为 material.nu（当前给定 poisson_ratio 无法映射到规范键名）\",\"material.youngs_modulus 键名不符合规范，应为 material.E（当前给定 youngs_modulus 无法映射到规范键名）\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 188,
+ "presentation": "spec_json_raw_name"
+}

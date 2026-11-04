@@ -1,0 +1,14 @@
+{
+ "task_id": "L2i_stiffened_panel_800x600",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"structure.params 中缺少 stringer_height（长桁高度）\",\"structure.params 中缺少 stringer_thickness（长桁厚度）\",\"structure.params 中缺少 stringer_kind（长桁剖面类型，应为 blade 或 T）\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 187,
+ "presentation": "spec_json_raw_name"
+}

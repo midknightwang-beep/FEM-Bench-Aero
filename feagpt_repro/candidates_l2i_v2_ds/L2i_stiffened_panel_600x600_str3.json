@@ -1,0 +1,14 @@
+{
+ "task_id": "L2i_stiffened_panel_600x600_str3",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"structure.params 缺 stringer_height\",\"structure.params 缺 stringer_thickness\",\"structure.params 缺 stringer_kind\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 139,
+ "presentation": "spec_json_raw_name"
+}
