@@ -2936,6 +2936,102 @@ def main():
     print(f"  [{'ok ' if _maj_ok else 'BAD!'}] NC-77 k 遍多数表决可证伪（T-B2B5 v4）      "
           f"{_maj_detail}")
 
+    # NC-78（T-L27b）L2「信息完备题」（ec=0）分支可证伪
+    #   ① 自检不是装饰：⑦ 这一段在输出里且 rc=0（删掉自检块会连这行一起消失）；
+    #   ② **自比 A==A**：两份真实 L2 候选重跑必须与已入库 artifact **逐字节**一致
+    #      —— 新分支不许改动任何现有成绩（label 从 artifact 现取，不写死）；
+    #   ③ 三个变异各须**红在指定自检项**，不是「反正红了」。
+    # -----------------------------------------------------------------------
+    _ec0_ok = False
+    _ec0_detail = ''
+    try:
+        import io as _io78
+        import json as _js78
+        import shutil as _sh78
+        import subprocess as _sp78
+        import tempfile as _tf78
+
+        _L2 = os.path.join(HERE, 'score_l2.py')
+        _py = sys.executable
+
+        def _run78(args):
+            _p = _sp78.run([_py] + args, capture_output=True, text=True, cwd=HERE,
+                           encoding='utf-8', errors='replace')
+            return _p.returncode, (_p.stdout or '') + (_p.stderr or '')
+
+        # ① 原样自检：rc=0 且 ⑦ 锚点在（锚点缺失判红，不 skip）
+        _rc0, _o0 = _run78([_L2, '--self-test'])
+        _anchor78 = bool(re.search(r'⑦\s*T-L27b', _o0))
+
+        # ② 自比 A==A：重跑两份真实 L2 候选，与入库 artifact 逐字节比
+        _same = []
+        _tmpd = _tf78.mkdtemp()
+        for _m in ('glm', 'ds'):
+            _ref = os.path.join(HERE, 'reports', 'l2_scores_v7_%s.json' % _m)
+            _cd = os.path.join(HERE, 'candidates_l2_v7_%s' % _m)
+            if not (os.path.exists(_ref) and os.path.isdir(_cd)):
+                _same.append('%s:缺对象(判红不skip)' % _m)
+                continue
+            _lb = _js78.load(_io78.open(_ref, encoding='utf-8')).get('label')
+            _out = os.path.join(_tmpd, 'l2_%s.json' % _m)
+            _args = [_L2, '--cand', _cd, '--out', _out] + (['--label', _lb] if _lb else [])
+            _rc, _o = _run78(_args)
+            _eq = (_rc == 0 and os.path.exists(_out) and
+                   open(_out, 'rb').read() == open(_ref, 'rb').read())
+            _same.append('%s:%s' % (_m, '同' if _eq else '异'))
+        _sh78.rmtree(_tmpd, ignore_errors=True)
+        _selfsame78 = all(x.endswith(':同') for x in _same)
+
+        # ③ 三个变异：锚点**从源码现取**
+        _src = _io78.open(_L2, encoding='utf-8').read()
+        _muts78 = [
+            ("    if not (task.get('expected_clarifications') or []):", "    if False:", 'e',
+             '关掉 ec=0 分支（回到旧行为）'),
+            ("            'clarify_wrong': 'clarify_wrong', 'no_output': 'no_output'}",
+             "            'clarify_wrong': 'spec_ok', 'no_output': 'no_output'}", 'f',
+             '把「该答不答」洗成通过'),
+            ("    if not (task.get('expected_clarifications') or []):", "    if True:", 'a',
+             '全题走 ec=0（污染现有卷）'),
+        ]
+        _hits78 = []
+        for _i, (_a, _b, _want, _desc) in enumerate(_muts78, 1):
+            if _src.count(_a) != 1:
+                _hits78.append('%s 锚点%d处(判红)' % (_desc, _src.count(_a)))
+                continue
+            _p78 = os.path.join(HERE, '_nc78_mut%d.py' % _i)
+            with _io78.open(_p78, 'w', encoding='utf-8', newline='') as _f:
+                _f.write(_src.replace(_a, _b, 1))
+            try:
+                _rc, _o = _run78([_p78, '--self-test'])
+                _red = sorted(set(re.findall(r'^\s*\(([a-h])\)', _o, re.M)))
+                if _rc != 0 and _want in _red:
+                    _hits78.append('%s->(%s)' % (_desc, _want))
+                else:
+                    _hits78.append('%s 未红在(%s)(rc=%d,实际红=%s)'
+                                   % (_desc, _want, _rc, _red or '无'))
+            finally:
+                try:
+                    os.remove(_p78)
+                except OSError:
+                    pass
+
+        _red78 = sum(1 for x in _hits78 if '->(' in x)
+        _ec0_ok = (_rc0 == 0 and _anchor78 and _selfsame78 and _red78 == len(_muts78))
+        _ec0_detail = ('自检rc=%d ⑦锚点=%s 自比 %s 变异=%d/%d %s'
+                       % (_rc0, '在' if _anchor78 else '缺', ' '.join(_same),
+                          _red78, len(_muts78), '; '.join(_hits78)))
+    except Exception as _e78:
+        _ec0_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e78,)
+
+    results.append({'id': 'NC-78',
+                    'desc': 'L2 信息完备题（ec=0）分支可证伪（T-L27b）：自检 ⑦ 段在且 rc=0；'
+                            '两份真实 L2 候选重跑与入库 artifact 逐字节一致（自比 A==A）；'
+                            '三向变异（关分支 / 洗白该答不答 / 全题走 ec=0）各须红在 (e)/(f)/(a)',
+                    'expect': '自检 rc=0 且 ⑦ 锚点在；glm/ds 逐字节同；三向变异红在指定项',
+                    'actual': _ec0_detail, 'ok': _ec0_ok})
+    print(f"  [{'ok ' if _ec0_ok else 'BAD!'}] NC-78 L2 信息完备题分支可证伪（T-L27b）      "
+          f"{_ec0_detail}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],

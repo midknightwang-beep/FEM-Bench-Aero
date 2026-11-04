@@ -48,8 +48,14 @@ import tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
-from score_baseline import judge_clarify_field_level   # noqa: E402  ★ 判据只有一处
+from score_baseline import (judge_clarify_field_level,      # noqa: E402  ★ 判据只有一处
+                            judge_l3_candidate)             # noqa: E402  ★ ec=0 分支委托它
 from check_l2_leak import scan                          # noqa: E402  ★ 掩码只有一处
+
+# ec=0（信息完备题）走 `judge_l3_candidate` 后，把它的类别名映射回 **L2 词表**。
+# 只做改名，不重算 —— 判定逻辑必须只有一份（T-L27b）。
+_EC0_CAT = {'spec_pass': 'spec_ok', 'spec_fail': 'spec_bad',
+            'clarify_wrong': 'clarify_wrong', 'no_output': 'no_output'}
 
 TASKS = os.path.join(HERE, 'tasks', 'tasks.jsonl')
 
@@ -68,13 +74,35 @@ def load_l2(tasks_path=TASKS):
 
 
 def classify(cand, task):
-    """单条 L2 候选判类。返回 (category, pass, detail)。"""
+    """单条 L2 候选判类。返回 (category, pass, detail)。
+
+    ★ T-L27b（2026-11-04）：**ec=0（信息完备题）必须能判**。
+      v7 卷的 L2 64 条**全部** ec=1（`Counter({1: 64})`），所以本分支在 v7 上**永不触发**
+      —— 这正是它能零成本接入的原因（自比 A==A：两份真实 L2 成绩单逐字节不变）。
+
+      为什么必须有它：L2 prompt 的 addendum 第 3 条**明确允许**「缺的键不影响定义时输出完整
+      spec」，而旧实现在 `if spec:` 里**不看 ec** ⇒ 一律判 `fabricated`（R20 静默编造）。
+      实测（2026-11-04，L3 的 59 条 ec=0 题的真实 spec 候选）**10/10 被判 fabricate** ——
+      把「完整题面下的正确回答」记成最重的错。L3 侧早有正确分支
+      （`该答不答（信息完备却澄清）`），两边不一致不是口径差异，是实现漏项。
+
+      **判定一律委托 `judge_l3_candidate`**（唯一实现，R58）；本函数只改名。
+    """
     if cand is None:
         return 'missing', False, {'note': '没有候选文件（该题未跑）'}
     if cand.get('error'):
         return 'llm_error', False, {'detail': cand['error']}
     clarify = cand.get('clarify')
     spec = cand.get('spec')
+
+    if not (task.get('expected_clarifications') or []):
+        # ── ec=0：该答的是 spec，澄清 = 该答不答 ──
+        if spec and not cand.get('_path'):
+            # 锚点缺失不得白送分（R29），也不得假装判过
+            return 'spec_bad', False, {'note': 'ec=0 且给了 spec，但缺 _path ⇒ 无法做 spec 保真判分'}
+        cat, ok, detail = judge_l3_candidate(cand, task)
+        return _EC0_CAT.get(cat, cat), ok, detail
+
     if clarify and not spec:
         ok, detail = judge_clarify_field_level(clarify, task)
         return ('clarify_ok' if ok else 'clarify_wrong'), ok, detail
@@ -131,6 +159,7 @@ def score(cand_dir, tasks_path=TASKS, label=None):
         if os.path.exists(p):
             try:
                 cand = json.load(open(p, encoding='utf-8'))
+                cand['_path'] = p        # ec=0 分支要做 spec 保真判分，必须有文件路径
             except Exception as e:                       # 坏文件不得当成"没跑"
                 cand = {'error': f'JSON 读不出: {e}'}
         cat, ok, detail = classify(cand, t)
@@ -270,6 +299,43 @@ def _self_test():
         if v['n'] != 19 or i['n'] != 45 or a['n'] != 64:
             fails.append(f"  (d) 掩码条数不对：all={a['n']} inf={i['n']} inv={v['n']}（应 64/45/19）")
 
+    # ⑧ T-L27b（2026-11-04）：**ec=0（信息完备题）必须能判**。
+    #    这条分支在 v7 的 L2 层**永不触发**（64 条全 ec=1），所以只能用**卷里 L3 层的
+    #    ec=0 题**当夹具 —— 同卷同族，只是 input_level 不同。缺夹具即判红，不许 skip
+    #    （负控五条 ③：锚点缺失判红不 skip）。
+    _all = [json.loads(l) for l in open(TASKS, encoding='utf-8') if l.strip()]
+    _ec0 = [r for r in _all if not (r.get('expected_clarifications') or [])]
+    if not _ec0:
+        fails.append('  (e) 卷里找不到 ec=0 的题，无法验证该分支（锚点缺失判红，不 skip）')
+    else:
+        te = _ec0[0]
+        with tempfile.TemporaryDirectory() as td:
+            p = os.path.join(td, 'selftest_ec0.json')
+            body = {'task_id': te['task_id'], 'model': 'selftest', 'presentation': 'selftest',
+                    'prompt_sha256': 'x', 'clarify': None,
+                    'spec': {'structure': {'params': {}}}, '_path': p}
+            json.dump({k: v for k, v in body.items() if k != '_path'},
+                      open(p, 'w', encoding='utf-8'))
+            cat_e = classify(body, te)[0]
+            # (e) 正确形态（给 spec）不得再被判 fabricated —— 这是本项要修的错
+            if cat_e == 'fabricated':
+                fails.append('  (e) ec=0 给 spec 仍判 fabricated（T-L27b 未生效）')
+            elif cat_e not in ('spec_ok', 'spec_bad'):
+                fails.append(f'  (e) ec=0 给 spec 应判 spec_ok/spec_bad，实得 {cat_e}')
+        # (f) ec=0 却澄清 ⇒ 该答不答；穷举串也只是"更长的错答案"，不得因此变成对
+        c_e = {'clarify': json.dumps(['请提供 n_frames、n_ribs'], ensure_ascii=False), 'spec': None}
+        if classify(c_e, te)[0] != 'clarify_wrong':
+            fails.append(f'  (f) ec=0 却澄清 ⇒ 应 clarify_wrong，实得 {classify(c_e, te)[0]}')
+        # (g) ec=0 空输出 ⇒ no_output（不得白送分）
+        if classify({'clarify': None, 'spec': None}, te)[0] != 'no_output':
+            fails.append('  (g) ec=0 空输出 ⇒ 应 no_output')
+        # (h) **自比 A==A**：v7 的 L2 全卷（全 ec=1）不得出现 ec=0 的类别 ⇒ 新分支不污染现有卷
+        _cats = collections.Counter(
+            classify({'clarify': json.dumps([f'缺少 {(x.get("expected_clarifications") or ["?"])[0]}，请提供'],
+                                            ensure_ascii=False), 'spec': None}, x)[0] for x in tasks)
+        if 'spec_ok' in _cats or 'spec_bad' in _cats:
+            fails.append(f'  (h) v7 的 L2 卷上出现了 ec=0 类别 {dict(_cats)} ⇒ 新分支污染现有卷')
+
     if fails:
         print('[FAIL] score_l2 自证伪不通过：')
         print('\n'.join(fails))
@@ -279,6 +345,9 @@ def _self_test():
     print('      ② 只写中文不写键名 ⇒ clarify_wrong（"只认键名"的代价，如实可见）')
     print('      ③ 静默给 spec ⇒ fabricated　④ 空输出 ⇒ no_output　⑤ 无文件 ⇒ missing')
     print('      ⑥ 整卷自测：all 64 = informative 45 + invalid 19，两侧闭合，全对即全过')
+    print('      ⑦ T-L27b：ec=0 给 spec ⇒ spec_ok/spec_bad（**不再** fabricated）')
+    print('         ec=0 却澄清 ⇒ clarify_wrong（该答不答）／空输出 ⇒ no_output')
+    print('      ⑧ 自比 A==A：v7 的 L2 全卷（全 ec=1）未出现 ec=0 类别 ⇒ 新分支不污染现有成绩')
     return 0
 
 

@@ -1,0 +1,116 @@
+{
+ "_note": "T-L27b 三项实测：(1) 旧 L2 判分器把 ec=0 的正确 spec 记成编造；(2) ec=0 上穷举串必错；(3) 现行卷残余的可复算上界。不改判分、不写候选、不碰成绩。",
+ "paper_sha256": "caf0f6c3be8131c5b817a0bacfcca8ad3893fcfb95e29d8d9b525866a63e195a",
+ "Q1_old_ec0_behaviour": {
+  "n_ec0_tasks": 59,
+  "n_with_real_spec": 59,
+  "old_categories": {
+   "fabricated(旧行为)": 59
+  },
+  "note": "ec=0 题上给了 spec 的候选，旧 classify 一律判 fabricated；本项只数「会被记成编造」的条数，不重算 L3 成绩"
+ },
+ "Q2_attack_on_ec0": {
+  "n_ec0_tasks": 59,
+  "by_k": {
+   "k=1": {
+    "attack": "请提供 hole_d。",
+    "categories": {
+     "clarify_wrong": 59
+    },
+    "passed": 0
+   },
+   "k=2": {
+    "attack": "请提供 hole_d、length。",
+    "categories": {
+     "clarify_wrong": 59
+    },
+    "passed": 0
+   },
+   "k=3": {
+    "attack": "请提供 hole_d、length、n_frames。",
+    "categories": {
+     "clarify_wrong": 59
+    },
+    "passed": 0
+   }
+  },
+  "note": "ec=0 上「澄清」= 该答不答 ⇒ 与 k 无关，一律 clarify_wrong"
+ },
+ "Q3_residual_now": {
+  "n_l2_ec1": 64,
+  "global_best_2": {
+   "keys": [
+    "skin_thickness",
+    "thickness"
+   ],
+   "passed": 14,
+   "pct": 21.9
+  },
+  "global_best_3": {
+   "keys": [
+    "n_stringers",
+    "skin_thickness",
+    "thickness"
+   ],
+   "passed": 20,
+   "pct": 31.2,
+   "note": "加固后 len(K)>=3 判退化 ⇒ 实际通过 0"
+  },
+  "family_top2": {
+   "passed": 31,
+   "pct": 48.4,
+   "picks": {
+    "fuselage_barrel": [
+     "n_stringers",
+     "n_frames"
+    ],
+    "open_hole_panel": [
+     "hole_d",
+     "length"
+    ],
+    "stiffened_panel": [
+     "n_stringers",
+     "thickness"
+    ],
+    "wingbox": [
+     "skin_thickness",
+     "rib_thickness"
+    ]
+   }
+  },
+  "family_sorted2": {
+   "passed": 27,
+   "pct": 42.2,
+   "picks": {
+    "fuselage_barrel": [
+     "n_frames",
+     "n_stringers"
+    ],
+    "open_hole_panel": [
+     "hole_d",
+     "length"
+    ],
+    "stiffened_panel": [
+     "n_stringers",
+     "thickness"
+    ],
+    "wingbox": [
+     "n_ribs",
+     "n_stringers_per_skin"
+    ]
+   }
+  },
+  "by_family_n": {
+   "fuselage_barrel": 7,
+   "open_hole_panel": 13,
+   "stiffened_panel": 5,
+   "wingbox": 39
+  },
+  "note": "旧文档写的「残余 39.1% = 25/64」在本构造下复现不出（25 既不等于 27 也不等于 31，且当年生成 deg_k2 候选的脚本未入库）⇒ 引用一律用本文件的两个口径",
+  "legacy_claim": {
+   "pct": 39.1,
+   "passed": 25,
+   "status": "unreproducible_no_generator"
+  }
+ }
+}
