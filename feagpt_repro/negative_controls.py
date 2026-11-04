@@ -2963,9 +2963,36 @@ def main():
         _rc0, _o0 = _run78([_L2, '--self-test'])
         _anchor78 = bool(re.search(r'⑦\s*T-L27b', _o0))
 
-        # ② 自比 A==A：重跑两份真实 L2 候选，与入库 artifact 逐字节比
+        # ② 自比 A==A：重跑两份真实 L2 候选，与入库 artifact **逐叶子**比
+        #    ★ T-L27c 起判据从「逐字节」升级为「**纯增量**」：题型分层（`strata` 块 +
+        #      `per_task[].stratum`）是**有意新增**的字段，逐字节必然不同；但既有判定
+        #      （category/pass）与三个分母一个都不许动。故断言 = 旧叶子**一个不丢、一个不改**，
+        #      且新增叶子**只许**落在题型轴这两处。这比逐字节更严（逐字节挡不住"顺手多写一个
+        #      数字"，这里挡得住）。
         _same = []
         _tmpd = _tf78.mkdtemp()
+
+        def _leaves78(d, p=''):
+            o = {}
+            for _k, _v in d.items():
+                _kk = '%s/%s' % (p, _k) if p else _k
+                if isinstance(_v, dict):
+                    o.update(_leaves78(_v, _kk))
+                elif isinstance(_v, list):
+                    for _i, _it in enumerate(_v):
+                        _kk2 = '%s[%s]' % (_kk, _it.get('task_id', _i)
+                                           if isinstance(_it, dict) else _i)
+                        if isinstance(_it, dict):
+                            o.update(_leaves78(_it, _kk2))
+                        else:
+                            o[_kk2] = _js78.dumps(_it, ensure_ascii=False, sort_keys=True)
+                else:
+                    o[_kk] = _v
+            return o
+
+        def _is_stratum_axis78(k):
+            return k == 'strata' or k.startswith('strata/') or k.endswith('/stratum')
+
         for _m in ('glm', 'ds'):
             _ref = os.path.join(HERE, 'reports', 'l2_scores_v7_%s.json' % _m)
             _cd = os.path.join(HERE, 'candidates_l2_v7_%s' % _m)
@@ -2976,11 +3003,21 @@ def main():
             _out = os.path.join(_tmpd, 'l2_%s.json' % _m)
             _args = [_L2, '--cand', _cd, '--out', _out] + (['--label', _lb] if _lb else [])
             _rc, _o = _run78(_args)
-            _eq = (_rc == 0 and os.path.exists(_out) and
-                   open(_out, 'rb').read() == open(_ref, 'rb').read())
-            _same.append('%s:%s' % (_m, '同' if _eq else '异'))
+            _why = '未产出'
+            if _rc == 0 and os.path.exists(_out):
+                _lo = _leaves78(_js78.load(_io78.open(_ref, encoding='utf-8')))
+                _ln = _leaves78(_js78.load(_io78.open(_out, encoding='utf-8')))
+                _lost = [k for k in _lo if k not in _ln]
+                _chg = [k for k in _lo if k in _ln and _lo[k] != _ln[k]]
+                _bad = [k for k in _ln if k not in _lo and not _is_stratum_axis78(k)]
+                if not _lost and not _chg and not _bad:
+                    _why = '纯增量+%d叶子' % (len(set(_ln) - set(_lo)))
+                else:
+                    _why = ('丢%d/改%d/增非预期%d %s' % (len(_lost), len(_chg), len(_bad),
+                                                     (_lost + _chg + _bad)[:3]))
+            _same.append('%s:%s' % (_m, _why))
         _sh78.rmtree(_tmpd, ignore_errors=True)
-        _selfsame78 = all(x.endswith(':同') for x in _same)
+        _selfsame78 = all('纯增量' in x for x in _same)
 
         # ③ 三个变异：锚点**从源码现取**
         _src = _io78.open(_L2, encoding='utf-8').read()
@@ -3003,7 +3040,7 @@ def main():
                 _f.write(_src.replace(_a, _b, 1))
             try:
                 _rc, _o = _run78([_p78, '--self-test'])
-                _red = sorted(set(re.findall(r'^\s*\(([a-h])\)', _o, re.M)))
+                _red = sorted(set(re.findall(r'^\s*\(([a-i])\)', _o, re.M)))
                 if _rc != 0 and _want in _red:
                     _hits78.append('%s->(%s)' % (_desc, _want))
                 else:
@@ -3025,12 +3062,131 @@ def main():
 
     results.append({'id': 'NC-78',
                     'desc': 'L2 信息完备题（ec=0）分支可证伪（T-L27b）：自检 ⑦ 段在且 rc=0；'
-                            '两份真实 L2 候选重跑与入库 artifact 逐字节一致（自比 A==A）；'
+                            '两份真实 L2 候选重跑与入库 artifact **纯增量**（旧叶子一个不丢/不改，'
+                            '新增只许落在题型轴 strata/stratum，T-L27c 起从逐字节升级）；'
                             '三向变异（关分支 / 洗白该答不答 / 全题走 ec=0）各须红在 (e)/(f)/(a)',
-                    'expect': '自检 rc=0 且 ⑦ 锚点在；glm/ds 逐字节同；三向变异红在指定项',
+                    'expect': '自检 rc=0 且 ⑦ 锚点在；glm/ds 纯增量；三向变异红在指定项',
                     'actual': _ec0_detail, 'ok': _ec0_ok})
     print(f"  [{'ok ' if _ec0_ok else 'BAD!'}] NC-78 L2 信息完备题分支可证伪（T-L27b）      "
           f"{_ec0_detail}")
+
+    # NC-79（T-L27c）「判分器认不认这种题」可证伪
+    #   事故链：① `classify()` 把 ec=0 的正确 spec 记成 fabricated（59/59）；
+    #           ② `check_l2_leak` 在 ec=0 上 IndexError；③ `case_id_of()` 剥不掉 `L2i_` 前缀
+    #              ⇒ 金标准定位不到 ⇒ 全判 spec_bad，而 `score_l2` **没有前置闸** ⇒ 静默出假成绩。
+    #   故本负控只守两件最容易再犯的事：**剥离规则是承重的**、**缺金标准必须硬错**。
+    _l27c_ok = False
+    _l27c_detail = ''
+    try:
+        import io as _io79
+        import json as _js79
+        import subprocess as _sp79
+        import tempfile as _tf79
+
+        _L2b = os.path.join(HERE, 'score_l2.py')
+        _EQ = os.path.join(HERE, '_c1_caseid_equiv.py')
+        _py79 = sys.executable
+
+        def _run79(args):
+            _p = _sp79.run([_py79] + args, capture_output=True, text=True, cwd=HERE,
+                           encoding='utf-8', errors='replace')
+            return _p.returncode, (_p.stdout or '') + (_p.stderr or '')
+
+        # ① 两个自检的锚点在且 rc=0（锚点缺失判红，不 skip）
+        _rcE, _oE = _run79([_EQ])
+        _rcS, _oS = _run79([_L2b, '--self-test'])
+        _anE = 'T-L27c：信息完备卷的层前缀全部可解析' in _oE
+        _anS = bool(re.search(r'⑨\s*T-L27c', _oS))
+
+        # ② 剥离规则**承重性**：正确规则 ⇒ 金标准全命中；改回硬列 `^L[123]_` ⇒ 同一条
+        #    `require_dataset` 必须报「金标准数据集不完整」。两个方向都跑真数据，不 mock 闸。
+        sys.path.insert(0, HERE)
+        import evaluate as _ev79
+        _IVOL = os.path.join(HERE, 'tasks', 'tasks_l2_informative_v1.jsonl')
+        _ids = ([_js79.loads(l)['task_id']
+                 for l in _io79.open(_IVOL, encoding='utf-8') if l.strip()]
+                if os.path.exists(_IVOL) else [])
+        _pat_saved = _ev79._LAYER_PREFIX
+        try:
+            _err_good = _ev79.require_dataset(expect_ids=_ids) if _ids else '缺卷(判红)'
+        finally:
+            pass
+        try:
+            _ev79._LAYER_PREFIX = re.compile(r'^L[123]_')
+            _err_mut = _ev79.require_dataset(expect_ids=_ids) if _ids else '缺卷(判红)'
+        finally:
+            _ev79._LAYER_PREFIX = _pat_saved
+        _loadbearing = (_err_good is None and _err_mut is not None
+                        and '金标准数据集不完整' in (_err_mut or ''))
+
+        # ③ 三变异，锚点从源码现取
+        _src2 = _io79.open(_L2b, encoding='utf-8').read()
+        _muts79 = [
+            ("    if require_gold:", "    if False:", '(i)',
+             '删掉前置闸（回到静默 spec_bad）'),
+            ("    return 'clarified' if (task.get('expected_clarifications') or []) else 'informative'",
+             "    return 'x'", '(c)',
+             '题型分层归错桶（两层加总≠全卷）'),
+        ]
+        _hits79 = []
+        for _i, (_a, _b, _want, _desc) in enumerate(_muts79, 1):
+            if _src2.count(_a) != 1:
+                _hits79.append('%s 锚点%d处(判红)' % (_desc, _src2.count(_a)))
+                continue
+            _p79 = os.path.join(HERE, '_nc79_mut%d.py' % _i)
+            with _io79.open(_p79, 'w', encoding='utf-8', newline='') as _f:
+                _f.write(_src2.replace(_a, _b, 1))
+            try:
+                _rc, _o = _run79([_p79, '--self-test'])
+                _red = sorted(set(re.findall(r'^\s*\(([a-i])\)', _o, re.M)))
+                if _rc != 0 and _want.strip('()') in _red:
+                    _hits79.append('%s->%s' % (_desc, _want))
+                else:
+                    _hits79.append('%s 未红在%s(rc=%d,实际红=%s)'
+                                   % (_desc, _want, _rc, _red or '无'))
+            finally:
+                try:
+                    os.remove(_p79)
+                except OSError:
+                    pass
+        _red79 = sum(1 for x in _hits79 if '->' in x)
+
+        # ④ 4 条小卷成绩单可复算（同路径同输入必须逐字节一致；否则"跑出过"不等于"能复现"）
+        _sm = []
+        for _m2 in ('glm', 'ds'):
+            _rf = os.path.join(HERE, 'reports', 'diagnostics', 'l2i_v1_scores_%s.json' % _m2)
+            _cd2 = os.path.join(HERE, 'candidates_l2i_v1_%s' % _m2)
+            if not (os.path.exists(_rf) and os.path.isdir(_cd2)):
+                _sm.append('%s:缺对象(判红不skip)' % _m2)
+                continue
+            _t79 = _tf79.mkdtemp()
+            _o79 = os.path.join(_t79, 'x.json')
+            _rc, _o = _run79([_L2b, '--cand', _cd2, '--tasks', _IVOL,
+                              '--label', 'l2i_v1_%s' % _m2, '--out', _o79])
+            _eq = (_rc == 0 and os.path.exists(_o79) and
+                   open(_o79, 'rb').read() == open(_rf, 'rb').read())
+            _sm.append('%s:%s' % (_m2, '同' if _eq else '异'))
+        _l27c_ok = (_rcE == 0 and _anE and _rcS == 0 and _anS and _loadbearing
+                    and _red79 == len(_muts79) and all(x.endswith(':同') for x in _sm))
+        _l27c_detail = ('等价脚本rc=%d 锚点=%s；自检rc=%d ⑨=%s；承重规则 %s；'
+                        '复算 %s；变异=%d/%d %s'
+                        % (_rcE, '在' if _anE else '缺', _rcS, '在' if _anS else '缺',
+                           '是' if _loadbearing else '否（正=%r 变=%r）'
+                           % ((_err_good or '')[:40], (_err_mut or '')[:60]),
+                           ' '.join(_sm), _red79, len(_muts79), '; '.join(_hits79)))
+    except Exception as _e79:
+        _l27c_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e79,)
+
+    results.append({'id': 'NC-79',
+                    'desc': '改卷链路可证伪（T-L27c）：`_c1_caseid_equiv` 与 `score_l2 --self-test` '
+                            'rc=0 且 T-L27c/⑨ 锚点在；层前缀剥离规则**承重**（正确规则金标准全命中，'
+                            '改回硬列 `^L[123]_` 后同一条 require_dataset 必报"不完整"）；'
+                            '两向变异（删前置闸 / 分层归错桶）须红在 (i)/(c)；'
+                            '4 条小卷成绩单可逐字节复算',
+                    'expect': '两个 rc=0 且锚点在；承重规则双向成立；变异 2/2 红在指定项；复算 glm/ds 同',
+                    'actual': _l27c_detail, 'ok': _l27c_ok})
+    print(f"  [{'ok ' if _l27c_ok else 'BAD!'}] NC-79 改卷链路可证伪（T-L27c）            "
+          f"{_l27c_detail}")
 
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),

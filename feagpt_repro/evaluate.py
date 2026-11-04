@@ -13,7 +13,7 @@ evaluate.py — FEM-Bench-Aero 评测器（ROADMAP W2-2，A1 题型最小闭环�
   python evaluate.py --batch --tasks tasks/tasks.jsonl --levels L1 --limit 3 --use-gold
       （--use-gold：用数据集规范化 spec 当候选，冒烟用）
 """
-import json, os, sys, subprocess, argparse, time
+import json, os, re, sys, subprocess, argparse, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -22,14 +22,27 @@ RUNS = os.path.join(HERE, 'eval_runs')
 PY = sys.executable
 
 
+# 层前缀 = 行首的 `L<数字><小写字母>*_`（`L1_` / `L2_` / `L3_` / `L2i_` …）。
+# ★ 必须是**行首锚定 + 结构性**的：旧写法用三个 `replace('L1_','')` 硬列层名，
+#   任何新前缀（如 T-L27c 的 `L2i_`）都不被识别 ⇒ 金标准定位到不存在的目录（见下）。
+_LAYER_PREFIX = re.compile(r'^L\d+[a-z]*_')
+
+
 def case_id_of(task_id):
     """`task_id` → 数据集目录名（去掉层前缀与候选后缀）。
 
     ★ **与 evaluate_one() 内的同名转换必须逐字等价**——T-C1 已把原先散在三处的内联链
       统一到本函数，并由 `_c1_caseid_equiv.py` 对两个卷全部 task_id 逐条断言新旧结果相等。
       **改这里就是改金标准定位**，任何改动前先跑那个等价脚本。
+
+    ★ **T-L27c（2026-11-04）：从「硬列层名」改成「行首结构性前缀」**。原因是一次实测事故：
+      自造前缀 `L2i_`（L2 的信息完备子题型）不被三个 `replace` 命中 ⇒ `case_id` 仍是
+      `L2i_open_hole_panel_…` ⇒ `modeling/<case>/spec.json` 不存在 ⇒ 4 条候选**全部**
+      被判 `spec_bad / failed=['gold spec']`，**看起来像模型全错**。
+      两个卷的 192+165 条 `task_id` 全部以 `L1_/L2_/L3_` 开头、中段零出现
+      ⇒ 本改动对冻结卷**逐条等价**（`_c1_caseid_equiv.py` 断言，非声明）。
     """
-    return (task_id.replace('L1_', '').replace('L2_', '').replace('L3_', '')
+    return (_LAYER_PREFIX.sub('', task_id, count=1)
             .replace('_final', '').replace('cand_', ''))
 
 

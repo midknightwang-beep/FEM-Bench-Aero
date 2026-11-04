@@ -39,7 +39,9 @@ L2 的判类（与 L3 的 clarify 分支同口径）
 """
 import argparse
 import collections
+import contextlib
 import hashlib
+import io
 import json
 import os
 import sys
@@ -50,6 +52,7 @@ sys.path.insert(0, HERE)
 
 from score_baseline import (judge_clarify_field_level,      # noqa: E402  ★ 判据只有一处
                             judge_l3_candidate)             # noqa: E402  ★ ec=0 分支委托它
+from evaluate import require_dataset                    # noqa: E402  ★ 前置闸只有一处（T-L27c）
 from check_l2_leak import scan                          # noqa: E402  ★ 掩码只有一处
 
 # ec=0（信息完备题）走 `judge_l3_candidate` 后，把它的类别名映射回 **L2 词表**。
@@ -82,7 +85,8 @@ def classify(cand, task):
 
       为什么必须有它：L2 prompt 的 addendum 第 3 条**明确允许**「缺的键不影响定义时输出完整
       spec」，而旧实现在 `if spec:` 里**不看 ec** ⇒ 一律判 `fabricated`（R20 静默编造）。
-      实测（2026-11-04，L3 的 59 条 ec=0 题的真实 spec 候选）**10/10 被判 fabricate** ——
+      实测（2026-11-04，`diagnostics/l27b_ec0_probe.json`：卷里 **59 条** ec=0 题、
+      每条的规范化 spec 都真实存在）**59/59 被判 fabricated** ——
       把「完整题面下的正确回答」记成最重的错。L3 侧早有正确分支
       （`该答不答（信息完备却澄清）`），两边不一致不是口径差异，是实现漏项。
 
@@ -147,8 +151,46 @@ def _block(rows, key='pass'):
     return {'n': n, 'passed': p, 'pct': _pct(p, n), 'by_family': _by_family(rows, key)}
 
 
-def score(cand_dir, tasks_path=TASKS, label=None):
+# ---------------------------------------------------------------------------
+# T-L27c：**题型分层**（informative = 信息完备、该答；clarified = 缺键、该问）
+# ---------------------------------------------------------------------------
+def stratum_of(task):
+    """按「题面是否缺必需键」分层。判据直接读 `expected_clarifications`，不读名字。
+
+    ★ 为什么必须单独一层（别拿 `clarify_informative` 顶替）：
+      `clarify_informative` 的分组键是 **`name_leak`（掩码）**，"信息完备"与"未掩码"在 v7 卷上
+      **只是碰巧重合** —— v7 的 L2 全 ec=1，而 ec=0 的题天然不会被掩码，于是同一批题在两个
+      口径里都落进「informative」。将来一旦混卷（一半 ec=0 一半 ec=1），这两层就会分叉，
+      而键名还叫 `clarify_informative` ⇒ **同名字段不同源**，数字会静静地错。
+      故：掩码轴与题型轴**各报各的**，互不顶替。
+    """
+    return 'clarified' if (task.get('expected_clarifications') or []) else 'informative'
+
+
+def _strata(rows, key='pass'):
+    """两层各自的 n/passed/pct + by_family，并断言两层加总闭合到全卷。"""
+    out = {}
+    for s in ('informative', 'clarified'):
+        sub = [r for r in rows if r.get('stratum') == s]
+        out[s] = _block(sub, key)
+    return out
+
+
+def score(cand_dir, tasks_path=TASKS, label=None, require_gold=True):
+    """跑分。`require_gold=False` **只给自检用**，且自检里另有 ⑨ 断言闸本身会红。
+
+    ★ T-L27c（2026-11-04）：**金标准定位不到必须硬错，不能静默判 spec_bad**。
+      事故现场：派生题的 `L2i_` 前缀不被 `case_id_of()` 剥掉 ⇒ `modeling/<case>/spec.json`
+      不存在 ⇒ 4 条候选全判 `spec_bad / failed=['gold spec']`，成绩单上**看着像模型全错**。
+      `score_baseline.py`（L3 路径）从 T-C1 起就有 `require_dataset(expect_ids=...)`，
+      **本文件一直没有** —— 同一类闸只装在一个评分器上，等于没装（R58：无工具读的 = 无闸）。
+    """
     tasks = load_l2(tasks_path)
+    if require_gold:
+        err = require_dataset(expect_ids=[t['task_id'] for t in tasks])
+        if err:
+            print('[dataset] ' + err)
+            return None, 2
     n_l2, leak_hits, n_clean = scan(tasks_path)
     leak_ids = {h['task_id'] for h in leak_hits}
 
@@ -172,6 +214,7 @@ def score(cand_dir, tasks_path=TASKS, label=None):
                 prompt_shas[cand['prompt_sha256']] += 1
         rows.append({
             'task_id': t['task_id'], 'family': t['family'],
+            'stratum': stratum_of(t),        # informative（该答）／clarified（该问）
             'omitted_field': (t.get('expected_clarifications') or [None])[0],
             'category': cat, 'pass': ok,
             'name_leak': t['task_id'] in leak_ids,
@@ -210,6 +253,31 @@ def score(cand_dir, tasks_path=TASKS, label=None):
     n_cand = b_all['n'] - cats.get('missing', 0)
     status = 'scored' if cats.get('missing', 0) == 0 else 'partial'
 
+    # ── 题型分层报（T-L27c）──
+    strata = _strata(rows)
+    if strata['informative']['n'] + strata['clarified']['n'] != b_all['n']:
+        print(f"[FATAL] 题型分层不闭合：informative {strata['informative']['n']} + "
+              f"clarified {strata['clarified']['n']} ≠ all {b_all['n']}")
+        return None, 6
+    if (strata['informative']['passed'] + strata['clarified']['passed']) != b_all['passed']:
+        print(f"[FATAL] 题型分层通过数不闭合：{strata['informative']['passed']} + "
+              f"{strata['clarified']['passed']} ≠ {b_all['passed']}")
+        return None, 6
+    for _s, _b in strata.items():
+        _sn = sum(x['n'] for x in _b['by_family'].values())
+        _sp = sum(x['passed'] for x in _b['by_family'].values())
+        if _sn != _b['n'] or _sp != _b['passed']:
+            print(f"[FATAL] 题型分层族级不闭合（{_s}）：Σ族 {_sn}/{_sp} ≠ {_b['n']}/{_b['passed']}")
+            return None, 6
+    # 全卷有一条题型却没有另一条 ⇒ 分层的意义就在于**同一张卷上两个数分开看**，
+    # 这时候必须明说「本卷只覆盖一层」，不能让读者以为另一层是 0 分。
+    strata['_coverage'] = ('both' if strata['informative']['n'] and strata['clarified']['n']
+                           else ('informative_only' if strata['informative']['n']
+                                 else 'clarified_only'))
+    strata['_note'] = ('两层的**判定对象不同**：informative 层判「该答就答，且 spec 保真」；'
+                       'clarified 层判「该问就问，且键名对」。两层的 pct 不可相加、不可比大小'
+                       '（R54）。`clarify_informative` 是**掩码轴**，与本层（题型轴）同名不同源。')
+
     return {
         '_note': ('L2 澄清题首次跑分（T-A13a/T-A13b）。判据 import 自 score_baseline.'
                   'judge_clarify_field_level（R17）；双口径掩码 import 自 check_l2_leak.scan（R66）。'
@@ -234,6 +302,7 @@ def score(cand_dir, tasks_path=TASKS, label=None):
         'clarify_all': {**b_all, 'denominator': '全卷 L2（含 name 泄漏的无效子集）'},
         'clarify_informative': {**b_inf, 'denominator': 'name 未泄漏的可判子集'},
         'invalid_subset': {**b_inv, 'denominator': 'name 泄漏 ⇒ 判据失效（R66 隔离，不得单独对外）'},
+        'strata': strata,
         'closure': {'units': 'tasks', 'all': b_all['n'], 'informative': b_inf['n'],
                     'invalid': b_inv['n'],
                     'formula': 'all == informative + invalid（任务数与通过数两侧都成立）'},
@@ -287,7 +356,7 @@ def _self_test():
                     'presentation': 'selftest', 'prompt_sha256': 'x',
                     'clarify': json.dumps([f'缺少 {k}，请提供'], ensure_ascii=False), 'spec': None}
             json.dump(body, open(os.path.join(td, f"{x['task_id']}.json"), 'w', encoding='utf-8'))
-        sc, rc = score(td, label='selftest')
+        sc, rc = score(td, label='selftest', require_gold=False)
     if rc != 0 or not sc:
         fails.append(f'  (c) 整卷自测跑分失败 rc={rc}')
     else:
@@ -336,6 +405,30 @@ def _self_test():
         if 'spec_ok' in _cats or 'spec_bad' in _cats:
             fails.append(f'  (h) v7 的 L2 卷上出现了 ec=0 类别 {dict(_cats)} ⇒ 新分支污染现有卷')
 
+    # ⑨ T-L27c（2026-11-04）：**前置闸本身要有判据**。
+    #    事故根因不是「前缀写错」，而是「金标准定位不到却没人报错」。所以这里端到端跑一次
+    #    `score()`，喂一条**一定定位不到**的 task_id，断言 rc==2（唯一由该闸产生的返回码；
+    #    rc=3 是多 model 混批、rc=4 是双口径不闭合，都不重码）。
+    #    ★ 双向：同一卷 `require_gold=False` 时**必须不返回 2** —— 否则无法排除上面那次红
+    #      是别的原因造成的（负控五条 ①：不只断言"红"，还要断言"红的原因对"）。
+    #      红的原因也要看：捕获闸的输出，断言它确实在说「金标准数据集不完整」。
+    fake = dict(tasks[0], task_id='L2_zzz_case_does_not_exist')
+    with tempfile.TemporaryDirectory() as td9:
+        vol9 = os.path.join(td9, 'vol_gate_probe.jsonl')
+        with open(vol9, 'w', encoding='utf-8') as fh:
+            fh.write(json.dumps(fake, ensure_ascii=False) + '\n')
+        _buf = io.StringIO()
+        with contextlib.redirect_stdout(_buf):
+            _s1, _r1 = score(td9, vol9, label='selftest', require_gold=True)
+            _s2, _r2 = score(td9, vol9, label='selftest', require_gold=False)
+        _msg = _buf.getvalue()
+    if _r1 != 2 or _s1 is not None:
+        fails.append(f'  (i) 金标准定位不到时未硬错：rc={_r1}（期望 2，且不产出成绩单）')
+    if '金标准数据集不完整' not in _msg:
+        fails.append(f'  (i) 红了但原因不对（应说"金标准数据集不完整"）：{_msg[:120]!r}')
+    if _r2 == 2:
+        fails.append('  (i) require_gold=False 也被拦 ⇒ 上面那次红不是闸供给的，判据无效')
+
     if fails:
         print('[FAIL] score_l2 自证伪不通过：')
         print('\n'.join(fails))
@@ -348,6 +441,7 @@ def _self_test():
     print('      ⑦ T-L27b：ec=0 给 spec ⇒ spec_ok/spec_bad（**不再** fabricated）')
     print('         ec=0 却澄清 ⇒ clarify_wrong（该答不答）／空输出 ⇒ no_output')
     print('      ⑧ 自比 A==A：v7 的 L2 全卷（全 ec=1）未出现 ec=0 类别 ⇒ 新分支不污染现有成绩')
+    print('      ⑨ T-L27c：金标准定位不到 ⇒ rc=2 硬错（不再静默判 spec_bad）；关掉闸则必须不返回 2')
     return 0
 
 
@@ -380,6 +474,13 @@ def main(argv=None):
           f" = {sc['clarify_informative']['pct']}%")
     print(f"  invalid_subset       {sc['invalid_subset']['passed']}/{sc['invalid_subset']['n']}"
           f" = {sc['invalid_subset']['pct']}%（R66 隔离，不得单独对外）")
+    _st = sc['strata']
+    print(f"  ── 题型分层（coverage={_st['_coverage']}）──")
+    for _nm, _lab in (('informative', '信息完备（该答⇒spec 保真）'),
+                      ('clarified', '缺键（该问⇒键名对）')):
+        _b = _st[_nm]
+        print(f"  strata.{_nm:13s} {_b['passed']}/{_b['n']}"
+              f" = {_b['pct']}%   ← {_lab}")
     if a.out:
         os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
         json.dump(sc, open(a.out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)

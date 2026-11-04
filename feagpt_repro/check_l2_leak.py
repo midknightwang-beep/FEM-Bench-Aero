@@ -77,7 +77,16 @@ def scan(tasks_path=TASKS):
             continue
         n_l2 += 1
         cid = r['task_id'][3:]
-        key = r['expected_clarifications'][0]
+        ec = r.get('expected_clarifications') or []
+        if not ec:
+            # ★ T-L27c（2026-11-04）：**信息完备题（ec=0）没有「被删的键」，name 泄漏这个问题对它不存在**
+            #   —— 它的正确行为是给 spec，判分（spec 保真）不依赖 name ⇒ 不进 hits、也不计入泄漏。
+            #   为什么可以这样归类：本判据要回答的是「name 里出现的数字是否泄漏了**该题被删的那个键**」，
+            #   没有被删的键就没有可泄漏的对象；把它算成「干净」而不是「不可判」，
+            #   也不改变 all == informative + invalid 的闭合式（两边一进一出）。
+            #   对 v7 卷**零影响**：v7 的 L2 64 条全 ec=1 ⇒ 本分支永不触发。
+            continue
+        key = ec[0]
         name = (l1.get(cid) or {}).get('name') or cid
         rv = revealed_fields(name)
         if key in rv:

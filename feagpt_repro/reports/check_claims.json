@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_78.json）",
-   "expect": "78/78",
-   "actual": "78/78",
+   "desc": "C-019 负控通过数（源 negative_controls_79.json）",
+   "expect": "79/79",
+   "actual": "79/79",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "78",
-   "actual": "78",
+   "expect": "79",
+   "actual": "79",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 6.19",
-   "actual": "6.19",
+   "expect": "全部 = 6.20",
+   "actual": "6.20",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "78/78",
-   "actual": "78/78",
+   "expect": "79/79",
+   "actual": "79/79",
    "ok": true,
    "skip": false
   },
@@ -366,7 +366,7 @@
    "id": "S-44",
    "desc": "官方导航文件 INDEX 的 headline 指向与负控编号必须与 artifact 一致（R58）",
    "expect": "含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致",
-   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L26 主区间 NC-70..78 / 总数 78；artifact 最大 NC-78、共 78 条；逐条覆盖 78/78",
+   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L26 主区间 NC-70..79 / 总数 79；artifact 最大 NC-79、共 79 条；逐条覆盖 79/79",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793794155/1793794155；check 1793794354 vs 负控 1793794155",
+   "actual": "C-019 mtime 记录/实际 = 1793796446/1793796446；check 1793796464 vs 负控 1793796446",
    "ok": true,
    "skip": false
   },
@@ -720,9 +720,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 50130,
-   "sha256": "0b2c5b4443525670407215bc20aacc0ee5e237cfca696b746fc426bcd964ad56",
-   "mtime": 1793794405
+   "size": 51403,
+   "sha256": "1cf6054b57851160a00dabbcd47929d86069dd0a190edc3cfa3d11021f813d92",
+   "mtime": 1793796349
   },
   {
    "claim_id": "C-027",
@@ -1398,15 +1398,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_78.json",
+   "artifact": "feagpt_repro/reports/negative_controls_79.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 21290,
-   "sha256": "2f9745b5c2c6292398b0f67b343b979bdb6ac7dbc138099ac23b3d273e00625e",
-   "mtime": 1793794155
+   "size": 22189,
+   "sha256": "0315f78ea010841231dad1db2db51f8bf86e3ec733ba48167e7946405c4d5494",
+   "mtime": 1793796446
   }
  ]
 }

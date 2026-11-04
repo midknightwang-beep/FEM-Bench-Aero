@@ -25,6 +25,10 @@ VOLUMES = [
     os.path.join(HERE, 'reports', 'papers', 'tasks_v6c.jsonl'),
 ]
 
+# ② 的判据对象：唯一一个 task_id 不以 `L1_/L2_/L3_` 开头的卷（T-L27c 派生）。
+# 它**不参与** ①的等价比较 —— 对它的旧链结果本来就是错的，比等价没有意义。
+INF_VOL = os.path.join(HERE, 'tasks', 'tasks_l2_informative_v1.jsonl')
+
 
 def legacy_chain(task_id):
     """T-C1 之前散在 evaluate_one 三处的内联写法（逐字照抄，不得"顺手优化"）。"""
@@ -71,6 +75,37 @@ def main():
         print('[FATAL] 反向自检失败：判据恒真，全等价不可信')
         return 1
     print('[ok  ] case_id_of 与旧链逐条等价，且定位到的 spec.json 路径相同')
+
+    # ── ② T-L27c：**与旧链等价只证明"没改坏"，不证明"改对了"** ──
+    # 必须另有一条判据断言「新前缀真的能被解析到金标准」。否则把层前缀剥离整段删掉，
+    # 上面 357 条照样全等价（两个冻结卷的 task_id 本来就以 L1_/L2_/L3_ 开头）。
+    # 判据取自数据自身：遍历卷内 task_id 去 modeling/ 里找 spec.json，**不硬列前缀名**。
+    if os.path.exists(INF_VOL):
+        inf_rows = [json.loads(ln) for ln in open(INF_VOL, encoding='utf-8') if ln.strip()]
+        if not inf_rows:
+            print(f'[FATAL] {os.path.basename(INF_VOL)} 是空卷：判据会被空壳满足')
+            return 1
+        stuck, miss = [], []
+        for r in inf_rows:
+            tid = r['task_id']
+            cid = case_id_of(tid)
+            if cid == tid:
+                stuck.append(tid)        # 层前缀根本没被剥掉（本次事故的签名）
+            elif not os.path.isfile(os.path.join(FEA, 'modeling', cid, 'spec.json')):
+                miss.append((tid, cid))
+        print(f'  {os.path.basename(INF_VOL):24s} 任务 {len(inf_rows)} 条，'
+              f'前缀剥离 {len(inf_rows) - len(stuck)}/{len(inf_rows)}，'
+              f'金标准命中 {len(inf_rows) - len(stuck) - len(miss)}/{len(inf_rows)}')
+        if stuck:
+            print(f'[FATAL] {len(stuck)} 条的前缀没被剥离（case_id == task_id）：{stuck[:5]}')
+            return 1
+        if miss:
+            print(f'[FATAL] {len(miss)} 条定位不到 spec.json：{miss[:5]}')
+            return 1
+        print('[ok  ] T-L27c：信息完备卷的层前缀全部可解析，金标准全部命中')
+    else:
+        print(f'[skip] {os.path.basename(INF_VOL)} 不存在（非本仓库标准产物？）；'
+              f'新前缀判据**本向未验证**')
     return 0
 
 
