@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_sweep30_taper080",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"airfoil.n_stringers_per_skin=0 与已给的 stringer_thickness/stringer_kind/stringer_flange_width 矛盾，请确认长桁数量 n_stringers_per_skin 及是否保留长桁细节键\",\"缺失 stringer_height，若确有长桁请给出 n_stringers_per_skin 对应的 stringer_height\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 220,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

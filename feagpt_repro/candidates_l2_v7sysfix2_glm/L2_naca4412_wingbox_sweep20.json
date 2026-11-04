@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_sweep20",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"缺少翼盒肋的数量 n_ribs（题面未给出），请提供。\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 43,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

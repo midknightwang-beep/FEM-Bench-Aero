@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_web2",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"skin_thickness 缺失，无法定义翼盒蒙皮厚度\",\"extra.end_torque 和 extra.torque_axis_dof 不在允许键名范围内，且翼盒族 extra 应为 {}；若需施加扭矩，请明确其载荷定义方式\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 150,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

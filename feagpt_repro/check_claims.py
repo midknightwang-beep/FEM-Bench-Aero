@@ -713,8 +713,25 @@ def w5d_leaderboard_ok(path):
         mt = _txt(mdp)
         if pair and not pair.get('msr_delta_allowed') and '不可相减' not in mt:
             bad.append('md 未写明「不可相减」')
+        # ★ T-L27c v4（2026-11-04）：这条原本是**无条件**禁止 MSR 行出现 Δ —— 而它的名字/报错
+        #   写的是「分母不等时禁止」。v2f 换代后两模型 exam MSR 分母变成 22 vs 22
+        #   （`cfrp45s_d40` 本代产出 spec ⇒ 进分母）⇒ Δ 合法，闸却照红 ⇒ **实现比说明严**。
+        #   修法：按 `msr_delta_allowed` 分支，并在允许 Δ 时**双向核值**
+        #   （md 里那个 Δ 必须等于 json 的 `msr_delta_pp`，否则就是手改）。
+        #   反向 NC-83 五向守（含「分母不等却出现 Δ 须红」这一原意）。
+        if pair and pair.get('msr_delta_allowed'):
+            _want = pair.get('msr_delta_pp')
+            _hit = [ln for ln in mt.split('\n') if '条件 MSR' in ln and 'Δ' in ln]
+            if not _hit:
+                bad.append('分母相同却未在 md 出 MSR Δ（R54 允许时应给）')
+            else:
+                _m = re.search(r'Δ\s*([+-]?\d+(?:\.\d+)?)\s*pp', _hit[0])
+                if _m is None or _want is None or abs(float(_m.group(1)) - float(_want)) > 1e-6:
+                    bad.append(f'md 的 MSR Δ 与 json 的 msr_delta_pp 不符'
+                               f'（md={_m.group(1) if _m else None} vs json={_want}）')
         for line in mt.split('\n'):
-            if '条件 MSR' in line and 'Δ' in line and '不可相减' not in line:
+            if ('条件 MSR' in line and 'Δ' in line and '不可相减' not in line
+                    and pair and not pair.get('msr_delta_allowed')):
                 bad.append('md 的 MSR 行出现了 Δ（分母不等时禁止）')
                 break
         # 有失败就有 FPR，限制段必须提到它（防止只报好看的指标）

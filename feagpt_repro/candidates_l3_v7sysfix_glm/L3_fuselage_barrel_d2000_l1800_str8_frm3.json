@@ -1,0 +1,64 @@
+{
+ "task_id": "L3_fuselage_barrel_d2000_l1800_str8_frm3",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "6b90daf07bbe070d5c870c7006e9ff28142e441370d71c1b16083a4bec6c98f9",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "fuselage_barrel_pressure_shear_moment",
+  "description": "铝2024-T3机身柱壳段（D2000×L1800×t3），8根blade长桁+3个框，受内压0.05MPa、端部剪力50kN与端部弯矩50kN·m组合载荷",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "fuselage_barrel",
+   "params": {
+    "diameter": 2000,
+    "length": 1800,
+    "thickness": 3,
+    "n_stringers": 8,
+    "n_frames": 3
+   }
+  },
+  "mesh": {
+   "size_chord": 25,
+   "size_span": 25
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.05,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {
+   "end_shear": 50000,
+   "end_moment": 50000000
+  }
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'yield_strength'"
+   ]
+  }
+ ],
+ "raw_len": 799
+}

@@ -252,7 +252,14 @@ def main(argv=None):
         'statements': {'allowed': allowed, 'forbidden': forbidden},
         'limits': [
             f"exam n=25 ⇒ CI 宽（{A['claim']} TSR CI95 {(A['exam']['tsr'] or {}).get('ci95')}）；族 n<10 不单列结论",
-            f"MSR 是条件通过率（分母 {A['exam']['msr']['den']} vs {B['exam']['msr']['den']}）⇒ 不可直减（R54）",
+            # ★ T-L27c v4（2026-11-04）：这句**必须跟着分母走**。旧版是硬编码
+            #   「分母 X vs Y ⇒ 不可直减」，v2f 换代后两模型分母变成 22 vs 22（`cfrp45s_d40`
+            #   本代产出 spec ⇒ 进分母）⇒ md 第 13 行印出 Δ -4.5 pp、第 76 行却印「不可直减」，
+            #   同一份 artifact 自相矛盾。S-42 当场抓住（「md 的 MSR 行出现了 Δ（分母不等时禁止）」）。
+            #   ⇒ 文案由 `same_den` 渲染，不手写。
+            (f"MSR 是条件通过率（分母 {A['exam']['msr']['den']} vs {B['exam']['msr']['den']}）"
+             + ("⇒ 本代分母相同，**允许出 Δ**，但 pct 高低仍要连 SFR 一起看（R54）"
+                if pair['msr_delta_allowed'] else "⇒ 不可直减（R54）")),
             f"{B['claim']} 字段级 {B['value_added']['field_verdict']}（Δ{B['value_added']['field_delta_pp']} pp）⇒ 任务级单列会夸大",
             f"{B['claim']} 仍有 FPR {(B['fpr'] or {}).get('fabrication_rate_pct')}%（"
             f"{(B['fpr'] or {}).get('fabricated_on_clarify_tasks')}/{(B['fpr'] or {}).get('n_clarify_tasks')}）"

@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_n_ribs3_chord800",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"n_stringers_per_skin 已给为 0，但 airfoil 中又给出了 stringer_thickness、stringer_kind、stringer_flange_width，需要澄清是否确为无长桁素翼盒，还是 n_stringers_per_skin 缺失/应删除长桁细节键\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 164,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

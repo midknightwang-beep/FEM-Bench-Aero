@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_fuselage_barrel_d1600_l1600_str8_frm3",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"fuselage_barrel 族缺少字段 n_frames，请给出框的数量（题面 name 提及 frm3 但参数表中未给）。\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 80,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

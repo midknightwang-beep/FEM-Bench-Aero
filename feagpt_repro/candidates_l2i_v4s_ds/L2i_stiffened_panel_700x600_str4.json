@@ -1,0 +1,75 @@
+{
+ "task_id": "L2i_stiffened_panel_700x600_str4",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "f6cb45f738746226da59ef44efec953a475c063f2202703957f123fd52bbd60b",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "stiffened_panel_700x600_str4",
+  "description": "加筋壁板，700x600，4根长桁，铝2024-T3，均布压力0.0001MPa",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "stiffened_panel",
+   "params": {
+    "length": 700,
+    "width": 600,
+    "thickness": 2,
+    "n_stringers": 4
+   }
+  },
+  "mesh": {
+   "size_chord": 3,
+   "size_span": 3,
+   "element_order": 1,
+   "algorithm_2d": 6,
+   "recombine": true,
+   "recombination_algorithm": 0,
+   "min_jacobian": 0.3,
+   "refine_at_leading_edge": true,
+   "leading_edge_threshold": 1.6
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.0001,
+   "direction": [
+    0,
+    0,
+    -1
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {
+   "step_type": "static",
+   "solver": "auto",
+   "total_time": 1,
+   "incremental": true,
+   "initial_increment": 0.25,
+   "outputs": [
+    "U",
+    "S"
+   ]
+  },
+  "extra": {
+   "split_tag": "v11_interior_holdout",
+   "v11_bracket": "板长 600 ↔ 800；长桁 3 ↔ 5",
+   "v11_interior_holdout": true,
+   "v11_template": "stiffened_panel_800x600_str3"
+  }
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 1213,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_strict_v1"
+}

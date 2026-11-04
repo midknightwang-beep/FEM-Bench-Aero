@@ -1,0 +1,69 @@
+{
+ "task_id": "L3_fuselage_barrel_d2000_l1600_str8_frm3",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "6b90daf07bbe070d5c870c7006e9ff28142e441370d71c1b16083a4bec6c98f9",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "fuselage_barrel_pressure_shear_moment",
+  "description": "直径2000mm、长1600mm的铝2024-T3机身柱壳段，8根blade长桁、3个框，承受0.05 MPa内压+50 kN端剪+50 kN·m端弯。",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "fuselage_barrel",
+   "params": {
+    "diameter": 2000,
+    "length": 1600,
+    "thickness": 3,
+    "n_stringers": 8,
+    "n_frames": 3
+   }
+  },
+  "mesh": {
+   "size_chord": 25,
+   "size_span": 25
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.05,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {
+   "end_shear": 50000,
+   "end_moment": 50000
+  }
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'yield_strength'",
+    "/mesh must have required property 'size_chord'",
+    "/mesh must have required property 'size_span'",
+    "/mesh 不允许的键 \"size_circumferential\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le",
+    "/mesh 不允许的键 \"size_axial\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le",
+    "/analysis 不允许的键 \"type\"，请删除。analysis 允许键: solver/step_type/incremental/initial_increment/total_time/outputs（建议直接写 {}）"
+   ]
+  }
+ ],
+ "raw_len": 806
+}

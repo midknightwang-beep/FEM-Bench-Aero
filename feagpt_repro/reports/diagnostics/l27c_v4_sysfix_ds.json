@@ -1,0 +1,432 @@
+{
+ "_note": "T-L27c v3：同一卷同模型，只换 L2 prompt arm（base vs strict）。判类与 pass 全部读 score_l2.py 产物，本脚本不重算判分。",
+ "mode": "ablation",
+ "paper": "tasks_l2_informative_v2.jsonl",
+ "tasks_sha256": "76ee70f6e16dadeefd2f79d9ee3a21d5456f5669bf176d2dba8c7804c4ec4dae",
+ "model": "deepseek-v4-pro",
+ "arm": {
+  "base": {
+   "candidates": "candidates_l2i_v3s_ds",
+   "prompt_sha256": "99466166dc041b37d96e45502f93761aa27138e40dc623a1e49527a381416c4b"
+  },
+  "strict": {
+   "candidates": "candidates_l2i_v4s_ds",
+   "prompt_sha256": "f6cb45f738746226da59ef44efec953a475c063f2202703957f123fd52bbd60b"
+  }
+ },
+ "n_paired": 16,
+ "passed": {
+  "base": 8,
+  "strict": 10,
+  "pct_base": 50.0,
+  "pct_strict": 62.5
+ },
+ "agreement": {
+  "same_category": 10,
+  "n": 16,
+  "pct": 62.5,
+  "flipped_pass": 6
+ },
+ "matrix": {
+  "clarify_wrong->clarify_wrong": 1,
+  "spec_bad->spec_bad": 3,
+  "spec_bad->spec_ok": 4,
+  "spec_ok->clarify_wrong": 1,
+  "spec_ok->spec_bad": 1,
+  "spec_ok->spec_ok": 6
+ },
+ "mcnemar": {
+  "base_pass_strict_fail": 2,
+  "base_fail_strict_pass": 4,
+  "p_exact_two_sided": 0.6875,
+  "note": "配对数据用精确 McNemar；b+c==0 时 p=1.0。"
+ },
+ "transcription_errors": {
+  "base_tasks_with_given_key_broken": 5,
+  "strict_tasks_with_given_key_broken": 4,
+  "note": "「题面已给该键、输出却判错」= 转写错误（strict 引导的直接作用面）。"
+ },
+ "clarify_counts": {
+  "base": 1,
+  "strict": 2,
+  "note": "本卷 16 条 expected_clarifications 全为空 ⇒ 任何追问都记错。"
+ },
+ "per_task": [
+  {
+   "task_id": "L2i_fuselage_barrel_d1600_l1600_str8_frm3",
+   "family": "fuselage_barrel",
+   "split_v2": "extrapolation_test",
+   "base_category": "spec_bad",
+   "strict_category": "spec_bad",
+   "base_pass": false,
+   "strict_pass": false,
+   "base_failed_fields": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "strict_failed_fields": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "base_failed_given_keys": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "strict_failed_given_keys": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_fuselage_barrel_d1800_l2000_str8_frm3",
+   "family": "fuselage_barrel",
+   "split_v2": "val",
+   "base_category": "spec_bad",
+   "strict_category": "spec_bad",
+   "base_pass": false,
+   "strict_pass": false,
+   "base_failed_fields": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "strict_failed_fields": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "base_failed_given_keys": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "strict_failed_given_keys": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_fuselage_barrel_d2000_l1800_str8_frm3",
+   "family": "fuselage_barrel",
+   "split_v2": "extrapolation_test",
+   "base_category": "spec_bad",
+   "strict_category": "spec_bad",
+   "base_pass": false,
+   "strict_pass": false,
+   "base_failed_fields": [
+    "extra.split_tag",
+    "extra.v11_bracket",
+    "extra.v11_template"
+   ],
+   "strict_failed_fields": [
+    "extra.moment_axis",
+    "extra.shear_axis",
+    "extra.split_tag",
+    "extra.v11_bracket",
+    "extra.v11_template"
+   ],
+   "base_failed_given_keys": [
+    "extra.split_tag",
+    "extra.v11_bracket",
+    "extra.v11_template"
+   ],
+   "strict_failed_given_keys": [
+    "extra.moment_axis",
+    "extra.shear_axis",
+    "extra.split_tag",
+    "extra.v11_bracket",
+    "extra.v11_template"
+   ],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_fuselage_barrel_d2000_l2000_str8_frm3",
+   "family": "fuselage_barrel",
+   "split_v2": "train",
+   "base_category": "spec_bad",
+   "strict_category": "spec_ok",
+   "base_pass": false,
+   "strict_pass": true,
+   "base_failed_fields": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [
+    "extra.moment_axis",
+    "extra.shear_axis"
+   ],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_naca4412_wingbox",
+   "family": "wingbox",
+   "split_v2": "train",
+   "base_category": "spec_ok",
+   "strict_category": "spec_ok",
+   "base_pass": true,
+   "strict_pass": true,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_naca4412_wingbox_n_ribs3_chord1000",
+   "family": "wingbox",
+   "split_v2": "boundary_holdout",
+   "base_category": "spec_ok",
+   "strict_category": "spec_ok",
+   "base_pass": true,
+   "strict_pass": true,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_naca4412_wingbox_n_ribs6_chord1000",
+   "family": "wingbox",
+   "split_v2": "extrapolation_test",
+   "base_category": "spec_ok",
+   "strict_category": "spec_ok",
+   "base_pass": true,
+   "strict_pass": true,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_naca4412_wingbox_n_ribs7_chord1000",
+   "family": "wingbox",
+   "split_v2": "val",
+   "base_category": "spec_ok",
+   "strict_category": "spec_bad",
+   "base_pass": true,
+   "strict_pass": false,
+   "base_failed_fields": [],
+   "strict_failed_fields": [
+    "extra.sweep_index"
+   ],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [
+    "extra.sweep_index"
+   ],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_open_hole_panel_400x200_d20",
+   "family": "open_hole_panel",
+   "split_v2": "train",
+   "base_category": "spec_ok",
+   "strict_category": "spec_ok",
+   "base_pass": true,
+   "strict_pass": true,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_open_hole_panel_400x200_d20_cfrp45s",
+   "family": "open_hole_panel",
+   "split_v2": "val",
+   "base_category": "spec_ok",
+   "strict_category": "clarify_wrong",
+   "base_pass": true,
+   "strict_pass": false,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": "[\"hole_x\",\"hole_y\"]",
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_open_hole_panel_400x200_d20_cfrp45s_d40",
+   "family": "open_hole_panel",
+   "split_v2": "extrapolation_test",
+   "base_category": "clarify_wrong",
+   "strict_category": "clarify_wrong",
+   "base_pass": false,
+   "strict_pass": false,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": "[\"hole_x\",\"hole_y\"]",
+   "strict_clarify": "[\"hole_x\",\"hole_y\"]",
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_open_hole_panel_400x200_d20_offcentre",
+   "family": "open_hole_panel",
+   "split_v2": "extrapolation_test",
+   "base_category": "spec_bad",
+   "strict_category": "spec_ok",
+   "base_pass": false,
+   "strict_pass": true,
+   "base_failed_fields": [
+    "mesh.size (not in gold)"
+   ],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [
+    "mesh.size (not in gold)"
+   ],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_stiffened_panel_600x600",
+   "family": "stiffened_panel",
+   "split_v2": "train",
+   "base_category": "spec_bad",
+   "strict_category": "spec_ok",
+   "base_pass": false,
+   "strict_pass": true,
+   "base_failed_fields": [
+    "mesh.size (not in gold)"
+   ],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [
+    "mesh.size (not in gold)"
+   ],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_stiffened_panel_600x600_str3",
+   "family": "stiffened_panel",
+   "split_v2": "extrapolation_test",
+   "base_category": "spec_ok",
+   "strict_category": "spec_ok",
+   "base_pass": true,
+   "strict_pass": true,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_stiffened_panel_700x600_str4",
+   "family": "stiffened_panel",
+   "split_v2": "extrapolation_test",
+   "base_category": "spec_bad",
+   "strict_category": "spec_ok",
+   "base_pass": false,
+   "strict_pass": true,
+   "base_failed_fields": [
+    "extra.split_tag",
+    "extra.v11_bracket",
+    "extra.v11_interior_holdout",
+    "extra.v11_template"
+   ],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [
+    "extra.split_tag",
+    "extra.v11_bracket",
+    "extra.v11_interior_holdout",
+    "extra.v11_template"
+   ],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  },
+  {
+   "task_id": "L2i_stiffened_panel_800x600",
+   "family": "stiffened_panel",
+   "split_v2": "val",
+   "base_category": "spec_ok",
+   "strict_category": "spec_ok",
+   "base_pass": true,
+   "strict_pass": true,
+   "base_failed_fields": [],
+   "strict_failed_fields": [],
+   "base_failed_given_keys": [],
+   "strict_failed_given_keys": [],
+   "base_failed_absent_keys": [],
+   "strict_failed_absent_keys": [],
+   "base_clarify": null,
+   "strict_clarify": null,
+   "base_turns": null,
+   "strict_turns": null
+  }
+ ]
+}

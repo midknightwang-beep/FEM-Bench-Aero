@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_stiffened_panel_800x600",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"结构族为 stiffened_panel 但缺少长桁数量参数 n_stringers，请给出加筋长桁根数；若为素板请明示\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 76,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

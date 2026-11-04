@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_web1",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"缺失 tip_chord_ratio（键名：tip_chord_ratio），无法确定翼尖弦长与根弦比\",\"缺失 extra 块中的 end_torque 与 torque_axis_dof 不属于四族键名总表，且 wingbox 族 extra 应为空对象 {}\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 162,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

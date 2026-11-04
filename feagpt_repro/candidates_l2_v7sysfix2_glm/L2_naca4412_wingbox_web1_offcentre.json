@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_web1_offcentre",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"airfoil.n_stringers_per_skin 为 0（无长桁）却同时给出了 stringer_height/stringer_thickness/stringer_kind/stringer_flange_width，请确认长桁数量 n_stringers_per_skin（若确无长桁请删除长桁细节键，若有长桁请给出根数）\",\"stringer_kind 为 blade（无缘条剖面），却给出了 stringer_flange_width=30，blade 剖面不应有该键，请确认剖面类型及缘条宽\",\"extra.end_torque / extra.torque_axis_dof 不是本规范的合法键，且 wingbox 族 extra 必须为 {}，若需要施加扭矩载荷请说明载荷形式（仅支持 tip_force 或 pressure）\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 392,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

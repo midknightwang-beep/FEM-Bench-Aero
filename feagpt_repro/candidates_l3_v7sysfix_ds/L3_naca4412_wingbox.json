@@ -1,0 +1,30 @@
+{
+ "task_id": "L3_naca4412_wingbox",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "6b90daf07bbe070d5c870c7006e9ff28142e441370d71c1b16083a4bec6c98f9",
+ "clarify": "[\"题面提到若干翼肋等距布置，但未给出翼肋数量 n_ribs，请提供具体根数。\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 3,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/airfoil/n_ribs must be number",
+    "/ must match \"then\" schema",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'"
+   ]
+  },
+  {
+   "turn": 2,
+   "errors": [
+    "/airfoil must have required property 'n_ribs'",
+    "/ must match \"then\" schema"
+   ]
+  }
+ ],
+ "raw_len": 66
+}

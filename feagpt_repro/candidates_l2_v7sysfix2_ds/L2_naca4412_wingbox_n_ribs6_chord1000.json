@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_n_ribs6_chord1000",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"n_stringers_per_skin：airfoil 块中该键值为 0，但 wingbox 族该键为必需参数，且题面已给出 stringer_height=20、stringer_thickness=2.5、stringer_kind='blade' 等长桁细节，说明存在长桁特征；长桁数量为 0 与长桁细节矛盾，必须澄清实际长桁数（每蒙皮）\",\"stringer_flange_width：stringer_kind 为 'blade'，blade 剖面没有缘条，不应填写 stringer_flange_width=30；若实际为 T 剖面请澄清 stringer_kind 并保留 flange width，若确为 blade 则此键应删除\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 371,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_size_chord900",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"airfoil.n_stringers_per_skin 给定 0 但同时给出了 stringer_thickness/stringer_kind/stringer_flange_width，且缺少 stringer_height：请确认长桁是否真实存在，若存在请给出 n_stringers_per_skin 与 stringer_height 的数值\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 193,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_size_chord900",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"n_stringers_per_skin 已给出为 0，但 stringer_kind 为 blade 且给出了 stringer_thickness 与 stringer_flange_width，这与无长桁（n_stringers_per_skin=0）矛盾，请确认 n_stringers_per_skin 或长桁细节参数；\",\"airfoil 中缺少 stringer_height 键，无法定义 blade 长桁高度；\",\"stringer_kind=blade 时不应出现 stringer_flange_width=30，请确认该键是否应省略或改为 T 剖面并补齐 flange 信息。\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 339,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

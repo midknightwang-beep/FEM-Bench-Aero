@@ -1,0 +1,103 @@
+{
+ "task_id": "L2i_open_hole_panel_400x200_d20_cfrp45s_d40",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "f6cb45f738746226da59ef44efec953a475c063f2202703957f123fd52bbd60b",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "open_hole_panel_400x200_d20_cfrp45s_d40",
+  "description": "开孔板拉伸分析",
+  "material": {
+   "density": 2.78e-9,
+   "name": "Aluminium 2024-T3",
+   "poisson_ratio": 0.33,
+   "yield_strength": 345,
+   "youngs_modulus": 73100
+  },
+  "structure": {
+   "family": "open_hole_panel",
+   "params": {
+    "hole_d": 40,
+    "layup": {
+     "material": {
+      "E1": 140000,
+      "E2": 10000,
+      "E3": 10000,
+      "G12": 5000,
+      "G13": 5000,
+      "G23": 4000,
+      "density": 1.6e-9,
+      "name": "CFRP_T300",
+      "nu12": 0.3,
+      "nu13": 0.3,
+      "nu23": 0.45
+     },
+     "plies": [
+      {
+       "angle": 45,
+       "thickness": 0.5
+      },
+      {
+       "angle": -45,
+       "thickness": 0.5
+      },
+      {
+       "angle": -45,
+       "thickness": 0.5
+      },
+      {
+       "angle": 45,
+       "thickness": 0.5
+      }
+     ]
+    },
+    "length": 400,
+    "thickness": 2,
+    "width": 200
+   }
+  },
+  "mesh": {
+   "algorithm_2d": 6,
+   "element_order": 1,
+   "leading_edge_threshold": 1.6,
+   "min_jacobian": 0.3,
+   "recombination_algorithm": 0,
+   "recombine": true,
+   "refine_at_leading_edge": true,
+   "size_chord": 4,
+   "size_span": 4
+  },
+  "load": {
+   "direction": [
+    1,
+    0,
+    0
+   ],
+   "kind": "tip_force",
+   "magnitude": 4000
+  },
+  "bc": {
+   "clamp": true,
+   "root_surface": "root"
+  },
+  "analysis": {
+   "incremental": true,
+   "initial_increment": 0.25,
+   "outputs": [
+    "U",
+    "S"
+   ],
+   "solver": "ccx",
+   "step_type": "static",
+   "total_time": 1
+  },
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 1459,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_strict_v1"
+}

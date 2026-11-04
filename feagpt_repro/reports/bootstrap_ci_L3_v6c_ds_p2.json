@@ -21,32 +21,32 @@
    "denominator": "exam 全部任务"
   },
   "SFR": {
-   "point_pct": 95.2,
+   "point_pct": 87.0,
    "ci95": [
-    85.7,
+    69.6,
     100.0
    ],
-   "n": 21,
+   "n": 23,
    "n_pass": 20,
    "denominator": "exam 中产出 spec 的候选"
   },
   "MSR": {
-   "point_pct": 95.2,
+   "point_pct": 86.4,
    "ci95": [
-    85.7,
+    72.7,
     100.0
    ],
-   "n": 21,
-   "n_pass": 20,
+   "n": 22,
+   "n_pass": 19,
    "denominator": "exam 中 spec-required 且非澄清题（R23 分母）"
   }
  },
  "by_family_tsr": {
   "fuselage_barrel": {
    "n": 2,
-   "tsr_pct": 100.0,
+   "tsr_pct": 50.0,
    "ci95": [
-    100.0,
+    0.0,
     100.0
    ],
    "note": "n<10，只报不判"
@@ -71,9 +71,9 @@
   },
   "wingbox": {
    "n": 18,
-   "tsr_pct": 88.9,
+   "tsr_pct": 94.4,
    "ci95": [
-    72.2,
+    83.3,
     100.0
    ],
    "note": "n<10，只报不判"
@@ -92,23 +92,93 @@
   },
   "extrapolation": {
    "n": 13,
-   "n_pass": 11,
-   "tsr_pct": 84.6,
+   "n_pass": 10,
+   "tsr_pct": 76.9,
    "ci95": [
-    61.5,
+    53.8,
     100.0
    ],
    "note": "分栏 n<20，只报不判（R12/R30）"
   },
   "interpolation": {
    "n": 6,
-   "n_pass": 5,
-   "tsr_pct": 83.3,
+   "n_pass": 6,
+   "tsr_pct": 100.0,
    "ci95": [
-    50.0,
+    100.0,
     100.0
    ],
    "note": "分栏 n<20，只报不判（R12/R30）"
+  }
+ },
+ "exam_full": {
+  "note": "exam_full = legacy 三栏 + interpolation_v11（C-037 双分母）。与 `metrics`（legacy 25）**分母不同 ⇒ 只可并列、不可相减、不可用区间重叠度宣布优劣**（R54）。",
+  "n_exam_full": 25,
+  "n_exam_legacy": 25,
+  "underpowered": false,
+  "metrics": {
+   "TSR": {
+    "point_pct": 88.0,
+    "ci95": [
+     76.0,
+     100.0
+    ],
+    "n": 25,
+    "n_pass": 22,
+    "denominator": "exam_full 全部任务"
+   },
+   "SFR": {
+    "point_pct": 87.0,
+    "ci95": [
+     69.6,
+     100.0
+    ],
+    "n": 23,
+    "n_pass": 20,
+    "denominator": "exam_full 中产出 spec 的候选"
+   },
+   "MSR": {
+    "point_pct": 86.4,
+    "ci95": [
+     72.7,
+     100.0
+    ],
+    "n": 22,
+    "n_pass": 19,
+    "denominator": "exam_full 中 spec-required 且非澄清题（R23 分母）"
+   }
+  },
+  "by_stratum_tsr": {
+   "boundary": {
+    "n": 6,
+    "n_pass": 6,
+    "tsr_pct": 100.0,
+    "ci95": [
+     100.0,
+     100.0
+    ],
+    "note": "分栏 n<20，只报不判（R12/R30）"
+   },
+   "extrapolation": {
+    "n": 13,
+    "n_pass": 10,
+    "tsr_pct": 76.9,
+    "ci95": [
+     53.8,
+     100.0
+    ],
+    "note": "分栏 n<20，只报不判（R12/R30）"
+   },
+   "interpolation": {
+    "n": 6,
+    "n_pass": 6,
+    "tsr_pct": 100.0,
+    "ci95": [
+     100.0,
+     100.0
+    ],
+    "note": "分栏 n<20，只报不判（R12/R30）"
+   }
   }
  }
 }

@@ -37,7 +37,7 @@ const SYS = `你是飞机结构有限元建模专家。根据用户给出的结�
   · stiffened_panel ⇒ 写 structure.params：length/width/thickness/n_stringers（**题面明说素板才写 0**；题面提到长桁/加筋但没给根数 ⇒ 澄清 n_stringers，见数量铁律）。
 ★ extra 块：**只有** fuselage_barrel 用 end_shear / end_moment（单位 N、N·mm）；其余三族一律 {}。不得写 end_torque / torque_axis_dof / end_tension 之类自创键（键名即契约，自创键按编造判 FAIL）。
 ★ 载荷词汇（kind 的取值只有两个）：面内拉伸（端部均布拉力）或翼尖集中力 ⇒ kind="tip_force"（magnitude 用 N）；内压/均布面压 ⇒ kind="pressure"（magnitude 用 MPa）。
-★ 词汇约定（必须用这些词）：材料名 "Aluminium 2024-T3" 或 "CFRP-LAYUP"；翼型 code "4412"（不是 NACA4412）；载荷 kind "tip_force"（集中力）或 "pressure"（分布压力）；加筋长桁 kind "blade" 或 "T"；边界条件用 {"root_surface":"root","clamp":true}；载荷方向 direction 用 [x,y,z] 数组（法向即 [0,1,0]）；开孔板/加筋板载荷 kind="pressure" 用 magnitude（面压 MPa）或面内拉伸按用户描述；网格键 size_chord/size_span（翼盒）、size（板壳类）。
+★ 词汇约定（必须用这些词）：材料名 "Aluminium 2024-T3" 或 "CFRP-LAYUP"；翼型 code "4412"（不是 NACA4412）；载荷 kind "tip_force"（集中力）或 "pressure"（分布压力）；加筋长桁 kind "blade" 或 "T"；边界条件用 {"root_surface":"root","clamp":true}；载荷方向 direction 用 [x,y,z] 数组（法向即 [0,1,0]）；开孔板/加筋板载荷 kind="pressure" 用 magnitude（面压 MPa）或面内拉伸按用户描述；网格键 size_chord/size_span（四族通用）。
 ★ fuselage_barrel 的载荷组合（端剪/端弯）写进 extra.end_shear / extra.end_moment（数值用 N 和 N·mm）。
 材料按名称给出 E/ν/密度/屈服（铝 2024-T3: E=73100 MPa, ν=0.33, ρ=2.78e-9 t/mm^3, 屈服=345 MPa；T300/环氧参考用户给定）。
 只输出一个 JSON 对象（spec 或 clarify），不要输出其他文字。`;
@@ -107,7 +107,7 @@ const L2_STRICT = process.argv.includes('--l2-strict');
 
 // ---------------------------------------------------------------------------
 // T-L27c v3 第二跳（2026-11-04）：网格键更正 —— **考的是 SYS 自己的一句错话**
-// ★ 来源：SYS 第 40 行写「网格键 size_chord/size_span（翼盒）、**size（板壳类）**」，
+// ★ 来源：SYS 第 40 行**曾**写「网格键 size_chord/size_span（翼盒）、**size（板壳类）**」，
 //   但**四族 gold 的 mesh 段完全一致、全部用 size_chord/size_span，没有任何 gold 有 size**
 //   （实测 `modeling/*/spec.json`，`_l27c_check_mesh_keys.py` 守这条）。
 // ★ 修复确实做过、又被回滚带走：`_psa_fix_mesh_keys.py` 的 `OLD1`（p3 版 SYS 片段）
@@ -116,11 +116,16 @@ const L2_STRICT = process.argv.includes('--l2-strict');
 //   这句更正**随回滚一起消失，且没有任何闸报错**。
 //   （判据只锚 sha 变没变，不锚「sha 对应的那句话对不对」——见 CONFLICT N-34。）
 // ⇒ 模型按 prompt 写 `size` 被判「自造键」不是模型的锅。
-// ★ 这一跳**只加在实验 arm 里、不动 SYS 常量**：改 SYS 会改 `ce225186`，那是
-//   C-032/C-033/C-040/C-041 的锚点（R53/S-39），动它要老王拍板（R-A6）。
+//
+// ★★ 2026-11-04 老王拍板：**SYS 已修正**（第 40 行改为「网格键 size_chord/size_span
+//    （四族通用）」，不提 size 这个词，避免重演 ds 在 meshfix 段的反向追问）。
+//    下面的 `L2_MESHFIX_ADDENDUM` 因此**只剩历史实验价值**：
+//    - 它原本是唯一纠正 SYS 的手段，现在 SYS 自己是对的；
+//    - 且实测该段**只对 glm 单向有效、对 ds 引入反向噪声**（T-L27c v3，p=0.73，b=3）。
+//    ⇒ **新实验不要再启用 `--l2-meshfix`**；它保留是为了让 T-L27c v3 的产物可复现。
 // ---------------------------------------------------------------------------
 const L2_MESHFIX_ADDENDUM = `
-E. **网格键（本小节覆盖上文「size（板壳类）」那一句）**：四族的网格块**只有**
+E. **网格键**：四族的网格块**只有**
    size_chord 与 size_span 两个尺寸键 —— 开孔板与加筋板**也用这两个键名**，
    **没有 size 这个键**。把题面给的 size_chord / size_span 合并成一个 size，
    按「自造键」判错。`;

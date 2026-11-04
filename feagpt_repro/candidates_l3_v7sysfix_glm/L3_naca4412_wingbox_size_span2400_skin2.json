@@ -1,0 +1,73 @@
+{
+ "task_id": "L3_naca4412_wingbox_size_span2400_skin2",
+ "input_level": "L3",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "6b90daf07bbe070d5c870c7006e9ff28142e441370d71c1b16083a4bec6c98f9",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "wingbox_naca4412_tip_force",
+  "description": "NACA4412 翼盒，弦1000/展2400mm，壁厚2mm，5根肋（厚4mm），梁位0.25–0.70，翼尖500N集中力悬臂弯曲。",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "wingbox",
+   "params": {}
+  },
+  "airfoil": {
+   "code": "4412",
+   "chord": 1000,
+   "span": 2400,
+   "skin_thickness": 2,
+   "n_ribs": 5,
+   "rib_thickness": 4,
+   "spar_chordwise": [
+    0.25,
+    0.7
+   ],
+   "n_stringers_per_skin": 0,
+   "tip_chord_ratio": 1,
+   "sweep_deg": 0,
+   "web_chordwise": []
+  },
+  "mesh": {
+   "size_chord": 12,
+   "size_span": 25
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 500,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'yield_strength'",
+    "/mesh 不允许的键 \"element_type\"，请删除。mesh 允许键: size_chord/size_span/order/refine_le",
+    "/analysis 不允许的键 \"type\"，请删除。analysis 允许键: solver/step_type/incremental/initial_increment/total_time/outputs（建议直接写 {}）"
+   ]
+  }
+ ],
+ "raw_len": 881
+}

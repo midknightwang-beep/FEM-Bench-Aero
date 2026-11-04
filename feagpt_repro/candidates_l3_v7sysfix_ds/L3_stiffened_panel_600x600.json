@@ -1,0 +1,61 @@
+{
+ "task_id": "L3_stiffened_panel_600x600",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "6b90daf07bbe070d5c870c7006e9ff28142e441370d71c1b16083a4bec6c98f9",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "stiffened_panel_600x600_bare",
+  "description": "600×600 mm 铝 2024-T3 素板四边简支，受 0.0001 MPa 均布面压",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "stiffened_panel",
+   "params": {
+    "length": 600,
+    "width": 600,
+    "thickness": 2,
+    "n_stringers": 0
+   }
+  },
+  "mesh": {
+   "size_chord": 3,
+   "size_span": 3
+  },
+  "load": {
+   "kind": "pressure",
+   "magnitude": 0.0001,
+   "direction": [
+    0,
+    0,
+    -1
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'yield_strength'",
+    "/bc 不允许的键 \"all_edges\"，请删除。bc 允许键: root_surface/clamp（如 {\"root_surface\":\"root\",\"clamp\":true}）"
+   ]
+  }
+ ],
+ "raw_len": 678
+}

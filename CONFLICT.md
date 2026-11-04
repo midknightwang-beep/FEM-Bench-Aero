@@ -1180,7 +1180,7 @@ msr_l3.py --only L3_open_hole_panel_400x200_d40 -> rc=0, wall=6.2s, gates 全 Tr
 
 ---
 
-### N-34（中，**prompt 缺陷未修，待拍板**）SYS 说「板壳类用 `size`」，而四族 gold 都没有 `size` —— 改对过、被回滚带走、无闸报错
+### N-34（中，**已按 A 修正 SYS（2026-11-04 老王拍板）**）SYS 说「板壳类用 `size`」，而四族 gold 都没有 `size` —— 改对过、被回滚带走、无闸报错
 
 **发现时点**：T-L27c v3（L2 prompt 单变量消融）。C 臂加覆盖段后 glm 从 10/16 到 16/16，**而这条覆盖段覆盖的是 SYS 自己的一句错话** —— 顺着查下去才发现它一直在。
 
@@ -1232,6 +1232,106 @@ msr_l3.py --only L3_open_hole_panel_400x200_d40 -> rc=0, wall=6.2s, gates 全 Tr
 **建议**：走 **A**，但**排在 §13 第 10 项之前** —— 因为第 10 项（信息完备题型）恰恰是把 spec 摊给模型看的题型，不修这句就是拿带缺陷的 prompt 测「模型会不会追问」。
 
 **边界（诚实说）**：本条的「零变动」结论**只覆盖 mesh 段**。`SYS` 里是否还有别的键名与 gold 冲突，**没有系统性核过** —— 本轮只核了 `mesh` 段（因为它是这轮实验的变量）。要系统性核，得把 `GRADED_FIELDS` 与 `EXEC_CONFIG_KEYS` 的每个键反向扫一遍 `SYS` 文本，那是另一个任务。
+
+#### 执行结果（2026-11-04，老王拍板 A 并已落地）
+
+**改法**：`网格键 size_chord/size_span（翼盒）、size（板壳类）。` → `网格键 size_chord/size_span（四族通用）。`
+
+三点判断：
+
+1. **连「（翼盒）」一起改对**，不是只删六个字。实测 64 个 gold 覆盖四族、mesh 键集**完全一致**（9 键），板壳类同样用这两个键 —— 留着「（翼盒）」等于修一半。
+2. **刻意不在 SYS 里提「size」这个词**。上一轮 C 臂覆盖段原文「…**没有 size 这个键**」反而让 ds 追问了 4 条（把矛盾显式化）。⇒ **修 prompt 时「点名否定」比「不说」更容易诱发追问。**
+3. 其余一字未动；题面、rubric、判分器零改动。
+
+**四个 sha 全变**：`ce225186`→**`6b90daf0`**（SYS）／`03129c56`→**`c8de26d4`**（L2）／`094cd870`→**`b4c2dd6e`**（REFUSE）／`99466166`→**`f6cb45f7`**（L2_STRICT）。
+
+**效果一：错误模式彻底归零**
+
+| | 旧 SYS | 新 SYS |
+|---|---|---|
+| 多余 `size` 键（L2 informative，两模型） | **12 条题**（glm 9/14、ds 3/7，形态完全一致） | **0**（L2+L3、两模型、全部候选） |
+
+**效果二：glm 显著、ds 不敏感**
+
+| 模型 | 旧 base | 新 base | 旧 strict | 新 strict 两遍 | 配对检验 |
+|---|---|---|---|---|---|
+| glm | 2/16 | **8/16** | 10/16 | **16/16、14/16** | b=0/c=6，**p=0.0312** |
+| ds | 3/16 | 1/16 | 8/16 | **10/16、12/16** | b=2/c=4，p=0.6875 |
+
+⇒ 与 T-L27c v3 的结论同型：**补漏式修法不可假设跨模型通用**。ds 的问题不在 mesh 键，在于「把 schema 规范意见当成澄清理由」。
+
+**效果三：L3 零回归**
+
+- v7 卷：glm exam **23/25 → 23/25**（SFR 20/22 → 20/22），`exam` 块逐字段一致；全卷判分段 58/64 相同，差异 6 条**全在 dev**。ds 两遍 22/23（旧 23），跨度在噪声内。
+- v6c 卷（C-032/C-033 的 artifact）：见 `reports/diagnostics/task_l27c_v4_report.md` §7。
+
+**效果四：L2 v7 必须做「旧 SYS 今日对照」才能归因**
+
+ds 从 36/64 跳到 52/64（+16）幅度太大。把 SYS 临时改回旧表述（sha 验回 `ce225186`）跑全量 64 条得 **40/64**，再改回（sha 验回 `6b90daf0`）。⇒ 拆成 **跨天波动 ≈ +4**（同 prompt 5 天前 36 → 今日 40）＋ **SYS 效应 ≈ +6~+12**（今日旧 40 vs 今日新 46~52，两遍区间不重叠）。
+
+**不做这一步，就会把服务端波动算成 prompt 红利。**
+
+**遗留（由本轮新开）**：`CONFLICT` N-35 —— `EXEC_CONFIG_KEYS` 混装两类键、`engineering_layer` 只能一起开关。
+
+---
+
+### N-35（中，**判分口径未适配新题型**）`EXEC_CONFIG_KEYS` 一个集合混装两类键 —— `engineering_layer` 开关在 L2 轨道上把这两类一起关掉了
+
+**发现于** T-L27c v4（2026-11-04），SYS 修正后跑 L2 informative 小样本时暴露。
+
+#### 现象
+
+`score_l2.py` 调 `judge_l3_candidate()` **不传 `engineering_layer`**（默认 `False`），而 `score_baseline.py` 传 `engineering_layer=(task['input_level'] == 'L3')`。
+后果：`evaluate.py:232` 的 `if engineering_layer and k in EXEC_CONFIG_KEYS.get(holder, ())` 这个豁免分支，**在 L3 生效、在 L2 从不生效**。
+
+L2 informative 的失败字段里因此大量出现这些键：
+
+```
+extra.split_tag / extra.v11_bracket / extra.v11_interior_holdout / extra.v11_template
+extra.moment_axis / extra.shear_axis / extra.sweep_index
+mesh.algorithm_2d / mesh.element_order / mesh.leading_edge_threshold / mesh.min_jacobian / …
+```
+
+#### 根因：一个集合装了两类来源不同的键
+
+`EXEC_CONFIG_KEYS` 的注释把豁免前提写得很清楚：「gold 内部编码键（数据集离散索引/方向轴表示，**NL 任务书永远不会提及**）」。这个前提在 L3 成立（输入是自然语言），在 **L2 informative 不成立**（输入是整份 spec JSON）。
+
+但「前提不成立」不等于「这些键都该判」。它们其实是两类：
+
+| 类 | 键 | L2 题面给了吗 | 该不该判 |
+|---|---|---|---|
+| **真实执行配置** | `algorithm_2d` / `element_order` / `leading_edge_threshold` / `min_jacobian` / `recombination_algorithm` / `recombine` / `refine_at_leading_edge`（mesh 7 个） | 给了 | **该判** —— 这正是「逐字转写」的考点 |
+| **数据集构建元信息** | `sweep_index` / `shear_axis` / `moment_axis` / `split_tag` / `v11_bracket` / `v11_template` / `v11_interior_holdout`（6 个） | 给了 | **任何层都不该判** —— 模型产出它们无工程意义，`v11_bracket` 甚至是一句中文描述（「柱长 1600 ↔ 2000（d2000 系列的 l1600 / l2000 两条都在集）」），要求逐字转写不合常理 |
+
+⇒ 用**同一个布尔开关**控制两类键，必然顾此失彼：打开就丢掉 mesh 考点，关上就压住分数。
+
+#### 量化（16 条 informative 诊断卷，剥离上表 13 个键后重算通过）
+
+| arm | 原始 | 剥离后 |
+|---|---|---|
+| glm 新 base | 8/16 | **15/16** |
+| glm 新 strict 第 1 遍 | 16/16 | 16/16 |
+| glm 新 strict 第 2 遍 | 14/16 | **16/16** |
+| ds 新 strict 第 1 遍 | 10/16 | **14/16** |
+
+glm 第二遍失败的那 2 条，全部由这两类键造成（1 条 mesh 6 键、1 条 extra 4 键）—— **没有一条是多写 `size`**（N-34 已修净）。
+
+#### 三个选项
+
+- **A（打开开关）**：L2 也传 `engineering_layer=True`，与 L3 一致。**代价**：mesh 的 7 个键也不判 ⇒ L2「逐字转写网格配置」这个考点消失，题型价值大幅缩水。不推荐。
+- **B（推荐，拆集合）**：把元信息 6 键从 `EXEC_CONFIG_KEYS['extra']` 拆出，单独成 `DATASET_META_KEYS`，**任何层都不判**；`EXEC_CONFIG_KEYS` 只留真实执行配置（继续只在 L3 豁免）。实施要点：①判分器侧拆分；②**题面侧还应剥离 6 个元信息键**（否则模型照抄、gold 也有、判分跳过，三处口径要一致）；③题面改动触 R65（只许加行/新卷）。
+- **C（不动）**：L2 informative 的分数会长期被这些键压住 ~20pp，且读者会把「转写一句中文描述失败」读成模型能力问题（M7 同源）。
+
+#### 边界（诚实说）
+
+①本条只覆盖 `mesh` 与 `extra` 两处；`analysis` 段 5 个键、`load.direction` 未逐一验证（L2 的 16 条里 `extra` 为空的 8 条不受本条影响）。
+②`extra.moment_axis` / `shear_axis` 在 gold 里**确实存在**（柱壳 4 条），不是自创键；它们被豁免的理由是「NL 任务书不会提及」，不是「gold 没有」。
+③与 **N-30** 是互补关系、不是同一条：N-30 说的是「自创键检查根本不查这个集合」（豁免**恒不触发**），本条说的是「gold 有、候选没写」这条路径上豁免**被开关关掉**。两条都要修才闭合。
+④**本条不影响任何已发布数字**：L2 v7 的 64 条是「缺键澄清题」，判分看**追问的键名对不对**、不看 spec 保真 ⇒ 剥掉这 13 个键后 glm **49/64**、ds **36/64**，与已发布值一个不差（实测）。影响范围仅限 `informative` 题型，而该题型**尚未进卷**。
+
+#### 待拍板
+
+**A / B / C。** 未拍板前 `evaluate.py` 与 `score_l2.py` 一个字节不动。
 
 ---
 

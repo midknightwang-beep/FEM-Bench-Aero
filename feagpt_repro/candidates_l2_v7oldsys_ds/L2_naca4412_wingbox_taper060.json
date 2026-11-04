@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_taper060",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"n_stringers_per_skin 与 stringer_kind=blade 矛盾：blade 剖面没有缘条，但 spec 中给出了 stringer_flange_width；请明确长桁剖面（blade 不应有 flange_width）或改为 T 剖面\",\"n_stringers_per_skin=0 与 stringer_height/stringer_thickness/stringer_kind 同时存在矛盾：长桁数为 0 则不应有长桁几何细节，请明确是否真的有长桁以及根数\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 276,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

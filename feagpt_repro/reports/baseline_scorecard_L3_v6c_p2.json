@@ -1,5 +1,5 @@
 {
- "note": "W5c L3 主基线（考卷 v6c × 候选 candidates_l3_v6c_glm_p2，文案由考卷自动生成）：headline = exam 25 条（exam_stratum 三栏 boundary 6 / extrapolation 13 / interpolation 6）；dev（非 exam）30 条只作开发诊断。TSR=行为正确性（完备题答对+澄清题字段级问对 R17）；SFR=字段保真（R20：编造一律不计 PASS）；FPR 双向；MSR 全链见 msr 节（R14/R16/R35：solver 失败单列，不进 exam MSR）。",
+ "note": "W5c L3 主基线（考卷 v6c × 候选 candidates_l3_v7sysfix_glm，文案由考卷自动生成）：headline = exam 25 条（exam_stratum 三栏 boundary 6 / extrapolation 13 / interpolation 6）；dev（非 exam）30 条只作开发诊断。TSR=行为正确性（完备题答对+澄清题字段级问对 R17）；SFR=字段保真（R20：编造一律不计 PASS）；FPR 双向；MSR 全链见 msr 节（R14/R16/R35：solver 失败单列，不进 exam MSR）。",
  "model": "glm-5.3-flash",
  "model_source": "candidate files (per-task field `model`), 单一值；非默认、非命令行声称",
  "decode": "json_object + schema_task.json 校验 + 错误反馈修复循环（<=3 轮；SDK 无 logits 级 json_schema）",
@@ -12,34 +12,46 @@
   "stiffened_panel": 1
  },
  "turns_histogram": {
-  "1": 3,
+  "1": 4,
   "2": 50,
-  "3": 2
+  "3": 1
  },
- "first_pass_valid": 3,
+ "first_pass_valid": 4,
  "n_unresolved": 0,
  "provenance": {
-  "label": "C-032 v6c x glm prompt-v2 (paper v6c, candidates glm_p2)",
+  "label": "l3_v6c_p2_sysfix",
   "tasks_path": "reports/papers/tasks_v6c.jsonl",
   "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
-  "candidates_dir": "candidates_l3_v6c_glm_p2",
+  "candidates_dir": "candidates_l3_v7sysfix_glm",
   "model": "glm-5.3-flash",
-  "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+  "prompt_sha256": "6b90daf07bbe070d5c870c7006e9ff28142e441370d71c1b16083a4bec6c98f9",
   "prompt_sha256_note": "读自候选文件（生成时对 SYS prompt 取的 sha256）。UNKNOWN = 该批候选生成时未记录 ⇒ 与任何批次都不可比（R53）",
   "n_candidates": 55,
-  "generated_by": "score_baseline.py"
+  "generated_by": "score_baseline.py",
+  "judge_overrides": {
+   "path": "tasks/clarify_wrong_keys_fix.json",
+   "sha256": "c9d60bc166f28b3cc7766cda71c4691095374ce0893f2ac33a625be14fc77c76",
+   "version": "p1-1",
+   "n_fixes": 1,
+   "applied_to": [
+    "L3_naca4412_wingbox"
+   ],
+   "note": "判分元数据修正表（R71）：只许修「与 R34 键名契约矛盾」的事实错误；from 必须等于卷现值，否则不应用（S-59 守）。"
+  }
  },
  "n_tasks": 55,
  "n_tasks_in_paper": 55,
  "candidates_missing": [],
  "n_tasks_exam_expected": 25,
+ "n_tasks_exam_full_expected": 25,
  "partial": false,
+ "partial_full": false,
  "partial_candidates": false,
  "underpowered": false,
  "tsr": {
-  "pass": 45,
+  "pass": 46,
   "total": 55,
-  "pct": 81.8
+  "pct": 83.6
  },
  "exam": {
   "n": 25,
@@ -60,30 +72,73 @@
   },
   "msr": "20/22"
  },
+ "exam_v11": {
+  "n": 0,
+  "tsr": {
+   "pass": 0,
+   "total": 0,
+   "pct": 0.0
+  },
+  "sfr": {
+   "pass": 0,
+   "of_spec_candidates": 0,
+   "pct": 0.0
+  },
+  "categories": {},
+  "note": "v1.1 新增内插（interpolation_v11）单独成桶：既不是 legacy exam、也不是 dev。不单列会污染另一侧（折进 exam ⇒ 换分母，折进 dev ⇒ 30→39）。"
+ },
+ "exam_full": {
+  "n": 25,
+  "tsr": {
+   "pass": 23,
+   "total": 25,
+   "pct": 92.0
+  },
+  "sfr": {
+   "pass": 20,
+   "of_spec_candidates": 22,
+   "pct": 90.9
+  },
+  "categories": {
+   "clarify_ok": 3,
+   "spec_pass": 20,
+   "spec_fail": 2
+  },
+  "note": "exam_full = exam(legacy) + exam_v11（C-037 双分母）。与 C-032 的 exam 25 条**不可相减**（R54），只可并列陈述。"
+ },
+ "exam_denominator_closure": {
+  "exam_legacy": 25,
+  "exam_v11": 0,
+  "exam_full": 25,
+  "dev": 30,
+  "n_tasks": 55,
+  "closure_sum": 55,
+  "ok": true
+ },
  "dev": {
   "n": 30,
   "tsr": {
-   "pass": 22,
+   "pass": 23,
    "total": 30,
-   "pct": 73.3
+   "pct": 76.7
   },
   "sfr": {
-   "pass": 21,
+   "pass": 22,
    "of_spec_candidates": 29,
-   "pct": 72.4
+   "pct": 75.9
   },
   "categories": {
-   "spec_pass": 21,
-   "spec_fail": 8,
+   "spec_pass": 22,
+   "spec_fail": 7,
    "clarify_ok": 1
   },
   "note": "开发集，不进对外（R15）",
   "msr": "21/29"
  },
  "sfr_all": {
-  "pass": 41,
+  "pass": 42,
   "of_spec_candidates": 51,
-  "pct": 80.4
+  "pct": 82.4
  },
  "fpr": {
   "fabricated_on_clarify_tasks": 0,
@@ -114,18 +169,18 @@
   "val": {
    "n": 17,
    "tsr": {
-    "pass": 11,
+    "pass": 12,
     "total": 17,
-    "pct": 64.7
+    "pct": 70.6
    },
    "sfr": {
-    "pass": 11,
+    "pass": 12,
     "of_spec_candidates": 17,
-    "pct": 64.7
+    "pct": 70.6
    },
    "categories": {
-    "spec_pass": 11,
-    "spec_fail": 6
+    "spec_pass": 12,
+    "spec_fail": 5
    }
   }
  },
@@ -183,6 +238,7 @@
    }
   }
  },
+ "exam_by_stratum_note": "按 exam_full 遍历 STRATA_ALL 分栏；v7 起含 interpolation_v11 一栏。四栏之和 == exam_full.n（R-A5 闭合）",
  "per_task": [
   {
    "task_id": "L3_fuselage_barrel_d1600_l1600_str8_frm3",
@@ -192,17 +248,19 @@
    "tsr_pass": true,
    "exam_stratum": "extrapolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": true,
+   "n_questions": 1,
    "turns_used": 1,
-   "text": "[\"n_frames：题面提到'若干个普通框'但未给出框的数量，请明确 n_frames。\"]",
+   "text": "[\"普通框（blade 剖面）的具体数量 n_frames 是多少？题面只说'若干个'，未给出框数。\"]",
    "expected": [
     "n_frames"
    ],
    "alias_hits": {
     "n_frames": [
      "n_frames",
-     "普通框",
-     "框的数量"
+     "框数",
+     "普通框"
     ]
    }
   },
@@ -214,7 +272,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 0,
@@ -231,7 +291,9 @@
    "tsr_pass": false,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 1,
@@ -250,7 +312,9 @@
    "tsr_pass": true,
    "exam_stratum": "extrapolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 0,
@@ -267,7 +331,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 17,
    "n_fail": 0,
@@ -280,18 +346,18 @@
    "task_id": "L3_fuselage_barrel_d2000_l2000_t2_str8_frm3",
    "split_v2": "val",
    "family": "fuselage_barrel",
-   "category": "spec_fail",
-   "tsr_pass": false,
+   "category": "spec_pass",
+   "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 17,
-   "n_fail": 1,
+   "n_fail": 0,
    "n_fields_gated": 15,
-   "failed_fields": [
-    "extra.end_moment"
-   ],
+   "failed_fields": [],
    "exec_config_mismatch": 1,
    "dead_fields_skipped": 0
   },
@@ -303,12 +369,25 @@
    "tsr_pass": true,
    "exam_stratum": "interpolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": true,
+   "n_questions": 1,
    "turns_used": 1,
-   "text": "[\"翼肋数量未给出：题面提到'若干翼肋等距布置'但未给出具体根数 n_ribs，请提供翼肋的具体数量（以及若需要，等距布置的间距或起止位置）。\"]",
+   "text": "[\"翼肋数量 n_ribs 题面只说'若干翼肋等距布置'，请给出具体肋数\"]",
    "expected": [
     "n_ribs"
    ],
+   "wrong_keys_override": {
+    "field": "clarify_wrong_keys",
+    "from": [
+     "n_stringers_per_skin"
+    ],
+    "to": [
+     "n_stringers"
+    ],
+    "reason": "原登记把**本族正确键**当错族键：R34 规定翼盒族长桁数键就是 n_stringers_per_skin。原登记使 ds 的「先问对 n_ribs、又多问一句 n_stringers_per_skin」被判 clarify_wrong，判分理由（「使用了错族键名」）与事实相反。改为 n_stringers（柱壳/加",
+    "table_version": "p1-1"
+   },
    "alias_hits": {
     "n_ribs": [
      "n_ribs",
@@ -325,7 +404,9 @@
    "tsr_pass": true,
    "exam_stratum": "boundary",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -342,7 +423,9 @@
    "tsr_pass": true,
    "exam_stratum": "boundary",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -359,7 +442,9 @@
    "tsr_pass": true,
    "exam_stratum": "interpolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -376,7 +461,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -393,7 +480,9 @@
    "tsr_pass": true,
    "exam_stratum": "extrapolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -410,7 +499,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -427,7 +518,9 @@
    "tsr_pass": true,
    "exam_stratum": "interpolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -444,7 +537,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -461,7 +556,9 @@
    "tsr_pass": true,
    "exam_stratum": "interpolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -478,7 +575,9 @@
    "tsr_pass": true,
    "exam_stratum": "boundary",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -495,7 +594,9 @@
    "tsr_pass": true,
    "exam_stratum": "boundary",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -512,7 +613,9 @@
    "tsr_pass": true,
    "exam_stratum": "interpolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -529,7 +632,9 @@
    "tsr_pass": true,
    "exam_stratum": "extrapolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -546,7 +651,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -563,7 +670,9 @@
    "tsr_pass": true,
    "exam_stratum": "extrapolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -580,7 +689,9 @@
    "tsr_pass": true,
    "exam_stratum": "interpolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 27,
    "n_fail": 0,
@@ -597,7 +708,9 @@
    "tsr_pass": true,
    "exam_stratum": "extrapolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 28,
    "n_fail": 0,
@@ -614,7 +727,9 @@
    "tsr_pass": true,
    "exam_stratum": "boundary",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 27,
    "n_fail": 0,
@@ -631,7 +746,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -648,7 +765,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -665,7 +784,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -682,7 +803,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -699,7 +822,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -716,7 +841,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -733,7 +860,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -750,7 +879,9 @@
    "tsr_pass": true,
    "exam_stratum": "extrapolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -767,7 +898,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -784,7 +917,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -801,7 +936,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -818,7 +955,9 @@
    "tsr_pass": true,
    "exam_stratum": "boundary",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 24,
    "n_fail": 0,
@@ -835,7 +974,9 @@
    "tsr_pass": false,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 26,
    "n_fail": 2,
@@ -855,7 +996,9 @@
    "tsr_pass": false,
    "exam_stratum": "extrapolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 26,
    "n_fail": 2,
@@ -875,7 +1018,9 @@
    "tsr_pass": false,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 26,
    "n_fail": 2,
@@ -895,16 +1040,17 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": true,
-   "turns_used": 2,
-   "text": "[\"hole_d（孔直径）未给出，开孔拉伸板必须有孔径才能建模，请提供孔直径（mm）\",\"hole_x/hole_y（孔心坐标）未给出，请确认孔心位置（若为中心孔请说明，hole_x/hole_y 可省略）\"]",
+   "n_questions": 2,
+   "turns_used": 1,
+   "text": "[\"孔直径 hole_d 是多少？\",\"孔心坐标（hole_x、hole_y，相对板中心的偏心坐标）是多少？\"]",
    "expected": [
     "hole_d"
    ],
    "alias_hits": {
     "hole_d": [
      "hole_d",
-     "孔径",
      "孔直径"
     ]
    }
@@ -917,8 +1063,10 @@
    "tsr_pass": false,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
-   "turns_used": 3,
+   "n_questions": 0,
+   "turns_used": 2,
    "n_fields": 18,
    "n_fail": 1,
    "n_fields_gated": 16,
@@ -936,8 +1084,10 @@
    "tsr_pass": false,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
-   "turns_used": 3,
+   "n_questions": 0,
+   "turns_used": 2,
    "n_fields": 18,
    "n_fail": 1,
    "n_fields_gated": 16,
@@ -955,7 +1105,9 @@
    "tsr_pass": false,
    "exam_stratum": "extrapolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 1,
@@ -974,8 +1126,10 @@
    "tsr_pass": false,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
-   "turns_used": 2,
+   "n_questions": 0,
+   "turns_used": 3,
    "n_fields": 18,
    "n_fail": 1,
    "n_fields_gated": 16,
@@ -993,7 +1147,9 @@
    "tsr_pass": true,
    "exam_stratum": "extrapolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
@@ -1010,7 +1166,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
@@ -1027,7 +1185,9 @@
    "tsr_pass": true,
    "exam_stratum": "extrapolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
@@ -1044,7 +1204,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
@@ -1061,7 +1223,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
@@ -1078,7 +1242,9 @@
    "tsr_pass": true,
    "exam_stratum": "extrapolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 18,
    "n_fail": 0,
@@ -1095,7 +1261,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 14,
    "n_fail": 0,
@@ -1112,16 +1280,17 @@
    "tsr_pass": true,
    "exam_stratum": "extrapolation",
    "is_exam": true,
+   "is_exam_full": true,
    "ec": true,
+   "n_questions": 1,
    "turns_used": 1,
-   "text": "[\"题面提到长桁但未给出根数，请明确 n_stringers（长桁数量）\"]",
+   "text": "[\"n_stringers：长桁的具体根数未给出，请明确（例如每根长桁的间距或总数）\"]",
    "expected": [
     "n_stringers"
    ],
    "alias_hits": {
     "n_stringers": [
-     "n_stringers",
-     "长桁数量"
+     "n_stringers"
     ]
    }
   },
@@ -1133,7 +1302,9 @@
    "tsr_pass": false,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 14,
    "n_fail": 2,
@@ -1153,7 +1324,9 @@
    "tsr_pass": true,
    "exam_stratum": null,
    "is_exam": false,
+   "is_exam_full": false,
    "ec": false,
+   "n_questions": 0,
    "turns_used": 2,
    "n_fields": 14,
    "n_fail": 0,
@@ -1196,14 +1369,28 @@
   "provenance": {
    "tasks_path": "reports/papers/tasks_v6c.jsonl",
    "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
-   "candidates_dir": "candidates_l3_v6c_glm_p2",
-   "reuse_source": "self(recompute-only, no re-solve — 统计段由同一成绩单的 per_task 重算，须与实跑逐数一致)"
+   "candidates_dir": "candidates_l3_v7sysfix_glm",
+   "reuse_source": "reports/archive/baseline_scorecard_L3_v6c_p2__pre_sysfix.json"
   },
   "n_not_run": 0,
   "msr": "41/51",
   "msr_pct": 80.4,
   "exam_msr": "20/22",
   "exam_msr_pct": 90.9,
+  "exam_v11_msr": "0/0",
+  "exam_v11_msr_pct": null,
+  "exam_full_msr": "20/22",
+  "exam_full_msr_pct": 90.9,
+  "exam_full_denominator_audit": null,
+  "exam_full_closure": {
+   "units": "counted（MSR 可计分子集；任务语境的 34 见顶层 exam_denominator_closure）",
+   "exam_legacy": 22,
+   "exam_v11": 0,
+   "exam_full": 22,
+   "dev": 29,
+   "closure_sum": 51,
+   "ok": true
+  },
   "exam_by_family": {
    "fuselage_barrel": {
     "msr": "1/1",
@@ -1250,6 +1437,8 @@
   "solver_in_dev": [],
   "exam_msr_excl_solver": "20/22",
   "exam_msr_excl_solver_pct": 90.9,
+  "exam_full_msr_excl_solver": "20/22",
+  "exam_full_msr_excl_solver_pct": 90.9,
   "dev_msr_excl_solver": "21/29",
   "dev_msr_excl_solver_pct": 72.4,
   "msr_excl_solver": "41/51",
@@ -1329,6 +1518,7 @@
   "n_denominator": 51,
   "n_clarify_excluded": 4,
   "n_unresolved": 0,
+  "n_unresolved_note": "本字段是**任务层**（spec-required 但未产出 spec，含「澄清判错」）；顶层 scorecard.n_unresolved 是**候选层**（category=no_output）。同名不同义，引用时必须写清是哪一层。",
   "n_unresolved_excluded": 0,
   "n_notrun_excluded": 0,
   "n_env_excluded": 0,
@@ -1340,9 +1530,9 @@
    "model": 10
   },
   "gate_fail_counts": {
-   "fidelity_disp": 5,
-   "spec_fidelity": 7,
-   "pipeline": 3
+   "fidelity_disp": 4,
+   "spec_fidelity": 5,
+   "pipeline": 5
   },
   "per_task": [
    {
@@ -1362,7 +1552,7 @@
      "spec_fidelity": true
     },
     "pipeline_rc": 0,
-    "wall_seconds": 269.0,
+    "wall_seconds": 312.0,
     "fidelity_dev_pct": 0.0
    },
    {
@@ -1411,19 +1601,17 @@
    },
    {
     "task_id": "L3_fuselage_barrel_d2000_l2000_t2_str8_frm3",
-    "msr_pass": false,
+    "msr_pass": true,
     "denominator": true,
     "gates": {
      "mesh_quality": true,
      "semantics": true,
-     "fidelity_disp": false,
-     "spec_fidelity": false
+     "fidelity_disp": true,
+     "spec_fidelity": true
     },
     "pipeline_rc": 0,
-    "wall_seconds": 255.9,
-    "fidelity_dev_pct": 54.9011,
-    "failure_class": "model",
-    "failure_detail": ""
+    "wall_seconds": 271.6,
+    "fidelity_dev_pct": 0.0
    },
    {
     "task_id": "L3_naca4412_wingbox",
@@ -1442,7 +1630,7 @@
      "spec_fidelity": true
     },
     "pipeline_rc": 0,
-    "wall_seconds": 8.8,
+    "wall_seconds": 7.7,
     "fidelity_dev_pct": 0.0
    },
    {
@@ -1910,16 +2098,21 @@
     "msr_pass": false,
     "denominator": true,
     "gates": {
-     "mesh_quality": true,
-     "semantics": true,
-     "fidelity_disp": true,
-     "spec_fidelity": false
+     "pipeline": false
     },
-    "pipeline_rc": 0,
-    "wall_seconds": 8.6,
-    "fidelity_dev_pct": 0.2645,
+    "pipeline_rc": 1,
+    "wall_seconds": 2.2,
+    "fidelity_dev_pct": null,
     "failure_class": "model",
-    "failure_detail": ""
+    "failure_gates": {
+     "pipeline": {
+      "field": "run_pipeline",
+      "expected": "rc=0",
+      "actual": "rc=1",
+      "detail": "As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp090s\\open_hole_tension_laminate\\open_hole_tension_laminate.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp090s\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+     }
+    },
+    "failure_detail": "run_pipeline rc=0 rc=1 As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp090s\\open_hole_tension_laminate\\open_hole_tension_laminate.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp090s\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
    },
    {
     "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s",
@@ -1942,10 +2135,18 @@
      "pipeline": false
     },
     "pipeline_rc": 1,
-    "wall_seconds": 2.6,
+    "wall_seconds": 2.0,
     "fidelity_dev_pct": null,
     "failure_class": "model",
-    "failure_detail": "As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s_d40\\open_hole_tension_layup\\open_hole_tension_layup.step(113 en"
+    "failure_gates": {
+     "pipeline": {
+      "field": "run_pipeline",
+      "expected": "rc=0",
+      "actual": "rc=1",
+      "detail": "As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s_d40\\open_hole_tension_plate\\open_hole_tension_plate.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s_d40\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+     }
+    },
+    "failure_detail": "run_pipeline rc=0 rc=1 As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s_d40\\open_hole_tension_plate\\open_hole_tension_plate.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrp45s_d40\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
    },
    {
     "task_id": "L3_open_hole_panel_400x200_d20_cfrpqi",
@@ -1955,10 +2156,18 @@
      "pipeline": false
     },
     "pipeline_rc": 1,
-    "wall_seconds": 2.6,
+    "wall_seconds": 2.0,
     "fidelity_dev_pct": null,
     "failure_class": "model",
-    "failure_detail": "As Is       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrpqi\\open_hole_tension_plate_cfrp\\open_hole_tension_plate_cfrp.step(1"
+    "failure_gates": {
+     "pipeline": {
+      "field": "run_pipeline",
+      "expected": "rc=0",
+      "actual": "rc=1",
+      "detail": "      ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrpqi\\open_hole_tension_plate_400x200\\open_hole_tension_plate_400x200.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrpqi\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
+     }
+    },
+    "failure_detail": "run_pipeline rc=0 rc=1       ******\n******        Transferring Shape, ShapeType = 0                      ******\n** WorkSession : Sending all data\n Step File Name : F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrpqi\\open_hole_tension_plate_400x200\\open_hole_tension_plate_400x200.step(113 ents)  Write  Done\nFeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_open_hole_panel_400x200_d20_cfrpqi\n\n\nTraceback (most recent call last):\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 161, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\run_pipeline.py\", line 140, in main\n    r = pipeline.run(\n        s,\n    ...<4 lines>...\n        solver_name=args.solver,\n    )\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\pipeline.py\", line 232, in run\n    layup = laminate.layup_from_params(spec.structure.params)\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\laminate.py\", line 190, in layup_from_params\n    raise ValueError(\"layup: expected an object with 'plies' and 'material'\")\nValueError: layup: expected an object with 'plies' and 'material'\n"
    },
    {
     "task_id": "L3_open_hole_panel_400x200_d20_offcentre",
@@ -2075,24 +2284,54 @@
      "spec_fidelity": false
     },
     "pipeline_rc": 0,
-    "wall_seconds": 110.3,
+    "wall_seconds": 108.9,
     "fidelity_dev_pct": 0.0269,
     "failure_class": "model",
-    "failure_detail": ""
+    "failure_gates": {
+     "spec_fidelity": {
+      "field": "spec_fidelity (field-level, mandatory)",
+      "expected": "all graded fields equal (float tol 1e-6)",
+      "actual": "12/14 fields",
+      "n_fail": 2,
+      "n_fields": 14,
+      "failed": [
+       {
+        "field": "params.length",
+        "expected": 800.0,
+        "actual": 600,
+        "pass": false
+       },
+       {
+        "field": "params.width",
+        "expected": 600.0,
+        "actual": 800,
+        "pass": false
+       }
+      ]
+     }
+    },
+    "failure_detail": "spec_fidelity (field-level, mandatory) all graded fields equal (float tol 1e-6) 12/14 fields [{\"field\": \"params.length\", \"expected\": 800.0, \"actual\": 600, \"pass\": false}, {\"field\": \"params.width\", \"expected\": 600.0, \"actual\": 800, \"pass\": false}]"
    },
    {
     "task_id": "L3_stiffened_panel_800x600_str3",
-    "msr_pass": true,
+    "msr_pass": false,
     "denominator": true,
     "gates": {
-     "mesh_quality": true,
-     "semantics": true,
-     "fidelity_disp": true,
-     "spec_fidelity": true
+     "pipeline": false
     },
-    "pipeline_rc": 0,
-    "wall_seconds": 110.8,
-    "fidelity_dev_pct": 0.0
+    "pipeline_rc": 1,
+    "wall_seconds": 1.1,
+    "fidelity_dev_pct": null,
+    "failure_class": "model",
+    "failure_gates": {
+     "pipeline": {
+      "field": "run_pipeline",
+      "expected": "rc=0",
+      "actual": "rc=1",
+      "detail": "FeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_stiffened_panel_800x600_str3\n\n\nt\\panel.py\", line 144, in parse_params\n    _validate(p)\n    ~~~~~~~~~^^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\panel.py\", line 167, in _validate\n    sections.faces_per_section(p.stringer_kind, p.stringer_flange_width)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\sections.py\", line 140, in faces_per_section\n    return section(kind, 0.0, 0.0, -1.0, 1.0, **kw).n_faces\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\sections.py\", line 117, in section\n    raise ValueError(\n        f\"unknown stringer section {kind!r}; registered: {sorted(SECTIONS)}\"\n    ) from None\nValueError: unknown stringer section 0; registered: ['T', 'blade', 't']\n"
+     }
+    },
+    "failure_detail": "run_pipeline rc=0 rc=1 FeaGPT reproduction | 1 case(s) -> F:\\AI FEA Modeling DataSets\\feagpt_repro\\eval_runs\\L3_stiffened_panel_800x600_str3\n\n\nt\\panel.py\", line 144, in parse_params\n    _validate(p)\n    ~~~~~~~~~^^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\panel.py\", line 167, in _validate\n    sections.faces_per_section(p.stringer_kind, p.stringer_flange_width)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\sections.py\", line 140, in faces_per_section\n    return section(kind, 0.0, 0.0, -1.0, 1.0, **kw).n_faces\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"F:\\AI FEA Modeling DataSets\\feagpt_repro\\feagpt\\sections.py\", line 117, in section\n    raise ValueError(\n        f\"unknown stringer section {kind!r}; registered: {sorted(SECTIONS)}\"\n    ) from None\nValueError: unknown stringer section 0; registered: ['T', 'blade', 't']\n"
    }
   ]
  },

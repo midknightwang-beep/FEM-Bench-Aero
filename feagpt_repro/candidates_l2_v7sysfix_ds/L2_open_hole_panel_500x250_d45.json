@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_open_hole_panel_500x250_d45",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"hole_d 缺失：开孔板必须给出孔径（键名 hole_d）\",\"hole_x 缺失：偏心孔必须给出孔心 x 坐标（键名 hole_x）\",\"hole_y 缺失：偏心孔必须给出孔心 y 坐标（键名 hole_y）\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 145,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

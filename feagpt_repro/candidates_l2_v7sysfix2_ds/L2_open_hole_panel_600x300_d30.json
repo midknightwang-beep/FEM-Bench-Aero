@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_open_hole_panel_600x300_d30",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"缺失键 hole_d：开孔板中心孔直径未给定，无法定义开孔几何\",\"缺失键 hole_x：孔心 x 坐标未给定（若为中心孔可省略，但需确认是否偏心孔）\",\"缺失键 hole_y：孔心 y 坐标未给定（若为中心孔可省略，但需确认是否偏心孔）\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 158,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

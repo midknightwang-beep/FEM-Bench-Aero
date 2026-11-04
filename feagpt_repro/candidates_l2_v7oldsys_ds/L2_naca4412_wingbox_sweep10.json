@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_sweep10",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"skin_thickness\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 43,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

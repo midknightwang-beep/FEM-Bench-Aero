@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_n_ribs6_chord1000",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"n_stringers_per_skin 为 0 表示无长桁，但 airfoil 中同时给出了 stringer_height、stringer_thickness、stringer_kind、stringer_flange_width，存在矛盾：无长桁时不应有长桁细节参数，需澄清是否有长桁及对应数量\",\"stringer_flange_width 在 stringer_kind 为 blade 时不应存在，blade 剖面无翼缘，需澄清长桁剖面类型\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 273,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

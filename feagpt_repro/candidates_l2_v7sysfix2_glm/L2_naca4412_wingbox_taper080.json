@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_taper080",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"翼盒缺少每侧蒙皮的长桁数量键 n_stringers_per_skin，请给出具体根数（题面已给出长桁尺寸但未给数量）。\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 76,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

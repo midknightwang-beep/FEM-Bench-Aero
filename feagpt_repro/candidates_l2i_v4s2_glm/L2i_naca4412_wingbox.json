@@ -1,0 +1,85 @@
+{
+ "task_id": "L2i_naca4412_wingbox",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "f6cb45f738746226da59ef44efec953a475c063f2202703957f123fd52bbd60b",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "naca4412_wingbox",
+  "description": "NACA 4412 翼盒模型，铝 2024-T3，根部固支，翼尖施加 500 N 法向集中力",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "wingbox",
+   "params": {}
+  },
+  "airfoil": {
+   "code": "4412",
+   "chord": 1000,
+   "span": 2000,
+   "skin_thickness": 3,
+   "n_ribs": 5,
+   "rib_thickness": 4,
+   "spar_chordwise": [
+    0.25,
+    0.7
+   ],
+   "n_stringers_per_skin": 0,
+   "stringer_height": 20,
+   "stringer_thickness": 2.5,
+   "stringer_kind": "blade",
+   "stringer_flange_width": 30,
+   "tip_chord_ratio": 1,
+   "sweep_deg": 0,
+   "web_chordwise": []
+  },
+  "mesh": {
+   "size_chord": 12,
+   "size_span": 25,
+   "element_order": 1,
+   "algorithm_2d": 6,
+   "recombine": true,
+   "recombination_algorithm": 0,
+   "refine_at_leading_edge": true,
+   "leading_edge_threshold": 1.6,
+   "min_jacobian": 0.3
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 500,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {
+   "solver": "auto",
+   "step_type": "static",
+   "incremental": true,
+   "initial_increment": 0.25,
+   "total_time": 1,
+   "outputs": [
+    "U",
+    "S"
+   ]
+  },
+  "extra": {}
+ },
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 1006,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_strict_v1"
+}

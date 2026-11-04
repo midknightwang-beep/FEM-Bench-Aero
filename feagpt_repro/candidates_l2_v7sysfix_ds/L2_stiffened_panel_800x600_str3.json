@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_stiffened_panel_800x600_str3",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"structure.params.thickness 缺失，无法定义 stiffened_panel 壁板厚度\",\"structure.params.n_stringers 已给为 3，但长桁细节键 stringer_height、stringer_thickness、stringer_kind 缺失，无法定义加筋长桁剖面；若为 T 剖面还需 stringer_flange_width\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 228,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_web1_offcentre",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"extra 中 end_torque / torque_axis_dof 不是 wingbox 族允许的键，wingbox 的 extra 必须为 {}；请确认是否应删除这些键\",\"airfoil 中 stringer_flange_width 对 stringer_kind=\\\"blade\\\" 不适用，blade 剖面没有缘条；请确认是否应删除该键\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 205,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

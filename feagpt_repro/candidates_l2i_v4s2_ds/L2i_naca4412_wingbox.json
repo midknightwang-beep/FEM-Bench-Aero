@@ -1,0 +1,15 @@
+{
+ "task_id": "L2i_naca4412_wingbox",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "f6cb45f738746226da59ef44efec953a475c063f2202703957f123fd52bbd60b",
+ "clarify": "[\"material: 缺少 poisson_ratio / yield_strength 等键？请确认材料参数键名与取值。\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 89,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_strict_v1"
+}

@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_open_hole_panel_400x200_d40",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"structure.params.thickness 缺失，无法定义开孔板厚度\",\"load.kind 为 tip_force 但 open_hole_panel 面内拉伸应按端部均布拉力处理，需确认是否改为压力或补充等效面载定义；当前 magnitude 4000 N 无法直接作为面载施加\",\"hole_x / hole_y 缺失，无法确定孔心位置（题面未说明中心孔）\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 225,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

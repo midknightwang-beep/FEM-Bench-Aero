@@ -1,18 +1,18 @@
 {
  "schema": "w5d_leaderboard/v1",
- "generated_at": "2026-10-27T20:28:07",
+ "generated_at": "2026-11-04T23:56:17",
  "paper": {
   "path": "reports/papers/tasks_v6c.jsonl",
   "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5"
  },
- "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+ "prompt_sha256": "6b90daf07bbe070d5c870c7006e9ff28142e441370d71c1b16083a4bec6c98f9",
  "models": {
   "C-032": {
    "claim": "C-032",
    "model": "glm-5.3-flash",
    "scorecard": "reports\\baseline_scorecard_L3_v6c_p2.json",
    "candidates_dir": "candidates_l3_v6c_glm_p2",
-   "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+   "prompt_sha256": "6b90daf07bbe070d5c870c7006e9ff28142e441370d71c1b16083a4bec6c98f9",
    "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
    "exam": {
     "tsr": {
@@ -87,9 +87,9 @@
    },
    "dev": {
     "tsr": {
-     "pass": 22,
+     "pass": 23,
      "total": 30,
-     "pct": 73.3
+     "pct": 76.7
     },
     "msr": "21/29"
    },
@@ -101,9 +101,9 @@
      "model": 10
     },
     "gate_fail_counts": {
-     "fidelity_disp": 5,
-     "spec_fidelity": 7,
-     "pipeline": 3
+     "fidelity_disp": 4,
+     "spec_fidelity": 5,
+     "pipeline": 5
     },
     "solver_ids": [],
     "unresolved_ids": []
@@ -126,11 +126,11 @@
     "clarify_wrong_field": 0
    },
    "turns": {
-    "1": 3,
+    "1": 4,
     "2": 50,
-    "3": 2
+    "3": 1
    },
-   "first_pass": 3,
+   "first_pass": 4,
    "underpowered": false
   },
   "C-033": {
@@ -138,7 +138,7 @@
    "model": "deepseek-v4-pro",
    "scorecard": "reports\\baseline_scorecard_L3_v6c_ds_p2.json",
    "candidates_dir": "candidates_l3_v6c_ds_p2",
-   "prompt_sha256": "ce225186cafa5d55c445e30e201b658a37834ec67be8c80a45201b3508423f22",
+   "prompt_sha256": "6b90daf07bbe070d5c870c7006e9ff28142e441370d71c1b16083a4bec6c98f9",
    "tasks_sha256": "9c1faa3a731f29369facf2eafce49c6c168fb7f12a28a55d85af971b58b063e5",
    "exam": {
     "tsr": {
@@ -152,33 +152,30 @@
     },
     "sfr": {
      "pass": 20,
-     "of_spec_candidates": 21,
-     "pct": 95.2,
+     "of_spec_candidates": 23,
+     "pct": 87.0,
      "ci95": [
-      85.7,
+      69.6,
       100.0
      ]
     },
     "msr": {
-     "pass": 20,
-     "den": 21,
-     "pct": 95.2,
+     "pass": 19,
+     "den": 22,
+     "pct": 86.4,
      "ci95": [
-      85.7,
+      72.7,
       100.0
      ],
      "conditional": true,
-     "excluded_ids": [
-      "L3_open_hole_panel_400x200_d20_cfrp45s_d40"
-     ],
+     "excluded_ids": [],
      "definition": "conditional：分母 = 产出了 spec 且非 expected_clarifications 的题；模型侧无输出记 TSR fail / FPR，不计入 MSR（W5a 原设计，避免双记）。⇒ **跨成绩单比 MSR 前必须先对齐分母与 SFR（R54）**，分母不同时 pct 不得直减、不得据此排名。"
     },
     "categories": {
-     "clarify_ok": 2,
+     "fabricated": 1,
      "spec_pass": 20,
-     "clarify_wrong": 1,
-     "spec_fail": 1,
-     "no_output": 1
+     "clarify_ok": 2,
+     "spec_fail": 2
     },
     "three_columns": {
      "boundary": {
@@ -192,76 +189,78 @@
      "extrapolation": {
       "n": 13,
       "tsr": {
-       "pass": 11,
+       "pass": 10,
        "total": 13,
-       "pct": 84.6
+       "pct": 76.9
       }
      },
      "interpolation": {
       "n": 6,
       "tsr": {
-       "pass": 5,
+       "pass": 6,
        "total": 6,
-       "pct": 83.3
+       "pct": 100.0
       }
      }
     },
     "denominator_audit": {
      "n_tasks_total": 25,
-     "n_counted": 21,
+     "n_counted": 22,
      "n_clarify_excluded": 3,
-     "n_unresolved_excluded": 1,
-     "n_solver_excluded": 0,
+     "n_unresolved_excluded": 0,
+     "n_solver_excluded": 1,
      "closure_ok": true
     }
    },
    "dev": {
     "tsr": {
-     "pass": 22,
+     "pass": 23,
      "total": 30,
-     "pct": 73.3
+     "pct": 76.7
     },
     "msr": "22/29"
    },
    "full": {
-    "msr": "42/50",
-    "pct": 84.0,
-    "den": 50,
+    "msr": "41/51",
+    "pct": 80.4,
+    "den": 51,
     "failure_class_counts": {
-     "model": 8
+     "solver": 1,
+     "model": 9
     },
     "gate_fail_counts": {
-     "fidelity_disp": 6,
-     "spec_fidelity": 8
+     "pipeline": 1,
+     "fidelity_disp": 7,
+     "spec_fidelity": 9
     },
-    "solver_ids": [],
-    "unresolved_ids": [
-     "L3_open_hole_panel_400x200_d20_cfrp45s_d40"
-    ]
+    "solver_ids": [
+     "L3_fuselage_barrel_d2000_l2000_str12_frm4"
+    ],
+    "unresolved_ids": []
    },
    "value_added": {
     "task_level_pct": 88.0,
     "task_level_delta_pp": 88.0,
     "task_verdict": "PASS",
     "field_floor_hit_rate": 0.8593,
-    "field_llm_hit_rate": 0.9094,
-    "field_delta_pp": 5.0,
+    "field_llm_hit_rate": 0.9502,
+    "field_delta_pp": 9.1,
     "field_verdict": "BELOW",
-    "verdict_split": "任务级 PASS / 字段级 BELOW（Δ5.0 pp）—— 两尺度结论相反，文档必须并列报，禁止只引有利的一侧（R49）"
+    "verdict_split": "任务级 PASS / 字段级 BELOW（Δ9.1 pp）—— 两尺度结论相反，文档必须并列报，禁止只引有利的一侧（R49）"
    },
    "fpr": {
     "fabricated_on_clarify_tasks": 1,
     "n_clarify_tasks": 4,
     "fabrication_rate_pct": 25.0,
     "overclarify": 0,
-    "clarify_wrong_field": 1
+    "clarify_wrong_field": 0
    },
    "turns": {
-    "1": 2,
-    "2": 48,
-    "3": 5
+    "1": 1,
+    "2": 50,
+    "3": 4
    },
-   "first_pass": 2,
+   "first_pass": 1,
    "underpowered": false
   }
  },
@@ -549,10 +548,10 @@
   "both_tasks_sha256_equal": true,
   "tsr_delta_pp": -4.0,
   "tsr_leader": "C-032",
-  "msr_delta_allowed": false,
-  "msr_delta_pp": null,
-  "msr_note": "**分母不同（22 vs 21）⇒ 不出 Δ、不得据此排名**（R54）；A 排除 []，B 排除 ['L3_open_hole_panel_400x200_d20_cfrp45s_d40']",
-  "msr_leader_by_pct": "C-033",
+  "msr_delta_allowed": true,
+  "msr_delta_pp": -4.5,
+  "msr_note": "分母相同（22）⇒ 允许出 Δ",
+  "msr_leader_by_pct": "C-032",
   "confusion": {
    "both_pass": 22,
    "only_a": 1,
@@ -561,8 +560,8 @@
   },
   "confusion_tasks": {
    "both_pass": [
-    "L3_fuselage_barrel_d1600_l1600_str8_frm3",
     "L3_fuselage_barrel_d2000_l2000_str12_frm4",
+    "L3_naca4412_wingbox",
     "L3_naca4412_wingbox_n_ribs3_chord1000",
     "L3_naca4412_wingbox_n_ribs3_chord800",
     "L3_naca4412_wingbox_n_ribs5_chord800",
@@ -585,7 +584,7 @@
     "L3_stiffened_panel_600x600_str3"
    ],
    "only_a": [
-    "L3_naca4412_wingbox"
+    "L3_fuselage_barrel_d1600_l1600_str8_frm3"
    ],
    "only_b": [],
    "neither": [
@@ -605,20 +604,19 @@
      "B_only": [],
      "A_category": "spec_fail",
      "B_category": "spec_fail"
-    }
-   ],
-   "differing": [
+    },
     {
      "task_id": "L3_open_hole_panel_400x200_d20_cfrp45s_d40",
-     "common": [],
-     "A_only": [
+     "common": [
       "params.layup"
      ],
+     "A_only": [],
      "B_only": [],
      "A_category": "spec_fail",
-     "B_category": "no_output"
+     "B_category": "spec_fail"
     }
-   ]
+   ],
+   "differing": []
   },
   "spec_pass": {
    "a": 20,
@@ -635,22 +633,22 @@
    "C-032（glm-5.3-flash）exam TSR **23/25 = 92.0%**、C-033（deepseek-v4-pro）**22/25 = 88.0%**——**同卷（`tasks_sha256` 相同）+ 同 prompt（`prompt_sha256` 相同）**",
    "逐题 2×2：both 22 / only_a 1 / only_b 0 / neither 2",
    "两模型 `spec_pass` = 20 vs 20（相同）",
-   "字段级命中率：C-032 99.34%（Δ13.4 pp，PASS） vs C-033 90.94%（Δ5.0 pp，BELOW）"
+   "字段级命中率：C-032 99.34%（Δ13.4 pp，PASS） vs C-033 95.02%（Δ9.1 pp，BELOW）"
   ],
   "forbidden": [
    "「C-033 的 88.0% 是能力上限」——2×2 里 only_b = 0，没有任何一条 A 错 B 对",
    "「两模型一样强」——TSR 差 4.0 pp，且失败模式不同（见共享失败字段集）",
    "「差距全部来自建模能力」——`spec_pass` 20 vs 20，差异不在建模能力这一层",
-   "「用 MSR 单独排名」——**分母不同（22 vs 21）⇒ 不出 Δ、不得据此排名**（R54）；A 排除 []，B 排除 ['L3_open_hole_panel_400x200_d20_cfrp45s_d40']",
-   "「C-033 有显著增量」——字段级 Δ5.0 pp < 10 pp 判据（BELOW）",
+   "「用 MSR 单独排名」——分母相同（22）⇒ 允许出 Δ",
+   "「C-033 有显著增量」——字段级 Δ9.1 pp < 10 pp 判据（BELOW）",
    "「dev 也一致」——dev 是开发集，不进对外结论（R15）；只作参考"
   ]
  },
  "limits": [
   "exam n=25 ⇒ CI 宽（C-032 TSR CI95 [80.0, 100.0]）；族 n<10 不单列结论",
-  "MSR 是条件通过率（分母 22 vs 21）⇒ 不可直减（R54）",
-  "C-033 字段级 BELOW（Δ5.0 pp）⇒ 任务级单列会夸大",
-  "C-033 仍有 FPR 25.0%（1/4）与 1 条问错字段 ⇒ prompt v3 待修",
+  "MSR 是条件通过率（分母 22 vs 22）⇒ 本代分母相同，**允许出 Δ**，但 pct 高低仍要连 SFR 一起看（R54）",
+  "C-033 字段级 BELOW（Δ9.1 pp）⇒ 任务级单列会夸大",
+  "C-033 仍有 FPR 25.0%（1/4）与 0 条问错字段 ⇒ prompt v3 待修",
   "C-029/C-031 是 prompt v1 历史，`prompt_sha256` 未记录 ⇒ 与本榜**不可相减**（R53）"
  ],
  "repro": [

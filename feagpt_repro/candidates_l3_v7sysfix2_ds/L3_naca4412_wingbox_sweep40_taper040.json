@@ -1,0 +1,73 @@
+{
+ "task_id": "L3_naca4412_wingbox_sweep40_taper040",
+ "input_level": "L3",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "6b90daf07bbe070d5c870c7006e9ff28142e441370d71c1b16083a4bec6c98f9",
+ "clarify": null,
+ "refuse": null,
+ "spec": {
+  "name": "wingbox NACA4412",
+  "description": "NACA4412 翼盒，弦向1000、展向2000，蒙皮/梁3、肋4，5肋，梢根比0.4，后掠40度，铝2024-T3，翼尖500N集中力，根部固支",
+  "material": {
+   "name": "Aluminium 2024-T3",
+   "youngs_modulus": 73100,
+   "poisson_ratio": 0.33,
+   "density": 2.78e-9,
+   "yield_strength": 345
+  },
+  "structure": {
+   "family": "wingbox",
+   "params": {}
+  },
+  "airfoil": {
+   "code": "4412",
+   "chord": 1000,
+   "span": 2000,
+   "skin_thickness": 3,
+   "n_ribs": 5,
+   "rib_thickness": 4,
+   "spar_chordwise": [
+    0.25,
+    0.7
+   ],
+   "n_stringers_per_skin": 0,
+   "tip_chord_ratio": 0.4,
+   "sweep_deg": 40,
+   "web_chordwise": []
+  },
+  "mesh": {
+   "size_chord": 12,
+   "size_span": 25
+  },
+  "load": {
+   "kind": "tip_force",
+   "magnitude": 500,
+   "direction": [
+    0,
+    1,
+    0
+   ]
+  },
+  "bc": {
+   "root_surface": "root",
+   "clamp": true
+  },
+  "analysis": {},
+  "extra": {}
+ },
+ "turns_used": 2,
+ "validation_history": [
+  {
+   "turn": 1,
+   "errors": [
+    "/airfoil must have required property 'n_stringers_per_skin'",
+    "/ must match \"then\" schema",
+    "/material must have required property 'youngs_modulus'",
+    "/material must have required property 'poisson_ratio'",
+    "/material must have required property 'yield_strength'"
+   ]
+  }
+ ],
+ "raw_len": 878
+}

@@ -958,7 +958,8 @@ def main():
           f"expect=fwd T/mut F actual={det45}")
 
     # NC-46（R54 反向）：MSR 是条件通过率 ⇒ ①删掉 msr_definition（口径未写进成绩单）
-    # ②只把分母改小但不点名被排除的题（复现 C-033 的 20/21 口径）⇒ S-40 必须红。
+    # ②只把分母改小但**不点名**被排除的题 ⇒ 红；③点名数与审计数不符（v2f 代 C-033 的
+    # 无输出排除已是 0 条，「点名清空」成了空操作 ⇒ 改为按基线现取：审计 = 点名 + 1）。
     # 动机与那条 MSR 反直觉同源：被排除的恰好是失败题 ⇒ 分母小的 pct 反而「更高」。
     ok46, det46 = False, 'no artifact'
     from check_claims import msr_conditional_declared
@@ -974,12 +975,24 @@ def main():
         m46b = json.loads(json.dumps(sc33_real))
         m46b['msr_section'].pop('n_no_spec_excluded_ids', None)   # 只降分母不点名
         ok_r46b, _ = msr_conditional_declared(m46b, 'C-033mut2')
+        # ★★★ 变异锚点**现取不写死**（同一坑第 N 次复发，T-L27c v4 实测）：
+        #   v2f 代的 C-033 已经 `n_no_spec_excluded_ids=[]` / `n_unresolved_excluded=0`
+        #   （`cfrp45s_d40` 不再是无输出，本代唯一的排除是 solver），于是原本的
+        #   「点名清空」在新基线上是**空操作**（清空前本来就是空的）⇒ 跑到新代变成「漏判」。
+        #   写死的不是数字，是「基线长什么样」。改为按基线算：审计条数 = 点名条数 + 1，
+        #   测的仍是同一条不变量（**点名数必须等于审计数**），且与基线有几条无关。
         m46c = json.loads(json.dumps(sc33_real))
-        m46c['msr_section']['n_no_spec_excluded_ids'] = []        # 点名清空但审计仍 1 条
+        _ms46 = m46c['msr_section']
+        _ids46 = list(_ms46.get('n_no_spec_excluded_ids') or [])
+        _aud46 = dict(_ms46.get('denominator_audit') or {})
+        _aud46['n_unresolved_excluded'] = len(_ids46) + 1
+        _ms46['denominator_audit'] = _aud46
         ok_r46c, _ = msr_conditional_declared(m46c, 'C-033mut3')
         ok46 = ok_f46 and (not ok_r46a) and (not ok_r46b) and (not ok_r46c)
         det46 = (f'正向={"过" if ok_f46 else "红"} 删口径={"红" if not ok_r46a else "漏判"} '
-                 f'不点名={"红" if not ok_r46b else "漏判"} 点名清空={"红" if not ok_r46c else "漏判"}')
+                 f'不点名={"红" if not ok_r46b else "漏判"} '
+                 f'点名{len(_ids46)}条/审计{len(_ids46) + 1}条='
+                 f'{"红" if not ok_r46c else "漏判"}')
     results.append({'id': 'NC-46', 'desc': 'MSR 条件口径未声明/排除项未点名必须被 R54/S-40 拒绝',
                     'expect': 'fwd=True / 三向变异=False', 'actual': det46, 'ok': ok46})
     print(f"  [{'ok ' if ok46 else 'BAD!'}] NC-46 MSR 条件口径缺声明被 S-40 拒绝                "
@@ -3533,6 +3546,99 @@ def main():
                     'actual': _nc82_detail, 'ok': _nc82_ok})
     print(f"  [{'ok ' if _nc82_ok else 'BAD!'}] NC-82 候选 mesh 键 == gold（T-L27c v3）      "
           f"{_nc82_detail}")
+
+    # NC-83（T-L27c v4）「跨模型榜单的 MSR Δ 必须与分母一致，且 md 与 json 不得各说一句」
+    #   背景（本轮实测的两个真 bug，都属「闸的名义 ≠ 闸的行为」）：
+    #     ① `w5d_leaderboard_ok()` 里「MSR 行不得出现 Δ」是**无条件**的，而报错文字写的是
+    #        「分母不等时禁止」。v2f 代两模型 exam MSR 分母变成 22 vs 22（`cfrp45s_d40` 进分母）
+    #        ⇒ Δ 合法、闸照红 ⇒ 实现比说明严。
+    #     ② `make_w5d_leaderboard.py` 的限制段**硬编码**「分母 X vs Y ⇒ 不可直减」，
+    #        而同一份 md 第 13 行已经印出 Δ ⇒ 一份 artifact 自己说两句话。
+    #   守五件（双向，缺一向就发现不了「恒绿」或「恒红」）：
+    #     A 正向：现行真 artifact 必须绿（不误报）
+    #     B 分母**不等**且 md 出现 Δ ⇒ 红（这条是原意，必须还在）
+    #     C 分母**相等**且 md 的 Δ == json 的 `msr_delta_pp` ⇒ 绿
+    #     D 分母相等但 md 的 Δ 被**手改成别的数** ⇒ 红（核值，不只核「有没有 Δ」）
+    #     E 分母相等却**不出 Δ** ⇒ 红（允许时不给也是错）
+    _nc83_ok = False
+    _nc83_detail = ''
+    try:
+        import tempfile as _tf83
+        import io as _io83
+        import shutil as _sh83
+        import check_claims as _cc83
+
+        def _sc(fpr=None):
+            return {'exam': {'tsr': {'pct': 90.0}, 'msr': {'den': 22}},
+                    'value_added': {'field_llm_hit_rate': 0.99, 'field_verdict': 'PASS'},
+                    'full': {'failure_class_counts': {'model': 1}}}
+
+        def _mk(root, den_a, den_b, delta_pp, md_delta, md_extra=''):
+            """造一份最小榜单（json + md），返回 json 路径。"""
+            a, b = _sc(), _sc()
+            a['exam']['msr']['den'] = den_a
+            b['exam']['msr']['den'] = den_b
+            same = (den_a == den_b)
+            d = {'schema': 'w5d_leaderboard/v1',
+                 'models': {'A': a, 'B': b},
+                 'pair': {'a': 'A', 'b': 'B', 'msr_delta_allowed': same,
+                          'msr_delta_pp': delta_pp if same else None},
+                 'statements': {'allowed': ['x'], 'forbidden': ['y']}}
+            jp = os.path.join(root, 'lead.json')
+            _io83.open(jp, 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False))
+            row = ('| **条件 MSR**（分母 = 产出 spec 的非澄清题） | 20/22 = 90.9%% | 19/22 = 86.4%% | %s |'
+                   % (('✅ Δ %s pp' % md_delta) if md_delta is not None else '**❌ 不可相减**'))
+            _io83.open(os.path.join(root, 'lead.md'), 'w', encoding='utf-8').write(
+                '# lead\n\n' + row + '\n' + md_extra + '\n')
+            return jp
+
+        _t83 = _tf83.mkdtemp()
+        try:
+            _h83 = []
+            # A 正向：现行真 artifact（分母 22 vs 22、Δ -4.5）
+            _real = os.path.join(HERE, 'reports', 'w5d_leaderboard.json')
+            _okA, _dA = _cc83.w5d_leaderboard_ok(_real)
+            _h83.append(('A正向真artifact必绿', _okA, str(_dA)[:60]))
+
+            # B 分母不等 + md 出 Δ ⇒ 红
+            _d83 = os.path.join(_t83, 'b'); os.makedirs(_d83)
+            _okB, _dB = _cc83.w5d_leaderboard_ok(_mk(_d83, 22, 21, None, -4.5))
+            _h83.append(('B分母不等出Δ必红',
+                         (not _okB) and '分母不等时禁止' in _dB, str(_dB)[:60]))
+
+            # C 分母相等 + Δ 与 json 一致 ⇒ 绿
+            _d83c = os.path.join(_t83, 'c'); os.makedirs(_d83c)
+            _okC, _dC = _cc83.w5d_leaderboard_ok(_mk(_d83c, 22, 22, -4.5, -4.5))
+            _h83.append(('C相等且Δ一致必绿', _okC, str(_dC)[:60]))
+
+            # D 分母相等但 md 的 Δ 被改 ⇒ 红（核值）
+            _d83d = os.path.join(_t83, 'd'); os.makedirs(_d83d)
+            _okD, _dD = _cc83.w5d_leaderboard_ok(_mk(_d83d, 22, 22, -4.5, -1.0))
+            _h83.append(('D手改Δ必红', (not _okD) and '不符' in _dD, str(_dD)[:60]))
+
+            # E 分母相等却不出 Δ ⇒ 红
+            _d83e = os.path.join(_t83, 'e'); os.makedirs(_d83e)
+            _okE, _dE = _cc83.w5d_leaderboard_ok(_mk(_d83e, 22, 22, -4.5, None))
+            _h83.append(('E相等却不出Δ必红',
+                         (not _okE) and '未在 md 出 MSR Δ' in _dE, str(_dE)[:60]))
+
+            _bad83 = [x for x in _h83 if not x[1]]
+            _nc83_ok = not _bad83
+            _nc83_detail = ('; '.join('%s(%s)' % (x[0], x[2]) for x in _h83) if _nc83_ok
+                            else 'FAIL: ' + '; '.join('%s(%s)' % (x[0], x[2]) for x in _bad83))
+        finally:
+            _sh83.rmtree(_t83, ignore_errors=True)
+    except Exception as _e83:
+        _nc83_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e83,)
+
+    results.append({'id': 'NC-83',
+                    'desc': '跨模型榜单的 MSR Δ 判据必须与分母一致（T-L27c v4）：'
+                            'A 真 artifact 不误报；B 分母不等出 Δ 须红（原意）；'
+                            'C 分母相等且 Δ 与 json 一致须绿；D 手改 Δ 须红；E 相等却不出 Δ 须红',
+                    'expect': '5 项全过（双向 + 核值）',
+                    'actual': _nc83_detail, 'ok': _nc83_ok})
+    print(f"  [{'ok ' if _nc83_ok else 'BAD!'}] NC-83 榜单 MSR Δ 与分母一致（T-L27c v4）    "
+          f"{_nc83_detail}")
 
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),

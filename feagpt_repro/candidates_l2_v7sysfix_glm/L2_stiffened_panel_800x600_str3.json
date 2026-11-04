@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_stiffened_panel_800x600_str3",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"缺少壁板厚度 thickness，请提供 stiffened_panel.params.thickness\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 69,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

@@ -1,0 +1,15 @@
+{
+ "task_id": "L2i_open_hole_panel_400x200_d20_cfrp45s",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"缺失字段 hole_x：开孔板孔的 x 向坐标未给出，无法定义偏心孔位置（中心孔时需明确 hole_x 可省略）\",\"缺失字段 hole_y：开孔板孔的 y 向坐标未给出，无法定义偏心孔位置（中心孔时需明确 hole_y 可省略）\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 149,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

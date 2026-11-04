@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_open_hole_panel_400x200_d40",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"structure.params.thickness 缺失：请给出开孔板厚度 thickness\",\"structure.params.hole_x 与 structure.params.hole_y 缺失：请确认孔心坐标（若为中心孔请明确说明，否则给出 hole_x/hole_y）\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 158,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

@@ -1,7 +1,7 @@
 {
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
- "n_active_claims": 34,
- "n_artifacts": 75,
+ "n_active_claims": 33,
+ "n_artifacts": 72,
  "n_fail": 0,
  "n_fail_structural": 0,
  "n_fail_semantic": 0,
@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_82.json）",
-   "expect": "82/82",
-   "actual": "82/82",
+   "desc": "C-019 负控通过数（源 negative_controls_83.json）",
+   "expect": "83/83",
+   "actual": "83/83",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "82",
-   "actual": "82",
+   "expect": "83",
+   "actual": "83",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 6.22",
-   "actual": "6.22",
+   "expect": "全部 = 6.23",
+   "actual": "6.23",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "82/82",
-   "actual": "82/82",
+   "expect": "83/83",
+   "actual": "83/83",
    "ok": true,
    "skip": false
   },
@@ -278,7 +278,7 @@
    "id": "S-33",
    "desc": "字段级命中率分母构成闭合（R47）",
    "expect": "n_exam_counted + n_excluded_clarify_ok == exam.n，且编造记 0 不排除",
-   "actual": "C-029 计入 22 + 排除 3 = 25；其中编造记 0 **0** 条；C-031 计入 25 + 排除 0 = 25；其中编造记 0 **3** 条；C-032 计入 22 + 排除 3 = 25；其中编造记 0 **0** 条；C-033 计入 23 + 排除 2 = 25；其中编造记 0 **2** 条",
+   "actual": "C-029 计入 22 + 排除 3 = 25；其中编造记 0 **0** 条；C-031 计入 25 + 排除 0 = 25；其中编造记 0 **3** 条；C-032 计入 22 + 排除 3 = 25；其中编造记 0 **0** 条；C-033 计入 23 + 排除 2 = 25；其中编造记 0 **1** 条",
    "ok": true,
    "skip": false
   },
@@ -286,7 +286,7 @@
    "id": "S-34",
    "desc": "第二模型不取代 headline（R48）",
    "expect": "恰有一条 claim 标（对外 headline）（当前 = C-032）；C-031/C-033 等第二模型标 supporting 且不自称 headline",
-   "actual": "唯一 headline = ['C-032']；supporting = ['C-031', 'C-033', 'C-040', 'C-041']（均未自称 headline）",
+   "actual": "唯一 headline = ['C-032']；supporting = ['C-031', 'C-033', 'C-040']（均未自称 headline）",
    "ok": true,
    "skip": false
   },
@@ -310,7 +310,7 @@
    "id": "S-37",
    "desc": "MSR 分母四类拆分且加和闭合（R52）",
    "expect": "counted + clarify + unresolved + notrun + env + unknown == n_tasks_total；counted == solver + counted_excl_solver；n_clarify_excluded 不得混入未收敛",
-   "actual": "C-029 全卷 55 = counted 51 + clarify 4 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 51 = solver 4 + counted_excl_solver 47｜exam counted 22 + clarify 3 + unresolved 0；C-031 全卷 55 = counted 50 + clarify 4 + unresolved 1 + notrun 0 + env 0 + unknown 0；且 counted 50 = solver 0 + counted_excl_solver 50｜exam counted 22 + clarify 3 + unresolved 0；C-032 全卷 55 = counted 51 + clarify 4 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 51 = solver 0 + counted_excl_solver 51｜exam counted 22 + clarify 3 + unresolved 0；C-033 全卷 55 = counted 50 + clarify 4 + unresolved 1 + notrun 0 + env 0 + unknown 0；且 counted 50 = solver 0 + counted_excl_solver 50｜exam counted 21 + clarify 3 + unresolved 1",
+   "actual": "C-029 全卷 55 = counted 51 + clarify 4 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 51 = solver 4 + counted_excl_solver 47｜exam counted 22 + clarify 3 + unresolved 0；C-031 全卷 55 = counted 50 + clarify 4 + unresolved 1 + notrun 0 + env 0 + unknown 0；且 counted 50 = solver 0 + counted_excl_solver 50｜exam counted 22 + clarify 3 + unresolved 0；C-032 全卷 55 = counted 51 + clarify 4 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 51 = solver 0 + counted_excl_solver 51｜exam counted 22 + clarify 3 + unresolved 0；C-033 全卷 55 = counted 51 + clarify 4 + unresolved 0 + notrun 0 + env 0 + unknown 0；且 counted 51 = solver 1 + counted_excl_solver 50｜exam counted 22 + clarify 3 + unresolved 0",
    "ok": true,
    "skip": false
   },
@@ -326,7 +326,7 @@
    "id": "S-39",
    "desc": "prompt-v2 代成绩单的 prompt sha == 当前源码（R53）",
    "expect": "C-032/C-033 的 provenance.prompt_sha256 非 UNKNOWN 且等于生成器当前 SYS 的 sha256",
-   "actual": "C-032 prompt sha ce225186cafa… == 源码（未漂移）；C-033 prompt sha ce225186cafa… == 源码（未漂移）",
+   "actual": "C-032 prompt sha 6b90daf07bbe… == 源码（未漂移）；C-033 prompt sha 6b90daf07bbe… == 源码（未漂移）",
    "ok": true,
    "skip": false
   },
@@ -334,7 +334,7 @@
    "id": "S-40",
    "desc": "MSR 条件口径必须写进成绩单且排除项点名（R54）",
    "expect": "msr_section.msr_definition 非空；n_no_spec_excluded_ids 与实际排除数一致",
-   "actual": "C-029 口径已声明；无模型侧无输出被排除；C-031 口径已声明；条件分母排除 1 条（open_hole_panel_400x200_d20_cfrp090s…）；C-032 口径已声明；无模型侧无输出被排除；C-033 口径已声明；条件分母排除 1 条（open_hole_panel_400x200_d20_cfrp45s_d40…）",
+   "actual": "C-029 口径已声明；无模型侧无输出被排除；C-031 口径已声明；条件分母排除 1 条（open_hole_panel_400x200_d20_cfrp090s…）；C-032 口径已声明；无模型侧无输出被排除；C-033 口径已声明；无模型侧无输出被排除",
    "ok": true,
    "skip": false
   },
@@ -350,7 +350,7 @@
    "id": "S-42",
    "desc": "跨模型榜单三列并排且分母不等不出 MSR Δ（R56）",
    "expect": "榜单含任务级/字段级/失败分层三组；msr_delta_allowed 由分母算；分母不等时 msr_delta_pp 为空且 md 写明不可相减",
-   "actual": "三列齐（任务级/字段级/失败分层）×2 模型；MSR 可减=False（分母 22 vs 21）；能说 4 条 / 不能说 6 条",
+   "actual": "三列齐（任务级/字段级/失败分层）×2 模型；MSR 可减=True（分母 22 vs 22）；能说 4 条 / 不能说 6 条",
    "ok": true,
    "skip": false
   },
@@ -358,7 +358,7 @@
    "id": "S-43",
    "desc": "prompt 消融结论必须与当前 prompt sha 一致（R57）",
    "expect": "消融产物有 decision.adopt 与变体清单；否决 ⇒ 当前 sha == C-032 基线；采纳 ⇒ 当前 sha ≠ 基线",
-   "actual": "C-035 否决态：当前 sha == 基线 ce225186cafa…（未采用未采纳的变体）",
+   "actual": "C-035 否决态：当前 sha == 基线 6b90daf07bbe…（未采用未采纳的变体）",
    "ok": true,
    "skip": false
   },
@@ -366,7 +366,7 @@
    "id": "S-44",
    "desc": "官方导航文件 INDEX 的 headline 指向与负控编号必须与 artifact 一致（R58）",
    "expect": "含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致",
-   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L26 主区间 NC-70..82 / 总数 82；artifact 最大 NC-82、共 82 条；逐条覆盖 82/82",
+   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L26 主区间 NC-70..83 / 总数 83；artifact 最大 NC-83、共 83 条；逐条覆盖 83/83",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793801993/1793801993；check 1793802110 vs 负控 1793801993",
+   "actual": "C-019 mtime 记录/实际 = 1793808343/1793808343；check 1793808544 vs 负控 1793808343",
    "ok": true,
    "skip": false
   },
@@ -485,7 +485,7 @@
   {
    "id": "S-60",
    "desc": "L2 澄清题族分层必须落盘且闭合：Σ族==总数、按族可加、两层不得同名换义（R72）",
-   "expect": "每个 scored 模型块三桶都须有 by_family；Σ族 n / passed == 总数；每族 inf + inv == all（任务数与通过数两侧）；顶层 by_family 必须是**分母构成**（int）。族级实读：glm-5.3-flash: wingbox 24/39 fuselage_barrel 7/7 open_hole_panel 13/13 stiffened_panel 5/5 ‖ deepseek-v4-pro: wingbox 15/39 fuselage_barrel 5/7 open_hole_panel 11/13 stiffened_panel 5/5",
+   "expect": "每个 scored 模型块三桶都须有 by_family；Σ族 n / passed == 总数；每族 inf + inv == all（任务数与通过数两侧）；顶层 by_family 必须是**分母构成**（int）。族级实读：glm-5.3-flash: wingbox 21/39 fuselage_barrel 7/7 open_hole_panel 13/13 stiffened_panel 5/5 ‖ deepseek-v4-pro: stiffened_panel 3/5 wingbox 30/39 fuselage_barrel 6/7 open_hole_panel 13/13",
    "actual": "已跑分模型块 2 个；顶层 by_family 为分母构成",
    "ok": true,
    "skip": false
@@ -720,9 +720,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 53770,
-   "sha256": "20dc3c5a85b877bd16e3545984c9fc72183efc167f3536f1793b5e2a809f6232",
-   "mtime": 1793801877
+   "size": 58716,
+   "sha256": "ca3e981bf72fdc70b09ddd3f8df35eef3c3c4014a86ee45c9e2acc3f48766114",
+   "mtime": 1793808530
   },
   {
    "claim_id": "C-027",
@@ -1109,42 +1109,6 @@
    "mtime": 1793623703
   },
   {
-   "claim_id": "C-041",
-   "artifact": "feagpt_repro/reports/l2_scores_v7_glm.json",
-   "exists": true,
-   "git_tracked": true,
-   "external": false,
-   "ok": true,
-   "problems": [],
-   "size": 41015,
-   "sha256": "695f2f777ef75c8a6b2dc012c234bf5d7b51f9f73e8e54c553f1d8ac7eeabb4e",
-   "mtime": 1793367392
-  },
-  {
-   "claim_id": "C-041",
-   "artifact": "feagpt_repro/reports/l2_scores_v7_ds.json",
-   "exists": true,
-   "git_tracked": true,
-   "external": false,
-   "ok": true,
-   "problems": [],
-   "size": 34348,
-   "sha256": "34a5a8d83ebd04fdbb43ea49b2e4fa284a6f2b27327097250cb7970f6800e201",
-   "mtime": 1793367392
-  },
-  {
-   "claim_id": "C-041",
-   "artifact": "feagpt_repro/reports/l2_clarify_dual.json",
-   "exists": true,
-   "git_tracked": true,
-   "external": false,
-   "ok": true,
-   "problems": [],
-   "size": 15068,
-   "sha256": "1571fba64dd150b6797d392e040cad2b44315db1971cd9a0567352810b8c1204",
-   "mtime": 1793367463
-  },
-  {
    "claim_id": "C-038",
    "artifact": "feagpt_repro/reports/l2_clarify_dual.json",
    "exists": true,
@@ -1152,9 +1116,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 15068,
-   "sha256": "1571fba64dd150b6797d392e040cad2b44315db1971cd9a0567352810b8c1204",
-   "mtime": 1793367463
+   "size": 15089,
+   "sha256": "ae532ea04c1c19ecac25ed14f07eb96a5b427875334a14731cb6c6e4e9c8c9fc",
+   "mtime": 1793807365
   },
   {
    "claim_id": "C-038",
@@ -1164,9 +1128,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 4652,
-   "sha256": "0b8739b34b48222bc11f2512ad244ba09e155870bcc1185c42ebca5f78d9336e",
-   "mtime": 1793367463
+   "size": 4659,
+   "sha256": "eb6dfd93db822b7d514723584f0c416a30f33ebdb2275e6c60f938ca283f70ce",
+   "mtime": 1793807365
   },
   {
    "claim_id": "C-039",
@@ -1260,9 +1224,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 17918,
-   "sha256": "6147d939656660a9f0dbce5421eb719910ca863fbc2486cb26e96d39488736fc",
-   "mtime": 1793104087
+   "size": 17716,
+   "sha256": "67aee0629ce3ddd6e7da57c555762f2d331abd8d345da0130794ec76470c85ee",
+   "mtime": 1793807777
   },
   {
    "claim_id": "C-034",
@@ -1272,9 +1236,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 7709,
-   "sha256": "d1d6da496d201e1d9458fb955aadc9645148bfff9567661b1b68099152b3d157",
-   "mtime": 1793104087
+   "size": 7035,
+   "sha256": "4ed1ffbe6d92379c5ab25d0e8eda571498dc621ceace2a912719ef53c390e622",
+   "mtime": 1793807777
   },
   {
    "claim_id": "C-033",
@@ -1284,9 +1248,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 51828,
-   "sha256": "13638cac10cbfc6fa61d5a1f343ac1433b3bb92c6c9b28f2777570ac90cad9f4",
-   "mtime": 1793030562
+   "size": 63101,
+   "sha256": "3e223056e982b5f28175052ff95604362c1d24b4203dabbd79954037131c8ff6",
+   "mtime": 1793807280
   },
   {
    "claim_id": "C-033",
@@ -1296,9 +1260,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 2109,
-   "sha256": "a1490c20b1a6570f8053d34d1d3cd0913c810d8a5d47d0c6b7c724d1c2d57cf1",
-   "mtime": 1793030425
+   "size": 3573,
+   "sha256": "cc11b29fd1548f6509271e8d010ec3b3ebdc31574ee844707f63533051ce11c0",
+   "mtime": 1793807285
   },
   {
    "claim_id": "C-033",
@@ -1308,9 +1272,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 3126,
-   "sha256": "c57a17108dcb5eb13a25bd922a27c5668391db965c7ae8c273afe972db7a2303",
-   "mtime": 1793030570
+   "size": 2502,
+   "sha256": "9860d323f4ad6bf8669b846899f3ad7f34e15422781e48faf1a53e16867e8d41",
+   "mtime": 1793807525
   },
   {
    "claim_id": "C-033",
@@ -1320,9 +1284,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 4424,
-   "sha256": "5d6601f35b8beda949e13e928acfd254b5370276ba5bfaddd47b0d954e7b2909",
-   "mtime": 1793030570
+   "size": 4322,
+   "sha256": "6431c6bdc6788c6cabeb4b3043ae9863a6957d1f88a16cbcead956ec748f47c7",
+   "mtime": 1793807525
   },
   {
    "claim_id": "C-033",
@@ -1344,9 +1308,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 52908,
-   "sha256": "9e4eb126f2565eb2321bbe4bc41b8319944c821ee1cdb4fbf6b932ce28080454",
-   "mtime": 1793030560
+   "size": 68318,
+   "sha256": "289f505a80e703375a1c3e537176feea00cf20399655af51b9458d6609e26d45",
+   "mtime": 1793806897
   },
   {
    "claim_id": "C-032",
@@ -1356,9 +1320,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 2108,
-   "sha256": "bbec602f9098e599f07cb3b7b775243e8dfee810113512a484f2e20b59a0b95d",
-   "mtime": 1793028464
+   "size": 3573,
+   "sha256": "4be04e9a0a69931eb63be5fcb80a77b8079f98b9ce44fdb1dbfe271782147169",
+   "mtime": 1793806902
   },
   {
    "claim_id": "C-032",
@@ -1398,15 +1362,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_82.json",
+   "artifact": "feagpt_repro/reports/negative_controls_83.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 24155,
-   "sha256": "cac6417a097a8d7b4c7f43ebf9b1f2533554dd5d5da7e24ca30ef0cc45a165db",
-   "mtime": 1793801993
+   "size": 25131,
+   "sha256": "77e0c793308afe825378580090bade992ec882bcc2778d01bea7918fa1deeb93",
+   "mtime": 1793808343
   }
  ]
 }

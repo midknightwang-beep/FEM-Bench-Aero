@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_open_hole_panel_400x200_d40_offcentre",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"open_hole_panel 缺少必填参数 width（板宽），请提供该字段。\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 56,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

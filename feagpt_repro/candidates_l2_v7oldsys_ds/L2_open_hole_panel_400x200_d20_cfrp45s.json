@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_open_hole_panel_400x200_d20_cfrp45s",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "03129c56d83b8bd37dc1393b649e7250d4bdda2edf680d83889ebae07c4c0d83",
+ "clarify": "[\"thickness（open_hole_panel 板厚）\",\"hole_x（孔心 x 坐标）\",\"hole_y（孔心 y 坐标）\",\"mesh.size（板壳类网格尺寸）\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 130,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}
