@@ -9,8 +9,8 @@
 
 | 口径 | 分母 n | 含义 |
 |---|---|---|
-| `clarify_all` | **64** | 全卷 L2 澄清题（含 name 泄漏的无效子集） |
-| `clarify_informative` | **45** | name 未泄漏被省略值的可判子集（真的在考「会不会追问」） |
+| `clarify_all` | **64** | clarify 层（ec≠[]）全量，含 name 泄漏的无效子集 |
+| `clarify_informative` | **45** | clarify 层里 name 未泄漏被省略值的可判子集（真的在考「会不会追问」） |
 | （无效子集，不进任何单一口径） | 19 | spec.name 直接写出被省略值 ⇒ clarify 判据无效（N-17） |
 
 > 两个分母不同（clarify_all 64 ≠ clarify_informative 45）⇒ 禁止相减、禁止据此排名（R54）；R66 要求无效子集隔离并双报，只报一侧即 S-53 红。
@@ -19,8 +19,8 @@
 
 | 模型 | 呈现 | prompt sha | `clarify_all` | `clarify_informative` | `invalid`(泄漏 19) | 类别 |
 |---|---|---|---|---|---|---|
-| `glm-5.3-flash` | `spec_json_raw_name` | `c8de26d43bf7…` | **46/64 = 71.9%** | **27/45 = 60.0%** | **19/19 = 100.0%** | {'clarify_ok': 46, 'fabricated': 14, 'clarify_wrong': 4} |
-| `deepseek-v4-pro` | `spec_json_raw_name` | `c8de26d43bf7…` | **52/64 = 81.2%** | **33/45 = 73.3%** | **19/19 = 100.0%** | {'clarify_ok': 52, 'fabricated': 7, 'clarify_wrong': 5} |
+| `glm-5.3-flash` | `spec_json_raw_name` | `c8de26d43bf7…` | **46/64 = 71.9%** | **27/45 = 60.0%** | **19/19 = 100.0%** | {'clarify_ok': 46, 'fabricated': 14, 'clarify_wrong': 4, 'spec_ok': 13, 'spec_bad': 3} |
+| `deepseek-v4-pro` | `spec_json_raw_name` | `c8de26d43bf7…` | **52/64 = 81.2%** | **33/45 = 73.3%** | **19/19 = 100.0%** | {'clarify_ok': 52, 'fabricated': 7, 'clarify_wrong': 20, 'spec_ok': 1} |
 
 ## 按族分层（R72：族级数字由 artifact 提供，不得手抄）
 

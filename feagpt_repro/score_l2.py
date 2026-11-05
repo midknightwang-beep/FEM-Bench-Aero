@@ -227,11 +227,18 @@ def score(cand_dir, tasks_path=TASKS, label=None, require_gold=True):
         return None, 3
     model = next(iter(models), None)
 
-    all_rows = rows
-    inf_rows = [r for r in rows if not r['name_leak']]
-    inv_rows = [r for r in rows if r['name_leak']]
+    # ── 双口径（掩码轴）──
+    # ★ N-36（2026-11-05，v8 进卷时改）：本轴的全集 = **clarified 层**（ec≠[]），
+    #   不是「全部 L2 行」。信息完备题（ec=0）的通过与否由 spec 保真判定（`spec_ok`），
+    #   与「该问的字段有没有问出来」是两个判定对象；若把它算进 `clarify_informative`，
+    #   v8 上会变成 45+16=61 —— 一个把两种考点混在一起的 pct，且键名还叫 clarify。
+    #   对 v7 零影响（v7 的 L2 全 ec=1 ⇒ 集合相同 ⇒ 产物逐字节不变，交付时证明）。
+    clar_rows = [r for r in rows if r['stratum'] == 'clarified']
+    n_excluded_informative = len(rows) - len(clar_rows)
+    inf_rows = [r for r in clar_rows if not r['name_leak']]
+    inv_rows = [r for r in clar_rows if r['name_leak']]
 
-    b_all, b_inf, b_inv = _block(all_rows), _block(inf_rows), _block(inv_rows)
+    b_all, b_inf, b_inv = _block(clar_rows), _block(inf_rows), _block(inv_rows)
     # R-A5：**任务数与通过数两边都要闭合**，否则双报就是两个对不上的数
     if b_all['n'] != b_inf['n'] + b_inv['n']:
         print(f"[FATAL] 双口径分母不闭合：all {b_all['n']} ≠ informative {b_inf['n']} + invalid {b_inv['n']}")
@@ -250,18 +257,24 @@ def score(cand_dir, tasks_path=TASKS, label=None, require_gold=True):
             return None, 5
 
     cats = collections.Counter(r['category'] for r in rows)
-    n_cand = b_all['n'] - cats.get('missing', 0)
+    # n_cand / status 必须按**全部 L2 行**算（b_all 现在只是 clarify 层）——
+    # 否则信息完备题的候选缺失会被漏计，`partial` 会假装跑完了（R-A5）。
+    n_cand = len(rows) - cats.get('missing', 0)
     status = 'scored' if cats.get('missing', 0) == 0 else 'partial'
 
     # ── 题型分层报（T-L27c）──
+    # 闭合基准必须是**全部 L2 行**（b_all 现在只是 clarify 层），且通过数按行独立复算，
+    # 不用 b_all 反推 —— 否则「两层加起来等于自己」这种等式永远成立（N-26）。
     strata = _strata(rows)
-    if strata['informative']['n'] + strata['clarified']['n'] != b_all['n']:
+    _n_rows = len(rows)
+    _pass_rows = sum(1 for r in rows if r['pass'])
+    if strata['informative']['n'] + strata['clarified']['n'] != _n_rows:
         print(f"[FATAL] 题型分层不闭合：informative {strata['informative']['n']} + "
-              f"clarified {strata['clarified']['n']} ≠ all {b_all['n']}")
+              f"clarified {strata['clarified']['n']} ≠ all {_n_rows}")
         return None, 6
-    if (strata['informative']['passed'] + strata['clarified']['passed']) != b_all['passed']:
+    if (strata['informative']['passed'] + strata['clarified']['passed']) != _pass_rows:
         print(f"[FATAL] 题型分层通过数不闭合：{strata['informative']['passed']} + "
-              f"{strata['clarified']['passed']} ≠ {b_all['passed']}")
+              f"{strata['clarified']['passed']} ≠ {_pass_rows}")
         return None, 6
     for _s, _b in strata.items():
         _sn = sum(x['n'] for x in _b['by_family'].values())
@@ -299,9 +312,11 @@ def score(cand_dir, tasks_path=TASKS, label=None, require_gold=True):
         'n_candidates': n_cand,
         'n_missing': cats.get('missing', 0),
         'category_counts': dict(cats),
-        'clarify_all': {**b_all, 'denominator': '全卷 L2（含 name 泄漏的无效子集）'},
-        'clarify_informative': {**b_inf, 'denominator': 'name 未泄漏的可判子集'},
-        'invalid_subset': {**b_inv, 'denominator': 'name 泄漏 ⇒ 判据失效（R66 隔离，不得单独对外）'},
+        'clarify_all': {**b_all, 'denominator': 'clarify 层（ec≠[]；ec=0 的信息完备题不在本轴）'},
+        'clarify_informative': {**b_inf, 'denominator': 'clarify 层里 name 未泄漏的可判子集'},
+        'invalid_subset': {**b_inv, 'denominator': 'clarify 层里 name 泄漏 ⇒ 判据失效（R66 隔离，不得单独对外）'},
+        'clarify_universe': 'clarified_stratum',
+        'n_excluded_informative': n_excluded_informative,
         'strata': strata,
         'closure': {'units': 'tasks', 'all': b_all['n'], 'informative': b_inf['n'],
                     'invalid': b_inv['n'],

@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_open_hole_panel_400x200_d20_cfrpqi",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"open_hole_panel 缺少 structure.params.length（板长），无法定义几何\",\"open_hole_panel 的 load.kind 为 tip_force，不符合该族载荷词汇（应为 pressure 或面内拉伸描述），请给出载荷 kind 与 magnitude\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 165,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

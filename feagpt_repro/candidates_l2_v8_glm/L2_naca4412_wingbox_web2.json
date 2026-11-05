@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_web2",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"缺少 wingbox 必需的 airfoil.skin_thickness（蒙皮厚度），无法定义模型，请提供该字段。\",\"extra 块中的 end_torque / torque_axis_dof 为规范外自创键（wingbox 的 extra 必须为 {}），请确认该扭矩载荷的合规处理方式或删除。\",\"airfoil 中 n_stringers_per_skin=0 与给出的 stringer_height/stringer_thickness/stringer_kind/stringer_flange_width 长桁细节矛盾，请确认是否实际带长桁及其数量。\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 301,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

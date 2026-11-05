@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_sweep20_taper060",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"n_stringers_per_skin 不能为 0：题面 airfoil 块中同时给出了 stringer_height、stringer_thickness、stringer_kind、stringer_flange_width，说明该翼盒存在长桁，但未给出每块蒙皮上的长桁数量\",\"stringer_flange_width 与 stringer_kind=\\\"blade\\\" 冲突：blade 剖面没有缘条宽度，应删除 stringer_flange_width 或改为 T 剖面并明确缘条宽度\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 285,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

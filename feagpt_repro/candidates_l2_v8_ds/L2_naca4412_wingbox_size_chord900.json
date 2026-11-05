@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_size_chord900",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"n_stringers_per_skin 不能为 0，题面未明确无长桁，请给出具体长桁数量\",\"stringer_height 缺失，请给出长桁高度\",\"stringer_kind 为 blade 时不应有 stringer_flange_width，请确认长桁类型或删除该键\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 169,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

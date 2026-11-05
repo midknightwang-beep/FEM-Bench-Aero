@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_size_skin2",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"n_stringers_per_skin=0 与给定的 stringer_thickness/stringer_kind/stringer_flange_width 矛盾：若确有长桁请给出每蒙皮长桁根数 n_stringers_per_skin 及缺失的 stringer_height（长桁高度），若确为 0 则应删除长桁细节键\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 181,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

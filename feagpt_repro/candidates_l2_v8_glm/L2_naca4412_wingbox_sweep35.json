@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_sweep35",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"缺少 airfoil.tip_chord_ratio：机翼带 35° 后掠但未给翼尖/翼根弦比，无法确定展向弦长分布，请提供 tip_chord_ratio。\",\"airfoil.n_stringers_per_skin=0 与给出的长桁尺寸（stringer_height/stringer_thickness/stringer_kind/stringer_flange_width）矛盾：若确有长桁请给出 n_stringers_per_skin 的根数；若确实无长桁，则长桁细节键应删除。\",\"airfoil.stringer_kind=\\\"blade\\\" 为 blade 剖面，blade 无缘条，不应携带 stringer_flange_width=30，请确认剖面类型；若为 T 剖面请改 stringer_kind 并保留 stringer_flange_width。\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 407,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

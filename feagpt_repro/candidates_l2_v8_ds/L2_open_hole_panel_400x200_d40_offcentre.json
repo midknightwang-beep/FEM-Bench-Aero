@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_open_hole_panel_400x200_d40_offcentre",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"structure.params.width 缺失，无法定义开孔板几何\",\"structure.params.hole_y 缺失（当前未给出孔心 y 坐标）\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 112,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

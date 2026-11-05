@@ -23,7 +23,7 @@ NC-23..25 W5a' CLAIMS 自检（artifact 缺失 / eval_runs 未追踪 / 官方·�
 输出：reports/negative_controls_<n>.json（**入库**，R25；不再写 eval_runs/ 工作目录）；
 全部秒级（spec_fidelity 快通道，不起求解器）。
 """
-import json, os, sys, re, argparse
+import json, os, sys, re, glob, hashlib, argparse
 
 try:  # P1-3（专家第五轮）：GBK 控制台直跑不因中文/符号输出崩
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -96,6 +96,149 @@ def write_cand(name, spec):
     spec.setdefault('name', f'nc_{name}')
     json.dump(spec, open(p, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return p
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 成绩单比较（N-36，2026-11-05 抽出）
+#
+# 为什么抽出来：NC-78 / NC-79④ / NC-80③ 都在做「重跑 vs 入库 artifact」。原来三处各写一套
+# （两处逐字节、一处逐叶子），而 N-36 一改 `score_l2.py` 的输出结构，三处**同时**红。
+# 记忆里的老坑「同一类闸只装在一个调用点 = 没装」有对偶形态：**同一类闸散在三个调用点
+# 各写一套 = 改口径时必然漏一处**。故统一到下面这一个函数。
+#
+# ★ 为什么不重出那几份历史成绩单：`reports/l2_scores_v7_*.json` 与 `l2i_v*_scores_*.json`
+#   是 C-041 命令逐字记录过的产物（p2 代 / T-L27c 代）。重出等于改写 C-041 里那条
+#   `score_l2.py … --out reports/l2_scores_v7_glm.json` 的历史，并且会把「p2 代 49/64」
+#   这条证据换成今天的判分器输出 —— 那是**销毁证据**，不是换代。按 R53 的口径：
+#   两代并存、各自内部一致、边界写进文档（RUBRIC N-36 段），不互相顶替。
+#   代价是「逐字节复算」在 schema 换代后必然红 —— 那是**正确的连带反应**，故判据升级为
+#   「旧叶子一个不丢、一个不改（声明集除外）+ 新增只许落在声明集」，另配一条**真复现**
+#   判据（同一份代码连跑两遍必须逐字节相同），后者不依赖任何 artifact 的代数。
+# ─────────────────────────────────────────────────────────────────────────────
+def score_leaves(d, prefix=''):
+    """把成绩单摊成 `{叶子路径: 标量}`；列表元素按自身 `task_id`（无则下标）命名。"""
+    out = {}
+    for k, v in d.items():
+        kk = f'{prefix}/{k}' if prefix else k
+        if isinstance(v, dict):
+            out.update(score_leaves(v, kk))
+        elif isinstance(v, list):
+            for i, it in enumerate(v):
+                kk2 = '%s[%s]' % (kk, it.get('task_id', i) if isinstance(it, dict) else i)
+                if isinstance(it, dict):
+                    out.update(score_leaves(it, kk2))
+                else:
+                    out[kk2] = json.dumps(it, ensure_ascii=False, sort_keys=True)
+        else:
+            out[kk] = v
+    return out
+
+
+def _n36_new_ok(k):
+    """N-36 起**允许新增**的叶子。
+
+    只两类，且都是「声明」不是「判定」：
+      · 题型轴 `strata` / `strata.*` / `per_task[..]/stratum`（T-L27c 就开始了）；
+      · 掩码轴的全集声明 `clarify_universe` 与 `n_excluded_informative`（N-36）。
+    两者都不会改任何一条题的 category/pass —— 判定叶子由下面的判定集逐条钉死。
+    """
+    return (k == 'strata' or k.startswith('strata/') or k.endswith('/stratum')
+            or k in ('clarify_universe', 'n_excluded_informative'))
+
+
+def _n36_chg_ok(k):
+    """N-36 起**允许改值**的叶子。
+
+      · `paper`：成绩单只记 `--tasks` 的**基名**。历史 artifact 当年传的是 `tasks/tasks.jsonl`，
+        负控为复算历史 arm 必须传冻结卷 `reports/papers/tasks_v7.jsonl` ⇒ 基名不同。
+        **同一性由 `tasks_sha256` 逐字节相等单独兜住**（它不在白名单里，一改就红）。
+      · `*/denominator`：三块掩码轴分母的口径文案（N-36 把「全卷 L2」改成「clarify 层」）。
+    数量与键名都会打进负控的 actual 字段，**不静默放行**。
+    """
+    return k == 'paper' or k.endswith('/denominator')
+
+
+def compare_score_leaves(ref_path, run_path):
+    """`run_path`（现跑）相对 `ref_path`（入库 artifact）是否**纯增量**。
+
+    返回 `(ok, 说明)`。默认拒绝：除 `_n36_chg_ok` / `_n36_new_ok` 之外，任何丢/改/新增都算红。
+
+    ★ 唯一的条件性豁免：**整卷都是信息完备题**（`n_excluded_informative == n_tasks_l2`）。
+      这类卷（`l2i_v1_*` 4 条、`l2i_v2_*` 等 16 条）按 N-36 的定义域，掩码轴是**空的**
+      （ec=[] 的题没有被省略的键，抽不出掩码）⇒ 三个掩码块的 `n/passed/by_family` 必然
+      从「全卷」塌到 0。这不是数据异常，是轴归位。
+      但**不许趁机放水**：另配一条迁移不变量 —— 旧 `clarify_informative` 的 `n/passed`
+      必须逐数等于新 `strata.informative` 的 `n/passed`（同一个数换个轴，不是换个数）；
+      且 per_task 的 category/pass 与顶层字段仍走默认拒绝。
+    """
+    od = json.load(open(ref_path, encoding='utf-8'))
+    nd = json.load(open(run_path, encoding='utf-8'))
+    lo, ln = score_leaves(od), score_leaves(nd)
+
+    _tops = ('clarify_all', 'clarify_informative', 'invalid', 'invalid_subset')
+    # ★ 豁免必须由**两个独立条件**同时成立才开：声明的排除数 == L2 总数（N-36 新口径），
+    #   **且** `strata.informative.n == L2 总数`（题型轴独立数出来的，不读同一个声明字段）。
+    #   只信声明字段的话，把 `n_excluded_informative` 改成 n_tasks_l2 就能白拿豁免 ——
+    #   那正是「放宽没有边界」（R69）。
+    mask_empty = (bool(nd.get('n_tasks_l2'))
+                  and nd.get('n_excluded_informative') == nd.get('n_tasks_l2')
+                  and ((nd.get('strata') or {}).get('informative') or {}).get('n')
+                  == nd.get('n_tasks_l2'))
+
+    def _exempt(k):
+        if not mask_empty:
+            return False
+        # 掩码块的 `n/passed/by_family` 与它们在 `closure` 里的两条计数（all / informative）。
+        # `closure/units`、`closure/formula` 不在豁免内 —— 文案与单位不该跟着塌。
+        if k in ('closure/all', 'closure/informative'):
+            return True
+        return k in _tops or any(k.startswith(t + '/') for t in _tops)
+
+    lost = [k for k in lo if k not in ln and not _exempt(k)]
+    chg = [k for k in lo if k in ln and lo[k] != ln[k] and not _exempt(k)]
+    bad_chg = [k for k in chg if not _n36_chg_ok(k)]
+    new = [k for k in ln if k not in lo]
+    bad_new = [k for k in new if not _n36_new_ok(k)]
+    ok = not lost and not bad_chg and not bad_new
+
+    det = ('纯增量+%d叶子（声明改动%d: %s）'
+           % (len(new), len(chg), ','.join(sorted(chg)[:4]) or '无'))
+    if mask_empty:
+        _oi = od.get('clarify_informative') or {}
+        _ni = (nd.get('strata') or {}).get('informative') or {}
+        _same = (_oi.get('n') == _ni.get('n') and _oi.get('passed') == _ni.get('passed'))
+        if _same:
+            det += ('；掩码轴按定义域为空(0/0)，数字迁至 strata.informative %s/%s 逐数相同'
+                    % (_ni.get('passed'), _ni.get('n')))
+        else:
+            ok = False
+            det += ('；掩码块迁移不符(旧 clarify_informative %s/%s ≠ 新 strata.informative %s/%s)'
+                    % (_oi.get('passed'), _oi.get('n'), _ni.get('passed'), _ni.get('n')))
+    if not ok:
+        det = ('丢%d/改越界%d/增越界%d %s'
+               % (len(lost), len(bad_chg), len(bad_new),
+                  (lost + bad_chg + bad_new)[:4]) + ('｜' + det if mask_empty else ''))
+    return ok, det
+
+
+def resolve_volume_by_sha(sha):
+    """按 artifact 里记的 `tasks_sha256` **现取**对应卷（不猜路径、不写死卷名）。
+
+    为什么必须这样：`score_l2.py` 的 `--tasks` 默认是**当前卷**，而当前卷每次换卷都会前进。
+    NC-78 原来不传 `--tasks`，于是「重跑历史 arm」跑在**新卷**上（80 条）配 64 条候选 ⇒
+    凭空多出 16 条 missing、`n_tasks_l2` 也从 64 变 80 —— 假红，而且原因与判据无关。
+    记忆里的老坑是「变异锚点写死的是基线长什么样」；这里是它的姊妹形态：
+    **判据隐式依赖『当前卷恰好还是当年那一卷』**。
+    """
+    if not sha:
+        return None
+    pats = [os.path.join(HERE, 'reports', 'papers', 'tasks_v*.jsonl'),
+            os.path.join(HERE, 'tasks', '*.jsonl')]
+    for pat in pats:
+        for p in sorted(glob.glob(pat)):
+            if hashlib.sha256(open(p, 'rb').read()).hexdigest() == sha:
+                return p
+    return None
 
 
 def main():
@@ -2040,7 +2183,14 @@ def main():
         _cc63 = _ilu63.module_from_spec(_spec63)
         _spec63.loader.exec_module(_cc63)
 
-        _sc63 = json.load(open(os.path.join(HERE, 'reports', 'l2_scores_v7_glm.json'),
+        # ★ N-36（2026-11-05）：夹具必须换成**当前卷**的成绩单。原来用
+        #   `reports/l2_scores_v7_glm.json`（64 条候选、p2 代、无 `strata`），而
+        #   `dual_clarify()` 的分母现取当前卷（v8 = 80 条 L2）⇒ 齐备判据
+        #   `n_cand == n_total` 是 64 != 80 ⇒ 块恒 `not_run`、`passed=None`，
+        #   下一行 `passed += 1` 直接 TypeError。**这不是判据太严，是夹具与卷不同源**：
+        #   本负控要测的是「并列时每块是否闭合」，与哪一代成绩单无关，取当卷那份即可。
+        _sc63 = json.load(open(os.path.join(HERE, 'reports', 'diagnostics',
+                                            'l2_v8_scores_glm.json'),
                               encoding='utf-8'))
         _base63 = _r63.dual_clarify(scores=[_sc63])
         _m1_63 = list(_base63['by_model'].values())[0]
@@ -2977,34 +3127,14 @@ def main():
         _anchor78 = bool(re.search(r'⑦\s*T-L27b', _o0))
 
         # ② 自比 A==A：重跑两份真实 L2 候选，与入库 artifact **逐叶子**比
-        #    ★ T-L27c 起判据从「逐字节」升级为「**纯增量**」：题型分层（`strata` 块 +
-        #      `per_task[].stratum`）是**有意新增**的字段，逐字节必然不同；但既有判定
-        #      （category/pass）与三个分母一个都不许动。故断言 = 旧叶子**一个不丢、一个不改**，
-        #      且新增叶子**只许**落在题型轴这两处。这比逐字节更严（逐字节挡不住"顺手多写一个
-        #      数字"，这里挡得住）。
+        #    ★ T-L27c 起判据从「逐字节」升级为「**纯增量**」；N-36 起该判据抽到
+        #      `compare_score_leaves()`，NC-79④ / NC-80③ 共用同一份（改口径只改一处）。
+        #    ★★ N-36 暴露的第二个缺陷：原实现**不传 `--tasks`** ⇒ 跑在**当前卷**上。
+        #      这在本轮把「历史 arm（64 条候选）」跑到「新卷（80 条）」上，凭空 +16 missing、
+        #      `n_tasks_l2` 64→80 —— 假红且原因与判据无关。改为按 artifact 的
+        #      `tasks_sha256` **现取**卷（`resolve_volume_by_sha`），不猜路径。
         _same = []
         _tmpd = _tf78.mkdtemp()
-
-        def _leaves78(d, p=''):
-            o = {}
-            for _k, _v in d.items():
-                _kk = '%s/%s' % (p, _k) if p else _k
-                if isinstance(_v, dict):
-                    o.update(_leaves78(_v, _kk))
-                elif isinstance(_v, list):
-                    for _i, _it in enumerate(_v):
-                        _kk2 = '%s[%s]' % (_kk, _it.get('task_id', _i)
-                                           if isinstance(_it, dict) else _i)
-                        if isinstance(_it, dict):
-                            o.update(_leaves78(_it, _kk2))
-                        else:
-                            o[_kk2] = _js78.dumps(_it, ensure_ascii=False, sort_keys=True)
-                else:
-                    o[_kk] = _v
-            return o
-
-        def _is_stratum_axis78(k):
-            return k == 'strata' or k.startswith('strata/') or k.endswith('/stratum')
 
         for _m in ('glm', 'ds'):
             _ref = os.path.join(HERE, 'reports', 'l2_scores_v7_%s.json' % _m)
@@ -3012,23 +3142,36 @@ def main():
             if not (os.path.exists(_ref) and os.path.isdir(_cd)):
                 _same.append('%s:缺对象(判红不skip)' % _m)
                 continue
-            _lb = _js78.load(_io78.open(_ref, encoding='utf-8')).get('label')
+            _refd = _js78.load(_io78.open(_ref, encoding='utf-8'))
+            _vol = resolve_volume_by_sha(_refd.get('tasks_sha256'))
+            if not _vol:
+                _same.append('%s:卷sha%s 找不到对应卷(判红不skip)'
+                             % (_m, (_refd.get('tasks_sha256') or '?')[:12]))
+                continue
+            _lb = _refd.get('label')
             _out = os.path.join(_tmpd, 'l2_%s.json' % _m)
-            _args = [_L2, '--cand', _cd, '--out', _out] + (['--label', _lb] if _lb else [])
+            _args = ([_L2, '--cand', _cd, '--tasks', _vol, '--out', _out]
+                     + (['--label', _lb] if _lb else []))
             _rc, _o = _run78(_args)
-            _why = '未产出'
-            if _rc == 0 and os.path.exists(_out):
-                _lo = _leaves78(_js78.load(_io78.open(_ref, encoding='utf-8')))
-                _ln = _leaves78(_js78.load(_io78.open(_out, encoding='utf-8')))
-                _lost = [k for k in _lo if k not in _ln]
-                _chg = [k for k in _lo if k in _ln and _lo[k] != _ln[k]]
-                _bad = [k for k in _ln if k not in _lo and not _is_stratum_axis78(k)]
-                if not _lost and not _chg and not _bad:
-                    _why = '纯增量+%d叶子' % (len(set(_ln) - set(_lo)))
-                else:
-                    _why = ('丢%d/改%d/增非预期%d %s' % (len(_lost), len(_chg), len(_bad),
-                                                     (_lost + _chg + _bad)[:3]))
-            _same.append('%s:%s' % (_m, _why))
+            if _rc != 0 or not os.path.exists(_out):
+                _same.append('%s:未产出' % _m)
+                continue
+            _ok_cmp, _cmp = compare_score_leaves(_ref, _out)
+            # ★ 声明的两个新字段不能只「允许存在」——它们的值必须由**卷本身**独立推出。
+            _nud = _js78.load(_io78.open(_out, encoding='utf-8'))
+            _rows_v = [_js78.loads(l) for l in _io78.open(_vol, encoding='utf-8') if l.strip()]
+            _l2_v = [r for r in _rows_v if r.get('input_level') == 'L2']
+            _n_inf_v = sum(1 for r in _l2_v if not (r.get('expected_clarifications') or []))
+            _decl_ok = (_nud.get('clarify_universe') == 'clarified_stratum'
+                        and _nud.get('n_excluded_informative') == _n_inf_v)
+            if _ok_cmp and _decl_ok:
+                _same.append('%s:%s' % (_m, _cmp))
+            elif not _ok_cmp:
+                _same.append('%s:%s' % (_m, _cmp))
+            else:
+                _same.append('%s:声明字段与卷不符(universe=%r n_excl=%r 卷内=%d)'
+                             % (_m, _nud.get('clarify_universe'),
+                                _nud.get('n_excluded_informative'), _n_inf_v))
         _sh78.rmtree(_tmpd, ignore_errors=True)
         _selfsame78 = all('纯增量' in x for x in _same)
 
@@ -3076,9 +3219,12 @@ def main():
     results.append({'id': 'NC-78',
                     'desc': 'L2 信息完备题（ec=0）分支可证伪（T-L27b）：自检 ⑦ 段在且 rc=0；'
                             '两份真实 L2 候选重跑与入库 artifact **纯增量**（旧叶子一个不丢/不改，'
-                            '新增只许落在题型轴 strata/stratum，T-L27c 起从逐字节升级）；'
+                            '改值只许 paper 与 */denominator、新增只许题型轴与掩码轴两声明键，'
+                            'N-36 起由 compare_score_leaves 统一裁）；卷按 artifact 的 tasks_sha256 '
+                            '**现取**（不跑在当前卷上）；两个声明字段的值须由卷独立推出；'
                             '三向变异（关分支 / 洗白该答不答 / 全题走 ec=0）各须红在 (e)/(f)/(a)',
-                    'expect': '自检 rc=0 且 ⑦ 锚点在；glm/ds 纯增量；三向变异红在指定项',
+                    'expect': '自检 rc=0 且 ⑦ 锚点在；glm/ds 纯增量且声明字段与卷相符；'
+                              '三向变异红在指定项',
                     'actual': _ec0_detail, 'ok': _ec0_ok})
     print(f"  [{'ok ' if _ec0_ok else 'BAD!'}] NC-78 L2 信息完备题分支可证伪（T-L27b）      "
           f"{_ec0_detail}")
@@ -3108,7 +3254,7 @@ def main():
         # ① 两个自检的锚点在且 rc=0（锚点缺失判红，不 skip）
         _rcE, _oE = _run79([_EQ])
         _rcS, _oS = _run79([_L2b, '--self-test'])
-        _anE = 'T-L27c：信息完备卷的层前缀全部可解析' in _oE
+        _anE = 'T-L27c：信息完备行的层前缀全部可解析' in _oE
         _anS = bool(re.search(r'⑨\s*T-L27c', _oS))
 
         # ② 剥离规则**承重性**：正确规则 ⇒ 金标准全命中；改回硬列 `^L[123]_` ⇒ 同一条
@@ -3164,7 +3310,10 @@ def main():
                     pass
         _red79 = sum(1 for x in _hits79 if '->' in x)
 
-        # ④ 4 条小卷成绩单可复算（同路径同输入必须逐字节一致；否则"跑出过"不等于"能复现"）
+        # ④ 4 条小卷成绩单：**真复现**（同一份代码连跑两遍必须逐字节相同）+ 与入库 artifact
+        #    **纯增量**。★ N-36：原来只做后者，而后者在 schema 换代后必然红（历史 artifact 是
+        #    旧代输出）。「跑出过 ≠ 能复现」的本质是**同一份代码可不可重复**，与 artifact 的
+        #    代数无关 ⇒ 拆成两条判据，后者按声明集裁（`compare_score_leaves`）。
         _sm = []
         for _m2 in ('glm', 'ds'):
             _rf = os.path.join(HERE, 'reports', 'diagnostics', 'l2i_v1_scores_%s.json' % _m2)
@@ -3173,16 +3322,23 @@ def main():
                 _sm.append('%s:缺对象(判红不skip)' % _m2)
                 continue
             _t79 = _tf79.mkdtemp()
-            _o79 = os.path.join(_t79, 'x.json')
-            _rc, _o = _run79([_L2b, '--cand', _cd2, '--tasks', _IVOL,
-                              '--label', 'l2i_v1_%s' % _m2, '--out', _o79])
-            _eq = (_rc == 0 and os.path.exists(_o79) and
-                   open(_o79, 'rb').read() == open(_rf, 'rb').read())
-            _sm.append('%s:%s' % (_m2, '同' if _eq else '异'))
+            _o79a = os.path.join(_t79, 'a.json')
+            _o79b = os.path.join(_t79, 'b.json')
+            _base = [_L2b, '--cand', _cd2, '--tasks', _IVOL, '--label', 'l2i_v1_%s' % _m2]
+            _rc_a, _ = _run79(_base + ['--out', _o79a])
+            _rc_b, _ = _run79(_base + ['--out', _o79b])
+            _repro = (_rc_a == 0 and _rc_b == 0 and os.path.exists(_o79a)
+                      and os.path.exists(_o79b)
+                      and open(_o79a, 'rb').read() == open(_o79b, 'rb').read())
+            _ok_cmp, _cmp = ((False, '未产出') if not os.path.exists(_o79a)
+                             else compare_score_leaves(_rf, _o79a))
+            _sm.append('%s:%s' % (_m2, ('复现+%s' % _cmp) if (_repro and _ok_cmp)
+                                  else ('不复现' if not _repro else _cmp)))
+            __import__('shutil').rmtree(_t79, ignore_errors=True)
         _l27c_ok = (_rcE == 0 and _anE and _rcS == 0 and _anS and _loadbearing
-                    and _red79 == len(_muts79) and all(x.endswith(':同') for x in _sm))
+                    and _red79 == len(_muts79) and all(':复现+' in x for x in _sm))
         _l27c_detail = ('等价脚本rc=%d 锚点=%s；自检rc=%d ⑨=%s；承重规则 %s；'
-                        '复算 %s；变异=%d/%d %s'
+                        '复算(两遍逐字节+纯增量) %s；变异=%d/%d %s'
                         % (_rcE, '在' if _anE else '缺', _rcS, '在' if _anS else '缺',
                            '是' if _loadbearing else '否（正=%r 变=%r）'
                            % ((_err_good or '')[:40], (_err_mut or '')[:60]),
@@ -3195,8 +3351,9 @@ def main():
                             'rc=0 且 T-L27c/⑨ 锚点在；层前缀剥离规则**承重**（正确规则金标准全命中，'
                             '改回硬列 `^L[123]_` 后同一条 require_dataset 必报"不完整"）；'
                             '两向变异（删前置闸 / 分层归错桶）须红在 (i)/(c)；'
-                            '4 条小卷成绩单可逐字节复算',
-                    'expect': '两个 rc=0 且锚点在；承重规则双向成立；变异 2/2 红在指定项；复算 glm/ds 同',
+                            '4 条小卷成绩单可**真复现**（同代码两遍逐字节相同）且与 artifact 纯增量',
+                    'expect': '两个 rc=0 且锚点在；承重规则双向成立；变异 2/2 红在指定项；'
+                              '复算 glm/ds 两遍逐字节同且纯增量',
                     'actual': _l27c_detail, 'ok': _l27c_ok})
     print(f"  [{'ok ' if _l27c_ok else 'BAD!'}] NC-79 改卷链路可证伪（T-L27c）            "
           f"{_l27c_detail}")
@@ -3280,7 +3437,8 @@ def main():
             else:
                 _hits80.append('%s 未红在「%s」(实际=%s)' % (_n80, _want80, (_res80 or ['全绿'])[0][:40]))
 
-        # ③ 两份 16 条成绩单可逐字节复算（"跑出过" ≠ "能复现"）
+        # ③ 两份 16 条成绩单：真复现（同代码两遍逐字节相同）+ 与 artifact 纯增量
+        #    （N-36：判据与 NC-78/NC-79④ 共用 `compare_score_leaves`，声明集只有一处）
         _sm80 = []
         for _m80 in ('glm', 'ds'):
             _rf80 = os.path.join(HERE, 'reports', 'diagnostics', 'l2i_v2_scores_%s.json' % _m80)
@@ -3289,12 +3447,19 @@ def main():
                 _sm80.append('%s:缺对象(判红不skip)' % _m80)
                 continue
             _t80 = _tf79.mkdtemp()
-            _o80 = os.path.join(_t80, 'x.json')
-            _rc80, _oo80 = _run80([os.path.join(HERE, 'score_l2.py'), '--cand', _cd80,
-                                   '--tasks', _V280, '--label', 'l2i_v2_%s' % _m80, '--out', _o80])
-            _eq80 = (_rc80 == 0 and os.path.exists(_o80) and
-                     open(_o80, 'rb').read() == open(_rf80, 'rb').read())
-            _sm80.append('%s:%s' % (_m80, '同' if _eq80 else '异'))
+            _o80a = os.path.join(_t80, 'a.json')
+            _o80b = os.path.join(_t80, 'b.json')
+            _b80args = [os.path.join(HERE, 'score_l2.py'), '--cand', _cd80,
+                        '--tasks', _V280, '--label', 'l2i_v2_%s' % _m80]
+            _rc80a, _ = _run80(_b80args + ['--out', _o80a])
+            _rc80b, _ = _run80(_b80args + ['--out', _o80b])
+            _repro80 = (_rc80a == 0 and _rc80b == 0
+                        and os.path.exists(_o80a) and os.path.exists(_o80b)
+                        and open(_o80a, 'rb').read() == open(_o80b, 'rb').read())
+            _ok80, _cmp80 = ((False, '未产出') if not os.path.exists(_o80a)
+                             else compare_score_leaves(_rf80, _o80a))
+            _sm80.append('%s:%s' % (_m80, ('复现+%s' % _cmp80) if (_repro80 and _ok80)
+                                    else ('不复现' if not _repro80 else _cmp80)))
             _shutil80 = __import__('shutil')
             _shutil80.rmtree(_t80, ignore_errors=True)
 
@@ -3312,9 +3477,9 @@ def main():
 
         _red80 = sum(1 for x in _hits80 if x.endswith('->红'))
         _l27cv2_ok = (_base_ok and _red80 == len(_muts80)
-                      and all(x.endswith(':同') for x in _sm80)
+                      and all(':复现+' in x for x in _sm80)
                       and all(x.endswith(':同') for x in _sha80))
-        _l27cv2_detail = ('v1/v2 --check=%d/%d；变异=%d/%d %s；复算 %s；嵌sha %s'
+        _l27cv2_detail = ('v1/v2 --check=%d/%d；变异=%d/%d %s；复算(两遍逐字节+纯增量) %s；嵌sha %s'
                           % (_rcM1, _rcM2, _red80, len(_muts80), '; '.join(_hits80),
                              ' '.join(_sm80), ' '.join(_sha80)))
     except Exception as _e80:
@@ -3324,8 +3489,9 @@ def main():
                     'desc': '信息完备卷的增卷规则可证伪（T-L27c v2）：双卷 --check rc=0（新规则不弄坏旧卷）；'
                             '三向变异（删基线 v1 一条 / 族内 spec 重复 / 篡改物理参数）各须红在'
                             '「基线 v1 自身条数」/「spec 完全重复」/「spec 与源题」；'
-                            '16 条成绩单逐字节可复算；成绩单内嵌卷 sha == 磁盘卷 sha',
-                    'expect': '双卷 rc=0；变异 3/3 红在指定项；复算 glm/ds 同；嵌 sha 两侧同',
+                            '16 条成绩单可**真复现**（同代码两遍逐字节相同）且与 artifact 纯增量；'
+                            '成绩单内嵌卷 sha == 磁盘卷 sha',
+                    'expect': '双卷 rc=0；变异 3/3 红在指定项；复算两遍逐字节同且纯增量；嵌 sha 两侧同',
                     'actual': _l27cv2_detail, 'ok': _l27cv2_ok})
     print(f"  [{'ok ' if _l27cv2_ok else 'BAD!'}] NC-80 增卷规则可证伪（T-L27c v2）          "
           f"{_l27cv2_detail}")
@@ -3709,6 +3875,99 @@ def main():
                     'expect': 'A 绿 / B–E 各自点名正确的判据变红',
                     'actual': _nc84_detail, 'ok': _nc84_ok})
     print(f"  [{'ok ' if _nc84_ok else 'BAD!'}] NC-84 判分键两类分离（N-35 / S-63）      {_nc84_detail}")
+
+    # NC-85（N-36，v8 进卷）「掩码轴的全集必须写死是 clarify 层，且排除数必须能从卷里独立复算」
+    #   守 S-53 的 (e)。四个变异：A 真件必绿；B/C/D 是三种「产物被改坏」的形态；
+    #   E 是**反向**：当卷里没有 ec=[] 的题时（v7），判据不得假红。
+    #   ★ 为什么需要 (e)：S-53 的 (c) 只比「artifact 与现算一致」——产物若用同一段有 bug
+    #     的代码重出（把 ec=0 算成干净），两边会一起变成 61，(c) 照样绿。
+    #     (e) 独立从卷里数 ec=[] 的条数，才钉得住「两边一起错」。
+    _nc85_ok = False
+    _nc85_detail = ''
+    try:
+        import tempfile as _tf85
+        import shutil as _sh85
+        import check_claims as _C85
+
+        _rep85 = os.path.join(HERE, 'reports', 'l2_clarify_dual.json')
+        _cur85 = os.path.join(HERE, 'tasks', 'tasks.jsonl')
+        _v7_85 = os.path.join(HERE, 'reports', 'papers', 'tasks_v7.jsonl')
+        _pre85 = os.path.join(HERE, 'reports', 'archive', 'l2_clarify_dual__pre_v8.json')
+
+        def _stage85(tasks_src, rep_obj):
+            d = _tf85.mkdtemp(prefix='nc85_')
+            os.makedirs(os.path.join(d, 'tasks'))
+            os.makedirs(os.path.join(d, 'reports'))
+            _sh85.copy2(tasks_src, os.path.join(d, 'tasks', 'tasks.jsonl'))
+            with open(os.path.join(d, 'reports', 'l2_clarify_dual.json'), 'w', encoding='utf-8') as f:
+                json.dump(rep_obj, f, ensure_ascii=False)
+            return d
+
+        def _clean85(d):
+            _sh85.rmtree(d, ignore_errors=True)
+
+        _base85 = json.load(open(_rep85, encoding='utf-8'))
+        _h85 = []
+
+        # A 正向：真卷 + 真件
+        _d = _stage85(_cur85, _base85)
+        try:
+            _ok, _det = _C85.l2_clarify_dual(base=_d)
+        finally:
+            _clean85(_d)
+        _h85.append(('A正向真件必绿', _ok, ('绿' if _ok else '红') + ('[无红]' if _ok else '[%s]' % _det[:80])))
+
+        # B/C/D：三种改坏
+        for _tag, _mut in (('B 伪造 n_excluded_informative=0 必红', 'no_excl'),
+                           ('C clarify_all.n 改成 L2 总数 必红', 'all80'),
+                           ('D 删掉 clarify_universe 必红', 'no_universe')):
+            _r = json.loads(json.dumps(_base85))
+            if _mut == 'no_excl':
+                _r['n_excluded_informative'] = 0
+            elif _mut == 'all80':
+                _r['clarify_all']['n'] = _r['clarify_all']['n'] + _r['n_excluded_informative']
+            elif _mut == 'no_universe':
+                _r.pop('clarify_universe', None)
+            _d = _stage85(_cur85, _r)
+            try:
+                _ok, _det = _C85.l2_clarify_dual(base=_d)
+            finally:
+                _clean85(_d)
+            _h85.append((_tag, _ok, ('绿' if _ok else '红') + ('[无红]' if _ok else '[%s]' % _det[:80])))
+
+        # E 反向：v7 卷（无 ec=[] 题）+ v7 代产物补上两个新字段 ⇒ 必须绿（不假红）
+        if os.path.exists(_v7_85) and os.path.exists(_pre85):
+            _r = json.load(open(_pre85, encoding='utf-8'))
+            _r['clarify_universe'] = 'clarified_stratum'
+            _r['n_excluded_informative'] = 0
+            _d = _stage85(_v7_85, _r)
+            try:
+                _ok, _det = _C85.l2_clarify_dual(base=_d)
+            finally:
+                _clean85(_d)
+            _h85.append(('E v7 无该题型时不假红', _ok,
+                         ('绿' if _ok else '红') + ('[无红]' if _ok else '[%s]' % _det[:120])))
+        else:
+            _h85.append(('E v7 无该题型时不假红', False, '红[锚点缺失：v7 卷或 v7 代产物不在]'))
+
+        _exp85 = [True, False, False, False, True]
+        _bad85 = [(t, o, d) for (t, o, d), e in zip(_h85, _exp85) if o != e]
+        _nc85_ok = not _bad85
+        _nc85_detail = ('; '.join('%s->%s' % (t, ('绿' if o else '红')) for t, o, _d in _h85)
+                        if _nc85_ok else
+                        'FAIL: ' + '; '.join('%s 期望%s 实得%s[%s]'
+                                             % (t, '绿' if e else '红', '绿' if o else '红', d)
+                                             for (t, o, d), e in zip(_h85, _exp85) if o != e))
+    except Exception as _e85:
+        _nc85_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e85,)
+
+    results.append({'id': 'NC-85',
+                    'desc': '掩码轴全集必须是 clarify 层且排除数可独立复算（N-36 / S-53(e)）：'
+                            'A 真件不误报；B 伪造 n_excluded=0 须红；C 把 L2 全量塞进 clarify_all 须红；'
+                            'D 删掉 clarify_universe 须红；E v7（无 ec=[] 题）不得假红',
+                    'expect': 'A/E 绿；B–D 各自点名正确的判据变红',
+                    'actual': _nc85_detail, 'ok': _nc85_ok})
+    print(f"  [{'ok ' if _nc85_ok else 'BAD!'}] NC-85 掩码轴全集与排除数（N-36 / S-53e）  {_nc85_detail}")
 
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),

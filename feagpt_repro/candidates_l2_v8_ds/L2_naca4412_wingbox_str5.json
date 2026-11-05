@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_str5",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"stringer_kind 为 blade 时不应包含 stringer_flange_width 键，请确认是否删除该键或改为 T 型长桁并保留 stringer_flange_width\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 124,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

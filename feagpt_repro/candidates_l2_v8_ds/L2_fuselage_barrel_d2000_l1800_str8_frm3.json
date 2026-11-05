@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_fuselage_barrel_d2000_l1800_str8_frm3",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"n_stringers\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 27,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

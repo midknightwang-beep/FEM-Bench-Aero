@@ -1,0 +1,15 @@
+{
+ "task_id": "L2i_fuselage_barrel_d1600_l1600_str8_frm3",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"缺少键 skin_thickness（fuselage_barrel 蒙皮厚度），当前 params 只有 diameter/length/n_frames/n_stringers/thickness，无法确定哪个是蒙皮厚度\",\"缺少键 frame_thickness（框厚度），已给 n_frames=3 但未给框截面/厚度尺寸\",\"缺少键 stringer_height（长桁高度），已给 n_stringers=8 但未给长桁截面高度\",\"缺少键 stringer_thickness（长桁厚度），已给 n_stringers=8 但未给长桁截面厚度\",\"缺少键 stringer_kind（长桁剖面类型 blade/T），已给 n_stringers=8 但未给长桁形式\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 388,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

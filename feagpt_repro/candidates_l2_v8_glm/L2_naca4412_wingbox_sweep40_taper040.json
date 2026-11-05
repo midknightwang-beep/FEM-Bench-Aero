@@ -1,0 +1,15 @@
+{
+ "task_id": "L2_naca4412_wingbox_sweep40_taper040",
+ "input_level": "L2",
+ "model": "glm-5.3-flash",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"wingbox 缺少 airfoil.skin_thickness（蒙皮厚度），无法定义模型，请提供该键的数值。\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 72,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

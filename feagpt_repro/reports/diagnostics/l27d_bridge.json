@@ -1,0 +1,141 @@
+{
+  "v7": {
+    "path": "reports/papers/tasks_v7.jsonl",
+    "sha256": "caf0f6c3be8131c5b817a0bacfcca8ad3893fcfb95e29d8d9b525866a63e195a",
+    "n_rows": 192
+  },
+  "v8": {
+    "path": "reports/papers/tasks_v8.jsonl",
+    "sha256": "54d8352bfdec40151fae4e0915f2a24364fdf0e114cc75d09a08735659b4c267",
+    "n_rows": 208
+  },
+  "by_level": {
+    "L1": {
+      "v7_n": 64,
+      "v8_n": 64,
+      "lost": 0,
+      "added": 0
+    },
+    "L2": {
+      "v7_n": 64,
+      "v8_n": 80,
+      "lost": 0,
+      "added": 16
+    },
+    "L3": {
+      "v7_n": 64,
+      "v8_n": 64,
+      "lost": 0,
+      "added": 0
+    }
+  },
+  "checks": {
+    "B1_old_rows_preserved": true,
+    "B2_L3_unchanged": true,
+    "B2_note": "L3 行集合差为空 ⇒ v7 的 L3 成绩单（C-032/C-033/C-040）仍然代表 v8 的 L3 层，**不需要重跑**",
+    "B3_added_are_informative": true,
+    "B3b_clarify_numbers_unchanged": true
+  },
+  "l2_added": {
+    "n": 16,
+    "all_ec_empty": true,
+    "all_prefix_L2i": true,
+    "by_family": {
+      "wingbox": 4,
+      "open_hole_panel": 4,
+      "fuselage_barrel": 4,
+      "stiffened_panel": 4
+    },
+    "task_ids": [
+      "L2i_naca4412_wingbox_n_ribs3_chord1000",
+      "L2i_naca4412_wingbox_n_ribs6_chord1000",
+      "L2i_naca4412_wingbox_n_ribs7_chord1000",
+      "L2i_naca4412_wingbox",
+      "L2i_open_hole_panel_400x200_d20_cfrp45s_d40",
+      "L2i_open_hole_panel_400x200_d20_cfrp45s",
+      "L2i_open_hole_panel_400x200_d20",
+      "L2i_open_hole_panel_400x200_d20_offcentre",
+      "L2i_fuselage_barrel_d1600_l1600_str8_frm3",
+      "L2i_fuselage_barrel_d1800_l2000_str8_frm3",
+      "L2i_fuselage_barrel_d2000_l2000_str8_frm3",
+      "L2i_fuselage_barrel_d2000_l1800_str8_frm3",
+      "L2i_stiffened_panel_600x600_str3",
+      "L2i_stiffened_panel_800x600",
+      "L2i_stiffened_panel_600x600",
+      "L2i_stiffened_panel_700x600_str4"
+    ]
+  },
+  "scores": {
+    "glm": {
+      "v7": {
+        "clarify_all": [
+          46,
+          64
+        ],
+        "clarify_informative": [
+          27,
+          45
+        ],
+        "invalid_subset": [
+          19,
+          19
+        ]
+      },
+      "v8": {
+        "clarify_all": [
+          46,
+          64
+        ],
+        "clarify_informative": [
+          27,
+          45
+        ],
+        "invalid_subset": [
+          19,
+          19
+        ]
+      },
+      "v8_informative": [
+        13,
+        16
+      ],
+      "same": true
+    },
+    "ds": {
+      "v7": {
+        "clarify_all": [
+          52,
+          64
+        ],
+        "clarify_informative": [
+          33,
+          45
+        ],
+        "invalid_subset": [
+          19,
+          19
+        ]
+      },
+      "v8": {
+        "clarify_all": [
+          52,
+          64
+        ],
+        "clarify_informative": [
+          33,
+          45
+        ],
+        "invalid_subset": [
+          19,
+          19
+        ]
+      },
+      "v8_informative": [
+        1,
+        16
+      ],
+      "same": true
+    }
+  },
+  "_note": "v7 → v8 单变量对照（R-A2）。**本表不给任何 Δ**：两卷分母不同（192/208、L2 64/80）⇒ 按 R54 禁止相减。B2 证明 L3 层不需要重跑，B3b 证明新增 16 条没有扰动澄清层的任何一个数。"
+}

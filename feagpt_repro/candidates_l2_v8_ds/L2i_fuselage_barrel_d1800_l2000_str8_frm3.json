@@ -1,0 +1,15 @@
+{
+ "task_id": "L2i_fuselage_barrel_d1800_l2000_str8_frm3",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"structure.params 中缺少 frame_thickness（框厚度），无法定义 fuselage_barrel 结构。\",\"extra 中存在 shear_axis 和 moment_axis，但 fuselage_barrel 规范只允许 end_shear 和 end_moment，不应包含 shear_axis 或 moment_axis，需确认或移除。\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 222,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

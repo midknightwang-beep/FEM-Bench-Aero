@@ -1,0 +1,15 @@
+{
+ "task_id": "L2i_stiffened_panel_800x600",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"stiffened_panel 的 n_stringers 已给定为 0，但未给出长桁相关尺寸字段（stringer_height、stringer_thickness、stringer_kind）的具体值，无法判断是否需要定义加筋特征；若确实为素板，请明确说明，否则请补充缺失键名 n_stringers 对应特征的长桁参数或说明无长桁。\",\"缺少 stringer_kind\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 223,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

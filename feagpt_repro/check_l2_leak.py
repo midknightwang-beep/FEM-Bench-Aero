@@ -64,28 +64,39 @@ def revealed_fields(name):
     return {k: sorted(v) for k, v in out.items()}
 
 
-def scan(tasks_path=TASKS):
-    """返回 (总 L2 数, 泄漏明细列表, 干净数)。"""
+def scan(tasks_path=TASKS, with_skipped=False):
+    """返回 (clarify 层条数, 泄漏明细列表, 干净数[, 被排除的信息完备题数])。
+
+    ★ N-36（v8 进卷）：`n_l2` 是**本轴的全集 = ec 非空的 L2 题**，不是「全部 L2 题」。
+      ec=0 的信息完备题不在这个轴的定义域里，整条排除（详见循环内的长注释）。
+      v7 卷上 ec=0 条数为 0 ⇒ **本改动对 v7 零影响**（交付时必须逐字节证明这一点）。
+    """
     if not os.path.exists(tasks_path):
         raise SystemExit(f'找不到 {tasks_path}（先跑 make_tasks.py）')
     rows = [json.loads(l) for l in open(tasks_path, encoding='utf-8') if l.strip()]
     l1 = {r['task_id'][3:]: r['input']['spec_normalized']
           for r in rows if r['input_level'] == 'L1'}
-    hits, n_l2 = [], 0
+    hits, n_l2, n_skip = [], 0, 0
     for r in rows:
         if r['input_level'] != 'L2':
             continue
-        n_l2 += 1
-        cid = r['task_id'][3:]
         ec = r.get('expected_clarifications') or []
         if not ec:
-            # ★ T-L27c（2026-11-04）：**信息完备题（ec=0）没有「被删的键」，name 泄漏这个问题对它不存在**
-            #   —— 它的正确行为是给 spec，判分（spec 保真）不依赖 name ⇒ 不进 hits、也不计入泄漏。
-            #   为什么可以这样归类：本判据要回答的是「name 里出现的数字是否泄漏了**该题被删的那个键**」，
-            #   没有被删的键就没有可泄漏的对象；把它算成「干净」而不是「不可判」，
-            #   也不改变 all == informative + invalid 的闭合式（两边一进一出）。
-            #   对 v7 卷**零影响**：v7 的 L2 64 条全 ec=1 ⇒ 本分支永不触发。
+            # ★ N-36（2026-11-05，v8 进卷时改）：信息完备题（ec=0）**整条排除**，不再「算成干净」。
+            #   本判据回答的是「name 里出现的数字是否泄漏了该题**被删的那个键**」——
+            #   没有被删的键就没有可泄漏的对象，于是它既不是「泄漏」也不是「未泄漏」，
+            #   而是**不在这个轴的定义域里**（v7 那句话本身是对的）。
+            #   但旧实现「算成干净」在本轴上是**静默错**：它把 ec=0 题塞进
+            #   `clarify_informative`，而这批题的通过与否由 **spec 保真**（`spec_ok`）判定，
+            #   与「该问的字段有没有问出来」是两个判定对象 ⇒ 同一个 pct 里混两种考点，
+            #   正是 S-60 警告的「同名字段不同源」。
+            #   对 v7 零影响（v7 的 L2 64 条全 ec=1 ⇒ 本分支永不触发）；对 v8 是**必须**，
+            #   否则 clarify_informative 会从 45 变成 45+16=61，而那个 61 没有任何意义。
+            #   排除不丢信息：题型轴 `strata.informative` 会单独报这 16 条。
+            n_skip += 1
             continue
+        n_l2 += 1
+        cid = r['task_id'][3:]
         key = ec[0]
         name = (l1.get(cid) or {}).get('name') or cid
         rv = revealed_fields(name)
@@ -99,6 +110,8 @@ def scan(tasks_path=TASKS):
                 'name_evidence': rv[key],
                 'split_v2': r.get('split_v2'),
             })
+    if with_skipped:
+        return n_l2, hits, n_l2 - len(hits), n_skip
     return n_l2, hits, n_l2 - len(hits)
 
 
@@ -109,10 +122,11 @@ def main():
     ap.add_argument('--tasks', default=TASKS)
     args = ap.parse_args()
 
-    n_l2, hits, n_clean = scan(args.tasks)
+    n_l2, hits, n_clean, n_skip = scan(args.tasks, with_skipped=True)
     by_fam = collections.Counter(h['family'] for h in hits)
-    print(f'L2 总数 {n_l2}；name 泄漏被省略值 {len(hits)} 条；干净 {n_clean} 条'
-          f'（informative 比例 {100.0 * n_clean / max(1, n_l2):.1f}%）')
+    print(f'clarify 层（ec≠[]）总数 {n_l2}；name 泄漏被省略值 {len(hits)} 条；干净 {n_clean} 条'
+          f'（informative 比例 {100.0 * n_clean / max(1, n_l2):.1f}%）；'
+          f'另有 ec=0 信息完备题 {n_skip} 条，**不在本轴定义域内，已整条排除**')
     print('按族:', dict(by_fam))
     for h in hits:
         print(f"  [{h['family']:16s}] {h['case_id']:42s} 省略={h['omitted_field']:20s}"
@@ -125,6 +139,8 @@ def main():
                       'docstring；撞车不算泄漏。可用 check_l2_leak.py 复跑复现。'),
             'tasks': rel(args.tasks),
             'n_l2': n_l2, 'n_leak': len(hits), 'n_clean': n_clean,
+            'n_informative_excluded': n_skip,
+            'universe': 'clarified_stratum（ec≠[]；ec=0 的信息完备题不在本轴定义域内）',
             'informative_pct': round(100.0 * n_clean / max(1, n_l2), 1),
             'by_family': dict(by_fam),
             'hits': hits,

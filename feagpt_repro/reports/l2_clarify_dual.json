@@ -2,14 +2,16 @@
   "_note": "L2 澄清题双口径（CONFLICT N-17 拍板 C'）。判据见 check_l2_leak.py；分母与掩码由本文件唯一维护，`passed` 由 score_l2.py 跑分经 --scores 回填（不齐 64/64 则保持 not_run 并记 partial）。",
   "paper": "tasks.jsonl",
   "tasks": "tasks/tasks.jsonl",
-  "tasks_sha256": "caf0f6c3be8131c5b817a0bacfcca8ad3893fcfb95e29d8d9b525866a63e195a",
+  "tasks_sha256": "54d8352bfdec40151fae4e0915f2a24364fdf0e114cc75d09a08735659b4c267",
   "criterion": "check_l2_leak.py 语义前缀匹配（d<N>/frm<N>/str<N>/...）；数值撞车不算泄漏（例：str4 揭示 n_stringers，不揭示 rib_thickness）",
   "status": "scored",
+  "clarify_universe": "clarified_stratum",
+  "n_excluded_informative": 16,
   "clarify_all": {
     "n": 64,
     "passed": 46,
     "pct": 71.9,
-    "denominator": "全卷 L2 澄清题（含 name 泄漏的无效子集）",
+    "denominator": "clarify 层（ec≠[]）全量，含 name 泄漏的无效子集",
     "by_family": {
       "fuselage_barrel": 7,
       "open_hole_panel": 13,
@@ -22,7 +24,7 @@
     "n": 45,
     "passed": 27,
     "pct": 60.0,
-    "denominator": "name 未泄漏被省略值的可判子集（真的在考「会不会追问」）",
+    "denominator": "clarify 层里 name 未泄漏被省略值的可判子集（真的在考「会不会追问」）",
     "by_family": {
       "fuselage_barrel": 2,
       "open_hole_panel": 3,
@@ -291,13 +293,15 @@
   "by_model": {
     "glm-5.3-flash": {
       "model": "glm-5.3-flash",
-      "candidates": "candidates_l2_v7sysfix_glm",
+      "candidates": "candidates_l2_v8_glm",
       "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
       "presentation": "spec_json_raw_name",
       "category_counts": {
         "clarify_ok": 46,
         "fabricated": 14,
-        "clarify_wrong": 4
+        "clarify_wrong": 4,
+        "spec_ok": 13,
+        "spec_bad": 3
       },
       "status": "scored",
       "clarify_all": {
@@ -384,13 +388,14 @@
     },
     "deepseek-v4-pro": {
       "model": "deepseek-v4-pro",
-      "candidates": "candidates_l2_v7sysfix_ds",
+      "candidates": "candidates_l2_v8_ds",
       "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
       "presentation": "spec_json_raw_name",
       "category_counts": {
         "clarify_ok": 52,
         "fabricated": 7,
-        "clarify_wrong": 5
+        "clarify_wrong": 20,
+        "spec_ok": 1
       },
       "status": "scored",
       "clarify_all": {
@@ -477,12 +482,14 @@
     }
   },
   "model": "glm-5.3-flash",
-  "candidates": "candidates_l2_v7sysfix_glm",
+  "candidates": "candidates_l2_v8_glm",
   "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
   "presentation": "spec_json_raw_name",
   "category_counts": {
     "clarify_ok": 46,
     "fabricated": 14,
-    "clarify_wrong": 4
+    "clarify_wrong": 4,
+    "spec_ok": 13,
+    "spec_bad": 3
   }
 }

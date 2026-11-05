@@ -1,0 +1,15 @@
+{
+ "task_id": "L2i_fuselage_barrel_d2000_l2000_str8_frm3",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"material 中缺少 yield_strength 的完整定义，但该键已存在且值 345 已给出，符合要求；检查后无需澄清。\",\"structure.params 中 fuselage_barrel 所需键 diameter、length、thickness、n_stringers、n_frames 均已给出；检查后无需澄清。\",\"analysis 中 outputs 包含 'U' 和 'S'，但未给出 'RF' 等其它输出，不影响模型定义。\",\"extra 中已给出 end_shear 和 end_moment，但未给出 shear_axis 和 moment_axis 是否允许；这两个键不在 fuselage_barrel 四族键名总表中，属于额外键，按规范不应写入。\",\"bc 中缺少 root_surface 的坐标定义，但 root_surface 已指定为 'root'，符合规范。\",\"load 中 kind 为 pressure，但 fuselage_barrel 的载荷组合按规范应使用 end_shear/end_moment 写入 extra，此处 load 中同时出现 pressure 与 extra 中的端剪/端弯，存在载荷定义冲突，需澄清以哪种载荷为准。\",\"load 中缺少 fuselage_barrel 内压作用面的定义，但该族结构参数中未明确内压作用面，需澄清。\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 665,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}

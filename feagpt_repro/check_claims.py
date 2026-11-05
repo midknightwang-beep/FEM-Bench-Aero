@@ -1149,7 +1149,7 @@ SOLVER_TREES = 2
 #: 任务层卷链（R65 / S-52）：上一版 → 当前版，语义是「**只许加行，不许改老行**」。
 #: 下一版冻结时**必须手工把链往前推一格**（v7 → v8），因为「只许加行」不是天然语义：
 #: v6 → v6b（补 exam_stratum）→ v6c（R32/R36 改 10 行）都是**改行**，不在链上。
-TASK_CHAIN = [('tasks_v6c.jsonl', 'tasks_v7.jsonl')]
+TASK_CHAIN = [('tasks_v6c.jsonl', 'tasks_v7.jsonl'), ('tasks_v7.jsonl', 'tasks_v8.jsonl')]
 
 
 def _row_of(claims_md, claim_id):
@@ -1631,6 +1631,9 @@ def l2_clarify_dual(base=None, report=None):
       (c) `informative` 掩码必须与**现算**一致（防 artifact 过期：题改了掩码没重算）
       (d) `delta_allowed` 必须为 False（R54：分母不等不得相减）；
           `status == 'scored'` 时两侧都必须有整数 `passed`（不得只报一侧）
+      (e) N-36（v8 进卷）：`clarify_universe` 必须写死为本轴的全集（clarify 层），
+          且 `n_excluded_informative` / `clarify_all.n` 必须能**独立从卷里复算**。
+          （c）只证明「artifact 与现算一致」，两边一起错时仍绿；（e）补的就是这一端。
     """
     import importlib
     if HERE not in sys.path:
@@ -1685,6 +1688,36 @@ def l2_clarify_dual(base=None, report=None):
                 notes.append(f"掩码与现算一致（invalid {len(f_inv)} / informative {len(f_inf)}）")
     else:
         problems.append('找不到 tasks/tasks.jsonl（掩码无法复算）')
+
+    # (e) N-36（v8 进卷）：本轴的全集必须写明是 **clarify 层**，且「被排除的信息完备题数」
+    #     必须与**独立从卷里数出来的** ec=[] 条数一致。
+    #     ★ 为什么 (c) 不够：(c) 比的是「artifact 与现算是否一致」——若产物是用**同一段
+    #       有 bug 的代码**重出的（把 ec=0 算成干净），两边会**一起**变成 61，(c) 照样绿。
+    #       这就是「A ⊆ B 要核两端」的同型坑：只核一边，两边同错时全绿。
+    #       这里不调 report_l2_clarify，直接读卷数字，才是独立复算。
+    if os.path.exists(tasks_p):
+        try:
+            _rows = [json.loads(l) for l in open(tasks_p, encoding='utf-8') if l.strip()]
+            _l2 = [r for r in _rows if r.get('input_level') == 'L2']
+            _n_inf = sum(1 for r in _l2 if not (r.get('expected_clarifications') or []))
+            _n_clar = len(_l2) - _n_inf
+        except Exception as e:
+            problems.append(f'卷读不动，无法复算题型分层：{e}')
+        else:
+            if rep.get('clarify_universe') != 'clarified_stratum':
+                problems.append(
+                    f"clarify_universe 不是 'clarified_stratum'（实为 {rep.get('clarify_universe')!r}）"
+                    '⇒ 掩码轴的全集没写明，读者会把它当成整层 L2')
+            if rep.get('n_excluded_informative') != _n_inf:
+                problems.append(
+                    f"n_excluded_informative {rep.get('n_excluded_informative')} != 卷里 ec=[] 的 L2 条数 {_n_inf}"
+                    '（「两边一起错」的形态：产物用旧代码重出）')
+            if all_b['n'] != _n_clar:
+                problems.append(f"clarify_all.n {all_b['n']} != 卷里 ec≠[] 的 L2 条数 {_n_clar}")
+            if all_b['n'] + _n_inf != len(_l2):
+                problems.append(f"clarify_all.n {all_b['n']} + 信息完备 {_n_inf} != L2 总条数 {len(_l2)}")
+            else:
+                notes.append(f'题型分层闭合：L2 {len(_l2)} = clarify {all_b["n"]} + informative {_n_inf}')
 
     # (d) R54 + 状态
     if rep.get('delta_allowed') is not False:
@@ -2687,12 +2720,15 @@ def semantic_checks(root, rows, skip_hook_guard=False, public_mode=False):
     # S-53（R66，T-A10c；来自 N-17 / 拍板 C'）：**无效子集必须隔离并双报**。
     # clarify 判据在 19/64 条 L2 上无效（name 泄漏）⇒ 不改题、改口径：64 / 45 并列。
     _ok53, _det53 = l2_clarify_dual()
-    add('S-53', 'L2 clarify 无效子集必须隔离并双报：clarify_all(64) 与 clarify_informative(45) 并列（R66）',
+    add('S-53', 'L2 clarify 无效子集必须隔离并双报：clarify_all 与 clarify_informative 并列（R66；条数一律实读，不写死）',
         'reports/l2_clarify_dual.json 必须同时含两块且闭合（all−inf==invalid）；'
         'informative 掩码必须与现算一致（防过期）；delta_allowed 必须 False（R54）；'
         'status=scored 时两侧都必须有整数 passed；'
         '多模型并列（by_model）时**每个模型块自己**都要闭合且两侧报分，且顶层必须是其中一块、逐数相等'
-        '（T-A13c：多模型带来的新形态「只报有利一侧」= 顶层放它、by_model 里少一个）',
+        '（T-A13c：多模型带来的新形态「只报有利一侧」= 顶层放它、by_model 里少一个）；'
+        '(e) N-36：`clarify_universe` 必须是 clarified_stratum，且 `n_excluded_informative` 与'
+        '`clarify_all.n` 必须**独立从卷里**复算得上（防「两边一起错」：产物用同一段有 bug 的代码重出时，'
+        '掩码与现算会同时变成错的值，(c) 照样绿）',
         _det53, _ok53)
 
     # S-56（T-A12a，第十四轮 P1-1）：**协议不得硬编码 rubric 版本 / 规则范围 / 解释器**。

@@ -408,7 +408,8 @@ def main():
                   f"gold={json.dumps(r['gold'], ensure_ascii=False)[:40]} :: {r['reason']}")
         if dev_viol:
             print(f'\n  ★ dev 违规 {len(dev_viol)} 条：**不进 exam、不得进入任何对外 claim**（R15）。')
-            print('    若要消除，只能做 v8 新卷 + 重冻结 + bridge —— R65 禁止改 v7 老行。')
+            print('    这是题面真缺陷（R41），且**改它必须动老行** ⇒ 只能挂账（R65 禁改已发布行）。'
+                  '★ v8 只加了 L2 题、L3 行逐字节未动，所以这 4 条在 v8 上原样存在。')
     if out_path:
         print('\nreport ->', out_path)
     return 0 if report['gate_ok'] else 1

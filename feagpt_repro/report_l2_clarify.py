@@ -88,7 +88,12 @@ def dual_clarify(tasks_path=TASKS, paper=None, scores=None):
         raise SystemExit(f'{tasks_path} 里没有 L2 任务（先跑 make_tasks.py）')
 
     rows = [json.loads(l) for l in open(tasks_path, encoding='utf-8') if l.strip()]
-    l2_rows = [r for r in rows if r['input_level'] == 'L2']
+    # ★ N-36（v8 进卷）：本文件的轴是**掩码（name 泄漏）**，它的全集 = clarify 层（ec≠[]）。
+    #   信息完备题（ec=0）没有「被删的键」，抽不出掩码，硬塞进来会把两种判定对象
+    #   混进同一个 pct（详见 check_l2_leak.scan 的注释）。题型轴由 score_l2 的 `strata` 报。
+    l2_all = [r for r in rows if r['input_level'] == 'L2']
+    l2_rows = [r for r in l2_all if (r.get('expected_clarifications') or [])]
+    n_excluded_informative = len(l2_all) - len(l2_rows)
     invalid_ids = sorted(h['task_id'] for h in hits)
     invalid_set = set(invalid_ids)
     informative_ids = sorted(r['task_id'] for r in l2_rows if r['task_id'] not in invalid_set)
@@ -110,15 +115,17 @@ def dual_clarify(tasks_path=TASKS, paper=None, scores=None):
         'criterion': ('check_l2_leak.py 语义前缀匹配（d<N>/frm<N>/str<N>/...）；'
                       '数值撞车不算泄漏（例：str4 揭示 n_stringers，不揭示 rib_thickness）'),
         'status': 'not_run',
+        'clarify_universe': 'clarified_stratum',
+        'n_excluded_informative': n_excluded_informative,
         'clarify_all': {
             'n': n_l2, 'passed': None, 'pct': None,
-            'denominator': '全卷 L2 澄清题（含 name 泄漏的无效子集）',
+            'denominator': 'clarify 层（ec≠[]）全量，含 name 泄漏的无效子集',
             'by_family': dict(sorted(fam_all.items())),
             'by_family_note': _FAM_NOTE,
         },
         'clarify_informative': {
             'n': len(informative_ids), 'passed': None, 'pct': None,
-            'denominator': 'name 未泄漏被省略值的可判子集（真的在考「会不会追问」）',
+            'denominator': 'clarify 层里 name 未泄漏被省略值的可判子集（真的在考「会不会追问」）',
             'by_family': dict(sorted(fam_inf.items())),
             'by_family_note': _FAM_NOTE,
             'task_ids': informative_ids,
@@ -154,8 +161,12 @@ def _score_block(rep, sc):
       否则「并列」就变成把两个来源不明的数摆在一起。
     """
     n_l2 = rep['clarify_all']['n']
+    # ★ N-36（v8 进卷）：**候选齐不齐要按 L2 全层比**（80），不能拿 clarify 层的分母（64）——
+    #   否则信息完备题那 16 条即使跑了也会恒判「候选不齐」，永远升不到 scored。
+    #   注意这是两件事：`n`（本轴分母，64）与「有没有把这一层的题都跑过」（80）。
+    n_total = n_l2 + rep.get('n_excluded_informative', 0)
     n_cand = sc.get('n_candidates')
-    complete = (sc.get('status') == 'scored') and (n_cand == n_l2)
+    complete = (sc.get('status') == 'scored') and (n_cand == n_total)
     blk = {
         'model': sc.get('model'),
         'candidates': sc.get('candidates'),

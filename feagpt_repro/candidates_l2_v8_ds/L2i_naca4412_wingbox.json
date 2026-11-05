@@ -1,0 +1,15 @@
+{
+ "task_id": "L2i_naca4412_wingbox",
+ "input_level": "L2",
+ "model": "deepseek-v4-pro",
+ "kind": null,
+ "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef",
+ "clarify": "[\"n_stringers_per_skin 为 0 时，stringer_height、stringer_thickness、stringer_kind、stringer_flange_width 这些长桁细节键应省略；请确认长桁数或删除长桁细节键\"]",
+ "refuse": null,
+ "spec": null,
+ "turns_used": 1,
+ "validation_history": [],
+ "raw_len": 151,
+ "presentation": "spec_json_raw_name",
+ "prompt_arm": "l2_base"
+}
