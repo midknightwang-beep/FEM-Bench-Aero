@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793883016/1793883016；check 1793883306 vs 负控 1793883016",
+   "actual": "C-019 mtime 记录/实际 = 1793883016/1793883016；check 1793883323 vs 负控 1793883016",
    "ok": true,
    "skip": false
   },
@@ -728,9 +728,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 59114,
-   "sha256": "41786ea1c9dd036a0f3ba5cda2fa9cc0c88c52629d70146739da3a64054bfe81",
-   "mtime": 1793882941
+   "size": 61292,
+   "sha256": "2fb7dddec4184809e2cd99226d8d55cb16f43d0ce5d1d2c84de3ef2ac3b1a349",
+   "mtime": 1793883363
   },
   {
    "claim_id": "C-027",
