@@ -168,13 +168,16 @@ def main():
                  break_py, ['--public'], must_red={'S-46'}, must_ex={'S-51'})
 
         # S5 边界②：非 C-013 的 artifact 缺失 ⇒ 引用它的 claim 仍红（豁免不是"整表免检"）
-        # C-041 与 C-038 共用 l2_clarify_dual.json，删掉后两条都必须红且不得被豁免。
+        # 2026-11-05（F-6/R27 重整）起 `l2_clarify_dual.json` 由 C-038 独家持有（官方汇总），
+        # C-041 只挂分模型成绩 ⇒ 删掉它只红 C-038，且**不得**把不持有它的 C-041 拖红
+        # （归属变了，断言跟着换 —— 并顺手钉住「不得殃及」这半边）。
         def drop_artifact(r):
             p = os.path.join(r, 'feagpt_repro', 'reports', 'l2_clarify_dual.json')
             assert os.path.exists(p), '锚点文件不存在，场景无法构造'
             os.remove(p)
-        scenario('S5 边界：删非 C-013 的 artifact ⇒ C-038/C-041 仍红',
-                 drop_artifact, ['--public'], must_red={'C-038', 'C-041'}, must_ex={'S-46'})
+        scenario('S5 边界：删官方汇总 artifact ⇒ C-038 红、C-041 不殃及',
+                 drop_artifact, ['--public'], must_red={'C-038'}, must_ex={'S-46'},
+                 must_not_ex={'C-038'})
 
         # S6 边界①：不加 --public 时 C-013 必须红（豁免不得自动生效）
         scenario('S6 边界：不加 --public 时 C-013 必须红',

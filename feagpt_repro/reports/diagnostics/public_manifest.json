@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-05T22:17:39+08:00",
- "source_head": "0913ec4af248f3ff596073d9613f0bca90d4fa78",
+ "generated_at": "2026-11-05T23:50:19+08:00",
+ "source_head": "2f1cb6d15a78266113d11f1d2b81736a65ea84ce",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 4104,
- "bytes_total": 94786386,
- "n_keep": 3669,
- "bytes_keep": 20051838,
+ "n_total": 4105,
+ "bytes_total": 94858947,
+ "n_keep": 3670,
+ "bytes_keep": 20117013,
  "categories": {
   "KEEP:根目录仓库配置": {
    "n": 2,
@@ -13,7 +13,7 @@
   },
   "内部记忆/应用": {
    "n": 31,
-   "bytes": 650508
+   "bytes": 657894
   },
   "根目录内部材料": {
    "n": 46,
@@ -21,7 +21,7 @@
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
-   "bytes": 3845248
+   "bytes": 3849840
   },
   "KEEP:根目录必需": {
    "n": 3,
@@ -36,8 +36,8 @@
    "bytes": 51098052
   },
   "KEEP:代码与证据": {
-   "n": 3557,
-   "bytes": 16173166
+   "n": 3558,
+   "bytes": 16233749
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -3454,6 +3454,7 @@
   "feagpt_repro/reports/archive/negative_controls_82.json",
   "feagpt_repro/reports/archive/negative_controls_83.json",
   "feagpt_repro/reports/archive/negative_controls_84.json",
+  "feagpt_repro/reports/archive/negative_controls_85.json",
   "feagpt_repro/reports/baseline_scorecard_L1_smoke.json",
   "feagpt_repro/reports/baseline_scorecard_L3_v4.json",
   "feagpt_repro/reports/baseline_scorecard_L3_v5_rescore.json",
@@ -3654,7 +3655,7 @@
   "feagpt_repro/reports/l2_scores_v7_glm.json",
   "feagpt_repro/reports/msr_l3_v4.json",
   "feagpt_repro/reports/msr_l3_v5_rescore.json",
-  "feagpt_repro/reports/negative_controls_85.json",
+  "feagpt_repro/reports/negative_controls_87.json",
   "feagpt_repro/reports/papers/SHA256SUMS",
   "feagpt_repro/reports/papers/nl_human_v4.jsonl",
   "feagpt_repro/reports/papers/nl_human_v5.jsonl",
@@ -4481,6 +4482,12 @@
    "n": 1,
    "markers": [
     "{{VENV_PY}}"
+   ]
+  },
+  "feagpt_repro/negative_controls.py": {
+   "n": 1,
+   "markers": [
+    "{{DATA_ARCHIVE}}"
    ]
   },
   "feagpt_repro/parse_xval_v11_log.py": {
