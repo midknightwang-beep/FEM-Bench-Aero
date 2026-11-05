@@ -3969,6 +3969,165 @@ def main():
                     'actual': _nc85_detail, 'ok': _nc85_ok})
     print(f"  [{'ok ' if _nc85_ok else 'BAD!'}] NC-85 掩码轴全集与排除数（N-36 / S-53e）  {_nc85_detail}")
 
+    # NC-86（F-6，2026-11-05 拍板 A）「`--public` 豁免必须有前提守卫：该撤销时撤销」
+    #   C-013 豁免的理由里自己承诺了公开侧替代物（DATA.md §2 的 GitHub Release 下载）。
+    #   D2 发布后「数据包不可得」的旧前提已死，替代前提 = **DATA.md §2 有真实下载 URL**。
+    #   闸守的是这个不变量：前提死（DATA.md 缺失 / 无 URL / URL 是占位符）⇒ 豁免失效。
+    #   六向：A 真件+前提在 ⇒ 豁免成立；B URL 退化为占位符 ⇒ 不豁免；C DATA.md 缺失 ⇒
+    #   不豁免；D 无下载段 ⇒ 不豁免；E 无 root ⇒ fail-closed 不豁免；F 非占位符 artifact
+    #   （真路径）⇒ 不豁免（R75 边界②的原边界不得被前提守卫顺手放宽）。
+    _nc86_ok = False
+    _nc86_detail = ''
+    try:
+        import tempfile as _tf86
+        import check_claims as _C86
+
+        _PH86 = '{{DATA_ARCHIVE}}/SHA256SUMS.txt'
+
+        def _data_md86(url_text):
+            d = _tf86.mkdtemp(prefix='nc86_')
+            os.makedirs(os.path.join(d, 'FEM-Bench-Aero'))
+            body = '## 2. 获取方式\n\n'
+            if url_text is not None:
+                body += '下载页 %s\n' % url_text
+            with open(os.path.join(d, 'FEM-Bench-Aero', 'DATA.md'), 'w',
+                      encoding='utf-8') as f:
+                f.write(body)
+            return d
+
+        _URL86 = 'https://github.com/midknightwang-beep/FEM-Bench-Aero/releases/tag/data-v1.0-v1.1'
+        # 每项 (tag, 断言成立?, 实际豁免?, why)。断言成立 = 行为符合预期。
+        _h86 = []
+        # A：真实主仓 root（DATA.md 在、URL 在）
+        _ok, _why = _C86.public_exempt_external_artifact(_PH86, os.path.dirname(HERE))
+        _h86.append(('A真件+前提在必豁免', _ok, _ok, _why[:90]))
+        # B：URL 退化为占位符
+        _d = _data_md86('https://github.com/{{OWNER}}/FEM-Bench-Aero/releases/tag/data-v1.0-v1.1')
+        _ok, _why = _C86.public_exempt_external_artifact(_PH86, _d)
+        _h86.append(('B URL占位符必不豁免', not _ok, _ok, _why[:90]))
+        # C：DATA.md 整个缺失
+        _d = _tf86.mkdtemp(prefix='nc86_')
+        _ok, _why = _C86.public_exempt_external_artifact(_PH86, _d)
+        _h86.append(('C DATA.md缺失必不豁免', not _ok, _ok, _why[:90]))
+        # D：DATA.md 在但无下载段
+        _d = _data_md86(None)
+        _ok, _why = _C86.public_exempt_external_artifact(_PH86, _d)
+        _h86.append(('D无下载段必不豁免', not _ok, _ok, _why[:90]))
+        # E：无 root（fail-closed）
+        _ok, _why = _C86.public_exempt_external_artifact(_PH86, None)
+        _h86.append(('E无root必不豁免', not _ok, _ok, _why[:90]))
+        # F（反向）：真路径（非占位符）即便前提在也不豁免
+        _ok, _why = _C86.public_exempt_external_artifact('F:/FEA_Archive_20261024/SHA256SUMS.txt',
+                                                         os.path.dirname(HERE))
+        _h86.append(('F真路径必不豁免', not _ok, _ok, _why[:90]))
+
+        _bad86 = [(t, g, w) for (t, a_ok, g, w) in _h86 if not a_ok]
+        _nc86_ok = not _bad86
+        _nc86_detail = ('; '.join('%s->%s' % (t, ('豁免' if g else '拒')) for t, _a, g, _w in _h86)
+                        if _nc86_ok else
+                        'FAIL: ' + '; '.join('%s 行为%s 不合预期[%s]'
+                                             % (t, '豁免' if g else '拒', w)
+                                             for (t, _a, g, w) in _bad86))
+    except Exception as _e86:
+        _nc86_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e86,)
+
+    results.append({'id': 'NC-86',
+                    'desc': 'F-6 前提守卫：C-013 的 `--public` 豁免必须以「DATA.md §2 有真实 '
+                            'Release 下载 URL」为前提（2026-11-05 拍板 A）——A 真件+前提在必豁免；'
+                            'B URL 退化为占位符 / C DATA.md 缺失 / D 无下载段 / E 无 root'
+                            '（fail-closed）各必不豁免；F 非占位符 artifact 必不豁免（R75②）',
+                    'expect': 'A 豁免；B–F 全部拒绝',
+                    'actual': _nc86_detail, 'ok': _nc86_ok})
+    print(f"  [{'ok ' if _nc86_ok else 'BAD!'}] NC-86 F-6 豁免前提守卫  {_nc86_detail}")
+
+    # NC-87（F-6 连带发现）「claim 行状态列必须是已知状态词：静默消失必须变显式红」
+    #   C-041 行 command 列有一根裸 `|` ⇒ 单元格错位 ⇒ status 不含 active ⇒
+    #   整条 claim 被静默跳过、artifact 检查 0 覆盖，一天无人察觉。
+    #   闸：凡 C-xx 行 status 不含 active/superseded/retracted ⇒ 显式红。
+    #   三向：A 复刻 C-041 事故（裸竖线错位）必须红且**点名**；B 健康行不得红；
+    #   C superseded（非 active 但状态词合法）不得被本闸误伤。
+    _nc87_ok = False
+    _nc87_detail = ''
+    try:
+        import tempfile as _tf87
+        import subprocess as _sp87
+
+        _HDR87 = ('| claim_id | statement | artifact | command | date | verified | '
+                  'coverage | status |\n')
+        _SEP87 = '|---|---|---|---|---|---|---|---|\n'
+        # A：复刻事故 —— command 列里一根裸 `|`，其后所有列右移
+        _BAD87 = ('| C-902 | 测试错位行 | feagpt_repro/reports/x.json | '
+                  '`cmd --out a|b` | 2026-01-01 | GATED | cov | active |\n')
+        # B：健康行（status 合法、artifact 指向 staged root 里真实存在的文件）
+        _GOOD87 = ('| C-901 | 测试健康行 | feagpt_repro/reports/x.json | '
+                   '`cmd --out feagpt_repro/reports/x.json` | 2026-01-01 | GATED | '
+                   'cov | active |\n')
+        # C：superseded —— 非 active 但状态词合法，本闸不得误伤
+        _SUP87 = ('| C-903 | 测试退役行 | feagpt_repro/reports/x.json | '
+                  '`cmd --out feagpt_repro/reports/x.json` | 2026-01-01 | GATED | '
+                  'cov | superseded（已被 C-901 取代） |\n')
+
+        def _stage87(claim_rows):
+            d = _tf87.mkdtemp(prefix='nc87_')
+            os.makedirs(os.path.join(d, 'FEM-Bench-Aero'))
+            os.makedirs(os.path.join(d, 'feagpt_repro', 'reports'))
+            open(os.path.join(d, 'feagpt_repro', 'reports', 'x.json'), 'w').write('{}')
+            with open(os.path.join(d, 'FEM-Bench-Aero', 'CLAIMS.md'), 'w',
+                      encoding='utf-8') as f:
+                f.write(_HDR87 + _SEP87 + ''.join(claim_rows))
+            return d
+
+        def _run87(d, js):
+            _r = _sp87.run([sys.executable, os.path.join(HERE, 'check_claims.py'),
+                            '--claims', os.path.join(d, 'FEM-Bench-Aero', 'CLAIMS.md'),
+                            '--root', d, '--json', js, '--no-semantic'],
+                           cwd=HERE, capture_output=True, text=True,
+                           encoding='utf-8', errors='replace')
+            if not os.path.exists(js):
+                return None, '未产出 JSON（rc=%s）%s' % (_r.returncode, (_r.stderr or '')[-200:])
+            return json.load(open(js, encoding='utf-8')), None
+
+        _MARK = '单元格错位'
+        _h87 = []
+        # A：错位行必须显式红且点名
+        _d = _stage87([_BAD87, _GOOD87])
+        _j, _err = _run87(_d, os.path.join(_d, 'cc.json'))
+        _recs = [x for x in (_j or {}).get('results', []) if x.get('claim_id') == 'C-902']
+        _hit = any(any(_MARK in str(p) for p in (x.get('problems') or [])) for x in _recs)
+        _h87.append(('A错位行显式红且点名', bool(_j) and _hit, _err or
+                     ('点名' if _hit else '未点名 recs=%s' % _recs[:1])))
+        # B：健康行不得被本闸误伤
+        _hit_b = any(any(_MARK in str(p) for p in (x.get('problems') or []))
+                     for x in (_j or {}).get('results', []) if x.get('claim_id') == 'C-901')
+        _h87.append(('B健康行不误伤', bool(_j) and not _hit_b,
+                     _err or ('误伤' if _hit_b else '干净')))
+        # C：superseded 状态词合法 ⇒ 不得红在本闸
+        _d = _stage87([_SUP87])
+        _j2, _err2 = _run87(_d, os.path.join(_d, 'cc.json'))
+        _hit_c = any(any(_MARK in str(p) for p in (x.get('problems') or []))
+                     for x in (_j2 or {}).get('results', []) if x.get('claim_id') == 'C-903')
+        _h87.append(('C superseded不误伤', bool(_j2) and not _hit_c,
+                     _err2 or ('误伤' if _hit_c else '干净')))
+
+        _exp87 = [True, True, True]
+        _bad87 = [(t, o, w) for (t, o, w), e in zip(_h87, _exp87) if o != e]
+        _nc87_ok = not _bad87
+        _nc87_detail = ('; '.join('%s->%s' % (t, ('过' if o else '败')) for t, o, _w in _h87)
+                        if _nc87_ok else
+                        'FAIL: ' + '; '.join('%s 期望%s 实得%s[%s]'
+                                             % (t, '过' if e else '败', '过' if o else '败', w)
+                                             for (t, o, w), e in zip(_h87, _exp87) if o != e))
+    except Exception as _e87:
+        _nc87_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e87,)
+
+    results.append({'id': 'NC-87',
+                    'desc': 'F-6 连带发现：claim 行 status 列必须含已知状态词，单元格错位'
+                            '（裸 `|`）导致的静默跳过必须变显式红（C-041 事故，2026-11-05）——'
+                            'A 复刻错位行必须红且点名；B 健康行不误伤；C superseded 不误伤',
+                    'expect': 'A 点名红；B/C 干净',
+                    'actual': _nc87_detail, 'ok': _nc87_ok})
+    print(f"  [{'ok ' if _nc87_ok else 'BAD!'}] NC-87 状态列闸（C-041 事故）  {_nc87_detail}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],

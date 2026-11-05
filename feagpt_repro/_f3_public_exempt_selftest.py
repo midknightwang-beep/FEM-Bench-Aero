@@ -19,10 +19,14 @@ R75 三条边界对应的场景：
                   S4 `PY=` 是裸 python 时 S-46 不得豁免
                   S5 非 C-013 的 artifact 缺失不得豁免
   ③ 不计入通过  → S1 断言豁免项 skip=True 且带 reason、且不计入语义项通过数
+F-6 前提守卫（2026-11-05 拍板 A）对应的场景：
+  S7 DATA.md 下载 URL 退化为占位符 ⇒ C-013 不得豁免（前提死亡）
+  S8 DATA.md 整个不在公开集 ⇒ 同上
 """
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -57,8 +61,15 @@ def _restore(repo):
 def _run(repo, extra, js):
     if os.path.exists(js):
         os.remove(js)
-    r = subprocess.run([PY, 'check_claims.py', '--json', js] + extra,
-                       cwd=os.path.join(repo, 'feagpt_repro'),
+    # ★ 2026-11-05（F-6 途中修）：跑**主仓当前的** check_claims.py（--root/--claims 指向副本），
+    #   不再跑副本里冻结的旧版。首版用 cwd=副本 + 相对路径调脚本，跑的是快照冻结时的旧代码
+    #   —— 代码演进后自检永远在验旧逻辑（S7/S8 首跑就是被这个坑的：新判据在副本里根本不存在）。
+    #   「自检验的是当前代码 × 快照数据」，两样都必须指名道姓。
+    r = subprocess.run([PY, os.path.join(HERE, 'check_claims.py'),
+                        '--root', repo,
+                        '--claims', os.path.join(repo, 'FEM-Bench-Aero', 'CLAIMS.md'),
+                        '--json', js] + extra,
+                       cwd=HERE,
                        capture_output=True, text=True, encoding='utf-8', errors='replace')
     if not os.path.exists(js):
         # 崩了（rc!=0 且没产出 JSON）也要说清楚，不能当成「没有红项」
@@ -168,6 +179,29 @@ def main():
         # S6 边界①：不加 --public 时 C-013 必须红（豁免不得自动生效）
         scenario('S6 边界：不加 --public 时 C-013 必须红',
                  None, [], must_red={'C-013'}, must_ex=set(), must_not_ex={'C-013'})
+
+        # S7 / S8（F-6 前提守卫，2026-11-05 拍板 A）：C-013 的豁免**有前提** ——
+        # DATA.md §2 必须有真实 Release 下载 URL（公开侧替代物在，豁免才有存在理由）。
+        # 前提死亡 ⇒ 豁免自动失效 ⇒ C-013 必须红且不得被豁免；其余豁免项不受牵连
+        # （前提是 C-013 专属的，不得顺手把别的豁免也关掉）。
+        def kill_download_url(r):
+            p = os.path.join(r, 'FEM-Bench-Aero', 'DATA.md')
+            t = open(p, encoding='utf-8').read()
+            t2 = re.sub(r'https?://github\.com/[^\s\)\]>]+/releases/(?:tag|download)/data-v[^\s\)\]>]*',
+                        '{{DATA_RELEASE_UNAVAILABLE}}', t)
+            assert t2 != t, 'DATA.md 里没找到 Release URL，场景无法构造'
+            open(p, 'w', encoding='utf-8', newline='').write(t2)
+        scenario('S7 F-6：DATA.md 下载 URL 退化为占位符 ⇒ C-013 不得豁免',
+                 kill_download_url, ['--public'],
+                 must_red={'C-013'}, must_ex={'S-46'}, must_not_ex={'C-013'})
+
+        def drop_data_md(r):
+            p = os.path.join(r, 'FEM-Bench-Aero', 'DATA.md')
+            assert os.path.exists(p), 'DATA.md 不在快照里，场景无法构造'
+            os.remove(p)
+        scenario('S8 F-6：DATA.md 整个不在公开集 ⇒ C-013 不得豁免',
+                 drop_data_md, ['--public'],
+                 must_red={'C-013'}, must_ex={'S-46'}, must_not_ex={'C-013'})
     finally:
         shutil.rmtree(td, ignore_errors=True)
 

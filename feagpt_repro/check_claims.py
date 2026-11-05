@@ -2120,8 +2120,10 @@ def n35_key_guard_state(root):
 #      （协议文件写死计数、`PY=` 是裸 `python`、非 C-013 的 artifact 缺失）**仍红**；
 #   ③ 不计入通过：豁免项标 `exempt` + `reason`，单列计数，不得当作绿数引用。
 _PUBLIC_EXEMPT_REASON = {
-    'C-013': '该 claim 的 artifact 是本机外部归档的 SHA256SUMS.txt，公开集按拍板不含它'
-             '（D2 发布数据包后应由下载地址替代）',
+    'C-013': '该 claim 的 artifact 是本机外部归档的 SHA256SUMS.txt，本机路径不随公开集分发；'
+             '公开获取由 DATA.md §2 的 GitHub Release 承担 —— **豁免前提**：该下载段必须'
+             '真实存在（F-6 前提守卫，2026-11-05 拍板 A）：前提死亡（DATA.md 缺失 / 下载段'
+             '被删 / URL 退化为占位符）⇒ 豁免自动失效 ⇒ 本项在公开集变红，逼人工处置',
     'S-46':  'INDEX 的 `PY=` 在渲染层被替换为占位符（本机路径不外泄），venv 特征不可判',
     'S-51':  'AGENTS.md / CLAUDE.md 按 D4 拍板①移出公开集，判据对象不存在',
     'S-56':  '同上：协议文件不在公开集',
@@ -2183,17 +2185,41 @@ def public_exempt_reason(sid, detail, root):
     return False, ''
 
 
-def public_exempt_external_artifact(rel):
-    """C-013 的豁免判定：**只有当 artifact 是渲染层占位符**时才豁免。
+def public_exempt_external_artifact(rel, root=None):
+    """C-013 的豁免判定：**artifact 是渲染层占位符** 且 **公开获取前提仍活着** 才豁免。
 
     为什么不用「cid == C-013 且 exists == False」：那样等于给这一条 claim 免检。
     占位符（`{{DATA_ARCHIVE}}/SHA256SUMS.txt`）才是「原本指向本机外部归档、
     公开集不含」的**证据**；如果它是普通相对路径却不存在，那是真缺失，该红。
+
+    F-6（2026-11-05 拍板 A）：豁免不是无条件的。D2 发布前它的前提是「数据包不可得」，
+    该前提已随 GitHub Release（`data-v1.0-v1.1`）发布而消失；替代前提 = **DATA.md §2
+    必须有真实 Release 下载 URL**（公开侧替代物在，豁免才有存在理由）。前提死亡 ⇒
+    不豁免 ⇒ C-013 在公开集变红，逼人工处置。这就是「该撤销时撤销」的机器守卫：
+    能判的不变量（替代物存在），优于需维护的名单（手改豁免清单）。
+    root 缺省/读不出一律 **fail-closed**（不豁免），绝不 fail-open。
     """
     a = (rel or '').strip()
-    if '{{' in a and '}}' in a:
-        return True, _PUBLIC_EXEMPT_REASON['C-013'] + '（实测 artifact=%s）' % a
-    return False, 'artifact %r 不是渲染层占位符 ⇒ 缺失是真问题，不豁免' % a
+    if not ('{{' in a and '}}' in a):
+        return False, 'artifact %r 不是渲染层占位符 ⇒ 缺失是真问题，不豁免' % a
+    if not root:
+        return False, '调用方未提供 root ⇒ 无法验证公开获取前提，不豁免（fail-closed）'
+    dm = os.path.join(os.path.abspath(root), 'FEM-Bench-Aero', 'DATA.md')
+    if not os.path.exists(dm):
+        return False, ('F-6 前提死亡：公开集里没有 FEM-Bench-Aero/DATA.md，'
+                       '豁免所依赖的公开获取替代物不存在 ⇒ 不豁免')
+    try:
+        txt = open(dm, encoding='utf-8', errors='replace').read()
+    except OSError:
+        return False, 'DATA.md 读不出 ⇒ 无法验证前提，不豁免（fail-closed）'
+    urls = re.findall(r'github\.com/[^\s\)\]>]+/releases/(?:tag|download)/data-v[^\s\)\]>]*',
+                      txt)
+    real = [u for u in urls if '{{' not in u and '}}' not in u]
+    if not real:
+        return False, ('F-6 前提死亡：DATA.md §2 无真实 Release 下载 URL'
+                       '（实测 %d 条，全为占位符或缺失）⇒ 不豁免' % len(urls))
+    return True, (_PUBLIC_EXEMPT_REASON['C-013']
+                  + '（实测 artifact=%s；前提在：DATA.md §2 %s）' % (a, real[0]))
 
 
 def semantic_checks(root, rows, skip_hook_guard=False, public_mode=False):
@@ -3024,7 +3050,8 @@ def main():
                     help='只做结构检查（旧行为）')
     ap.add_argument('--public', action='store_true',
                     help='公开分发集模式：**显式**豁免 5 项「公开集里结构上不可能满足」的判据'
-                         '（C-013 外部归档 / S-46 venv 路径被脱敏 / S-51、S-56 协议文件移出 / '
+                         '（C-013 外部归档（前提：DATA.md §2 有真实 Release 下载 URL，F-6 守卫）'
+                         ' / S-46 venv 路径被脱敏 / S-51、S-56 协议文件移出 / '
                          'S-61 无 .git/hooks）。按 R69：标 exempt + reason、不计入通过数，'
                          '且**只在失败原因确实是公开集造成时**才生效 —— 判据真的违规仍红。'
                          '不加本参数时行为与旧版完全一致')
@@ -3044,6 +3071,24 @@ def main():
               or (args.include_nonactive and r.get('status'))]
     results, fails = [], []
     seen = {}
+
+    # ── F-6 连带发现（2026-11-05）：状态列闸，防 claim **静默消失** ──
+    # C-041 行的 command 列里有一根裸 `|` ⇒ 表格单元格错位 ⇒ status 列吃进了别的文本
+    # ⇒ 不含 active ⇒ 整条 claim 被下面的循环 `continue` 掉，artifact 检查 0 覆盖，
+    # 且没有任何信号。「闸自己漏了比没闸更危险」：静默跳过必须变成显式红。
+    # 判据落在**结构**上（status 列必须含已知状态词），不落在名单上（不用手抄哪些行对）。
+    _KNOWN_STATUS = ('active', 'superseded', 'retracted')
+    for _r in rows:
+        _cid = _r.get('claim_id', '')
+        if not re.match(r'^C-\d+$', _cid):
+            continue
+        _st = (_r.get('status') or '').lower()
+        if not any(k in _st for k in _KNOWN_STATUS):
+            results.append({'claim_id': _cid, 'artifact': _r.get('artifact'), 'ok': False,
+                            'problems': ['status 列不含 active/superseded/retracted ⇒ '
+                                         '疑似表格单元格错位（裸 `|`），该 claim 此前被静默跳过'
+                                         '（C-041 事故，2026-11-05 登记）']})
+            fails.append(f'{_cid}: status 列异常（疑似单元格错位，claim 被静默跳过）')
 
     for r in rows:
         cid = r.get('claim_id', '?')
@@ -3097,8 +3142,10 @@ def main():
             # T-F3：C-013 的 artifact 是本机外部归档、公开集按拍板不含 ⇒ `--public` 下豁免。
             # 豁免条件**只认「artifact 是渲染层占位符」**（`{{DATA_ARCHIVE}}/...`），
             # 不认「cid==C-013 且不存在」—— 后者等于给这条 claim 免检（R75 边界②）。
+            # F-6（2026-11-05）：再加**前提守卫** —— DATA.md §2 必须有真实 Release 下载
+            # URL，否则不豁免（fail-closed）。传 root，绝不省略。
             if problems and public_mode and cid == 'C-013' and not exists:
-                _ex, _why = public_exempt_external_artifact(rel)
+                _ex, _why = public_exempt_external_artifact(rel, root)
                 if _ex:
                     rec.update({'ok': True, 'exempt': True, 'reason': _why})
                     problems = []
