@@ -1,27 +1,27 @@
 {
- "generated_at": "2026-11-05T00:14:02+08:00",
- "source_head": "33d47c3050a1e57de71a625b166bd85095c22ec1",
+ "generated_at": "2026-11-05T21:00:57+08:00",
+ "source_head": "56ba8b78774b770311686afb165ca5426c603f15",
  "rule": "whitelist-default-deny（详见 task_d4_contract.md §2）",
- "n_total": 3890,
- "bytes_total": 93074429,
- "n_keep": 3456,
- "bytes_keep": 18356426,
+ "n_total": 3931,
+ "bytes_total": 93505027,
+ "n_keep": 3496,
+ "bytes_keep": 18774530,
  "categories": {
   "KEEP:根目录仓库配置": {
    "n": 2,
    "bytes": 3432
   },
   "内部记忆/应用": {
-   "n": 30,
-   "bytes": 637455
+   "n": 31,
+   "bytes": 646457
   },
   "根目录内部材料": {
    "n": 46,
-   "bytes": 11171794
+   "bytes": 11175286
   },
   "KEEP:bench 文档与数据": {
    "n": 103,
-   "bytes": 3826635
+   "bytes": 3830813
   },
   "KEEP:根目录必需": {
    "n": 3,
@@ -36,8 +36,8 @@
    "bytes": 51098052
   },
   "KEEP:代码与证据": {
-   "n": 3344,
-   "bytes": 14496367
+   "n": 3384,
+   "bytes": 14910293
   },
   "KEEP:引用闭包拉回": {
    "n": 4,
@@ -231,6 +231,10 @@
   "feagpt_repro/_manifest_b6.log",
   "feagpt_repro/_mkds_abq_b6.log",
   "feagpt_repro/_mkds_ccx_b6.log",
+  "feagpt_repro/_n35_arm_run.py",
+  "feagpt_repro/_n35_bridge.py",
+  "feagpt_repro/_n35_key_guard.py",
+  "feagpt_repro/_n35_key_split_check.py",
   "feagpt_repro/_paths.py",
   "feagpt_repro/_probe_expand.py",
   "feagpt_repro/_probe_interp_w5b3b.py",
@@ -3210,8 +3214,40 @@
   "feagpt_repro/reports/archive/baseline_scorecard_L3_v7_glm__pre_p1a.json",
   "feagpt_repro/reports/archive/bootstrap_ci_L3_v7_ds__pre_p1a.json",
   "feagpt_repro/reports/archive/bootstrap_ci_L3_v7_glm__pre_p1a.json",
+  "feagpt_repro/reports/archive/l27c_v3_arm_ds_base_vs_strict__pre_n35.json",
+  "feagpt_repro/reports/archive/l27c_v3_arm_ds_base_vs_strict__pre_n35.md",
+  "feagpt_repro/reports/archive/l27c_v3_arm_ds_strict_vs_strictmeshfix__pre_n35.json",
+  "feagpt_repro/reports/archive/l27c_v3_arm_ds_strict_vs_strictmeshfix__pre_n35.md",
+  "feagpt_repro/reports/archive/l27c_v3_arm_glm_base_vs_strict__pre_n35.json",
+  "feagpt_repro/reports/archive/l27c_v3_arm_glm_base_vs_strict__pre_n35.md",
+  "feagpt_repro/reports/archive/l27c_v3_arm_glm_strict_vs_strictmeshfix__pre_n35.json",
+  "feagpt_repro/reports/archive/l27c_v3_arm_glm_strict_vs_strictmeshfix__pre_n35.md",
+  "feagpt_repro/reports/archive/l27c_v3_repro_ds__pre_n35.json",
+  "feagpt_repro/reports/archive/l27c_v3_repro_ds__pre_n35.md",
+  "feagpt_repro/reports/archive/l27c_v3_repro_glm__pre_n35.json",
+  "feagpt_repro/reports/archive/l27c_v3_repro_glm__pre_n35.md",
+  "feagpt_repro/reports/archive/l27c_v4_sysfix_ds__pre_n35.json",
+  "feagpt_repro/reports/archive/l27c_v4_sysfix_ds__pre_n35.md",
+  "feagpt_repro/reports/archive/l27c_v4_sysfix_glm__pre_n35.json",
+  "feagpt_repro/reports/archive/l27c_v4_sysfix_glm__pre_n35.md",
   "feagpt_repro/reports/archive/l2_clarify_dual__pre_sysfix.json",
   "feagpt_repro/reports/archive/l2_clarify_dual__pre_sysfix.md",
+  "feagpt_repro/reports/archive/l2i_v1_scores_ds__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v1_scores_glm__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v2_scores_ds__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v2_scores_glm__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v3s_scores_ds__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v3s_scores_glm__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v3sm2_scores_ds__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v3sm2_scores_glm__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v3sm_scores_ds__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v3sm_scores_glm__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v4base_scores_ds__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v4base_scores_glm__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v4s2_scores_ds__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v4s2_scores_glm__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v4s_scores_ds__pre_n35.json",
+  "feagpt_repro/reports/archive/l2i_v4s_scores_glm__pre_n35.json",
   "feagpt_repro/reports/archive/negative_controls_31.json",
   "feagpt_repro/reports/archive/negative_controls_37.json",
   "feagpt_repro/reports/archive/negative_controls_39.json",
@@ -3361,6 +3397,9 @@
   "feagpt_repro/reports/diagnostics/msr_v6c_dsv4pro_run.log",
   "feagpt_repro/reports/diagnostics/msr_v6c_reuse.log",
   "feagpt_repro/reports/diagnostics/msr_v6c_run.log",
+  "feagpt_repro/reports/diagnostics/n35_bridge.json",
+  "feagpt_repro/reports/diagnostics/n35_bridge.md",
+  "feagpt_repro/reports/diagnostics/n35_key_split.json",
   "feagpt_repro/reports/diagnostics/negative_controls_run.log",
   "feagpt_repro/reports/diagnostics/overclarify_p1.json",
   "feagpt_repro/reports/diagnostics/overclarify_p1.md",
@@ -3445,6 +3484,7 @@
   "feagpt_repro/reports/msr_l3_v4.json",
   "feagpt_repro/reports/msr_l3_v5_rescore.json",
   "feagpt_repro/reports/negative_controls_83.json",
+  "feagpt_repro/reports/negative_controls_84.json",
   "feagpt_repro/reports/papers/SHA256SUMS",
   "feagpt_repro/reports/papers/nl_human_v4.jsonl",
   "feagpt_repro/reports/papers/nl_human_v5.jsonl",
@@ -3544,6 +3584,7 @@
    ".workbuddy/memory/2026-11-02.md",
    ".workbuddy/memory/2026-11-03.md",
    ".workbuddy/memory/2026-11-04.md",
+   ".workbuddy/memory/2026-11-05.md",
    ".workbuddy/memory/MEMORY.md",
    ".workbuddy/memory/MEMORY_ARCHIVE_20261024_full.md",
    ".workbuddy/memory/MEMORY_ARCHIVE_20261027_pre_compact.md",
