@@ -36,8 +36,12 @@
 
 | 模型 | `strata.informative` | CI95（Wilson, n=16） | spec_ok | spec_bad | clarify_wrong |
 |---|---|---|---|---|---|
-| glm-5.3-flash | **2/16 = 12.5%** | [3.5, 36.0] | 2 | 12 | 2 |
-| deepseek-v4-pro | **3/16 = 18.8%** | [6.6, 43.0] | 3 | 4 | 9 |
+| glm-5.3-flash | **3/16 = 18.8%** | [6.6, 43.0] | 3 | 11 | 2 |
+| deepseek-v4-pro | **4/16 = 25.0%** | [10.2, 49.5] | 4 | 3 | 9 |
+
+> **★ 本表为 2026-11-05 N-35 修正后的口径**（`extra` 的 7 个数据集记账键不再判分）。旧口径为
+> glm 2/16 = 12.5% [3.5, 36.0]（spec_ok 2 / spec_bad 12）、ds 3/16 = 18.8% [6.6, 43.0]（spec_ok 3 / spec_bad 4）。
+> 旧代成绩单归档在 `reports/archive/l2i_v2_scores_*__pre_n35.json`，对照见 `n35_bridge.md`。
 
 `strata.clarified` 两层都是 `0/0`，`_coverage = informative_only` —— **本卷只覆盖「信息完备」层，另一层的 `0/0` 不是 0 分**。
 
@@ -47,10 +51,10 @@
 |---|---|---|
 | wingbox | 2/4 | 3/4 |
 | open_hole_panel | 0/4 | 0/4 |
-| fuselage_barrel | 0/4 | 0/4 |
+| fuselage_barrel | **1/4** | **1/4** |
 | stiffened_panel | 0/4 | 0/4 |
 
-> wingbox 是唯一有通过项的族。**不解释**——两模型合计 5 个通过里 5 个都在 wingbox，但这既可能是「翼盒 spec 更规整」，也可能是 n=4 的偶然。**记为待查，不当结论**。
+> wingbox 仍是主力（两模型合计 **7** 个通过里 **5** 个在它），但 **fuselage_barrel 各 1 条**在 N-35 修正后也进账了 —— 旧口径下这两条被判成 spec_bad，失败字段是 `extra.split_tag` / `v11_bracket` 这类数据集记账键。**不解释成「柱壳更容易」**：既可能是族特性、也可能是 n=4 的偶然。记为待查，不当结论。
 
 ---
 

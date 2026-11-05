@@ -16,32 +16,32 @@
  },
  "n_paired": 16,
  "passed": {
-  "base": 2,
+  "base": 3,
   "strict": 10,
-  "pct_base": 12.5,
+  "pct_base": 18.8,
   "pct_strict": 62.5
  },
  "agreement": {
-  "same_category": 7,
+  "same_category": 8,
   "n": 16,
-  "pct": 43.8,
-  "flipped_pass": 8
+  "pct": 50.0,
+  "flipped_pass": 7
  },
  "matrix": {
   "clarify_wrong->spec_bad": 1,
   "clarify_wrong->spec_ok": 1,
   "spec_bad->spec_bad": 5,
-  "spec_bad->spec_ok": 7,
-  "spec_ok->spec_ok": 2
+  "spec_bad->spec_ok": 6,
+  "spec_ok->spec_ok": 3
  },
  "mcnemar": {
   "base_pass_strict_fail": 0,
-  "base_fail_strict_pass": 8,
-  "p_exact_two_sided": 0.0078125,
+  "base_fail_strict_pass": 7,
+  "p_exact_two_sided": 0.015625,
   "note": "配对数据用精确 McNemar；b+c==0 时 p=1.0。"
  },
  "transcription_errors": {
-  "base_tasks_with_given_key_broken": 12,
+  "base_tasks_with_given_key_broken": 11,
   "strict_tasks_with_given_key_broken": 5,
   "note": "「题面已给该键、输出却判错」= 转写错误（strict 引导的直接作用面）。"
  },
@@ -64,20 +64,19 @@
     "mesh.refine_at_leading_edge",
     "mesh.size_chord",
     "mesh.size_span",
-    "extra.moment_axis",
-    "extra.shear_axis"
+    "mesh.size (not in gold)"
    ],
    "strict_failed_fields": [],
    "base_failed_given_keys": [
-    "extra.moment_axis",
-    "extra.shear_axis",
     "mesh.leading_edge_threshold",
     "mesh.refine_at_leading_edge",
     "mesh.size_chord",
     "mesh.size_span"
    ],
    "strict_failed_given_keys": [],
-   "base_failed_absent_keys": [],
+   "base_failed_absent_keys": [
+    "mesh.size (not in gold)"
+   ],
    "strict_failed_absent_keys": [],
    "base_clarify": null,
    "strict_clarify": null,
@@ -97,20 +96,19 @@
     "mesh.refine_at_leading_edge",
     "mesh.size_chord",
     "mesh.size_span",
-    "extra.moment_axis",
-    "extra.shear_axis"
+    "mesh.size (not in gold)"
    ],
    "strict_failed_fields": [],
    "base_failed_given_keys": [
-    "extra.moment_axis",
-    "extra.shear_axis",
     "mesh.leading_edge_threshold",
     "mesh.refine_at_leading_edge",
     "mesh.size_chord",
     "mesh.size_span"
    ],
    "strict_failed_given_keys": [],
-   "base_failed_absent_keys": [],
+   "base_failed_absent_keys": [
+    "mesh.size (not in gold)"
+   ],
    "strict_failed_absent_keys": [],
    "base_clarify": null,
    "strict_clarify": null,
@@ -130,20 +128,19 @@
     "mesh.refine_at_leading_edge",
     "mesh.size_chord",
     "mesh.size_span",
-    "extra.moment_axis",
-    "extra.shear_axis"
+    "mesh.size (not in gold)"
    ],
    "strict_failed_fields": [],
    "base_failed_given_keys": [
-    "extra.moment_axis",
-    "extra.shear_axis",
     "mesh.leading_edge_threshold",
     "mesh.refine_at_leading_edge",
     "mesh.size_chord",
     "mesh.size_span"
    ],
    "strict_failed_given_keys": [],
-   "base_failed_absent_keys": [],
+   "base_failed_absent_keys": [
+    "mesh.size (not in gold)"
+   ],
    "strict_failed_absent_keys": [],
    "base_clarify": null,
    "strict_clarify": null,
@@ -154,19 +151,13 @@
    "task_id": "L2i_fuselage_barrel_d2000_l2000_str8_frm3",
    "family": "fuselage_barrel",
    "split_v2": "train",
-   "base_category": "spec_bad",
+   "base_category": "spec_ok",
    "strict_category": "spec_ok",
-   "base_pass": false,
+   "base_pass": true,
    "strict_pass": true,
-   "base_failed_fields": [
-    "extra.moment_axis",
-    "extra.shear_axis"
-   ],
+   "base_failed_fields": [],
    "strict_failed_fields": [],
-   "base_failed_given_keys": [
-    "extra.moment_axis",
-    "extra.shear_axis"
-   ],
+   "base_failed_given_keys": [],
    "strict_failed_given_keys": [],
    "base_failed_absent_keys": [],
    "strict_failed_absent_keys": [],

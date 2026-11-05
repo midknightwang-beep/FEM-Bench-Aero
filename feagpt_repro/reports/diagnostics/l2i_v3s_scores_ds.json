@@ -12,19 +12,19 @@
  "n_candidates": 16,
  "n_missing": 0,
  "category_counts": {
-  "spec_ok": 8,
+  "spec_ok": 13,
   "clarify_wrong": 1,
-  "spec_bad": 7
+  "spec_bad": 2
  },
  "clarify_all": {
   "n": 16,
-  "passed": 8,
-  "pct": 50.0,
+  "passed": 13,
+  "pct": 81.2,
   "by_family": {
    "fuselage_barrel": {
     "n": 4,
-    "passed": 0,
-    "pct": 0.0
+    "passed": 4,
+    "pct": 100.0
    },
    "open_hole_panel": {
     "n": 4,
@@ -33,8 +33,8 @@
    },
    "stiffened_panel": {
     "n": 4,
-    "passed": 2,
-    "pct": 50.0
+    "passed": 3,
+    "pct": 75.0
    },
    "wingbox": {
     "n": 4,
@@ -46,13 +46,13 @@
  },
  "clarify_informative": {
   "n": 16,
-  "passed": 8,
-  "pct": 50.0,
+  "passed": 13,
+  "pct": 81.2,
   "by_family": {
    "fuselage_barrel": {
     "n": 4,
-    "passed": 0,
-    "pct": 0.0
+    "passed": 4,
+    "pct": 100.0
    },
    "open_hole_panel": {
     "n": 4,
@@ -61,8 +61,8 @@
    },
    "stiffened_panel": {
     "n": 4,
-    "passed": 2,
-    "pct": 50.0
+    "passed": 3,
+    "pct": 75.0
    },
    "wingbox": {
     "n": 4,
@@ -82,13 +82,13 @@
  "strata": {
   "informative": {
    "n": 16,
-   "passed": 8,
-   "pct": 50.0,
+   "passed": 13,
+   "pct": 81.2,
    "by_family": {
     "fuselage_barrel": {
      "n": 4,
-     "passed": 0,
-     "pct": 0.0
+     "passed": 4,
+     "pct": 100.0
     },
     "open_hole_panel": {
      "n": 4,
@@ -97,8 +97,8 @@
     },
     "stiffened_panel": {
      "n": 4,
-     "passed": 2,
-     "pct": 50.0
+     "passed": 3,
+     "pct": 75.0
     },
     "wingbox": {
      "n": 4,
@@ -134,9 +134,9 @@
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 41,
+    "n_fields": 40,
     "n_fail": 0,
-    "n_fields_gated": 39,
+    "n_fields_gated": 38,
     "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
@@ -152,9 +152,9 @@
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 44,
+    "n_fields": 40,
     "n_fail": 0,
-    "n_fields_gated": 42,
+    "n_fields_gated": 38,
     "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
@@ -170,9 +170,9 @@
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 41,
+    "n_fields": 40,
     "n_fail": 0,
-    "n_fields_gated": 39,
+    "n_fields_gated": 38,
     "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
@@ -271,18 +271,15 @@
    "family": "fuselage_barrel",
    "stratum": "informative",
    "omitted_field": null,
-   "category": "spec_bad",
-   "pass": false,
+   "category": "spec_ok",
+   "pass": true,
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 34,
-    "n_fail": 2,
-    "n_fields_gated": 32,
-    "failed_fields": [
-     "extra.moment_axis",
-     "extra.shear_axis"
-    ],
+    "n_fields": 32,
+    "n_fail": 0,
+    "n_fields_gated": 30,
+    "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
    }
@@ -292,18 +289,15 @@
    "family": "fuselage_barrel",
    "stratum": "informative",
    "omitted_field": null,
-   "category": "spec_bad",
-   "pass": false,
+   "category": "spec_ok",
+   "pass": true,
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 34,
-    "n_fail": 2,
-    "n_fields_gated": 32,
-    "failed_fields": [
-     "extra.moment_axis",
-     "extra.shear_axis"
-    ],
+    "n_fields": 32,
+    "n_fail": 0,
+    "n_fields_gated": 30,
+    "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
    }
@@ -313,18 +307,15 @@
    "family": "fuselage_barrel",
    "stratum": "informative",
    "omitted_field": null,
-   "category": "spec_bad",
-   "pass": false,
+   "category": "spec_ok",
+   "pass": true,
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 34,
-    "n_fail": 2,
-    "n_fields_gated": 32,
-    "failed_fields": [
-     "extra.moment_axis",
-     "extra.shear_axis"
-    ],
+    "n_fields": 32,
+    "n_fail": 0,
+    "n_fields_gated": 30,
+    "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
    }
@@ -334,19 +325,15 @@
    "family": "fuselage_barrel",
    "stratum": "informative",
    "omitted_field": null,
-   "category": "spec_bad",
-   "pass": false,
+   "category": "spec_ok",
+   "pass": true,
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 37,
-    "n_fail": 3,
-    "n_fields_gated": 35,
-    "failed_fields": [
-     "extra.split_tag",
-     "extra.v11_bracket",
-     "extra.v11_template"
-    ],
+    "n_fields": 32,
+    "n_fail": 0,
+    "n_fields_gated": 30,
+    "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
    }
@@ -412,20 +399,15 @@
    "family": "stiffened_panel",
    "stratum": "informative",
    "omitted_field": null,
-   "category": "spec_bad",
-   "pass": false,
+   "category": "spec_ok",
+   "pass": true,
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 33,
-    "n_fail": 4,
-    "n_fields_gated": 31,
-    "failed_fields": [
-     "extra.split_tag",
-     "extra.v11_bracket",
-     "extra.v11_interior_holdout",
-     "extra.v11_template"
-    ],
+    "n_fields": 29,
+    "n_fail": 0,
+    "n_fields_gated": 27,
+    "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
    }

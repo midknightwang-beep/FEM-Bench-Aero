@@ -2,18 +2,18 @@
 
 - base：`candidates_l2i_v2_glm` prompt_sha `03129c56d83b…`
 - strict：`candidates_l2i_v3s_glm` prompt_sha `99466166dc04…`
-- 通过：base **2/16**（12.5%）→ strict **10/16**（62.5%）
-- 配对：base对&strict错 **0** / base错&strict对 **8** ⇒ McNemar 精确双侧 **p = 0.0078**
-- 判类逐条相同 **7/16**（43.8%），pass 翻转 **8** 条
-- 转写错误（题面已给却被改坏）题数：base **12** → strict **5**
+- 通过：base **3/16**（18.8%）→ strict **10/16**（62.5%）
+- 配对：base对&strict错 **0** / base错&strict对 **7** ⇒ McNemar 精确双侧 **p = 0.0156**
+- 判类逐条相同 **8/16**（50.0%），pass 翻转 **7** 条
+- 转写错误（题面已给却被改坏）题数：base **11** → strict **5**
 - 追问数（本卷一律记错）：base **2** → strict **0**
 
 | task_id | 族 | split | base | strict | base 失败字段 | strict 失败字段 |
 |---|---|---|---|---|---|---|
-| `L2i_fuselage_barrel_d1600_l1600_str8_frm3` | fuselage_barrel | extrapolation_test | spec_bad | spec_ok | mesh.leading_edge_threshold, mesh.refine_at_leading_edge, mesh.size_chord, mesh.size_span, extra.moment_axis, extra.shear_axis | — |
-| `L2i_fuselage_barrel_d1800_l2000_str8_frm3` | fuselage_barrel | val | spec_bad | spec_ok | mesh.leading_edge_threshold, mesh.refine_at_leading_edge, mesh.size_chord, mesh.size_span, extra.moment_axis, extra.shear_axis | — |
-| `L2i_fuselage_barrel_d2000_l1800_str8_frm3` | fuselage_barrel | extrapolation_test | spec_bad | spec_ok | mesh.leading_edge_threshold, mesh.refine_at_leading_edge, mesh.size_chord, mesh.size_span, extra.moment_axis, extra.shear_axis | — |
-| `L2i_fuselage_barrel_d2000_l2000_str8_frm3` | fuselage_barrel | train | spec_bad | spec_ok | extra.moment_axis, extra.shear_axis | — |
+| `L2i_fuselage_barrel_d1600_l1600_str8_frm3` | fuselage_barrel | extrapolation_test | spec_bad | spec_ok | mesh.leading_edge_threshold, mesh.refine_at_leading_edge, mesh.size_chord, mesh.size_span, mesh.size (not in gold) | — |
+| `L2i_fuselage_barrel_d1800_l2000_str8_frm3` | fuselage_barrel | val | spec_bad | spec_ok | mesh.leading_edge_threshold, mesh.refine_at_leading_edge, mesh.size_chord, mesh.size_span, mesh.size (not in gold) | — |
+| `L2i_fuselage_barrel_d2000_l1800_str8_frm3` | fuselage_barrel | extrapolation_test | spec_bad | spec_ok | mesh.leading_edge_threshold, mesh.refine_at_leading_edge, mesh.size_chord, mesh.size_span, mesh.size (not in gold) | — |
+| `L2i_fuselage_barrel_d2000_l2000_str8_frm3` | fuselage_barrel | train | spec_ok | spec_ok | — | — |
 | `L2i_naca4412_wingbox` | wingbox | train | spec_bad | spec_ok | airfoil.stringer_flange_width | — |
 | `L2i_naca4412_wingbox_n_ribs3_chord1000` | wingbox | boundary_holdout | spec_bad | spec_ok | airfoil.stringer_flange_width | — |
 | `L2i_naca4412_wingbox_n_ribs6_chord1000` | wingbox | extrapolation_test | spec_ok | spec_ok | — | — |

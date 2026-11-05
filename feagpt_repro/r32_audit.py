@@ -31,7 +31,8 @@ import json, os, re, sys, collections, hashlib
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from evaluate import (GRADED_FIELDS, GRADED_MATERIAL, EXEC_CONFIG_KEYS,
-                      DEAD_STRINGER_KEYS, FEA, load_tasks, require_dataset)
+                      DATASET_META_KEYS, DEAD_STRINGER_KEYS, FEA, load_tasks,
+                      require_dataset)
 from score_baseline import stratum_of
 from _paths import rel   # T-A11a：跨盘符安全（见 _paths.py）
 
@@ -184,7 +185,12 @@ def classify(task, gold, holder, key, val, toks):
 
     # 2) 执行配置键：只报不判
     if key in EXEC_CONFIG_KEYS.get(holder, ()):
-        return 'exempt:exec_config', 'EXEC_CONFIG_KEYS（只报不判）'
+        return 'exempt:exec_config', 'EXEC_CONFIG_KEYS（只报不判，仅 L3 豁免）'
+    # 2b) 数据集构建元信息键（N-35 拍板 B）：**任何层都不判** ⇒ 审计侧也必须是 exempt。
+    # 同一类豁免只装在判分器一个调用点 = 没装：审计会把这些键读成「题面推不出 ⇒ VIOLATION」，
+    # 而判分器其实根本不看它们 ⇒ 两边对同一份卷给出两个结论（「闸的名义 ≠ 闸的行为」同族）。
+    if key in DATASET_META_KEYS.get(holder, ()):
+        return 'exempt:dataset_meta', 'DATASET_META_KEYS（任何层都不判，含 v1.1 记账键）'
     if holder == 'load' and key == 'direction' and (gold.get('load') or {}).get('kind') == 'pressure':
         return 'exempt:exec_config', '内压方向是数据集内部约定（径向），题面不给向量'
 

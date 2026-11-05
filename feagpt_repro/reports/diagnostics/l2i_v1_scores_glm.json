@@ -12,12 +12,13 @@
  "n_candidates": 4,
  "n_missing": 0,
  "category_counts": {
-  "spec_bad": 4
+  "spec_ok": 1,
+  "spec_bad": 3
  },
  "clarify_all": {
   "n": 4,
-  "passed": 0,
-  "pct": 0.0,
+  "passed": 1,
+  "pct": 25.0,
   "by_family": {
    "fuselage_barrel": {
     "n": 1,
@@ -36,16 +37,16 @@
    },
    "wingbox": {
     "n": 1,
-    "passed": 0,
-    "pct": 0.0
+    "passed": 1,
+    "pct": 100.0
    }
   },
   "denominator": "全卷 L2（含 name 泄漏的无效子集）"
  },
  "clarify_informative": {
   "n": 4,
-  "passed": 0,
-  "pct": 0.0,
+  "passed": 1,
+  "pct": 25.0,
   "by_family": {
    "fuselage_barrel": {
     "n": 1,
@@ -64,8 +65,8 @@
    },
    "wingbox": {
     "n": 1,
-    "passed": 0,
-    "pct": 0.0
+    "passed": 1,
+    "pct": 100.0
    }
   },
   "denominator": "name 未泄漏的可判子集"
@@ -80,8 +81,8 @@
  "strata": {
   "informative": {
    "n": 4,
-   "passed": 0,
-   "pct": 0.0,
+   "passed": 1,
+   "pct": 25.0,
    "by_family": {
     "fuselage_barrel": {
      "n": 1,
@@ -100,8 +101,8 @@
     },
     "wingbox": {
      "n": 1,
-     "passed": 0,
-     "pct": 0.0
+     "passed": 1,
+     "pct": 100.0
     }
    }
   },
@@ -127,17 +128,15 @@
    "family": "wingbox",
    "stratum": "informative",
    "omitted_field": null,
-   "category": "spec_bad",
-   "pass": false,
+   "category": "spec_ok",
+   "pass": true,
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 41,
-    "n_fail": 1,
-    "n_fields_gated": 39,
-    "failed_fields": [
-     "extra.sweep_index"
-    ],
+    "n_fields": 40,
+    "n_fail": 0,
+    "n_fields_gated": 38,
+    "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
    }
@@ -174,16 +173,15 @@
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 35,
-    "n_fail": 7,
-    "n_fields_gated": 33,
+    "n_fields": 33,
+    "n_fail": 5,
+    "n_fields_gated": 31,
     "failed_fields": [
      "mesh.leading_edge_threshold",
      "mesh.refine_at_leading_edge",
      "mesh.size_chord",
      "mesh.size_span",
-     "extra.moment_axis",
-     "extra.shear_axis"
+     "mesh.size (not in gold)"
     ],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0

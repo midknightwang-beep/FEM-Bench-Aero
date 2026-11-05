@@ -1,0 +1,183 @@
+{
+ "arms": "old / new / strip_meta / strip_all",
+ "meta_keys": [
+  "moment_axis",
+  "shear_axis",
+  "split_tag",
+  "sweep_index",
+  "v11_bracket",
+  "v11_interior_holdout",
+  "v11_template"
+ ],
+ "mesh_keys": [
+  "algorithm_2d",
+  "element_order",
+  "leading_edge_threshold",
+  "min_jacobian",
+  "recombination_algorithm",
+  "recombine",
+  "refine_at_leading_edge"
+ ],
+ "n_meta": 7,
+ "n_mesh": 7,
+ "n_strip_all": 14,
+ "overlap": [],
+ "batches": {
+  "L3_v6c_glm": {
+   "note": "headline 卷（C-032）",
+   "tasks": "reports/papers/tasks_v6c.jsonl",
+   "candidates": "candidates_l3_v7sysfix_glm",
+   "n_scored": 55,
+   "old_pass": 42,
+   "new_pass": 42,
+   "strip_meta_pass": 42,
+   "strip_all_pass": 42,
+   "flips_up": [],
+   "flips_down": [],
+   "new_vs_strip_meta_diff": [],
+   "mesh_keys_cost": [],
+   "n_old_blocked_by_meta": 0,
+   "n_meta_skipped_new": 18
+  },
+  "L3_v6c_ds": {
+   "note": "headline 卷（C-033）",
+   "tasks": "reports/papers/tasks_v6c.jsonl",
+   "candidates": "candidates_l3_v7sysfix_ds",
+   "n_scored": 55,
+   "old_pass": 42,
+   "new_pass": 42,
+   "strip_meta_pass": 42,
+   "strip_all_pass": 42,
+   "flips_up": [],
+   "flips_down": [],
+   "new_vs_strip_meta_diff": [],
+   "mesh_keys_cost": [],
+   "n_old_blocked_by_meta": 0,
+   "n_meta_skipped_new": 18
+  },
+  "L2i_v4base_glm": {
+   "note": "informative 新 base",
+   "tasks": "tasks/tasks_l2_informative_v2.jsonl",
+   "candidates": "candidates_l2i_v4base_glm",
+   "n_scored": 16,
+   "old_pass": 8,
+   "new_pass": 13,
+   "strip_meta_pass": 13,
+   "strip_all_pass": 15,
+   "flips_up": [
+    "L2i_fuselage_barrel_d1600_l1600_str8_frm3",
+    "L2i_fuselage_barrel_d1800_l2000_str8_frm3",
+    "L2i_fuselage_barrel_d2000_l2000_str8_frm3",
+    "L2i_naca4412_wingbox_n_ribs3_chord1000",
+    "L2i_stiffened_panel_700x600_str4"
+   ],
+   "flips_down": [],
+   "new_vs_strip_meta_diff": [],
+   "mesh_keys_cost": [
+    "L2i_fuselage_barrel_d2000_l1800_str8_frm3",
+    "L2i_open_hole_panel_400x200_d20"
+   ],
+   "n_old_blocked_by_meta": 7,
+   "n_meta_skipped_new": 21
+  },
+  "L2i_v4base_ds": {
+   "note": "informative 新 base（ds）",
+   "tasks": "tasks/tasks_l2_informative_v2.jsonl",
+   "candidates": "candidates_l2i_v4base_ds",
+   "n_scored": 16,
+   "old_pass": 1,
+   "new_pass": 1,
+   "strip_meta_pass": 1,
+   "strip_all_pass": 1,
+   "flips_up": [],
+   "flips_down": [],
+   "new_vs_strip_meta_diff": [],
+   "mesh_keys_cost": [],
+   "n_old_blocked_by_meta": 0,
+   "n_meta_skipped_new": 21
+  },
+  "L2i_v4s_glm": {
+   "note": "informative 新 strict 第 1 遍",
+   "tasks": "tasks/tasks_l2_informative_v2.jsonl",
+   "candidates": "candidates_l2i_v4s_glm",
+   "n_scored": 16,
+   "old_pass": 16,
+   "new_pass": 16,
+   "strip_meta_pass": 16,
+   "strip_all_pass": 16,
+   "flips_up": [],
+   "flips_down": [],
+   "new_vs_strip_meta_diff": [],
+   "mesh_keys_cost": [],
+   "n_old_blocked_by_meta": 0,
+   "n_meta_skipped_new": 21
+  },
+  "L2i_v4s_ds": {
+   "note": "informative 新 strict 第 1 遍（ds）",
+   "tasks": "tasks/tasks_l2_informative_v2.jsonl",
+   "candidates": "candidates_l2i_v4s_ds",
+   "n_scored": 16,
+   "old_pass": 10,
+   "new_pass": 14,
+   "strip_meta_pass": 14,
+   "strip_all_pass": 14,
+   "flips_up": [
+    "L2i_fuselage_barrel_d1600_l1600_str8_frm3",
+    "L2i_fuselage_barrel_d1800_l2000_str8_frm3",
+    "L2i_fuselage_barrel_d2000_l1800_str8_frm3",
+    "L2i_naca4412_wingbox_n_ribs7_chord1000"
+   ],
+   "flips_down": [],
+   "new_vs_strip_meta_diff": [],
+   "mesh_keys_cost": [],
+   "n_old_blocked_by_meta": 4,
+   "n_meta_skipped_new": 21
+  },
+  "L2i_v4s2_glm": {
+   "note": "informative 新 strict 第 2 遍",
+   "tasks": "tasks/tasks_l2_informative_v2.jsonl",
+   "candidates": "candidates_l2i_v4s2_glm",
+   "n_scored": 16,
+   "old_pass": 14,
+   "new_pass": 15,
+   "strip_meta_pass": 15,
+   "strip_all_pass": 16,
+   "flips_up": [
+    "L2i_stiffened_panel_700x600_str4"
+   ],
+   "flips_down": [],
+   "new_vs_strip_meta_diff": [],
+   "mesh_keys_cost": [
+    "L2i_fuselage_barrel_d1800_l2000_str8_frm3"
+   ],
+   "n_old_blocked_by_meta": 2,
+   "n_meta_skipped_new": 21
+  },
+  "L2i_v4s2_ds": {
+   "note": "informative 新 strict 第 2 遍（ds）",
+   "tasks": "tasks/tasks_l2_informative_v2.jsonl",
+   "candidates": "candidates_l2i_v4s2_ds",
+   "n_scored": 16,
+   "old_pass": 12,
+   "new_pass": 13,
+   "strip_meta_pass": 13,
+   "strip_all_pass": 14,
+   "flips_up": [
+    "L2i_fuselage_barrel_d2000_l2000_str8_frm3"
+   ],
+   "flips_down": [],
+   "new_vs_strip_meta_diff": [],
+   "mesh_keys_cost": [
+    "L2i_fuselage_barrel_d2000_l1800_str8_frm3"
+   ],
+   "n_old_blocked_by_meta": 2,
+   "n_meta_skipped_new": 21
+  }
+ },
+ "totals": {
+  "old_blocked_by_meta": 15,
+  "mesh_keys_cost_total": 4
+ },
+ "problems": [],
+ "ok": true
+}

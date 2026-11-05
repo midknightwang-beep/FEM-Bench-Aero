@@ -16,35 +16,33 @@
  },
  "n_paired": 16,
  "passed": {
-  "base": 8,
-  "strict": 10,
-  "pct_base": 50.0,
-  "pct_strict": 62.5
+  "base": 13,
+  "strict": 11,
+  "pct_base": 81.2,
+  "pct_strict": 68.8
  },
  "agreement": {
-  "same_category": 6,
+  "same_category": 10,
   "n": 16,
-  "pct": 37.5,
-  "flipped_pass": 8
+  "pct": 62.5,
+  "flipped_pass": 6
  },
  "matrix": {
   "clarify_wrong->spec_ok": 1,
-  "spec_bad->clarify_wrong": 2,
   "spec_bad->spec_bad": 1,
-  "spec_bad->spec_ok": 4,
-  "spec_ok->clarify_wrong": 2,
-  "spec_ok->spec_bad": 1,
-  "spec_ok->spec_ok": 5
+  "spec_bad->spec_ok": 1,
+  "spec_ok->clarify_wrong": 4,
+  "spec_ok->spec_ok": 9
  },
  "mcnemar": {
-  "base_pass_strict_fail": 3,
-  "base_fail_strict_pass": 5,
-  "p_exact_two_sided": 0.7265625,
+  "base_pass_strict_fail": 4,
+  "base_fail_strict_pass": 2,
+  "p_exact_two_sided": 0.6875,
   "note": "配对数据用精确 McNemar；b+c==0 时 p=1.0。"
  },
  "transcription_errors": {
-  "base_tasks_with_given_key_broken": 5,
-  "strict_tasks_with_given_key_broken": 2,
+  "base_tasks_with_given_key_broken": 0,
+  "strict_tasks_with_given_key_broken": 1,
   "note": "「题面已给该键、输出却判错」= 转写错误（strict 引导的直接作用面）。"
  },
  "clarify_counts": {
@@ -57,19 +55,13 @@
    "task_id": "L2i_fuselage_barrel_d1600_l1600_str8_frm3",
    "family": "fuselage_barrel",
    "split_v2": "extrapolation_test",
-   "base_category": "spec_bad",
+   "base_category": "spec_ok",
    "strict_category": "spec_ok",
-   "base_pass": false,
+   "base_pass": true,
    "strict_pass": true,
-   "base_failed_fields": [
-    "extra.moment_axis",
-    "extra.shear_axis"
-   ],
+   "base_failed_fields": [],
    "strict_failed_fields": [],
-   "base_failed_given_keys": [
-    "extra.moment_axis",
-    "extra.shear_axis"
-   ],
+   "base_failed_given_keys": [],
    "strict_failed_given_keys": [],
    "base_failed_absent_keys": [],
    "strict_failed_absent_keys": [],
@@ -82,19 +74,13 @@
    "task_id": "L2i_fuselage_barrel_d1800_l2000_str8_frm3",
    "family": "fuselage_barrel",
    "split_v2": "val",
-   "base_category": "spec_bad",
+   "base_category": "spec_ok",
    "strict_category": "spec_ok",
-   "base_pass": false,
+   "base_pass": true,
    "strict_pass": true,
-   "base_failed_fields": [
-    "extra.moment_axis",
-    "extra.shear_axis"
-   ],
+   "base_failed_fields": [],
    "strict_failed_fields": [],
-   "base_failed_given_keys": [
-    "extra.moment_axis",
-    "extra.shear_axis"
-   ],
+   "base_failed_given_keys": [],
    "strict_failed_given_keys": [],
    "base_failed_absent_keys": [],
    "strict_failed_absent_keys": [],
@@ -107,21 +93,13 @@
    "task_id": "L2i_fuselage_barrel_d2000_l1800_str8_frm3",
    "family": "fuselage_barrel",
    "split_v2": "extrapolation_test",
-   "base_category": "spec_bad",
+   "base_category": "spec_ok",
    "strict_category": "spec_ok",
-   "base_pass": false,
+   "base_pass": true,
    "strict_pass": true,
-   "base_failed_fields": [
-    "extra.split_tag",
-    "extra.v11_bracket",
-    "extra.v11_template"
-   ],
+   "base_failed_fields": [],
    "strict_failed_fields": [],
-   "base_failed_given_keys": [
-    "extra.split_tag",
-    "extra.v11_bracket",
-    "extra.v11_template"
-   ],
+   "base_failed_given_keys": [],
    "strict_failed_given_keys": [],
    "base_failed_absent_keys": [],
    "strict_failed_absent_keys": [],
@@ -134,19 +112,13 @@
    "task_id": "L2i_fuselage_barrel_d2000_l2000_str8_frm3",
    "family": "fuselage_barrel",
    "split_v2": "train",
-   "base_category": "spec_bad",
+   "base_category": "spec_ok",
    "strict_category": "clarify_wrong",
-   "base_pass": false,
+   "base_pass": true,
    "strict_pass": false,
-   "base_failed_fields": [
-    "extra.moment_axis",
-    "extra.shear_axis"
-   ],
+   "base_failed_fields": [],
    "strict_failed_fields": [],
-   "base_failed_given_keys": [
-    "extra.moment_axis",
-    "extra.shear_axis"
-   ],
+   "base_failed_given_keys": [],
    "strict_failed_given_keys": [],
    "base_failed_absent_keys": [],
    "strict_failed_absent_keys": [],
@@ -217,17 +189,13 @@
    "family": "wingbox",
    "split_v2": "val",
    "base_category": "spec_ok",
-   "strict_category": "spec_bad",
+   "strict_category": "spec_ok",
    "base_pass": true,
-   "strict_pass": false,
+   "strict_pass": true,
    "base_failed_fields": [],
-   "strict_failed_fields": [
-    "extra.sweep_index"
-   ],
+   "strict_failed_fields": [],
    "base_failed_given_keys": [],
-   "strict_failed_given_keys": [
-    "extra.sweep_index"
-   ],
+   "strict_failed_given_keys": [],
    "base_failed_absent_keys": [],
    "strict_failed_absent_keys": [],
    "base_clarify": null,
@@ -375,23 +343,13 @@
    "task_id": "L2i_stiffened_panel_700x600_str4",
    "family": "stiffened_panel",
    "split_v2": "extrapolation_test",
-   "base_category": "spec_bad",
+   "base_category": "spec_ok",
    "strict_category": "clarify_wrong",
-   "base_pass": false,
+   "base_pass": true,
    "strict_pass": false,
-   "base_failed_fields": [
-    "extra.split_tag",
-    "extra.v11_bracket",
-    "extra.v11_interior_holdout",
-    "extra.v11_template"
-   ],
+   "base_failed_fields": [],
    "strict_failed_fields": [],
-   "base_failed_given_keys": [
-    "extra.split_tag",
-    "extra.v11_bracket",
-    "extra.v11_interior_holdout",
-    "extra.v11_template"
-   ],
+   "base_failed_given_keys": [],
    "strict_failed_given_keys": [],
    "base_failed_absent_keys": [],
    "strict_failed_absent_keys": [],

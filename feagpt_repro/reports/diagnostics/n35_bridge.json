@@ -1,0 +1,261 @@
+{
+ "_note": "N-35（拍板 B：拆 EXEC_CONFIG_KEYS）的 bridge 表 —— 同一批候选、同一张卷，旧口径（archive/*__pre_n35.json）与新口径逐 arm 对照。**只覆盖 informative 诊断题型，不进对外数字**：L3 与 L2 v7 已实测逐题零变化。由 _n35_bridge.py 从两份 artifact 现读生成，不手抄（R-A3）。",
+ "arms": [
+  {
+   "arm": "v1_glm",
+   "note": "v1 卷（4 条旧 SYS base）",
+   "n": 4,
+   "old": 0,
+   "new": 1,
+   "delta": 1
+  },
+  {
+   "arm": "v1_ds",
+   "note": "v1 卷（4 条旧 SYS base，ds）",
+   "n": 4,
+   "old": 1,
+   "new": 1,
+   "delta": 0
+  },
+  {
+   "arm": "v2_glm",
+   "note": "v2 卷 base（旧 SYS）",
+   "n": 16,
+   "old": 2,
+   "new": 3,
+   "delta": 1
+  },
+  {
+   "arm": "v2_ds",
+   "note": "v2 卷 base（旧 SYS，ds）",
+   "n": 16,
+   "old": 3,
+   "new": 4,
+   "delta": 1
+  },
+  {
+   "arm": "v3s_glm",
+   "note": "v2 卷 + strict 段（旧 SYS）",
+   "n": 16,
+   "old": 10,
+   "new": 10,
+   "delta": 0
+  },
+  {
+   "arm": "v3s_ds",
+   "note": "v2 卷 + strict 段（旧 SYS，ds）",
+   "n": 16,
+   "old": 8,
+   "new": 13,
+   "delta": 5
+  },
+  {
+   "arm": "v3sm_glm",
+   "note": "v2 卷 + strict + meshfix（旧 SYS）",
+   "n": 16,
+   "old": 16,
+   "new": 16,
+   "delta": 0
+  },
+  {
+   "arm": "v3sm_ds",
+   "note": "v2 卷 + strict + meshfix（旧 SYS，ds）",
+   "n": 16,
+   "old": 10,
+   "new": 11,
+   "delta": 1
+  },
+  {
+   "arm": "v3sm2_glm",
+   "note": "meshfix 第 2 遍（复现检查）",
+   "n": 16,
+   "old": 14,
+   "new": 14,
+   "delta": 0
+  },
+  {
+   "arm": "v3sm2_ds",
+   "note": "meshfix 第 2 遍（复现检查，ds）",
+   "n": 16,
+   "old": 8,
+   "new": 10,
+   "delta": 2
+  },
+  {
+   "arm": "v4base_glm",
+   "note": "新 SYS base",
+   "n": 16,
+   "old": 8,
+   "new": 13,
+   "delta": 5
+  },
+  {
+   "arm": "v4base_ds",
+   "note": "新 SYS base（ds）",
+   "n": 16,
+   "old": 1,
+   "new": 1,
+   "delta": 0
+  },
+  {
+   "arm": "v4s_glm",
+   "note": "新 SYS strict 第 1 遍",
+   "n": 16,
+   "old": 16,
+   "new": 16,
+   "delta": 0
+  },
+  {
+   "arm": "v4s_ds",
+   "note": "新 SYS strict 第 1 遍（ds）",
+   "n": 16,
+   "old": 10,
+   "new": 14,
+   "delta": 4
+  },
+  {
+   "arm": "v4s2_glm",
+   "note": "新 SYS strict 第 2 遍",
+   "n": 16,
+   "old": 14,
+   "new": 15,
+   "delta": 1
+  },
+  {
+   "arm": "v4s2_ds",
+   "note": "新 SYS strict 第 2 遍（ds）",
+   "n": 16,
+   "old": 12,
+   "new": 13,
+   "delta": 1
+  }
+ ],
+ "pairs": [
+  {
+   "pair": "v3_glm_base_vs_strict",
+   "note": "v3 glm：base → strict",
+   "old": {
+    "base": 2,
+    "strict": 10,
+    "b": 0,
+    "c": 8,
+    "p": 0.0078125
+   },
+   "new": {
+    "base": 3,
+    "strict": 10,
+    "b": 0,
+    "c": 7,
+    "p": 0.015625
+   },
+   "verdict_flip": false,
+   "sign_flip": false
+  },
+  {
+   "pair": "v3_ds_base_vs_strict",
+   "note": "v3 ds：base → strict",
+   "old": {
+    "base": 3,
+    "strict": 8,
+    "b": 0,
+    "c": 5,
+    "p": 0.0625
+   },
+   "new": {
+    "base": 4,
+    "strict": 13,
+    "b": 0,
+    "c": 9,
+    "p": 0.00390625
+   },
+   "verdict_flip": true,
+   "sign_flip": false
+  },
+  {
+   "pair": "v3_glm_strict_vs_meshfix",
+   "note": "v3 glm：strict → meshfix",
+   "old": {
+    "base": 10,
+    "strict": 16,
+    "b": 0,
+    "c": 6,
+    "p": 0.03125
+   },
+   "new": {
+    "base": 10,
+    "strict": 16,
+    "b": 0,
+    "c": 6,
+    "p": 0.03125
+   },
+   "verdict_flip": false,
+   "sign_flip": false
+  },
+  {
+   "pair": "v3_ds_strict_vs_meshfix",
+   "note": "v3 ds：strict → meshfix",
+   "old": {
+    "base": 8,
+    "strict": 10,
+    "b": 3,
+    "c": 5,
+    "p": 0.7265625
+   },
+   "new": {
+    "base": 13,
+    "strict": 11,
+    "b": 4,
+    "c": 2,
+    "p": 0.6875
+   },
+   "verdict_flip": false,
+   "sign_flip": true
+  },
+  {
+   "pair": "v4_glm_sysfix",
+   "note": "v4 glm：旧 SYS → 新 SYS",
+   "old": {
+    "base": 10,
+    "strict": 16,
+    "b": 0,
+    "c": 6,
+    "p": 0.03125
+   },
+   "new": {
+    "base": 10,
+    "strict": 16,
+    "b": 0,
+    "c": 6,
+    "p": 0.03125
+   },
+   "verdict_flip": false,
+   "sign_flip": false
+  },
+  {
+   "pair": "v4_ds_sysfix",
+   "note": "v4 ds：旧 SYS → 新 SYS",
+   "old": {
+    "base": 8,
+    "strict": 10,
+    "b": 2,
+    "c": 4,
+    "p": 0.6875
+   },
+   "new": {
+    "base": 13,
+    "strict": 14,
+    "b": 1,
+    "c": 2,
+    "p": 1.0
+   },
+   "verdict_flip": false,
+   "sign_flip": false
+  }
+ ],
+ "significance_flips": [
+  "v3_ds_base_vs_strict"
+ ],
+ "direction_flips": [
+  "v3_ds_strict_vs_meshfix"
+ ]
+}

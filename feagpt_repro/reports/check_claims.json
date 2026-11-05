@@ -44,17 +44,17 @@
   },
   {
    "id": "S-04",
-   "desc": "C-019 负控通过数（源 negative_controls_83.json）",
-   "expect": "83/83",
-   "actual": "83/83",
+   "desc": "C-019 负控通过数（源 negative_controls_84.json）",
+   "expect": "84/84",
+   "actual": "84/84",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-05",
    "desc": "C-019 coverage 列",
-   "expect": "83",
-   "actual": "83",
+   "expect": "84",
+   "actual": "84",
    "ok": true,
    "skip": false
   },
@@ -133,16 +133,16 @@
   {
    "id": "S-15",
    "desc": "README 引用的 RUBRIC 版本",
-   "expect": "全部 = 6.24",
-   "actual": "6.24",
+   "expect": "全部 = 6.25",
+   "actual": "6.25",
    "ok": true,
    "skip": false
   },
   {
    "id": "S-16",
    "desc": "README 负控通过数",
-   "expect": "83/83",
-   "actual": "83/83",
+   "expect": "84/84",
+   "actual": "84/84",
    "ok": true,
    "skip": false
   },
@@ -366,7 +366,7 @@
    "id": "S-44",
    "desc": "官方导航文件 INDEX 的 headline 指向与负控编号必须与 artifact 一致（R58）",
    "expect": "含 claim id 的 headline 行全部指向唯一 headline（或显式标 historical）；负控行的 NC-x..y 与 =N/N 与最新 negative_controls_<N>.json 实读一致",
-   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L26 主区间 NC-70..83 / 总数 83；artifact 最大 NC-83、共 83 条；逐条覆盖 83/83",
+   "actual": "(a) headline 命中 3 条、显式历史 2 条、越权 0 条；(b) L26 主区间 NC-70..84 / 总数 84；artifact 最大 NC-84、共 84 条；逐条覆盖 84/84",
    "ok": true,
    "skip": false
   },
@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1793808343/1793808343；check 1793808777 vs 负控 1793808343",
+   "actual": "C-019 mtime 记录/实际 = 1793883016/1793883016；check 1793883306 vs 负控 1793883016",
    "ok": true,
    "skip": false
   },
@@ -503,6 +503,14 @@
    "desc": "进度看板（ROADMAP §1）的算术必须自洽且可被机器复算（T-R2）",
    "expect": "R1 四段权重和 == 100%；R2 合计 == Σ(权重x完成度) 且合计格里的算式复算值也须等于合计；R3 三口径里分母为 A / A+B+C+D 的行须等于对应数，其余行须显式标「无算式」；R4 每段声明项数 == 明细表行数（扣显式「含 Dxx」合并的行）；R5 每段算式复算 == 显示完成度，缺算式判红；R6 段 B 成绩单得分 == 达标 a/b",
    "actual": "R1 权重=100 | R2 合计 显示 49.0 vs 复算 49.35 | R4 明细 A=9/B=5/C=8/D=7 | 未覆盖（已显式标「无算式」）：无",
+   "ok": true,
+   "skip": false
+  },
+  {
+   "id": "S-63",
+   "desc": "判分口径的两类键（执行配置 / 数据集元信息）必须分离且各自生效（CONFLICT N-35）",
+   "expect": "A 元信息只许挂在 extra；B 元信息集 ∩ mesh 执行配置 == 空；B2 元信息集非空；C L2 语义下 mesh 键填错必须 FAIL（转写考点还在）；D L2 语义下 extra 元信息键填错必须 PASS（N-35 的核心）；E L3 语义下两者都 PASS（W4d 原拍板不变）；F 清空 EXEC_CONFIG_KEYS 后 extra 仍 PASS（豁免不寄生在执行配置集合上）；G gold 无该键、候选多写仍须 FAIL（自创键检查未随之放宽）",
+   "actual": "A✓；B✓；B2✓；C✓；D✓；E✓；F✓；G✓",
    "ok": true,
    "skip": false
   }
@@ -720,9 +728,9 @@
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 58716,
-   "sha256": "ca3e981bf72fdc70b09ddd3f8df35eef3c3c4014a86ee45c9e2acc3f48766114",
-   "mtime": 1793808530
+   "size": 59114,
+   "sha256": "41786ea1c9dd036a0f3ba5cda2fa9cc0c88c52629d70146739da3a64054bfe81",
+   "mtime": 1793882941
   },
   {
    "claim_id": "C-027",
@@ -1362,15 +1370,15 @@
   },
   {
    "claim_id": "C-019",
-   "artifact": "feagpt_repro/reports/negative_controls_83.json",
+   "artifact": "feagpt_repro/reports/negative_controls_84.json",
    "exists": true,
    "git_tracked": true,
    "external": false,
    "ok": true,
    "problems": [],
-   "size": 25131,
-   "sha256": "77e0c793308afe825378580090bade992ec882bcc2778d01bea7918fa1deeb93",
-   "mtime": 1793808343
+   "size": 25725,
+   "sha256": "b6dbb2ec64c07ae4d396289c587e620087aab1cf41604049c5f3024762608f9b",
+   "mtime": 1793883016
   }
  ]
 }

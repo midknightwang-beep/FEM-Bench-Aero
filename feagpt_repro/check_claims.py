@@ -2039,6 +2039,36 @@ def roadmap_selfcheck_state(root):
     return ok, rsc.detail_str(ok, probs, info)
 
 
+def n35_key_guard_state(root):
+    """S-63（CONFLICT N-35，老王 2026-11-04 拍板 B）：判分口径的两类键必须分离且各自生效。
+
+    **为什么必须是行为判据，不能断言「集合里是哪几个键」**
+    ------------------------------------------------------
+    手抄名单会漂：把 mesh 键挪进 `DATASET_META_KEYS`、同时把名单自己也改掉，名单式判据照绿。
+    这条只问行为（见 `_n35_key_guard.py` 的 A–G）：L2 语义下 mesh 填错必须 FAIL（考点还在）、
+    extra 元信息填错必须 PASS（N-35 修好）；L3 语义下两者都 PASS（W4d 原拍板不变）；
+    并且 extra 的豁免**不得寄生**在 `EXEC_CONFIG_KEYS` 上（清空它后仍须 PASS）。
+
+    **C 与 D 是一对反向判据**：只测 D 会把「全部豁免」判成过（放水也是过），
+    只测 C 会把「一个都不豁免」判成过（N-35 原状）。两条同时立才钉住「分开」。
+
+    **导入失败 / 抛异常一律判红**（R58：无工具读的 = 无闸），不 skip。
+    """
+    try:
+        if HERE not in sys.path:
+            sys.path.insert(0, HERE)
+        import _n35_key_guard as g
+    except Exception as e:  # noqa: BLE001
+        return False, f'无法导入 _n35_key_guard.py: {e}（缺判据即红，不 skip）'
+    try:
+        ok, detail, items = g.inspect()
+    except Exception as e:  # noqa: BLE001
+        return False, f'_n35_key_guard.inspect 抛异常: {e}'
+    bad = [i['id'] for i in items if not i['ok']]
+    tail = '' if ok else f'；红={",".join(bad)}'
+    return ok, f'{detail}{tail}'
+
+
 # ---------------------------------------------------------------------------
 # T-F3（R75）：`--public` 显式豁免 —— 只针对「公开分发集里结构上不可能满足」的判据
 # ---------------------------------------------------------------------------
@@ -2821,6 +2851,21 @@ def semantic_checks(root, rows, skip_hook_guard=False, public_mode=False):
     _ok62, _det62 = roadmap_selfcheck_state(root)
     add('S-62', '进度看板（ROADMAP §1）的算术必须自洽且可被机器复算（T-R2）',
         _S62_EXPECT, _det62, _ok62)
+
+    # S-63（CONFLICT N-35，拍板 B）：**判分口径的两类键必须分离且各自生效**。
+    #   背景：`EXEC_CONFIG_KEYS` 原来一个集合混装「真实执行配置（mesh 7，该判）」与
+    #   「数据集构建元信息（extra 7，任何层都不该判）」，用 `engineering_layer` 一个开关控制；
+    #   而 `score_l2.py` **不传**该开关 ⇒ L2 轨道上必然顾此失彼（打开丢考点 / 关上被压分）。
+    #   判据本体在 `_n35_key_guard.py`（A–G 八向，行为判据，不读键名名单），本条只做接线。
+    _S63_EXPECT = ('A 元信息只许挂在 extra；B 元信息集 ∩ mesh 执行配置 == 空；B2 元信息集非空；'
+                   'C L2 语义下 mesh 键填错必须 FAIL（转写考点还在）；'
+                   'D L2 语义下 extra 元信息键填错必须 PASS（N-35 的核心）；'
+                   'E L3 语义下两者都 PASS（W4d 原拍板不变）；'
+                   'F 清空 EXEC_CONFIG_KEYS 后 extra 仍 PASS（豁免不寄生在执行配置集合上）；'
+                   'G gold 无该键、候选多写仍须 FAIL（自创键检查未随之放宽）')
+    _ok63, _det63 = n35_key_guard_state(root)
+    add('S-63', '判分口径的两类键（执行配置 / 数据集元信息）必须分离且各自生效（CONFLICT N-35）',
+        _S63_EXPECT, _det63, _ok63)
 
     return out
 

@@ -133,9 +133,9 @@
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 41,
+    "n_fields": 40,
     "n_fail": 0,
-    "n_fields_gated": 39,
+    "n_fields_gated": 38,
     "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
@@ -151,9 +151,9 @@
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 44,
+    "n_fields": 40,
     "n_fail": 0,
-    "n_fields_gated": 42,
+    "n_fields_gated": 38,
     "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
@@ -169,9 +169,9 @@
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 41,
+    "n_fields": 40,
     "n_fail": 0,
-    "n_fields_gated": 39,
+    "n_fields_gated": 38,
     "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
@@ -289,9 +289,9 @@
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 34,
+    "n_fields": 32,
     "n_fail": 0,
-    "n_fields_gated": 32,
+    "n_fields_gated": 30,
     "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
@@ -307,9 +307,9 @@
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 34,
+    "n_fields": 32,
     "n_fail": 0,
-    "n_fields_gated": 32,
+    "n_fields_gated": 30,
     "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
@@ -325,9 +325,9 @@
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 34,
+    "n_fields": 32,
     "n_fail": 0,
-    "n_fields_gated": 32,
+    "n_fields_gated": 30,
     "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
@@ -343,9 +343,9 @@
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 37,
+    "n_fields": 32,
     "n_fail": 0,
-    "n_fields_gated": 35,
+    "n_fields_gated": 30,
     "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0
@@ -428,9 +428,9 @@
    "name_leak": false,
    "clarify_text": null,
    "detail": {
-    "n_fields": 33,
+    "n_fields": 29,
     "n_fail": 0,
-    "n_fields_gated": 31,
+    "n_fields_gated": 27,
     "failed_fields": [],
     "exec_config_mismatch": 0,
     "dead_fields_skipped": 0

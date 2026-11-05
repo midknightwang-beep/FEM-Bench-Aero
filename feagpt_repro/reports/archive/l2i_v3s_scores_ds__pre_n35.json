@@ -1,0 +1,434 @@
+{
+ "_note": "L2 澄清题首次跑分（T-A13a/T-A13b）。判据 import 自 score_baseline.judge_clarify_field_level（R17）；双口径掩码 import 自 check_l2_leak.scan（R66）。两个分母不同 ⇒ 禁相减、禁据此排名（R54）。★ 三块里的 `by_family` 是**每族的 n/passed/pct**（T-A14/R72）；它与 `l2_clarify_dual.json` 顶层 `clarify_all.by_family`（**分母构成**，每族多少题）**同名不同义**，不得互相引用。",
+ "paper": "tasks_l2_informative_v2.jsonl",
+ "tasks_sha256": "76ee70f6e16dadeefd2f79d9ee3a21d5456f5669bf176d2dba8c7804c4ec4dae",
+ "candidates": "candidates_l2i_v3s_ds",
+ "label": "l2i_v3s_ds",
+ "model": "deepseek-v4-pro",
+ "prompt_sha256": "99466166dc041b37d96e45502f93761aa27138e40dc623a1e49527a381416c4b",
+ "presentation": "spec_json_raw_name",
+ "status": "scored",
+ "n_tasks_l2": 16,
+ "n_candidates": 16,
+ "n_missing": 0,
+ "category_counts": {
+  "spec_ok": 8,
+  "clarify_wrong": 1,
+  "spec_bad": 7
+ },
+ "clarify_all": {
+  "n": 16,
+  "passed": 8,
+  "pct": 50.0,
+  "by_family": {
+   "fuselage_barrel": {
+    "n": 4,
+    "passed": 0,
+    "pct": 0.0
+   },
+   "open_hole_panel": {
+    "n": 4,
+    "passed": 2,
+    "pct": 50.0
+   },
+   "stiffened_panel": {
+    "n": 4,
+    "passed": 2,
+    "pct": 50.0
+   },
+   "wingbox": {
+    "n": 4,
+    "passed": 4,
+    "pct": 100.0
+   }
+  },
+  "denominator": "全卷 L2（含 name 泄漏的无效子集）"
+ },
+ "clarify_informative": {
+  "n": 16,
+  "passed": 8,
+  "pct": 50.0,
+  "by_family": {
+   "fuselage_barrel": {
+    "n": 4,
+    "passed": 0,
+    "pct": 0.0
+   },
+   "open_hole_panel": {
+    "n": 4,
+    "passed": 2,
+    "pct": 50.0
+   },
+   "stiffened_panel": {
+    "n": 4,
+    "passed": 2,
+    "pct": 50.0
+   },
+   "wingbox": {
+    "n": 4,
+    "passed": 4,
+    "pct": 100.0
+   }
+  },
+  "denominator": "name 未泄漏的可判子集"
+ },
+ "invalid_subset": {
+  "n": 0,
+  "passed": 0,
+  "pct": null,
+  "by_family": {},
+  "denominator": "name 泄漏 ⇒ 判据失效（R66 隔离，不得单独对外）"
+ },
+ "strata": {
+  "informative": {
+   "n": 16,
+   "passed": 8,
+   "pct": 50.0,
+   "by_family": {
+    "fuselage_barrel": {
+     "n": 4,
+     "passed": 0,
+     "pct": 0.0
+    },
+    "open_hole_panel": {
+     "n": 4,
+     "passed": 2,
+     "pct": 50.0
+    },
+    "stiffened_panel": {
+     "n": 4,
+     "passed": 2,
+     "pct": 50.0
+    },
+    "wingbox": {
+     "n": 4,
+     "passed": 4,
+     "pct": 100.0
+    }
+   }
+  },
+  "clarified": {
+   "n": 0,
+   "passed": 0,
+   "pct": null,
+   "by_family": {}
+  },
+  "_coverage": "informative_only",
+  "_note": "两层的**判定对象不同**：informative 层判「该答就答，且 spec 保真」；clarified 层判「该问就问，且键名对」。两层的 pct 不可相加、不可比大小（R54）。`clarify_informative` 是**掩码轴**，与本层（题型轴）同名不同源。"
+ },
+ "closure": {
+  "units": "tasks",
+  "all": 16,
+  "informative": 16,
+  "invalid": 0,
+  "formula": "all == informative + invalid（任务数与通过数两侧都成立）"
+ },
+ "per_task": [
+  {
+   "task_id": "L2i_naca4412_wingbox_n_ribs3_chord1000",
+   "family": "wingbox",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 41,
+    "n_fail": 0,
+    "n_fields_gated": 39,
+    "failed_fields": [],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  },
+  {
+   "task_id": "L2i_naca4412_wingbox_n_ribs6_chord1000",
+   "family": "wingbox",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 44,
+    "n_fail": 0,
+    "n_fields_gated": 42,
+    "failed_fields": [],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  },
+  {
+   "task_id": "L2i_naca4412_wingbox_n_ribs7_chord1000",
+   "family": "wingbox",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 41,
+    "n_fail": 0,
+    "n_fields_gated": 39,
+    "failed_fields": [],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  },
+  {
+   "task_id": "L2i_naca4412_wingbox",
+   "family": "wingbox",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 40,
+    "n_fail": 0,
+    "n_fields_gated": 38,
+    "failed_fields": [],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  },
+  {
+   "task_id": "L2i_open_hole_panel_400x200_d20_cfrp45s_d40",
+   "family": "open_hole_panel",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "clarify_wrong",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": "[\"hole_x\",\"hole_y\"]",
+   "detail": {
+    "clarify": "[\"hole_x\",\"hole_y\"]",
+    "note": "该答不答（信息完备却澄清）"
+   }
+  },
+  {
+   "task_id": "L2i_open_hole_panel_400x200_d20_cfrp45s",
+   "family": "open_hole_panel",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 32,
+    "n_fail": 0,
+    "n_fields_gated": 30,
+    "failed_fields": [],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  },
+  {
+   "task_id": "L2i_open_hole_panel_400x200_d20",
+   "family": "open_hole_panel",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 32,
+    "n_fail": 0,
+    "n_fields_gated": 30,
+    "failed_fields": [],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  },
+  {
+   "task_id": "L2i_open_hole_panel_400x200_d20_offcentre",
+   "family": "open_hole_panel",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_bad",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 33,
+    "n_fail": 1,
+    "n_fields_gated": 31,
+    "failed_fields": [
+     "mesh.size (not in gold)"
+    ],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  },
+  {
+   "task_id": "L2i_fuselage_barrel_d1600_l1600_str8_frm3",
+   "family": "fuselage_barrel",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_bad",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 34,
+    "n_fail": 2,
+    "n_fields_gated": 32,
+    "failed_fields": [
+     "extra.moment_axis",
+     "extra.shear_axis"
+    ],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  },
+  {
+   "task_id": "L2i_fuselage_barrel_d1800_l2000_str8_frm3",
+   "family": "fuselage_barrel",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_bad",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 34,
+    "n_fail": 2,
+    "n_fields_gated": 32,
+    "failed_fields": [
+     "extra.moment_axis",
+     "extra.shear_axis"
+    ],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  },
+  {
+   "task_id": "L2i_fuselage_barrel_d2000_l2000_str8_frm3",
+   "family": "fuselage_barrel",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_bad",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 34,
+    "n_fail": 2,
+    "n_fields_gated": 32,
+    "failed_fields": [
+     "extra.moment_axis",
+     "extra.shear_axis"
+    ],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  },
+  {
+   "task_id": "L2i_fuselage_barrel_d2000_l1800_str8_frm3",
+   "family": "fuselage_barrel",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_bad",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 37,
+    "n_fail": 3,
+    "n_fields_gated": 35,
+    "failed_fields": [
+     "extra.split_tag",
+     "extra.v11_bracket",
+     "extra.v11_template"
+    ],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  },
+  {
+   "task_id": "L2i_stiffened_panel_600x600_str3",
+   "family": "stiffened_panel",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 29,
+    "n_fail": 0,
+    "n_fields_gated": 27,
+    "failed_fields": [],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  },
+  {
+   "task_id": "L2i_stiffened_panel_800x600",
+   "family": "stiffened_panel",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_ok",
+   "pass": true,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 29,
+    "n_fail": 0,
+    "n_fields_gated": 27,
+    "failed_fields": [],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  },
+  {
+   "task_id": "L2i_stiffened_panel_600x600",
+   "family": "stiffened_panel",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_bad",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 30,
+    "n_fail": 1,
+    "n_fields_gated": 28,
+    "failed_fields": [
+     "mesh.size (not in gold)"
+    ],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  },
+  {
+   "task_id": "L2i_stiffened_panel_700x600_str4",
+   "family": "stiffened_panel",
+   "stratum": "informative",
+   "omitted_field": null,
+   "category": "spec_bad",
+   "pass": false,
+   "name_leak": false,
+   "clarify_text": null,
+   "detail": {
+    "n_fields": 33,
+    "n_fail": 4,
+    "n_fields_gated": 31,
+    "failed_fields": [
+     "extra.split_tag",
+     "extra.v11_bracket",
+     "extra.v11_interior_holdout",
+     "extra.v11_template"
+    ],
+    "exec_config_mismatch": 0,
+    "dead_fields_skipped": 0
+   }
+  }
+ ]
+}

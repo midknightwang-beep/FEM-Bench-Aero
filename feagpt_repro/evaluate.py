@@ -127,12 +127,24 @@ EXEC_CONFIG_KEYS = {
              'refine_at_leading_edge'},
     'analysis': {'incremental', 'initial_increment', 'outputs', 'step_type',
                  'total_time'},
-    # gold 内部编码键（数据集离散索引/方向轴表示，NL 任务书永远不会提及）
-    # N-19（T-A10b）：v1.1 的 4 个**数据集构建记账键**同属此类——它们记录「哪一版内插、
-    # 夹逼哪两个锚点、划分标签」，属 spec 的元信息而非模型该产出的物理字段。
-    # 不豁免的后果实测：v7 卷 9 条 v1.1 case 必然全 FAIL（模型不可能凭空写出
-    # split_tag='v11_interior_holdout'），且报告会把它读成「模型不行」（M7 同源）。
-    # 范围实测：这 4 个键**只出现在新增 9 条**，老 55 条一个都没有 ⇒ 补豁免不改动任何历史数字。
+}
+# N-35（老王 2026-11-04 拍板 **B：拆集合**）：
+# 原 `EXEC_CONFIG_KEYS['extra']` 混装两类**来源不同**的键，而 `engineering_layer` 只能一起开关
+# ⇒ 在 L2 轨道（`score_l2.py` 不传该开关）必然顾此失彼：打开就丢 mesh 考点、关上就被元信息压分
+# （实测 informative 16 条被压 ~20 pp，CONFLICT N-35）。
+#   类① **真实执行配置**：mesh 7 键 + analysis 5 键。题面给了、**该判** —— 这正是「逐字转写」的考点。
+#        仍按 W4d 只在 L3 豁免（`EXEC_CONFIG_KEYS` 原样保留，一字未动）。
+#   类② **数据集构建元信息**：extra 7 键（**不是 6** —— CONFLICT N-35 原文的「6 个」是笔误，
+#        它自己列了 7 个名字）。记录「哪一版内插 / 夹逼哪两个锚点 / 划分标签 / 离散索引 / 方向轴」，
+#        `v11_bracket` 的值甚至是一句中文描述 —— **任何层都不该判**，且**不依赖任何开关**。
+# ★ 两集合必须无交集：`mesh` 的键进这里 = 把考点静默删掉。由 S-63 机器守（`DATASET_META_KEYS`
+#   只许出现在 `extra`，且与 `EXEC_CONFIG_KEYS['mesh']` 交集为空）。
+# N-19（T-A10b）：v1.1 的 4 个构建记账键（split_tag / v11_*）同属此类——记录「哪一版内插、
+# 夹逼哪两个锚点、划分标签」，属 spec 的元信息而非模型该产出的物理字段。
+# 不豁免的后果实测：v7 卷 9 条 v1.1 case 必然全 FAIL（模型不可能凭空写出
+# split_tag='v11_interior_holdout'），且报告会把它读成「模型不行」（M7 同源）。
+# 范围实测：这 4 个键**只出现在新增 9 条**，老 55 条一个都没有 ⇒ 补豁免不改动任何历史数字。
+DATASET_META_KEYS = {
     'extra': {'sweep_index', 'shear_axis', 'moment_axis',
               'split_tag', 'v11_template', 'v11_bracket', 'v11_interior_holdout'},
 }
@@ -166,7 +178,7 @@ def spec_fidelity(cand_spec, gold_spec, family, input_mesh_keys=None, input_load
       - 自创键检查照旧 FAIL（编造语义字段不可豁免）
     """
     fields = []
-    dead_skipped, exec_mismatch = [], []
+    dead_skipped, exec_mismatch, dataset_meta_skipped = [], [], []
     holder_key, keys = GRADED_FIELDS.get(family, ('params', []))
     cand_holder = (cand_spec.get('airfoil', {}) if holder_key == 'airfoil'
                    else cand_spec.get('structure', {}).get('params', {}))
@@ -228,6 +240,14 @@ def spec_fidelity(cand_spec, gold_spec, family, input_mesh_keys=None, input_load
                 continue
             gv = gh[k]
             cv = ch.get(k, '<missing>')
+            # N-35（B）：数据集构建元信息键 —— **任何层都不判**，且**不依赖 engineering_layer**。
+            # 与下一段分开的原因：那 7 个是「该判的考点、只在 L3 豁免」（L2 要判，正是转写考点），
+            # 这 7 个是「连 L3 都不该判」。用同一个布尔开关控制两类，必然顾此失彼（N-35 根因）。
+            # 不做静默 continue：记进 dataset_meta_skipped 随结果返回，报告里看得到跳过了什么。
+            if k in DATASET_META_KEYS.get(holder, ()):
+                dataset_meta_skipped.append({'field': f'{holder}.{k}',
+                                             'expected': gv, 'actual': cv})
+                continue
             # W4d：执行配置键 REPORTED NOT GATED（填错单独报告，不 FAIL）
             if engineering_layer and k in EXEC_CONFIG_KEYS.get(holder, ()):
                 if cv != '<missing>' and not _field_equal(cv, gv):
@@ -275,7 +295,11 @@ def spec_fidelity(cand_spec, gold_spec, family, input_mesh_keys=None, input_load
     n_reported = sum(1 for f in fields if f.get('reported_not_gated'))
     out = {'pass': not fails, 'n_fields': len(fields), 'n_fail': len(fails),
            'n_fields_gated': len(fields) - n_reported,
+           'n_dataset_meta_skipped': len(dataset_meta_skipped),
            'failed': fails[:15]}
+    if dataset_meta_skipped:
+        # 任何层都报（不只 L3）—— L2 是否真的豁免了元信息键，要从产物里看得出
+        out['dataset_meta_skipped'] = dataset_meta_skipped[:10]
     if engineering_layer:
         out['engineering_layer'] = True
         out['dead_fields_skipped'] = dead_skipped

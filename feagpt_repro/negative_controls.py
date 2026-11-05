@@ -3640,6 +3640,76 @@ def main():
     print(f"  [{'ok ' if _nc83_ok else 'BAD!'}] NC-83 榜单 MSR Δ 与分母一致（T-L27c v4）    "
           f"{_nc83_detail}")
 
+    # NC-84（CONFLICT N-35，拍板 B）「判分口径的两类键必须分离，且分离不是靠放水」
+    #   守 S-63 的八向判据。五个变异**都必须是真变异**（改了行为、不是改文档）：
+    #     A 正向：现行代码 inspect() 必绿（不误报）
+    #     B 把 mesh 7 键**并入**元信息集 ⇒ 必红（B 交集 + C「L2 下 mesh 必判」双双失守）
+    #     C 元信息集清空 + 7 键回塞 EXEC_CONFIG_KEYS（= 拆分前的旧态）⇒ 必红（D：extra 又被判）
+    #     D 只清空元信息集（不动 EXEC_CONFIG_KEYS）⇒ 必红（B2 空集 + D 失去豁免）
+    #     E 把 mesh 键加进 METADATA_KEY_NAMES（放宽自创键）⇒ 必红（G：多写不再罚）
+    #   ★ B 与 C 是**一对反向**：只守 C 会漏「放水也绿」，只守 B 会漏「回到旧态也绿」。
+    _nc84_ok = False
+    _nc84_detail = ''
+    try:
+        import copy as _cp84
+        import _n35_key_guard as _g84
+        import evaluate as _E84
+
+        def _snap84():
+            return (_cp84.deepcopy(_E84.EXEC_CONFIG_KEYS),
+                    _cp84.deepcopy(_E84.DATASET_META_KEYS),
+                    set(_E84.METADATA_KEY_NAMES))
+
+        def _rest84(s):
+            _E84.EXEC_CONFIG_KEYS.clear(); _E84.EXEC_CONFIG_KEYS.update(s[0])
+            _E84.DATASET_META_KEYS.clear(); _E84.DATASET_META_KEYS.update(s[1])
+            _E84.METADATA_KEY_NAMES.clear(); _E84.METADATA_KEY_NAMES.update(s[2])
+
+        _h84 = []
+        for _tag84, _mut84 in (
+            ('A正向真码必绿', None),
+            ('B mesh键并入元信息集必红', 'mesh_into_meta'),
+            ('C 元信息清空+回塞执行配置必红', 'revert_old'),
+            ('D 只清空元信息集必红', 'meta_empty'),
+            ('E 放宽自创键必红', 'loosen_created'),
+        ):
+            _s84 = _snap84()
+            try:
+                if _mut84 == 'mesh_into_meta':
+                    _E84.DATASET_META_KEYS['extra'] |= set(_E84.EXEC_CONFIG_KEYS['mesh'])
+                elif _mut84 == 'revert_old':
+                    _E84.EXEC_CONFIG_KEYS['extra'] = set(_E84.DATASET_META_KEYS['extra'])
+                    _E84.DATASET_META_KEYS.clear()
+                elif _mut84 == 'meta_empty':
+                    _E84.DATASET_META_KEYS.clear()
+                elif _mut84 == 'loosen_created':
+                    _E84.METADATA_KEY_NAMES |= {'element_order', 'recombine', 'algorithm_2d'}
+                _ok84, _det84, _items84 = _g84.inspect()
+                _bad84 = ','.join(i['id'] for i in _items84 if not i['ok']) or '无红'
+            finally:
+                _rest84(_s84)
+            _h84.append((_tag84, _ok84, _bad84))
+
+        # 前一向必须绿、后四项必须红
+        _exp84 = [True, False, False, False, False]
+        _bad_h84 = [(t, o, d) for (t, o, d), e in zip(_h84, _exp84) if o != e]
+        _nc84_ok = not _bad_h84
+        _nc84_detail = ('; '.join('%s->%s[%s]' % (t, '绿' if o else '红', d) for t, o, d in _h84)
+                        if _nc84_ok else
+                        'FAIL: ' + '; '.join('%s 期望%s 实得%s[%s]'
+                                             % (t, '绿' if e else '红', '绿' if o else '红', d)
+                                             for (t, o, d), e in zip(_h84, _exp84) if o != e))
+    except Exception as _e84:
+        _nc84_detail = '跑不起来：%r（判据不可用 = 无判据）' % (_e84,)
+
+    results.append({'id': 'NC-84',
+                    'desc': '判分口径的两类键必须分离且各自生效（CONFLICT N-35 / S-63）：'
+                            'A 真代码不误报；B mesh 键并入元信息集须红；'
+                            'C 回到拆分前旧态须红；D 只清空元信息集须红；E 放宽自创键须红',
+                    'expect': 'A 绿 / B–E 各自点名正确的判据变红',
+                    'actual': _nc84_detail, 'ok': _nc84_ok})
+    print(f"  [{'ok ' if _nc84_ok else 'BAD!'}] NC-84 判分键两类分离（N-35 / S-63）      {_nc84_detail}")
+
     n_ok = sum(1 for r in results if r['ok'])
     report = {'n_cases': len(results), 'n_ok': n_ok, 'all_ok': n_ok == len(results),
               'ids': [r['id'] for r in results],
