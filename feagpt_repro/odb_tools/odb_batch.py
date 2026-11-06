@@ -55,9 +55,11 @@ import sys
 import time
 
 #: products from a previous run that would silently poison the next one
+#: (.fil can be ~75 MB/job when the inp uses *NODE FILE/*EL FILE -- 2026-11-06
+#: real-machine acceptance; .odb_f is the odb fragment file)
 _STALE_SUFFIXES = (
-    ".odb", ".odb.json", ".json.scalar", ".sta", ".dat", ".msg",
-    ".prt", ".com", ".sim", ".stt", ".pac", ".res", ".lck", ".023",
+    ".odb", ".odb_f", ".odb.json", ".json.scalar", ".sta", ".dat", ".msg",
+    ".prt", ".com", ".fil", ".sim", ".stt", ".pac", ".res", ".lck", ".023",
 )
 #: kept as evidence even on success unless --keep-logs is off (small files)
 _KEEP_ON_SUCCESS = (".sta", ".dat")

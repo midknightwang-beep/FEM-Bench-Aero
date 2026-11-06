@@ -53,3 +53,12 @@ job 布局：根目录下直接放 `<name>.inp`，或每个 job 一个子目录�
 2. `python odb_batch.py <真job目录> --dry-run` → 计划里的 job 清单与实际一致
 3. 小批 2–3 个 job 真跑 → `run_manifest.json` 全 `ok`、`.json.scalar` 读数与手工提取一致
 4. 抽 1 个 job 用 `--tier full` 重提取 → `meta.blocks` 与 `odb_scalar` 的标量在各自口径下对得上
+
+## 真机验收实录（2026-11-06，本机 D:\Program Files\SIMULIA）
+
+- `abaqus` 不在系统 PATH：普通 cmd 直跑报 `WinError 2` ⇒ 传 `--abaqus-cmd "D:\Program Files\SIMULIA\Commands\abaqus.bat"`（带空格必须引号）。
+- **数据集 inp 是 ccx 血统**：`*NODE FILE, OUTPUT=2D` / `*EL FILE, OUTPUT=2D` 的 `OUTPUT=2D` 是 CalculiX 专属参数，原生 Abaqus 判 4 个 fatal error、预处理器终止、不写 `.sta` ⇒ 求解前把验收副本里的 `, OUTPUT=2D` 剥掉（`sed 's/, OUTPUT=2D//g'`），**数据集原件不碰**。此坑被 `.sta` 闸正确拦下（abaqus rc=0 但分析没跑成）。
+- 验收批：`stiffened_panel_600x600_s0/_s3`，2/2 ok，各 ~17 s（11560 单元静力）。
+- **平衡自证**：`*DLOAD` 面压 `P=-1e-4 MPa × 600×600 mm² = 36 N` 解析值，两 job RF 合力实读 `35.9999997 / 36.0000000 N`（相对误差 ~1e-8）——独立解析锚点通过。
+- 量级自检：max|U| 0.964 mm（无筋 s0）vs 0.0152 mm（3 筋 s3），比值 ~63×，弯曲主导薄板加筋合理。
+- 已知口径差：剥掉 `OUTPUT=2D` 后 Abaqus odb 无表面膜应力场，s0 的 `vm_membrane` 读 0（s3 因 section point 布局读到 1.556）；与 ccx 的 OUTPUT=2D 膜应力直比需原生长 `OUTPUT=2D` 的 ccx 结果，属预期，非缺陷。
