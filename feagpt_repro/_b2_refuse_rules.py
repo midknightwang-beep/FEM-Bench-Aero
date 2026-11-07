@@ -62,6 +62,40 @@ from _b2_build_refuse_set import (CAP_KEYWORDS, INP_WRITER, spec_of)  # noqa: E4
 
 JS_PATH = os.path.join(HERE, 'gen_candidates_v2.js')
 
+# ---------------------------------------------------------------------------
+# 能力越界探针的锚点（2026-11-07 老王拍板）：**v1.1 的 64 份 spec.json**。
+# 声明「X 能力越界、拒答合法」的对象是卷子的题型覆盖；生成器词表不是同一件事
+# （C6-P1 让 inp_writer 有了 *FREQUENCY —— v2 模态线，v1.1 64 卷仍全 static）。
+# N-34：锚点闸守同一性 —— 锚必须跟声明走。将来 v1.1 加题型（新冻结卷）自动红。
+# 词表探针（CAP_KEYWORDS / inp_writer.py）保留在 _b2_build_refuse_set 里不删，
+# 作为生成器侧的独立证据源（双向：缺了不红、v1.1 进卷必红）。
+# ---------------------------------------------------------------------------
+MODELING_DIR = os.path.normpath(os.path.join(
+    HERE, os.pardir, 'FEM-Bench-Aero', 'modeling'))
+
+CAP_SPEC_PATTERNS = {
+    'frequency': r'"step_type"\s*:\s*"(?!static")\w+|"frequency"',
+    'buckle': r'"buckle"',
+    'dynamic': r'"dynamic"',
+    'contact': r'"contact"',
+    'plastic': r'"plastic"',
+    'fatigue': r'"fatigue"',
+    'thermal': r'"thermal"',
+    'failure': r'"failure"',
+}
+
+
+def _v11_spec_blob() -> str:
+    """Concatenate every v1.1 case spec.json (the probe's anchor object)."""
+    parts = []
+    if os.path.isdir(MODELING_DIR):
+        for name in sorted(os.listdir(MODELING_DIR)):
+            p = os.path.join(MODELING_DIR, name, 'spec.json')
+            if os.path.isfile(p):
+                with io.open(p, encoding='utf-8') as fh:
+                    parts.append(fh.read())
+    return '\n'.join(parts)
+
 # addendum 里由本表生成的区块，用这对标记包起来（js 里是注释行）。
 BLOCK_BEGIN = '// >>> REFUSE_RULES:BEGIN（本区块由 _b2_refuse_rules.py --emit 生成，勿手改）'
 BLOCK_END = '// <<< REFUSE_RULES:END'
@@ -377,12 +411,17 @@ def check(verbose=True):
         else:
             notes.append('[F:%s] raise 前缀 %d 条全部被规则覆盖' % (fam, len(prefixes)))
 
-    # ④ 能力越界：关键字必须**不在** deck 生成器里（R58 同源）
-    deck = io.open(INP_WRITER, encoding='utf-8').read()
-    for anchor, pat in CAP_KEYWORDS.items():
-        if re.search(pat, deck):
-            problems.append('[C:%s] 关键字 %r 出现在 inp_writer.py 里 —— '
-                            '该能力其实支持，不能再判越界' % (anchor, pat))
+    # ④ 能力越界：能力关键字必须**不在** v1.1 的 64 份 spec 里（R58 同源）。
+    #    ★ 锚点修正（2026-11-07 老王拍板）：声明对象是 **卷子的题型覆盖**，
+    #    不是生成器的词表 —— C6-P1 给 inp_writer 加了 frequency 分支（v2 模态线），
+    #    但 v1.1 的 64 卷仍全是 static，声明没有变假。旧锚点（grep inp_writer.py）
+    #    把「v2 线支持了」误读成「v8 卷支持了」（N-34：锚点闸守同一性，锚错对象
+    #    就误伤）。将来 v1.1 真加题型（新冻结卷）⇒ 探针自动红，不靠人记得改。
+    spec_blob = _v11_spec_blob()
+    for anchor, pat in CAP_SPEC_PATTERNS.items():
+        if re.search(pat, spec_blob, re.IGNORECASE):
+            problems.append('[C:%s] 关键字 %r 出现在 v1.1 的 64 份 spec.json 里 —— '
+                            '该能力其实进卷了，不能再判越界' % (anchor, pat))
 
     if verbose:
         for n in notes:

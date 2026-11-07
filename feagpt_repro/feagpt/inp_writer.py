@@ -252,16 +252,41 @@ def write_inp(
         L.append(f"{nset}, {int(clamp_dofs[0])}, {int(clamp_dofs[1])}, 0.0")
 
     # ---- step ----------------------------------------------------------- #
-    L.append("*STEP, NLGEOM=NO")
-    L.append("*STATIC")
-    L.append(f"{_fmt(spec.analysis.initial_increment)}, {_fmt(spec.analysis.total_time)}")
+    if spec.analysis.step_type == "frequency":
+        # C6-P1 (2026-11-07): eigenvalue step -- load-independent, so the load
+        # block is omitted entirely; the BC block above stays outside the step,
+        # which is valid for both dialects.  The eigenvalue table is printed to
+        # .dat automatically by both solvers; the field request below is only
+        # for mode shapes (frd / odb), never needed to read f1..f5.
+        L.append("*STEP")
+        n_modes = int(spec.analysis.n_modes)
+        if dialect == "ccx":
+            L.append("*FREQUENCY, SOLVER=ARPACK")
+            # data line: number of eigenvalues, lower bound, upper bound
+            L.append(f"{n_modes}, 0.0, 1.0e6")
+            L.append("*NODE FILE")
+            L.append("U")
+        else:
+            L.append("*FREQUENCY, EIGENSOLVER=LANCZOS")
+            # data line: number of eigenvalues, low freq, high freq (0,0 = auto)
+            L.append(f"{n_modes}, 0.0, 0.0")
+            # *NODE FILE is results-file-only in Abaqus; field output -> ODB
+            # (see _emit_output_requests docstring: the 2D abort lesson)
+            L.append("*OUTPUT, FIELD, NUMBER INTERVAL=1")
+            L.append("*NODE OUTPUT")
+            L.append("U")
+        L.append("*END STEP")
+    else:
+        L.append("*STEP, NLGEOM=NO")
+        L.append("*STATIC")
+        L.append(f"{_fmt(spec.analysis.initial_increment)}, {_fmt(spec.analysis.total_time)}")
 
-    applied = _emit_load(L, spec, elements, groups, load_group, pressure_group,
-                         nodes, pressure_dload_sign)
+        _emit_load(L, spec, elements, groups, load_group, pressure_group,
+                   nodes, pressure_dload_sign)
 
-    # ---- output requests ------------------------------------------------- #
-    _emit_output_requests(L, dialect)
-    L.append("*END STEP")
+        # ---- output requests ---------------------------------------------- #
+        _emit_output_requests(L, dialect)
+        L.append("*END STEP")
 
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
     return path

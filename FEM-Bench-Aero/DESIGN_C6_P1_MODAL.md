@@ -74,6 +74,8 @@ U                                           U
 | 频率 f | **打印的是 λ** ⇒ `f = sqrt(λ) / (2π)` | 表内直接打印 `CYCLES/TIME` 列 | **换算公式写死在提取器，且 abaqus 侧同时用 λ 反算一遍做内部一致性 pin**（两条路必须逐字节一致，不一致=提取器 bug） |
 | 有效质量 | **待核实**（ccx `.dat` 是否打印模态质量/参与因子，P1 首跑实测） | 自动打印 `E F F E C T I V E   M A S S` 表 | ccx 侧缺失则 v2 打样判据只用 f；有效质量作为 abaqus 侧诊断量，不进交叉判据 |
 
+> **★ 实测修正（2026-11-07，首跑即测，打样第 5 步执行中记录）**：ccx 2.23 的 `.dat` 特征值表**并非只打 λ**——实际是 5 列行 `MODE, λ, RAD/TIME, CYCLES/TIME, 虚部`，与 abaqus 同构，`CYCLES/TIME` 直接可读；且表后自动打印 `P A R T I C I P A T I O N   F A C T O R S`（参与因子有了，有效质量仍无——判据只用 f 的决定不变）。提取器两码统一走「打印 f 为主 + λ→f 反算 pin（1e-4 相对容差，mis-parse 即 raise）」，旧式 λ-only 布局保留为兜底解析；回归 pin `SELF_TEST_OK 11 pins` 含真机表头文本。本行是设计假设被实测推翻的更正记录，原文（上表第二列）保留供追溯。
+
 **提取器**：新 `extract_modal_dat.py`（纯文本解析，任意 python 可跑，沙箱内用已知 pin 值自检——含 λ→f 换算 pin：λ=4π² ⇒ f=1.0 Hz 整）。
 
 **语义量 schema（v2 打样层）**：`f1..f5`（Hz，Cycles/time）、`n_modes_found`、`lam1..lam5`（原始 λ）；每个 case 一个 `truth_modal.json`（打样阶段 = 测量产物，冻结后才成 truth）。

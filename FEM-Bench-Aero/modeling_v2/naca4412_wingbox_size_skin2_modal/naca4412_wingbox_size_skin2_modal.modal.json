@@ -1,0 +1,55 @@
+{
+ "source": "modal-dat",
+ "dialect": "ccx",
+ "dat": "F:\\AI FEA Modeling DataSets\\FEM-Bench-Aero\\modeling_v2\\naca4412_wingbox_size_skin2_modal\\naca4412_wingbox_size_skin2_modal.dat",
+ "modes": [
+  {
+   "mode": 1,
+   "lam": 36016.14,
+   "f_rad": 189.7792,
+   "f_hz": 30.20429,
+   "f_hz_check": 30.204295783166952
+  },
+  {
+   "mode": 2,
+   "lam": 273010.0,
+   "f_rad": 522.5036,
+   "f_hz": 83.15903,
+   "f_hz_check": 83.15902889373262
+  },
+  {
+   "mode": 3,
+   "lam": 278157.9,
+   "f_rad": 527.4068,
+   "f_hz": 83.93939,
+   "f_hz_check": 83.93939430843396
+  },
+  {
+   "mode": 4,
+   "lam": 293293.4,
+   "f_rad": 541.5657,
+   "f_hz": 86.19286,
+   "f_hz_check": 86.19285707424606
+  },
+  {
+   "mode": 5,
+   "lam": 325060.3,
+   "f_rad": 570.1406,
+   "f_hz": 90.74069,
+   "f_hz_check": 90.74069422140958
+  }
+ ],
+ "raw_block": "E I G E N V A L U E   O U T P U T\n\n MODE NO    EIGENVALUE                       FREQUENCY   \n                                     REAL PART            IMAGINARY PART\n                           (RAD/TIME)      (CYCLES/TIME     (RAD/TIME)\n\n      1   0.3601614E+05   0.1897792E+03   0.3020429E+02   0.0000000E+00\n      2   0.2730100E+06   0.5225036E+03   0.8315903E+02   0.0000000E+00\n      3   0.2781579E+06   0.5274068E+03   0.8393939E+02   0.0000000E+00\n      4   0.2932934E+06   0.5415657E+03   0.8619286E+02   0.0000000E+00\n      5   0.3250603E+06   0.5701406E+03   0.9074069E+02   0.0000000E+00\n",
+ "n_modes_found": 5,
+ "n_requested": 5,
+ "complete": true,
+ "positive": true,
+ "monotonic": true,
+ "f_hz": [
+  30.20429,
+  83.15903,
+  83.93939,
+  86.19286,
+  90.74069
+ ]
+}

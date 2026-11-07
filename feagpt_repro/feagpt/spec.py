@@ -264,11 +264,12 @@ class AnalysisSpec:
     """Solver deck settings."""
 
     solver: str = "auto"            # "auto" | "ccx" | "abaqus"
-    step_type: str = "static"
+    step_type: str = "static"       # "static" | "frequency" (C6-P1, 2026-11-07)
     incremental: bool = True
     initial_increment: float = 0.25
     total_time: float = 1.0
     outputs: tuple[str, ...] = ("U", "S")
+    n_modes: int = 5                # frequency step only: number of eigenvalues
 
 
 @dataclass
