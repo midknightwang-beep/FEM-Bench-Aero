@@ -1,0 +1,259 @@
+{
+ "what": "C6-P1 modal pilot, LLM round-1 (two models, one run each)",
+ "date": "2026-11-07",
+ "status": "diagnostic (v2 pilot line, NOT headline; headline stays C-032)",
+ "volume_freeze_sha256": "0aa7e3e348cc86977698eb57c50fb022aedc7714103716ce487e02f24f067d4e",
+ "tasks_sha256": "b9eac76d69199c2fdd52d52df273e16e88071a779e78a6436e901325fe60fcda",
+ "prompt_sha256": "6b90daf07bbe070d5c870c7006e9ff28142e441370d71c1b16083a4bec6c98f9",
+ "prompt_note": "SYS static baseline prompt, unchanged since v2f (6b90daf0...); presentation = v1.1 L1 style (gen_candidates_v2.js buildUser L1 branch)",
+ "candidates_dir_glm": "candidates_v2_modal_glm (not tracked; runs in eval_runs_v2_glm)",
+ "candidates_dir_ds": "candidates_v2_modal_ds (not tracked; runs in eval_runs_v2_ds)",
+ "models": {
+  "glm-5.3-flash": {
+   "n_tasks": 8,
+   "n_pass": 6,
+   "model_id_file": "glm-5.3-flash",
+   "rows": [
+    {
+     "task_id": "V2_L1_naca4412_wingbox_modal",
+     "overall_pass": false,
+     "gates": {
+      "contract": false
+     },
+     "spec_fidelity_n_fail": null,
+     "f1_rel_diff": null,
+     "wall_seconds": null,
+     "failure_class": "model"
+    },
+    {
+     "task_id": "V2_L1_naca4412_wingbox_n_ribs5_chord800_modal",
+     "overall_pass": true,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": true,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 0,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 112.6,
+     "failure_class": null
+    },
+    {
+     "task_id": "V2_L1_naca4412_wingbox_size_skin2_modal",
+     "overall_pass": true,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": true,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 0,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 188.7,
+     "failure_class": null
+    },
+    {
+     "task_id": "V2_L1_naca4412_wingbox_size_span2400_modal",
+     "overall_pass": true,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": true,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 0,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 182.1,
+     "failure_class": null
+    },
+    {
+     "task_id": "V2_L1_naca4412_wingbox_str3_modal",
+     "overall_pass": true,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": true,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 0,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 334.9,
+     "failure_class": null
+    },
+    {
+     "task_id": "V2_L1_naca4412_wingbox_sweep20_modal",
+     "overall_pass": true,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": true,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 0,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 197.6,
+     "failure_class": null
+    },
+    {
+     "task_id": "V2_L1_naca4412_wingbox_taper060_modal",
+     "overall_pass": false,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": false,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 1,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 214.8,
+     "failure_class": null
+    },
+    {
+     "task_id": "V2_L1_naca4412_wingbox_web1_modal",
+     "overall_pass": true,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": true,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 0,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 137.0,
+     "failure_class": null
+    }
+   ],
+   "red_summary": [
+    "V2_L1_naca4412_wingbox_modal: contract",
+    "V2_L1_naca4412_wingbox_taper060_modal: spec_fidelity"
+   ]
+  },
+  "deepseek-v4-pro": {
+   "n_tasks": 8,
+   "n_pass": 8,
+   "model_id_file": "deepseek-v4-pro",
+   "rows": [
+    {
+     "task_id": "V2_L1_naca4412_wingbox_modal",
+     "overall_pass": true,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": true,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 0,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 150.4,
+     "failure_class": null
+    },
+    {
+     "task_id": "V2_L1_naca4412_wingbox_n_ribs5_chord800_modal",
+     "overall_pass": true,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": true,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 0,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 94.7,
+     "failure_class": null
+    },
+    {
+     "task_id": "V2_L1_naca4412_wingbox_size_skin2_modal",
+     "overall_pass": true,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": true,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 0,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 136.9,
+     "failure_class": null
+    },
+    {
+     "task_id": "V2_L1_naca4412_wingbox_size_span2400_modal",
+     "overall_pass": true,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": true,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 0,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 225.2,
+     "failure_class": null
+    },
+    {
+     "task_id": "V2_L1_naca4412_wingbox_str3_modal",
+     "overall_pass": true,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": true,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 0,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 201.8,
+     "failure_class": null
+    },
+    {
+     "task_id": "V2_L1_naca4412_wingbox_sweep20_modal",
+     "overall_pass": true,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": true,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 0,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 102.1,
+     "failure_class": null
+    },
+    {
+     "task_id": "V2_L1_naca4412_wingbox_taper060_modal",
+     "overall_pass": true,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": true,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 0,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 162.6,
+     "failure_class": null
+    },
+    {
+     "task_id": "V2_L1_naca4412_wingbox_web1_modal",
+     "overall_pass": true,
+     "gates": {
+      "contract": true,
+      "spec_fidelity": true,
+      "pipeline": true,
+      "modal_f1": true
+     },
+     "spec_fidelity_n_fail": 0,
+     "f1_rel_diff": 0.0,
+     "wall_seconds": 118.5,
+     "failure_class": null
+    }
+   ],
+   "red_summary": []
+  }
+ },
+ "repro": [
+  "PY=C:/Users/22207/.workbuddy/binaries/python/envs/default/Scripts/python.exe",
+  "node gen_candidates_v2.js --tasks tasks/tasks_v2_modal.jsonl --levels L1 --limit 8 --out candidates_v2_modal_<tag> --model <id> --no-schema-validate",
+  "python score_v2_modal.py --candidate-dir candidates_v2_modal_<tag> --out-root eval_runs_v2_<tag>",
+  "python score_v2_modal.py --self-test  # 10/10 pins"
+ ]
+}

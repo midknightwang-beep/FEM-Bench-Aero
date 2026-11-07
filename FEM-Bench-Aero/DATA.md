@@ -264,3 +264,23 @@ sha256sum -c SHA256SUMS.txt
 - **f1 硬判 <1%**（实测双码 median 0.23% / max 0.73%）；高阶只记不判（S4 公式级差异，假设待核实）。
 - **候选判分走「同码自比」**：候选 spec 与参考 spec 都走同一条 feagpt 管线、同一码求解，
   公式差异在差值中自动抵消；跨码 f2+ 差异**不进判据**。
+
+### 7.5 死键修正（2026-11-07 深夜，老王拍板「修卷剥键+重冻结」）
+
+第一轮实测前发现 8 条 gold `spec.json` 带死键（v1.1 base case 参数表残留）：
+长桁细节键 8/8（7 条 `n_stringers_per_skin=0` 死键 + str3 的 `stringer_flange_width`
+被 `blade()` 忽略且 SYS 明令不写）+ 自创 extra 键 2 条（`n_ribs5` 的 `sweep_index`、
+`web1` 的 `end_torque`/`torque_axis_dof`）。模型守 SYS 不写这些键反而被判红
+（判据 supply 链断裂）。修正：`make_v2_strip_dead_keys.py` 剥键 + **deck sha 逐位
+一致**验证（8/8，truth 无需重出）+ `SHA256SUMS.txt` 只重算 8 条 spec 行（复算
+74/74）。考卷呈现补 name/description 逐字照抄；判分器在 pipeline 闸前把
+`name` 归一为 case_name（防模型 name 错位劫持产物路径 → `.dat` 假红）。
+
+### 7.6 第一轮实测结果（2026-11-07，diagnostic）
+
+成绩单：`feagpt_repro/reports/diagnostics/v2_modal_pilot_run1_2026-11-07.json`
+（v2 pilot 线，**不进对外 headline**，headline 仍是 C-032）。
+- **deepseek-v4-pro 8/8**；glm-5.3-flash 6/8。
+- 跑通的条目 f1_rel 全部 0.0（同码自比，物理逐位一致）。
+- glm 两红均为真红：材料块自创键 `E`（contract 拒绝）+ description 措辞漂移。
+- 考卷 sha `b9eac76d…`、prompt sha `6b90daf0…`（SYS 未动）、冻结 sha `0aa7e3e3…`。

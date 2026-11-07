@@ -1,9 +1,11 @@
 """Generate ``tasks/tasks_v2_modal.jsonl`` — the C6-P1 modal pilot exam.
 
 Each task mirrors the v1.1 L1 shape: ``input.spec_normalized`` is the full
-normalized parameter table (the gold spec minus ``workdir``/``airfoil``);
-the model's job is to turn it into a runnable FEASpec.  Everything is read
-from the frozen v2 artifacts at run time (R-A3: no hand-copied numbers).
+normalized parameter table (the gold spec minus ``workdir``).  Wingbox
+geometry lives in the ``airfoil`` block and IS included -- measured 2026-11-07:
+all 39 v1.1 L1 wingbox tasks carry ``airfoil`` in ``spec_normalized``
+(stripping it would leave the model without the geometry it is graded on,
+and spec_fidelity would be red even for a perfect transcription).
 
 Usage::
 
@@ -25,8 +27,11 @@ _ROOT = _HERE.parent
 _V2 = _ROOT / "FEM-Bench-Aero" / "modeling_v2"
 _OUT = _HERE / "tasks" / "tasks_v2_modal.jsonl"
 
-#: gold-only keys that must NOT leak into the task input (v1.1 convention)
-_STRIP_TOP = ("workdir", "airfoil")
+#: gold-only key that must NOT leak into the task input (v1.1 convention).
+#: ``airfoil`` is NOT stripped: v1.1 L1 wingbox tasks keep it (39/39 measured),
+#: and the recursive full-key spec_fidelity gate grades against the gold spec
+#: WITH airfoil -- a stripped input would be unanswerable.
+_STRIP_TOP = ("workdir",)
 
 
 def build_task(base: str) -> dict:

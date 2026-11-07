@@ -7,6 +7,8 @@
 //   3. CLARIFY 协议改 JSON：{"clarify": ["问题1", ...]}（json_object 模式下不出纯文本）
 //   4. 修复循环 ≤3 轮：校验失败把错误清单喂回去重生成，记录 turns_used + validation_history
 // 用法：node gen_candidates_v2.js --tasks tasks/tasks.jsonl --levels L3 --out candidates_l3_v2 --limit 2
+//   C6-P1 模态考卷：node gen_candidates_v2.js --tasks tasks/tasks_v2_modal.jsonl --levels L1 \
+//     --limit 8 --out candidates_v2_modal_<model> --model glm-5.3-flash --no-schema-validate
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -202,6 +204,18 @@ function maskName(taskId) {
 }
 
 function buildUser(t, mask) {
+  // C6-P1（2026-11-07）：v2 模态考卷用 input_level=L1 + input.spec_normalized
+  //（与 v1.1 L1 同形状）。呈现逐字复刻 gen_candidates.js specPrompt 的 L1 分支 ——
+  // 这样 v2 候选与 v1.1 L1 候选同 SYS sha、同呈现口径，唯一变量是题目本身。
+  if (t.input_level === 'L1' && t.input && t.input.spec_normalized) {
+    const s = t.input.spec_normalized;
+    return `结构族=${t.family}。请严格按以下参数生成 spec JSON（参数必须逐一采用，不得改动任何数值）：\n` +
+           `★ spec 顶层 name 与 description 也必须逐字照抄：name=${JSON.stringify(s.name)}，description=${JSON.stringify(s.description)}。\n` +
+           JSON.stringify(s.structure && s.structure.family === 'wingbox' ? s.airfoil : s.structure.params, null, 1) +
+           `\n载荷: ${JSON.stringify(s.load)}；网格: ${JSON.stringify(s.mesh)}；材料: ${JSON.stringify(s.material)}` +
+           `\n边界: ${JSON.stringify(s.bc)}；分析: ${JSON.stringify(s.analysis)}；extra: ${JSON.stringify(s.extra || {})}` +
+           `\n★ bc/analysis/extra 三块也必须逐字段照抄（柱壳的 extra.end_shear/end_moment 是主载荷）。`;
+  }
   if (t.input_level !== 'L2')
     return `工程任务描述：\n${t.input.nl}\n请据此输出 spec JSON（或 {"clarify":[...]}）。`;
   const s = JSON.parse(JSON.stringify(t.input.spec_normalized || {}));
@@ -288,6 +302,14 @@ async function main() {
   const MASK_NAME = argv.includes('--mask-name');
   // T-L27c v3：本轮 L2 prompt 的 arm 标签，写进每条候选供事后分辨（R-A8 可追溯）
   const myArmTag = 'l2_' + _L2_ARM_TAG;
+  // C6-P1（2026-11-07）：v2 模态考卷跳过 ajv 修复循环。
+  // 理由与 L2/REFUSE 同构：正确答案本身不满足这份 schema —— schema_task.json 的
+  // mesh/analysis 键集合比 v2 gold spec 窄（实测：element_order 等 7 个 mesh 键 +
+  // analysis.n_modes 都被判 additionalProperties）。修复循环会把「照抄 gold」的
+  // 输出逼着删键 ⇒ spec_fidelity（递归全键 vs gold）与 ajv 自相矛盾。
+  // 判分权威交给 score_v2_modal.py 的 contract 闸（FEASpec buildable，实测对 gold 通过）。
+  // 不传参时行为逐字节不变。
+  const NO_SCHEMA_VALIDATE = argv.includes('--no-schema-validate');
   // ---------------------------------------------------------------------
   // T-PSA（2026-11-01）：影子 prompt 入口。
   // ★ 只给 L3 用，**不改上面的 SYS 常量一个字节** —— 常量 sha 是 R53/S-39 的锚点，
@@ -383,7 +405,7 @@ async function main() {
         //   「你给的 spec 不合法」推回去，等于诱导它继续改 spec 而不是改口拒答。
         //   所以 kind==='refuse' 的题一次成型；对照题（kind==='build'）仍走完整
         //   修复循环，与 L3 口径一致才可比。
-        if (t.input_level === 'L2' || t.kind === 'refuse') break;
+        if (t.input_level === 'L2' || t.kind === 'refuse' || NO_SCHEMA_VALIDATE) break;
         const ok = validate(spec);
         const cerr = ok ? contractErrors(spec) : [];
         if (ok && !cerr.length) break;
@@ -414,6 +436,7 @@ async function main() {
     const row = { task_id: t.task_id, input_level: t.input_level, model: model.id,
                   kind: t.kind || null,
                   prompt_sha256: promptSha,
+                  schema_validated: !NO_SCHEMA_VALIDATE,
                   clarify, refuse, spec, turns_used: turnsUsed,
                   validation_history: valHistory, raw_len: answer.length };
     // T-A13a：L2 额外落一条「呈现方式」，否则事后无法分辨这批候选是遮了 name 还是没遮

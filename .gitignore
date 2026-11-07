@@ -75,3 +75,7 @@ feagpt_repro/.solve.lock
 
 # 交接包（zip 大二进制，不入库；HANDOFF/*.md 文档仍入库）
 _handoff/
+
+# v2 模态线（C6-P1）：候选与运行目录不入库，与 v1.1 candidates/ / eval_runs/ 同惯例（R-A3）
+feagpt_repro/candidates_v2_modal_*/
+feagpt_repro/eval_runs_v2*/

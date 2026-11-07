@@ -170,6 +170,14 @@ def evaluate_one_v2(task: dict, cand_spec_path: Path, out_root: Path = _RUNS,
         "failed": [{"path": p, "expected": e, "actual": a}
                    for p, e, a in fails[:20]]}
 
+    # gate 1.5 (2026-11-07): normalize name to the grader-derived case_name
+    # BEFORE writing the spec for solving.  A wrong model name has already
+    # been judged red by spec_fidelity; without this, run_pipeline names the
+    # run dir after the model's name and modal_f1 cannot find the .dat
+    # (measured: the name hijack turned 7/8 modal_f1 into "candidate .dat
+    # missing" although the solve itself succeeded).
+    raw["name"] = case_name
+
     # gate 2: pipeline (same code path as v1.1 evaluation)
     cand_spec_path = run_dir / "candidate.spec.json"
     cand_spec_path.write_text(json.dumps(raw, ensure_ascii=False, indent=1),
