@@ -1,0 +1,352 @@
+{
+ "volume": "modeling_v2 (C6-P1 modal pilot)",
+ "n_cases": 8,
+ "n_ok": 8,
+ "note": "f1 judged at <1% (decided); modes 2-5 recorded only -- mode-pairing open item (DESIGN_C6_P1_MODAL.md section 5)",
+ "f1_gate": {
+  "judged": "f1 only (decided 2026-11-07, option A)",
+  "threshold_rel": 0.01,
+  "n_judged": 8,
+  "n_fail": 0,
+  "fails": [],
+  "pass": true
+ },
+ "rel_diff_stats_by_mode": {
+  "mode_1": {
+   "n": 8,
+   "median": 0.002345692687130861,
+   "p90": 0.0032781051037275707,
+   "max": 0.007253329399143936
+  },
+  "mode_2": {
+   "n": 8,
+   "median": 0.0016723355949946526,
+   "p90": 0.00201304943611269,
+   "max": 0.15199523481211188
+  },
+  "mode_3": {
+   "n": 8,
+   "median": 0.03778159828882506,
+   "p90": 0.07559461990536742,
+   "max": 0.15700164313890738
+  },
+  "mode_4": {
+   "n": 8,
+   "median": 0.054092166298161146,
+   "p90": 0.08533248251293923,
+   "max": 0.1637081197111686
+  },
+  "mode_5": {
+   "n": 8,
+   "median": 0.07051114774429293,
+   "p90": 0.08661316431069795,
+   "max": 0.12481731574787576
+  }
+ },
+ "rows": [
+  {
+   "case": "naca4412_wingbox_modal",
+   "state": "ok",
+   "n_modes_compared": 5,
+   "modes": [
+    {
+     "mode": 1,
+     "f_ccx_hz": 31.46598,
+     "f_abq_hz": 31.363,
+     "rel_diff": 0.0032781051037275707
+    },
+    {
+     "mode": 2,
+     "f_ccx_hz": 94.76758,
+     "f_abq_hz": 94.577,
+     "rel_diff": 0.00201304943611269
+    },
+    {
+     "mode": 3,
+     "f_ccx_hz": 109.8194,
+     "f_abq_hz": 101.82,
+     "rel_diff": 0.07559461990536742
+    },
+    {
+     "mode": 4,
+     "f_ccx_hz": 111.7791,
+     "f_abq_hz": 103.0,
+     "rel_diff": 0.08175003992474128
+    },
+    {
+     "mode": 5,
+     "f_ccx_hz": 117.6577,
+     "f_abq_hz": 107.89,
+     "rel_diff": 0.08661316431069795
+    }
+   ],
+   "max_rel_diff": 0.08661316431069795
+  },
+  {
+   "case": "naca4412_wingbox_size_span2400_modal",
+   "state": "ok",
+   "n_modes_compared": 5,
+   "modes": [
+    {
+     "mode": 1,
+     "f_ccx_hz": 22.43187,
+     "f_abq_hz": 22.372,
+     "rel_diff": 0.002672536992898162
+    },
+    {
+     "mode": 2,
+     "f_ccx_hz": 67.68412,
+     "f_abq_hz": 67.58,
+     "rel_diff": 0.0015395065594629924
+    },
+    {
+     "mode": 3,
+     "f_ccx_hz": 92.39876,
+     "f_abq_hz": 86.103,
+     "rel_diff": 0.07054003277054526
+    },
+    {
+     "mode": 4,
+     "f_ccx_hz": 97.25436,
+     "f_abq_hz": 89.295,
+     "rel_diff": 0.08533248251293923
+    },
+    {
+     "mode": 5,
+     "f_ccx_hz": 100.0638,
+     "f_abq_hz": 92.33,
+     "rel_diff": 0.08039552210102408
+    }
+   ],
+   "max_rel_diff": 0.08533248251293923
+  },
+  {
+   "case": "naca4412_wingbox_n_ribs5_chord800_modal",
+   "state": "ok",
+   "n_modes_compared": 5,
+   "modes": [
+    {
+     "mode": 1,
+     "f_ccx_hz": 26.03833,
+     "f_abq_hz": 25.975,
+     "rel_diff": 0.0024351449907166877
+    },
+    {
+     "mode": 2,
+     "f_ccx_hz": 78.44204,
+     "f_abq_hz": 78.305,
+     "rel_diff": 0.0017485497652778505
+    },
+    {
+     "mode": 3,
+     "f_ccx_hz": 124.4042,
+     "f_abq_hz": 120.42,
+     "rel_diff": 0.032547436078622954
+    },
+    {
+     "mode": 4,
+     "f_ccx_hz": 143.467,
+     "f_abq_hz": 135.13,
+     "rel_diff": 0.059849890702340786
+    },
+    {
+     "mode": 5,
+     "f_ccx_hz": 149.3028,
+     "f_abq_hz": 139.69,
+     "rel_diff": 0.06652622487480653
+    }
+   ],
+   "max_rel_diff": 0.06652622487480653
+  },
+  {
+   "case": "naca4412_wingbox_size_skin2_modal",
+   "state": "ok",
+   "n_modes_compared": 5,
+   "modes": [
+    {
+     "mode": 1,
+     "f_ccx_hz": 30.20429,
+     "f_abq_hz": 29.986,
+     "rel_diff": 0.007253329399143936
+    },
+    {
+     "mode": 2,
+     "f_ccx_hz": 83.15903,
+     "f_abq_hz": 71.412,
+     "rel_diff": 0.15199523481211188
+    },
+    {
+     "mode": 3,
+     "f_ccx_hz": 83.93939,
+     "f_abq_hz": 71.72,
+     "rel_diff": 0.15700164313890738
+    },
+    {
+     "mode": 4,
+     "f_ccx_hz": 86.19286,
+     "f_abq_hz": 73.15,
+     "rel_diff": 0.1637081197111686
+    },
+    {
+     "mode": 5,
+     "f_ccx_hz": 90.74069,
+     "f_abq_hz": 80.08,
+     "rel_diff": 0.12481731574787576
+    }
+   ],
+   "max_rel_diff": 0.1637081197111686
+  },
+  {
+   "case": "naca4412_wingbox_str3_modal",
+   "state": "ok",
+   "n_modes_compared": 5,
+   "modes": [
+    {
+     "mode": 1,
+     "f_ccx_hz": 31.44399,
+     "f_abq_hz": 31.397,
+     "rel_diff": 0.0014955206784616531
+    },
+    {
+     "mode": 2,
+     "f_ccx_hz": 92.76514,
+     "f_abq_hz": 92.639,
+     "rel_diff": 0.0013607031644493656
+    },
+    {
+     "mode": 3,
+     "f_ccx_hz": 150.0984,
+     "f_abq_hz": 149.45,
+     "rel_diff": 0.004329183530941974
+    },
+    {
+     "mode": 4,
+     "f_ccx_hz": 180.6829,
+     "f_abq_hz": 178.12,
+     "rel_diff": 0.014285837712013949
+    },
+    {
+     "mode": 5,
+     "f_ccx_hz": 193.0535,
+     "f_abq_hz": 192.62,
+     "rel_diff": 0.0022480154846003645
+    }
+   ],
+   "max_rel_diff": 0.014285837712013949
+  },
+  {
+   "case": "naca4412_wingbox_sweep20_modal",
+   "state": "ok",
+   "n_modes_compared": 5,
+   "modes": [
+    {
+     "mode": 1,
+     "f_ccx_hz": 27.75749,
+     "f_abq_hz": 27.699,
+     "rel_diff": 0.0021094014424641386
+    },
+    {
+     "mode": 2,
+     "f_ccx_hz": 80.97955,
+     "f_abq_hz": 80.84,
+     "rel_diff": 0.0017247606979502767
+    },
+    {
+     "mode": 3,
+     "f_ccx_hz": 109.4489,
+     "f_abq_hz": 104.84,
+     "rel_diff": 0.04301576049902717
+    },
+    {
+     "mode": 4,
+     "f_ccx_hz": 114.0211,
+     "f_abq_hz": 108.64,
+     "rel_diff": 0.04833444189398151
+    },
+    {
+     "mode": 5,
+     "f_ccx_hz": 120.7276,
+     "f_abq_hz": 112.6,
+     "rel_diff": 0.06966685467128622
+    }
+   ],
+   "max_rel_diff": 0.06966685467128622
+  },
+  {
+   "case": "naca4412_wingbox_taper060_modal",
+   "state": "ok",
+   "n_modes_compared": 5,
+   "modes": [
+    {
+     "mode": 1,
+     "f_ccx_hz": 34.90307,
+     "f_abq_hz": 34.852,
+     "rel_diff": 0.001464266325014163
+    },
+    {
+     "mode": 2,
+     "f_ccx_hz": 103.7482,
+     "f_abq_hz": 103.64,
+     "rel_diff": 0.001043453774129835
+    },
+    {
+     "mode": 3,
+     "f_ccx_hz": 117.5391,
+     "f_abq_hz": 113.85,
+     "rel_diff": 0.031886549539282626
+    },
+    {
+     "mode": 4,
+     "f_ccx_hz": 124.0623,
+     "f_abq_hz": 121.41,
+     "rel_diff": 0.02160977022662025
+    },
+    {
+     "mode": 5,
+     "f_ccx_hz": 144.7214,
+     "f_abq_hz": 142.04,
+     "rel_diff": 0.01870126174582769
+    }
+   ],
+   "max_rel_diff": 0.031886549539282626
+  },
+  {
+   "case": "naca4412_wingbox_web1_modal",
+   "state": "ok",
+   "n_modes_compared": 5,
+   "modes": [
+    {
+     "mode": 1,
+     "f_ccx_hz": 31.70345,
+     "f_abq_hz": 31.632,
+     "rel_diff": 0.0022562403835450343
+    },
+    {
+     "mode": 2,
+     "f_ccx_hz": 91.14052,
+     "f_abq_hz": 90.993,
+     "rel_diff": 0.0016199104920390285
+    },
+    {
+     "mode": 3,
+     "f_ccx_hz": 171.7151,
+     "f_abq_hz": 170.2,
+     "rel_diff": 0.008862433978493598
+    },
+    {
+     "mode": 4,
+     "f_ccx_hz": 193.6623,
+     "f_abq_hz": 191.48,
+     "rel_diff": 0.011332434790985037
+    },
+    {
+     "mode": 5,
+     "f_ccx_hz": 258.457,
+     "f_abq_hz": 240.65,
+     "rel_diff": 0.07135544081729965
+    }
+   ],
+   "max_rel_diff": 0.07135544081729965
+  }
+ ]
+}

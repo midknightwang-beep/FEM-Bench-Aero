@@ -52,9 +52,18 @@ _DIAGNOSTIC_F = "abaqus does not print the eigenvalue table to .dat"
 
 _EIG_HEADER = re.compile(r"E\s*I\s*G\s*E\s*N\s*V\s*A\s*L\s*U\s*E", re.IGNORECASE)
 
-# abaqus data row: MODE EIGENVALUE F_RAD F_CYC GENMASS  (5 floats, first is int)
+# a candidate block is the real table (not a stray header echo) when it has
+# at least one "<int> <float>" data line -- covers abaqus 5/6-column rows and
+# the ccx one-line lambda layout
+_DATA_ROW_HINT = re.compile(r"^\s*\d+\s+[-+0-9.eE]", re.MULTILINE)
+
+# abaqus data row: MODE EIGENVALUE F_RAD F_CYC GENMASS [DAMPING]
+# REAL-MACHINE FINDING (2026-11-07): Abaqus 2026 prints a 6th column
+# "COMPOSITE MODAL DAMPING"; the 5-field regex silently matched nothing.
+# 6th field is optional so both layouts parse.
 _ABAQUS_ROW = re.compile(
-    r"^\s*(\d+)\s+([-+0-9.eE]+)\s+([-+0-9.eE]+)\s+([-+0-9.eE]+)\s+([-+0-9.eE]+)\s*$")
+    r"^\s*(\d+)\s+([-+0-9.eE]+)\s+([-+0-9.eE]+)\s+([-+0-9.eE]+)\s+([-+0-9.eE]+)"
+    r"(?:\s+([-+0-9.eE]+))?\s*$")
 
 # ccx 2.23 style: mode number on one line, eigenvalue on the next
 _CCX_PAIR = re.compile(r"^\s*(\d+)\s*$")
@@ -78,19 +87,32 @@ def _eigen_block(text: str) -> str:
     The table ends at the next section banner (or EOF).  Keeping the raw
     region in the output JSON makes every extracted number auditable without
     re-running the solver.
+
+    REAL-MACHINE FINDING (2026-11-07): an Abaqus .dat prints an *earlier*
+    spaced banner ("... C A L C U L A T I O N   O F   E I G E N V A L U E S",
+    plus a plain "NUMBER OF EIGENVALUES 5" echo) BEFORE the actual
+    "E I G E N V A L U E    O U T P U T" table.  The first regex hit is
+    therefore not the table.  So we scan *every* header hit and return the
+    first candidate block that actually contains a data row; if none does,
+    the first candidate is returned so the caller's error path stays
+    informative.
     """
-    m = _EIG_HEADER.search(text)
-    if not m:
-        return ""
-    lines = text[m.start():].splitlines()
-    keep = [lines[0]]
-    for ln in lines[1:]:
-        if _is_banner(ln):  # next section header -> table is over
-            break
-        keep.append(ln)
-        if len(keep) > 400:  # hard stop: requested modes are single digits
-            break
-    return "\n".join(keep)
+    first = ""
+    for m in _EIG_HEADER.finditer(text):
+        lines = text[m.start():].splitlines()
+        keep = [lines[0]]
+        for ln in lines[1:]:
+            if _is_banner(ln):  # next section header -> table is over
+                break
+            keep.append(ln)
+            if len(keep) > 400:  # hard stop: requested modes are single digits
+                break
+        blk = "\n".join(keep)
+        if not first:
+            first = blk
+        if _DATA_ROW_HINT.search(blk):
+            return blk
+    return first
 
 
 # --------------------------------------------------------------------------- #
@@ -104,7 +126,8 @@ def _parse_abaqus(block: str) -> list[dict]:
         m = _ABAQUS_ROW.match(ln)
         if not m:
             continue
-        mode, lam, f_rad, f_cyc, gen_mass = (float(x) for x in m.groups())
+        mode, lam, f_rad, f_cyc, gen_mass = \
+            (float(x) for x in m.groups()[:5])  # group 6 = damping, unused
         # internal consistency pin: f from lambda must equal the printed
         # Cycles/Time column.  lam could be <= 0 in degenerate cases; skip
         # the check there and let the caller's positivity gate fire.
@@ -265,6 +288,44 @@ def _self_test() -> int:
         raise AssertionError("tampered f_cyc column was not caught")
     except ValueError:
         ok += 1
+
+    # pin 2c: real-machine 6-column layout (Abaqus 2026, 2026-11-07) --
+    # trailing COMPOSITE MODAL DAMPING column; numbers are the actual
+    # baseline wingbox mode 1 and are independently recomputable:
+    # sqrt(38832.) = 197.06 rad/s, 197.06 / (2*pi) = 31.363 Hz
+    real = ("     MODE NO      EIGENVALUE              FREQUENCY"
+            "         GENERALIZED MASS   COMPOSITE MODAL DAMPING\n"
+            "                             (RAD/TIME)   (CYCLES/TIME)\n"
+            "       1       38832.         197.06         31.363"
+            "         1.0000         0.0000\n")
+    modes = _parse_abaqus(_eigen_block(real))
+    assert len(modes) == 1, modes
+    assert abs(modes[0]["f_hz"] - 31.363) < 1e-9, modes[0]
+    # production tolerance is 1e-4 RELATIVE (printed lambda has 5 sig digits)
+    assert abs(modes[0]["f_hz_check"] - 31.363) < 1e-4 * 31.363, modes[0]
+    ok += 1
+
+    # pin 2d: real-dat structure -- an EARLIER spaced banner
+    # ("... C A L C U L A T I O N   O F   E I G E N V A L U E S") and a plain
+    # "NUMBER OF EIGENVALUES" echo precede the actual table; the block scan
+    # must skip both and lock onto the table (2026-11-07, cross-diff got
+    # 0 modes on all 8 real .dat files because of this)
+    struct = ("                        S T E P       1     C A L C U L A T I O N"
+              "   O F   E I G E N V A L U E S\n"
+              "     NUMBER OF EIGENVALUES                      5\n"
+              "                    M E M O R Y   E S T I M A T E\n"
+              "     PROCESS      FLOATING PT\n"
+              "          1          1.84E+09\n"
+              "                              E I G E N V A L U E    O U T P U T\n"
+              " MODE NO      EIGENVALUE              FREQUENCY"
+              "         GENERALIZED MASS   COMPOSITE MODAL DAMPING\n"
+              "                             (RAD/TIME)   (CYCLES/TIME)\n"
+              "\n"
+              "       1       38832.         197.06         31.363"
+              "         1.0000         0.0000\n")
+    modes = _parse_abaqus(_eigen_block(struct))
+    assert len(modes) == 1 and modes[0]["f_hz"] == 31.363, modes
+    ok += 1
 
     # pin 3: ccx two-line layout -- lambda=4pi^2 => f=1.0 Hz
     ccx = (" E I G E N V A L U E   O U T P U T\n"

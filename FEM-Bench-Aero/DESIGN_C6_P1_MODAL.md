@@ -53,13 +53,14 @@
 --- ccx（CalculiX）---                      --- abaqus（原生）---
 *STEP                                       *STEP
 *FREQUENCY, SOLVER=ARPACK                   *FREQUENCY, EIGENSOLVER=LANCZOS
-5, 0.0, 1.0e6                               5, 0.0, 0.0
+5, 0.0, 1.0e6                               5, 0.0, 1.0e5
 *NODE FILE                                  *NODE FILE
 U                                           U
 *END STEP                                   *END STEP
 ```
 
 - ccx data 行 = `特征值数, 下界, 上界`；abaqus data 行 = `特征值数, 低频, 高频`（0,0=自动移位）；
+- **★ 实测修正 ②（2026-11-07，abaqus 首跑）**：abaqus 的 `5, 0.0, 0.0` **不是**「自动移位」——LANCZOS 把 [0,0] 当搜索区间（`.msg`: LEFT/RIGHT BOUNDARY 均 0e+00、`0 accepted`），返回 5 行占位零值（λ=0、GM=1.0），并打印刚体模态诊断块（质量/质心/惯性矩）——**约束其实生效了**（`POSITIVE EIGENVALUES 30444`），是区间写法问题。修正：data 行显式给上界 `5, 0.0, 1.0e5`（Hz）。连带修 extract 侧空/零模态防护（cross-diff `zero_modes_abq` 状态）而非放它进差表；
 - **load 段整个省略**（特征值问题载荷无关——这正是 P1 实现最薄的原因）；`_emit_load` 在 frequency 分支不调用；
 - 输出请求只留 `U` 节点文件（振型形状；`.dat` 特征值表自动打印，无需额外请求）；
 - 静力分支零改动（R-A1：本任务只加 frequency 分支这一个变量）。
@@ -97,6 +98,11 @@ U                                           U
 3. `n_modes_found == 5`：缺阶记 0 不排除（R47 纪律）。
 
 **双码交叉判据（先测后定）**：Δf_i = |f_abq − f_ccx| / ((f_abq + f_ccx)/2)。打样跑完 8×5=40 对，出**相对差分布表**（median/p90/max，逐阶）→ 老王拍板阈值 → 才代码化为判据。提案 §2 的建议值（f ≤1%）**只是谈判起点，不是预写判据**。
+
+**★ 阈值已拍板（2026-11-07，方案 A）**：40 对实测出齐后老王拍板——
+- **f1（基频）硬判 <1%**：实测 median 0.23% / p90 0.33% / max 0.73%，8/8 全过有余量；闸代码化于 `make_v2_cross_diff.py` 的 `f1_gate`（pass=true）。
+- **f2–f5 只记 artifact 不判**：高阶实测 0.1%–16.4%，其中 skin2 f2–f4 整体系统下移 ~15%（密集簇）、web1 f5 跳 7%——疑似**密集谱下的模态配对错位**（逐序号硬比会把「两码取到的振型顺序不同/簇内漏阶」记成大差异），真因待核实。
+- **open item（下一步）**：`n_modes` 提到 10 复测一轮（ccx 沙箱可跑；abaqus 需真机），确认谱对齐后再决定高阶判据结构（逐序号 vs 频率配对）与阈值。
 
 ## 6. 数据层 v2 线布局（形态 A 落地）
 

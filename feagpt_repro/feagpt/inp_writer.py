@@ -268,11 +268,20 @@ def write_inp(
             L.append("U")
         else:
             L.append("*FREQUENCY, EIGENSOLVER=LANCZOS")
-            # data line: number of eigenvalues, low freq, high freq (0,0 = auto)
-            L.append(f"{n_modes}, 0.0, 0.0")
+            # data line: number of eigenvalues, low freq, high freq (Hz).
+            # REAL-MACHINE FINDING (2026-11-07): "5, 0.0, 0.0" is NOT "auto"
+            # on Abaqus -- LANCZOS takes [0,0] as the computational interval
+            # (msg: LEFT/RIGHT BOUNDARY 0e+00, 0 accepted) and returns 5
+            # placeholder zero rows.  An explicit upper bound is required.
+            # 1.0e5 Hz is far above any structural f5 in this family.
+            L.append(f"{n_modes}, 0.0, 1.0e5")
             # *NODE FILE is results-file-only in Abaqus; field output -> ODB
-            # (see _emit_output_requests docstring: the 2D abort lesson)
-            L.append("*OUTPUT, FIELD, NUMBER INTERVAL=1")
+            # (see _emit_output_requests docstring: the 2D abort lesson).
+            # NUMBER INTERVAL is *not* allowed in a *FREQUENCY step (Abaqus
+            # preprocessor rejects it; real-machine finding 2026-11-07) --
+            # bare *OUTPUT, FIELD defaults to per-mode output, which is what
+            # mode shapes want anyway.
+            L.append("*OUTPUT, FIELD")
             L.append("*NODE OUTPUT")
             L.append("U")
         L.append("*END STEP")

@@ -63,7 +63,24 @@ def main(argv=None) -> int:
             row["error"] = str(exc)
             rows.append(row)
             continue
+        if not abq["modes"]:
+            row["state"] = "no_modes_abq"
+            row["error"] = "abaqus table parsed to 0 modes"
+            rows.append(row)
+            continue
+        if any((m.get("f_hz") or 0.0) <= 0.0 for m in abq["modes"]):
+            # placeholder table: LANCZOS found nothing in the requested
+            # interval (real-machine finding 2026-11-07: "5, 0.0, 0.0")
+            row["state"] = "zero_modes_abq"
+            row["error"] = "abaqus table contains non-positive frequencies " \
+                           "(unconverged interval, not real modes)"
+            rows.append(row)
+            continue
         n = min(len(ccx["modes"]), len(abq["modes"]))
+        if n == 0:
+            row["state"] = "no_common_modes"
+            rows.append(row)
+            continue
         modes = []
         for i in range(n):
             fc, fa = ccx["modes"][i]["f_hz"], abq["modes"][i]["f_hz"]
@@ -86,15 +103,31 @@ def main(argv=None) -> int:
         stats[f"mode_{k}"] = {
             "n": len(v), "median": statistics.median(v),
             "p90": p90, "max": max(v)}
+    # --- decided threshold gate (2026-11-07, 老王拍板 A) -----------------
+    # f1 (fundamental frequency) is judged hard at <1% relative difference
+    # (measured: median 0.23%, max 0.73% over 8 cases).  Modes 2-5 are
+    # RECORDED but NOT judged: high-order diffs (up to 16.4%) are dominated
+    # by dense-spectrum mode-pairing ambiguity (skin2 cluster, web1 jump) --
+    # open item, n_modes=10 re-run before any high-order threshold.
+    F1_THRESHOLD = 0.01
+    f1_rows = [{"case": r["case"], "rel_diff": r["modes"][0]["rel_diff"]}
+               for r in rows if r.get("state") == "ok"]
+    f1_bad = [x for x in f1_rows if x["rel_diff"] >= F1_THRESHOLD]
+    f1_gate = {"judged": "f1 only (decided 2026-11-07, option A)",
+               "threshold_rel": F1_THRESHOLD, "n_judged": len(f1_rows),
+               "n_fail": len(f1_bad), "fails": f1_bad,
+               "pass": len(f1_bad) == 0}
     out = {"volume": "modeling_v2 (C6-P1 modal pilot)",
            "n_cases": len(CASES), "n_ok": n_ok,
-           "note": ("measurement only -- threshold NOT pre-written "
-                    "(DESIGN_C6_P1_MODAL.md section 5, 先测后定)"),
+           "note": ("f1 judged at <1% (decided); modes 2-5 recorded only "
+                    "-- mode-pairing open item (DESIGN_C6_P1_MODAL.md "
+                    "section 5)"),
+           "f1_gate": f1_gate,
            "rel_diff_stats_by_mode": stats, "rows": rows}
     Path(args.out).write_text(json.dumps(out, ensure_ascii=False, indent=1),
                               encoding="utf-8")
-    print(json.dumps({"n_ok": n_ok, "stats": stats}, ensure_ascii=False,
-                     indent=1))
+    print(json.dumps({"n_ok": n_ok, "f1_gate_pass": f1_gate["pass"],
+                      "stats": stats}, ensure_ascii=False, indent=1))
     for r in rows:
         if r.get("state") != "ok":
             print(f"[!] {r['case']}: {r.get('state')} {r.get('error', '')}")
