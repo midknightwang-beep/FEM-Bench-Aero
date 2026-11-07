@@ -46,6 +46,10 @@ CalculiX 官方论坛「A Guide to Modifying Abaqus Input Files」对两码数�
   P_ref 尚未按族定义；λ 随 P_ref 变化（λ×P_ref 才是临界载荷）。
 - **Abaqus 侧数据行（`n, 1.0e6` / `EIGENSOLVER=SUBSPACE`）尚未真机验证** ⇒
   必须由老王在 WorkBuddy 外跑 bat（agent 内 `tsbx.dll` 必失败），小批 2 条先验再用。
+- **已备好待跑**：`make_p2_abq_jobs.py` 生成 2 条 abaqus deck（加筋板 1 + 柱壳 1）+
+  `feagpt_repro/_p2_abq_jobs/run_p2_abq_MANUAL.bat`；deck 六项自检全绿
+  （`*BUCKLE`/SUBSPACE 在、`*STATIC`/`OUTPUT=2D`/`NUMBER INTERVAL` 不在、参考载荷在步内），
+  bat 带 `.sta` 存在性检查与 eigenvalue 命中打印。作业目录不入库，换机用脚本重生成。
 
 **★ 与 P1 最大的不同**：模态步**载荷无关**（P1 直接省略整个 load 块，两码共用一张数据行即可）；
 屈曲步**载荷相关**，且两码数据行语义完全不同 ⇒ 必须按 dialect 分别写 step 段，
