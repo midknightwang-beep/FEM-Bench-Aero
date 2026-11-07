@@ -285,6 +285,35 @@ def write_inp(
             L.append("*NODE OUTPUT")
             L.append("U")
         L.append("*END STEP")
+    elif spec.analysis.step_type == "buckle":
+        # C6-P2 (2026-11-07, DESIGN_C6_P2_BUCKLE.md): linear eigenvalue
+        # buckling.  Unlike *FREQUENCY this step is LOAD DEPENDENT and the two
+        # dialects' data lines mean different things (official manuals):
+        #   ccx     : n_modes [, accuracy, Lanczos vectors, max iterations]
+        #   abaqus  : SUBSPACE -> n_modes, max eigenvalue, vectors, iterations
+        # We write the minimum legal line per dialect; the max eigenvalue on
+        # the Abaqus side must NOT be 0 (the P1 LANCZOS [0,0] placeholder-zero
+        # lesson).  Loads before a *BUCKLE step are removed by both solvers,
+        # hence the reference load is emitted inside the step only.
+        buck = spec.analysis.buckling or {}
+        n_buckle = int(buck.get("n_modes", 1))
+        L.append("*STEP")
+        if dialect == "ccx":
+            L.append("*BUCKLE")
+            L.append(f"{n_buckle}")
+        else:
+            L.append("*BUCKLE, EIGENSOLVER=SUBSPACE")
+            L.append(f"{n_buckle}, 1.0e6")
+        _emit_reference_load(L, spec, elements, groups, load_group,
+                             pressure_group, pressure_dload_sign)
+        if dialect == "ccx":
+            L.append("*NODE FILE")
+            L.append("U")
+        else:
+            L.append("*OUTPUT, FIELD")
+            L.append("*NODE OUTPUT")
+            L.append("U")
+        L.append("*END STEP")
     else:
         L.append("*STEP, NLGEOM=NO")
         L.append("*STATIC")
@@ -411,6 +440,46 @@ def _emit_load(L: list[str], spec: FEASpec, elements: dict, groups: dict,
                  f"{_fmt(pressure_dload_sign * abs(load.magnitude))}")
         return _emit_end_loads(L, spec, groups, load_group, nodes)
     return 0.0
+
+
+def _emit_reference_load(L: list[str], spec: FEASpec, elements: dict, groups: dict,
+                         load_group: str, pressure_group: str,
+                         pressure_dload_sign: float) -> float:
+    """C6-P2: emit ONLY the buckling step's reference load (no static extras).
+
+    Both ccx and Abaqus remove every load applied BEFORE a ``*BUCKLE`` step,
+    so the reference load must be written INSIDE the step.  ``spec.load`` is
+    deliberately not used (design decision Q4): it keeps its static-strength
+    meaning, and the buckling reference load is execution config living in
+    ``spec.analysis.buckling`` (N-35).  End shear / moment in ``spec.extra``
+    are static-strength loads too and are never emitted here.
+    """
+    ref = (spec.analysis.buckling or {}).get("reference_load") or {}
+    kind = ref.get("kind")
+    mag = float(ref["magnitude"])
+    lg = ref.get("load_group", load_group)
+    pg = ref.get("pressure_group", pressure_group)
+    sign = float(ref.get("pressure_dload_sign", pressure_dload_sign))
+    if kind == "pressure" and elements.get(pg):
+        L.append("*DLOAD")
+        L.append(f"E_{pg.upper()}, P, {_fmt(sign * mag)}")
+        return mag
+    if kind == "tip_force":
+        tip = groups.get(lg, [])
+        if not tip:
+            return 0.0
+        vec = [float(c) for c in (list(ref.get("direction", [0.0, 1.0, 0.0]))
+                                  + [0.0, 0.0, 0.0])[:3]]
+        dof = max(range(3), key=lambda i: abs(vec[i])) + 1
+        sgn = 1.0 if vec[dof - 1] >= 0 else -1.0
+        per_node = sgn * mag / len(tip)
+        L.append("*CLOAD")
+        for nid in tip:
+            L.append(f"{nid}, {dof}, {_fmt(per_node)}")
+        return mag
+    raise ValueError(
+        f"buckle reference_load {kind!r} has no target group "
+        f"(load_group={lg!r}, pressure_group={pg!r})")
 
 
 def _torque_rows(spec: FEASpec, tip: list[int],

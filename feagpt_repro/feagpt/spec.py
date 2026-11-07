@@ -264,12 +264,20 @@ class AnalysisSpec:
     """Solver deck settings."""
 
     solver: str = "auto"            # "auto" | "ccx" | "abaqus"
-    step_type: str = "static"       # "static" | "frequency" (C6-P1, 2026-11-07)
+    step_type: str = "static"       # "static" | "frequency" (C6-P1) | "buckle" (C6-P2)
     incremental: bool = True
     initial_increment: float = 0.25
     total_time: float = 1.0
     outputs: tuple[str, ...] = ("U", "S")
     n_modes: int = 5                # frequency step only: number of eigenvalues
+    # C6-P2 (decision Q4, DESIGN_C6_P2_BUCKLE.md §8): reference load and mode
+    # count for a linear buckling step live HERE, not in ``spec.load`` -- the
+    # latter keeps its static-strength meaning and must not be repurposed
+    # (N-35: execution config and dataset meta keys must stay separated).
+    # Shape: {"n_modes": int, "reference_load": {"kind": "pressure"|"tip_force",
+    #         "magnitude": float, "direction": [x,y,z], ...}}
+    # Empty by default => static/frequency specs round-trip byte for byte.
+    buckling: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -316,6 +324,33 @@ class FEASpec:
         if fam not in BUILDERS:
             raise ValueError(
                 f"structure.family missing or unknown: {fam!r}; registered: {sorted(BUILDERS)}")
+        # C6-P2: a buckle step MUST declare its reference load explicitly.
+        # A silent default would produce a load-free buckling deck (all loads
+        # before a *BUCKLE step are removed by both solvers), i.e. a solver
+        # that "succeeds" with meaningless eigenvalues -- the exact
+        # "runs fine, is wrong" failure the semantic gate exists to catch.
+        analysis_cfg = d.get("analysis", {})
+        if analysis_cfg.get("step_type") == "buckle":
+            buck = analysis_cfg.get("buckling")
+            if not isinstance(buck, dict) or not buck:
+                raise ValueError(
+                    "buckle step requires analysis.buckling with n_modes + reference_load")
+            n = buck.get("n_modes")
+            if not isinstance(n, int) or isinstance(n, bool) or n <= 0:
+                raise ValueError(f"analysis.buckling.n_modes must be a positive int; got {n!r}")
+            ref = buck.get("reference_load")
+            if not isinstance(ref, dict) or ref.get("kind") not in ("pressure", "tip_force"):
+                raise ValueError(
+                    "analysis.buckling.reference_load must be an object with "
+                    "kind='pressure' or 'tip_force'")
+            try:
+                mag = float(ref["magnitude"])
+            except (KeyError, TypeError, ValueError) as exc:
+                raise ValueError(
+                    "analysis.buckling.reference_load.magnitude must be numeric") from exc
+            if mag <= 0.0:
+                raise ValueError(
+                    f"analysis.buckling.reference_load.magnitude must be > 0; got {mag!r}")
         return cls(
             name=d.get("name", "fea_case"),
             description=d.get("description", ""),
