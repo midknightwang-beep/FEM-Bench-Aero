@@ -173,7 +173,13 @@ def main(argv=None) -> int:
     ap.add_argument("--summary", action="store_true",
                     help="write verify_v2_p1_ccx.json from .modal.json files")
     ap.add_argument("--only", help="comma-separated v1.1 case subset")
+    ap.add_argument("--n-modes", type=int, default=5,
+                    help="eigenvalue count (default 5 = pilot; 10 = "
+                         "mode-pairing re-test, open item 2026-11-07)")
     args = ap.parse_args(argv)
+    global N_MODES
+    if args.n_modes != 5:
+        N_MODES = args.n_modes
     if not (args.deck or args.solve_ccx or args.extract or args.summary):
         ap.error("pick an action: --deck / --solve-ccx / --extract / --summary")
     cases = CASES
