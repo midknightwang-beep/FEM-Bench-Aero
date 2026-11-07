@@ -225,3 +225,42 @@ cd <REPO>/feagpt_repro
 > **一句判断**：行尾问题影响的是**证据的可移植性**，不是**数字的正确性**。
 > 现在这条也通了——如果你 clone 后仍见 sha 对不上，先确认克隆的是 `9020ba5` 之后的提交。
 
+
+---
+
+## 7. v2 打样卷（模态线 C6-P1，2026-11-07 冻结）
+
+`modeling_v2/` 是**独立 v2 数据线**（C6 拍板：数据层形态 A），8 条翼盒模态打样卷，
+与 v1.1（64 条静力）并行、不互相补丁（R65）。**随 git 仓分发**（追踪体积 ~10 MB，
+不含 `.frd/.12d` 等求解会话产物），不走 Release。
+
+### 7.1 卷内容
+
+| 项 | 值 |
+|---|---|
+| 案例数 | **8**（基准 + 展长/弦长/蒙皮/长桁/后掠/梯形/腹板 七个单变量轴） |
+| 分析类型 | `*FREQUENCY`，`n_modes=10`（ccx ARPACK / abaqus LANCZOS 双码） |
+| 冻结指纹 | `modeling_v2/SHA256SUMS.txt`（74 文件，`modeling_v2/` 内相对路径） |
+| 真值 | 各 case `truth.json`：`f_hz_ccx` + `f_hz_abq` 双谱、`n_nodes`、`spec_sha256` |
+| 交叉差 artifact | `verify_v2_p1.json`（40 对逐序号）+ `verify_v2_p1_ccx.json`（10 阶全谱） |
+
+### 7.2 校验（在仓库根目录跑）
+
+```bash
+cd FEM-Bench-Aero/modeling_v2
+sha256sum -c SHA256SUMS.txt
+```
+
+### 7.3 命名与 v1.1 的差异
+
+| v1.1（`modeling/`） | v2（`modeling_v2/`） |
+|---|---|
+| `spec.json` / `model.inp` / `model.msh` | `<case>_modal.spec.json` / `<case>_modal.inp` / `<case>_modal.msh` |
+| 静力 `*STATIC`，truth 是位移/应力标量 | 模态 `*FREQUENCY`，truth 是 f1–f10 双码频谱 |
+| 不入库，Release 分发 | 入库，git 分发 |
+
+### 7.4 判据口径（拍板 2026-11-07 方案 A）
+
+- **f1 硬判 <1%**（实测双码 median 0.23% / max 0.73%）；高阶只记不判（S4 公式级差异，假设待核实）。
+- **候选判分走「同码自比」**：候选 spec 与参考 spec 都走同一条 feagpt 管线、同一码求解，
+  公式差异在差值中自动抵消；跨码 f2+ 差异**不进判据**。

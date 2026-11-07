@@ -107,7 +107,7 @@
 | C3 | 专家盲评 | C2 + 段 D 分发（否则专家拿不到东西） |
 | C4 | 效率对比（人工 vs 系统） | C3 |
 | C5 | **原型 V1**：NL → 澄清 → 生成 → 求解 → 云图 → 报告 | B1–B4 + C1 |
-| C6 | 屈曲 / 模态扩展（加筋板、柱壳主失效模式）——**已拍板（2026-11-06 晚）**：P1 模态先行 / 数据层形态 A（独立 v2 线）/ 6–8 条打样 / 双码 λ/f 阈值先测后定。提案 `PROPOSAL_C6_BUCKLING_MODAL.md` §6；**P1 打样设计已拍板（2026-11-07，四项全按推荐）**：`DESIGN_C6_P1_MODAL.md`（modeling_v2/ 根 / 8 条选材清单 / ARPACK / odb_batch solve 段复用）；**打样已完成（2026-11-07）**：8 条双码求解全过、40 对交叉差表 `modeling_v2/verify_v2_p1.json`（f1_gate pass=true）；阈值已拍板（f1<1% 硬判，f2–f5 只记）；**n_modes=10 复测已收口（2026-11-07）**：高阶差异定性为 S4 公式级（ccx 膨胀实体 vs abq 真壳，待核实），拍板 A = f1 收口 + 同码自比 + 不深挖；v2 打样全链闭环，待冻结 | 数据层新一轮（**不是** v1.1 的补丁） |
+| C6 | 屈曲 / 模态扩展（加筋板、柱壳主失效模式）——**已拍板（2026-11-06 晚）**：P1 模态先行 / 数据层形态 A（独立 v2 线）/ 6–8 条打样 / 双码 λ/f 阈值先测后定。提案 `PROPOSAL_C6_BUCKLING_MODAL.md` §6；**P1 打样设计已拍板（2026-11-07，四项全按推荐）**：`DESIGN_C6_P1_MODAL.md`（modeling_v2/ 根 / 8 条选材清单 / ARPACK / odb_batch solve 段复用）；**打样已完成（2026-11-07）**：8 条双码求解全过、40 对交叉差表 `modeling_v2/verify_v2_p1.json`（f1_gate pass=true）；阈值已拍板（f1<1% 硬判，f2–f5 只记）；**n_modes=10 复测已收口（2026-11-07）**：高阶差异定性为 S4 公式级（ccx 膨胀实体 vs abq 真壳，待核实），拍板 A = f1 收口 + 同码自比 + 不深挖；**卷已冻结 + 考卷已接入（2026-11-07 傍晚）**：`modeling_v2/SHA256SUMS.txt`（74 文件）+ 8 条 `truth.json`（`make_v2_truth.py` 现读生成）+ `tasks/tasks_v2_modal.jsonl` + 判分器 `score_v2_modal.py`（contract/spec_fidelity 递归全键/pipeline/modal_f1 四闸，self-test 10 pins，gold 自比冒烟 overall_pass=true）；下一步 = LLM 第一轮实测（gen_candidates_v2.js 喂 v2 卷 → score_v2_modal 判分） | 数据层新一轮（**不是** v1.1 的补丁） |
 | C7 | 试验真值锚定 | 外部数据 |
 | C8 | 受控试点 | C5 + C3 |
 

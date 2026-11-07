@@ -1,0 +1,92 @@
+{
+ "schema_version": 1,
+ "case_id": "naca4412_wingbox_size_span2400_modal",
+ "structure_family": "wingbox",
+ "spec_sha256": "9a5841706fbaa64b0997b236fe4b309687654c387034fe4b62cda87ac0049407",
+ "topology": {
+  "design": {
+   "family": "wingbox",
+   "n_ribs": 5,
+   "n_spars": 2,
+   "n_webs": 0,
+   "n_cells": 1,
+   "web_stations": [],
+   "n_skins": 2,
+   "n_stringers_per_skin": 0,
+   "n_stringers_upper": 0,
+   "n_stringers_lower": 0,
+   "n_faces_per_stringer_section": 0,
+   "stringer_section": "blade",
+   "stringer_flange_width": 30.0
+  },
+  "geometry": {
+   "n_surfaces": 21,
+   "n_spar_faces": 8,
+   "n_skin_faces_upper": 4,
+   "n_skin_faces_lower": 4,
+   "n_rib_faces": 5,
+   "n_stringer_faces_upper": 0,
+   "n_stringer_faces_lower": 0,
+   "n_web_faces": 0,
+   "n_rib_z_planes": 5,
+   "rib_z_planes": [
+    -0.0,
+    600.0,
+    1200.0,
+    1800.0,
+    2400.0
+   ],
+   "web_stations": []
+  },
+  "expected_geometry": {
+   "n_spar_faces": 8,
+   "n_skin_faces_upper": 4,
+   "n_skin_faces_lower": 4,
+   "n_rib_faces": 5,
+   "n_stringer_faces_upper": 0,
+   "n_stringer_faces_lower": 0,
+   "n_web_faces": 0,
+   "n_rib_z_planes": 5,
+   "web_stations": [],
+   "n_surfaces": 21
+  }
+ },
+ "scalars": {
+  "n_nodes": 5837,
+  "n_modes": 10,
+  "f_hz_ccx": [
+   22.43187,
+   67.68412,
+   92.39876,
+   97.25436,
+   100.0638,
+   108.9355,
+   129.3773,
+   155.1219,
+   160.7218,
+   169.1238
+  ],
+  "f_hz_abq": [
+   22.372,
+   67.58,
+   86.103,
+   89.295,
+   92.33,
+   99.543,
+   125.27,
+   148.73,
+   157.94,
+   158.61
+  ],
+  "f1_gate": {
+   "judged": "f1 (fundamental frequency)",
+   "threshold_rel": 0.01,
+   "note": "decided 2026-11-07 option A; candidate judging uses same-code self-comparison (ccx vs ccx); modes 2+ recorded, not judged (S4 formulation divergence, hypothesis unverified)"
+  },
+  "solver_meta": {
+   "ccx": "ARPACK, n_modes=10, freq range [0, 1e6]",
+   "abaqus": "LANCZOS, n_modes=10, freq range [0, 1e5]",
+   "cross_diff_artifact": "modeling_v2/verify_v2_p1.json"
+  }
+ }
+}
