@@ -1424,3 +1424,49 @@ pairing: 55 paired, 9 modeling-only, 0 xval-only -> MISMATCH     ← 等 §7 的
 | **考卷 v7**（接 v1.1 的 9 条进任务层） | ⏸ 未开工；按 R-A1 拆两步 + bridge，且 C-032 的 23/25 将不可比（R-A6） |
 
 > 本轮起按 N-5 的 **C+**：pre-flight 走 `--json "$TEMP/check_claims_preflight.json"`，官方 `reports/check_claims.json` 只在收口写一次（先负控后 check_claims）。
+
+---
+
+## 6. N-37（中，**命名/范围冲突，待拍板**）「C6-P2」一个标签指了两件事
+
+> 触发：2026-11-07 22:23 老王拍板「description 继续硬判，接着开工」，
+> 蜗子做 C6-P2 可行性调研时实读 `PROPOSAL_C6_BUCKLING_MODAL.md` 发现口径不一致。
+> **按 R-A11 / AGENTS 规约：只写这一页，不改任何 claim / artifact / paper / rubric，等老王拍板。**
+
+### 证据（全部为本次实读）
+
+| # | 来源 | 原文 / 实测 |
+|---|---|---|
+| 1 | `PROPOSAL_C6_BUCKLING_MODAL.md` §2 | **P2 线性屈曲**：加筋板轴压（N_x 扫描）、柱壳外压；语义量 λ_cr + 屈曲模态数；ccx / abq `*BUCKLE` |
+| 2 | 同文件 §5 | 「起步 6–8 条：模态 4（腹板/肋数/展长变体）**+ 屈曲 2–4**（加筋板轴压 2、柱壳外压 1–2）」 |
+| 3 | 同文件 §6 第 1 条 | 「P1 模态先 vs P2 屈曲先（推荐 P1；**若本职近期要交轴压校核，P2 提前**）」 |
+| 4 | 蜗子 2026-11-07 夜收口报告 §10 / ROADMAP C6 行 / DATA.md §7.7 / MEMORY.md | 把「柱壳/加筋板 + 自主建模题」写成了 **C6-P2 扩卷**（是蜗子的推断，非拍板件） |
+| 5 | `grep -rn "buckle&#124;BUCKLE" feagpt/*.py extract_modal_dat.py` | **零命中** ⇒ 屈曲在代码面完全未实现 |
+| 6 | `feagpt/inp_writer.py:255-285` | frequency 分支**不按族分支**，只换 step 段；柱壳/加筋板可直接复用（载荷块省略、BC 保留） |
+| 7 | `score_v2_modal.py` 硬编码面 | `V2_L1_` 前缀、`N_MODES=10`、`F1_THRESHOLD_REL=0.01`、固定 `modeling_v2/` 路径 ⇒ 扩卷需参数化 |
+| 8 | `FEM-Bench-Aero/modeling/` 实读 | 柱壳 **7 条**可选；加筋板 5 条中 `stiffened_panel_800x600[_str3]` 两条长期挂 dev（length/width 角色缺陷）⇒ **实际只剩 3 条** |
+
+### 三个选项（只能选一个，R-A1 不许并行）
+
+| 选项 | 内容 | 代价 / 风险 |
+|---|---|---|
+| **A** | 按原提案正名：**C6-P2 = 线性屈曲**，现在开工（加筋板轴压 + 柱壳外压，λ_cr 先测后定） | 从 0 建 `*BUCKLE` 双码输出解析、载荷工况设计、λ 阈值实测；工作量约等于 P1 全链。**触发条件：老王近期有轴压校核需求** |
+| **B（建议）** | 先做「模态扩卷（柱壳/加筋板）+ 自主建模题」，**正名为 C6-P1b**；屈曲保留为 C6-P2 | 补上 P1 两个最大诚实边界（只有翼盒一族、L1 是转写题不是自主建模），技术复用最厚；代价：屈曲后移；新族 f1 双码阈值必须重测（P1 的 1% 只在翼盒测过），SYS 需追加模态词汇段（新 prompt sha，R53） |
+| **C** | A + B 并行 | 违反 R-A1 单变量；判分器与 prompt 同时改 ⇒ 归因失败。**不推荐** |
+
+### 建议与判据定义域（N-36 教训）
+
+**建议 B**：P1 收口报告 §7 已写明两个诚实边界——「L1 是转写题不是自主建模」「只有翼盒一族」；
+P1b 正好补这两个洞，且 frequency 分支通用性已实测（证据 6）。
+屈曲是**另一条物理链路**（载荷相关特征值），不该与「题型升级」混在一个任务里。
+
+新题型进卷前必须写清定义域：①自主建模题的模态规则写在 SYS 追加段 ⇒ 测的是**规则应用、非自主发现**（C-042 同款边界）；
+②柱壳 spec 的 `extra.end_shear/end_moment/shear_axis/moment_axis` 在模态步被忽略但仍在 spec_fidelity 全键比对内 ⇒
+先声明「载荷键是否属于被考内容」，否则重演 N-36「零影响的真因是没有这种题」；
+③新族 f1 阈值**先测后定**，不得沿用翼盒 1%；④dev 两条加筋板不进新卷。
+
+### 待拍板后统一更正的落盘位置（现在不动）
+
+`FEM-Bench-Aero/REPORT_C6_P1_MODAL.md` §10、`FEM-Bench-Aero/DATA.md` §7.7、
+`FEM-Bench-Aero/ROADMAP.md` C6 行、`.workbuddy/memory/MEMORY.md` 当前状态段、
+`.workbuddy/memory/2026-11-07.md` 十二节 —— 五处「C6-P2 扩卷」字样按拍板结果正名。
