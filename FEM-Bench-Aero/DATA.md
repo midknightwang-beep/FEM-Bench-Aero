@@ -284,3 +284,15 @@ sha256sum -c SHA256SUMS.txt
 - 跑通的条目 f1_rel 全部 0.0（同码自比，物理逐位一致）。
 - glm 两红均为真红：材料块自创键 `E`（contract 拒绝）+ description 措辞漂移。
 - 考卷 sha `b9eac76d…`、prompt sha `6b90daf0…`（SYS 未动）、冻结 sha `0aa7e3e3…`。
+
+### 7.7 第二遍归因与收口报告（2026-11-07 夜）
+
+- **glm 独立重跑**（同卷、同 prompt sha `6b90daf0`、同模型、同参数）：6/8 → **7/8**，
+  两遍 f1_rel 全 0.0。`E` 键 contract 红只在第一遍出现 ⇒ 单次波动；
+  `description` 把 `NACA4412` 润色成 `NACA 4412` **两遍逐字相同** ⇒ 稳定的字段保真弱点。
+- 按「两遍区间重叠不得排名」：glm 记为 **`[6,7]/8`**，任一遍不单独引用；ds 8/8 仅一遍且为 pilot，同样不对外。
+- 对照 artifact：`feagpt_repro/reports/diagnostics/v2_modal_pilot_stability_2026-11-07.json`
+  （`freeze_bridge` 段说明第一遍冻结 sha 与提交前 EOL 规范化的关系：卷语义/deck 字节未变，两遍同卷）。
+- **收口报告**：`REPORT_C6_P1_MODAL.md`（拍板链 → 实现链 → 判据口径 → 两轮实测 → 诚实边界 → 未决岔路口）。
+- **待拍板**：description 是否继续硬判（推荐继续硬判，不为一个字段开口子；代价 glm 稳定 7/8）；
+  之后才谈 C6-P2 扩卷。

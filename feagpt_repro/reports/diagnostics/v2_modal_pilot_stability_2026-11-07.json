@@ -1,0 +1,130 @@
+{
+ "what": "C6-P1 modal pilot -- glm two-run stability attribution (diagnostic)",
+ "date": "2026-11-07",
+ "model": "glm-5.3-flash",
+ "runs": [
+  "run1: candidates_v2_modal_glm / eval_runs_v2_glm",
+  "run2: candidates_v2_modal_glm_p2 / eval_runs_v2_glm_p2"
+ ],
+ "same_conditions": {
+  "tasks_sha256": "b9eac76d69199c2fdd52d52df273e16e88071a779e78a6436e901325fe60fcda",
+  "prompt_sha256_run1": "6b90daf07bbe070d5c870c7006e9ff28142e441370d71c1b16083a4bec6c98f9",
+  "prompt_sha256_run2": "6b90daf07bbe070d5c870c7006e9ff28142e441370d71c1b16083a4bec6c98f9",
+  "prompt_equal": true,
+  "grader": "score_v2_modal.py (10/10 self-test pins)",
+  "max_turns": 3,
+  "temperature": 0,
+  "no_schema_validate": true
+ },
+ "freeze_bridge": {
+  "run1_recorded_freeze_sha": "0aa7e3e348cc86977698eb57c50fb022aedc7714103716ce487e02f24f067d4e",
+  "current_freeze_sha": "15351adeb7b4bb245281e61a9aad5ea94d2dd3733b6b0773ac4a7d7364eb3cc6",
+  "note": "run1 was written before the pre-commit EOL normalization; that step only changed line endings and the checksum manifest content (74/74 recomputed). Volume semantics and deck bytes are unchanged; grader reads spec via json.load. Both runs are same-volume."
+ },
+ "n_tasks": 8,
+ "run1_n_pass": 6,
+ "run2_n_pass": 7,
+ "reporting_rule": "two runs overlap -> neither single run may be quoted as THE score; report as [6,7]/8 range (R: stability over ranking)",
+ "attribution": {
+  "E_key_contract_failure": {
+   "run1": "red",
+   "run2": "green",
+   "class": "single-run fluctuation"
+  },
+  "description_drift": {
+   "run1": "red",
+   "run2": "red",
+   "class": "stable 2/2",
+   "detail": "model consistently rewrites NACA4412 -> NACA 4412 in the description field despite the verbatim-copy instruction; natural-language field fidelity is a systematic weakness, not noise"
+  }
+ },
+ "rows": [
+  {
+   "task_id": "V2_L1_naca4412_wingbox_modal",
+   "run1_pass": false,
+   "run2_pass": true,
+   "run1_red": [
+    "contract"
+   ],
+   "run2_red": [],
+   "f1_rel_run1": null,
+   "f1_rel_run2": 0.0,
+   "stability": "fluctuating"
+  },
+  {
+   "task_id": "V2_L1_naca4412_wingbox_size_span2400_modal",
+   "run1_pass": true,
+   "run2_pass": true,
+   "run1_red": [],
+   "run2_red": [],
+   "f1_rel_run1": 0.0,
+   "f1_rel_run2": 0.0,
+   "stability": "stable_green"
+  },
+  {
+   "task_id": "V2_L1_naca4412_wingbox_n_ribs5_chord800_modal",
+   "run1_pass": true,
+   "run2_pass": true,
+   "run1_red": [],
+   "run2_red": [],
+   "f1_rel_run1": 0.0,
+   "f1_rel_run2": 0.0,
+   "stability": "stable_green"
+  },
+  {
+   "task_id": "V2_L1_naca4412_wingbox_size_skin2_modal",
+   "run1_pass": true,
+   "run2_pass": true,
+   "run1_red": [],
+   "run2_red": [],
+   "f1_rel_run1": 0.0,
+   "f1_rel_run2": 0.0,
+   "stability": "stable_green"
+  },
+  {
+   "task_id": "V2_L1_naca4412_wingbox_str3_modal",
+   "run1_pass": true,
+   "run2_pass": true,
+   "run1_red": [],
+   "run2_red": [],
+   "f1_rel_run1": 0.0,
+   "f1_rel_run2": 0.0,
+   "stability": "stable_green"
+  },
+  {
+   "task_id": "V2_L1_naca4412_wingbox_sweep20_modal",
+   "run1_pass": true,
+   "run2_pass": true,
+   "run1_red": [],
+   "run2_red": [],
+   "f1_rel_run1": 0.0,
+   "f1_rel_run2": 0.0,
+   "stability": "stable_green"
+  },
+  {
+   "task_id": "V2_L1_naca4412_wingbox_taper060_modal",
+   "run1_pass": false,
+   "run2_pass": false,
+   "run1_red": [
+    "spec_fidelity"
+   ],
+   "run2_red": [
+    "spec_fidelity"
+   ],
+   "f1_rel_run1": 0.0,
+   "f1_rel_run2": 0.0,
+   "stability": "stable_red"
+  },
+  {
+   "task_id": "V2_L1_naca4412_wingbox_web1_modal",
+   "run1_pass": true,
+   "run2_pass": true,
+   "run1_red": [],
+   "run2_red": [],
+   "f1_rel_run1": 0.0,
+   "f1_rel_run2": 0.0,
+   "stability": "stable_green"
+  }
+ ],
+ "f1_rel_all_green_runs": true
+}
