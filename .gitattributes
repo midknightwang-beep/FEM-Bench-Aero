@@ -19,3 +19,7 @@
 
 # SHA256SUMS 必须保持 LF：sha256sum -c 遇 CRLF 行尾会把路径读成 "xxx\r" 找不到文件（modeling_v2 冻结清单，2026-11-07）
 SHA256SUMS.txt text eol=lf
+
+# 振型 npz 是二进制（内含 sha256 锚点），禁止任何行尾转换（P0-3, 2026-11-08）
+*.npz binary
+*.bin binary

@@ -1,0 +1,173 @@
+{
+ "what": "EX01 C3 verification at MODE-SHAPE level (ccx-internal, NOT two-code MAC)",
+ "date": "2026-11-08",
+ "status": "diagnostic; does NOT close U10/P0-3, does NOT close P0",
+ "sources": {
+  "safe_tier": "_p2_scaling_ccx/..._p020/*.frd",
+  "contaminated_tier": "_p2_scaling_ccx/..._p100/*.frd",
+  "node_ids_sha256": "3a8ffc2778bbe6fe0696b2d24a09991a81bc5207284887b7b1c4cc9bdd166ceb",
+  "n_nodes": 213270
+ },
+ "equations": {
+  "MAC": "MAC(a,b) = (a·b)^2 / ((a·a)(b·b)) over flattened nodal U vectors",
+  "normalization": "each mode L2-normalized before MAC (scale invariant)"
+ },
+ "lambda_p020": [
+  3.513125628,
+  3.517130875,
+  3.565450146,
+  3.684501937,
+  3.700561697,
+  3.914734345
+ ],
+ "lambda_p050": [
+  1.405239213,
+  1.406851496,
+  1.426179835,
+  1.473101664,
+  1.474387809,
+  1.480252076
+ ],
+ "lambda_p100": [
+  0.9495,
+  0.958239,
+  0.959194,
+  1.008206593,
+  1.009420451,
+  1.041864687
+ ],
+ "mac_matrix_rows_p100_cols_p020": [
+  [
+   1.0462101926638342e-07,
+   2.1947793045437943e-07,
+   4.639789513418473e-07,
+   1.3939986093119126e-08,
+   1.4737949840109826e-07,
+   3.438352284879656e-06
+  ],
+  [
+   9.16620050766702e-14,
+   4.000339198593643e-08,
+   6.547832300171697e-08,
+   4.6262012817350007e-07,
+   2.572310024289089e-08,
+   1.4873653785558907e-06
+  ],
+  [
+   7.127569109110762e-07,
+   2.1896521216541527e-07,
+   1.586655657442747e-08,
+   5.575130626243087e-07,
+   2.3276073848550917e-10,
+   6.533726400212906e-07
+  ],
+  [
+   2.664481589097894e-07,
+   6.770619044998065e-07,
+   2.7196715688792775e-10,
+   1.421806200520432e-07,
+   2.644635152443034e-08,
+   1.9908453779422384e-06
+  ],
+  [
+   5.686149474450216e-07,
+   2.1238765471072973e-07,
+   3.7661941853880147e-07,
+   1.6535850716056166e-07,
+   7.332108651591816e-07,
+   7.721920994209764e-07
+  ],
+  [
+   4.1765584839556626e-07,
+   1.0693872642270452e-08,
+   3.9159299951181684e-06,
+   1.0002623940069109e-06,
+   7.770811171646114e-08,
+   2.307742237890847e-08
+  ]
+ ],
+ "mac_match_threshold": 0.8,
+ "p020_vs_p050_same_mode_mac_modes_1_3": [
+  0.9998519631615453,
+  0.9999847595014417,
+  0.9999943741578861
+ ],
+ "p020_m1_vs_m2_mac": 1.1290656424921373e-09,
+ "argmax_per_p100_mode": {
+  "p100_m1": {
+   "argmax_p020_mode": 6,
+   "mac": 3.438352284879656e-06,
+   "paired": false,
+   "lambda_p100": 0.9495,
+   "lambda_p020_of_argmax_mode": 3.914734345,
+   "note": "NO PAIRING: max MAC below 0.80. The p100 shapes do not correspond to any of the lowest 6 safe-tier modes; more safe-tier modes would be needed to locate them."
+  },
+  "p100_m2": {
+   "argmax_p020_mode": 6,
+   "mac": 1.4873653785558907e-06,
+   "paired": false,
+   "lambda_p100": 0.958239,
+   "lambda_p020_of_argmax_mode": 3.914734345,
+   "note": "NO PAIRING: max MAC below 0.80. The p100 shapes do not correspond to any of the lowest 6 safe-tier modes; more safe-tier modes would be needed to locate them."
+  },
+  "p100_m3": {
+   "argmax_p020_mode": 1,
+   "mac": 7.127569109110762e-07,
+   "paired": false,
+   "lambda_p100": 0.959194,
+   "lambda_p020_of_argmax_mode": 3.513125628,
+   "note": "NO PAIRING: max MAC below 0.80. The p100 shapes do not correspond to any of the lowest 6 safe-tier modes; more safe-tier modes would be needed to locate them."
+  },
+  "p100_m4": {
+   "argmax_p020_mode": 6,
+   "mac": 1.9908453779422384e-06,
+   "paired": false,
+   "lambda_p100": 1.008206593,
+   "lambda_p020_of_argmax_mode": 3.914734345,
+   "note": "NO PAIRING: max MAC below 0.80. The p100 shapes do not correspond to any of the lowest 6 safe-tier modes; more safe-tier modes would be needed to locate them."
+  },
+  "p100_m5": {
+   "argmax_p020_mode": 6,
+   "mac": 7.721920994209764e-07,
+   "paired": false,
+   "lambda_p100": 1.009420451,
+   "lambda_p020_of_argmax_mode": 3.914734345,
+   "note": "NO PAIRING: max MAC below 0.80. The p100 shapes do not correspond to any of the lowest 6 safe-tier modes; more safe-tier modes would be needed to locate them."
+  },
+  "p100_m6": {
+   "argmax_p020_mode": 3,
+   "mac": 3.9159299951181684e-06,
+   "paired": false,
+   "lambda_p100": 1.041864687,
+   "lambda_p020_of_argmax_mode": 3.565450146,
+   "note": "NO PAIRING: max MAC below 0.80. The p100 shapes do not correspond to any of the lowest 6 safe-tier modes; more safe-tier modes would be needed to locate them."
+  }
+ },
+ "stage1_lambda_inference": [
+  {
+   "old_lambda": 1.008207,
+   "p100_6mode_index": 4,
+   "lambda_full_precision": 1.008206593
+  },
+  {
+   "old_lambda": 1.00942,
+   "p100_6mode_index": 5,
+   "lambda_full_precision": 1.009420451
+  }
+ ],
+ "findings": [
+  "F-m1: node ids are identical across the three tiers (sha256 in sources), so no nodal remapping is needed for the later two-code MAC.",
+  "F-m2: ccx-internal MAC(p020_mi, p050_mi) = [0.999852, 0.999985, 0.999994] for i=1..3 and MAC(p020 m1,m2) = 1.13e-09 => load scaling preserves mode shapes and the parser does not mix frames. This is a SAME-CODE control, not a two-code MAC.",
+  "F-m3: NO p100 mode pairs with any of the lowest 6 p020 modes (max MAC over the whole 6x6 matrix = 3.92e-06, threshold 0.80). The 0.1 MPa tier's shapes are therefore NOT the fundamental modes; this is consistent with the sigma=1.0 selection artifact but does NOT locate which higher modes they are -- that would need a larger safe-tier spectrum. Do not claim a mode-shape-level proof of C3.",
+  "F-m4: stage-1 inference from lambda values (old 1.008207 / 1.009420 are modes 4/5 of the 6-mode spectrum) is checked against full-precision 100CL lambdas: [{\"old_lambda\": 1.008207, \"p100_6mode_index\": 4, \"lambda_full_precision\": 1.008206593}, {\"old_lambda\": 1.00942, \"p100_6mode_index\": 5, \"lambda_full_precision\": 1.009420451}]."
+ ],
+ "scope_limit": "ccx vs ccx only. The Abaqus-side shapes are NOT available yet (external ODB job is the NEXT task). A high MAC here validates the load-scaling/mode-selection mechanism, NOT any cross-code formulation conclusion.",
+ "still_open": [
+  "U10/U14 two-code MAC",
+  "U2/U3 mesh + analytical anchors",
+  "EX01 D5: 6-case pilot deferred, lambda threshold frozen"
+ ],
+ "repro": [
+  "python probe_p2_mode_pairing.py"
+ ]
+}

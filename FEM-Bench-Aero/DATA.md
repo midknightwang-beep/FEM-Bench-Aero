@@ -367,3 +367,27 @@ sha256sum -c SHA256SUMS.txt
   `archive_p2_abq_scaling_evidence.py`、`apply_p2_stage3_revisions.py`。
 - **口径不变**：成因未定；**P0 未闭环**（MAC／网格／解析锚点仍缺）⇒ 6 条打样继续暂缓（D5）、
   λ 阈值不冻结、跨码数字仅 diagnostic。专家「现阶段不能定论」维持有效。
+
+
+### 7.12 P0-3 阶段 A：ccx 侧振型解析（2026-11-08 晚）
+
+- 按老王拍板「先把 ccx 侧振型解析做通，再配一次外部作业」，两阶段**串行不并行**；
+  送审报告 `REVIEW_C6_P2_FORMULATION_DIFFERENCE.md` **保持 v1.3 不动**（本阶段是工具链与证据准备，非新专家结论）。
+- **解析器** `feagpt_repro/extract_buckle_frd.py`（26/26 pins，含真机原文行复发 pin）：
+  ccx 2.23 `.frd` 定宽 `[3:13]` 节点号 + 3×12 字符科学计数法；`1PSTEP`→`100CL` 分帧；
+  **`100CL` 的 λ 是 9 位有效数**（`.dat` 仅 7 位）；**第 1 帧 λ=0 是静力基准场，不是模态**。
+- **复用现成产物**：`_p2_scaling_ccx/` 三档 `.frd`（各 92.5 MB）已含 `*NODE FILE U`，
+  **未重跑求解、未占 `.solve.lock`**。三档各 7 帧（1 静力 + 6 模态）、6/6 全阶 λ 对齐（相对差 <1e-7）、
+  节点 ID 序列 sha256 三档完全相同（213270 节点）⇒ 后续两码 MAC **无需节点重映射**。
+- **归档**：`reports/diagnostics/p2_ccx_modes_p020_2026-11-08.npz`（前 3 阶归一化振型，float32，
+  8117220 B，sha256 随摘要 JSON）+ `p2_ccx_modes_<tag>_2026-11-08.json`（三档摘要）。
+- **ccx 内部配对** `reports/diagnostics/p2_ccx_mode_pairing_2026-11-08.json`：
+  安全两档同阶 MAC = [0.999852, 0.999985, 0.999994]、跨阶 ≈1e-9 ⇒ 载荷缩放保持振型、解析器不串档；
+  0.1 MPa 受污染档的 6 个振型与安全档最低 6 阶**全不配对**（全矩阵最大 MAC 3.92e-06）
+  ⇒ 该档返回的不是基本模态；与 σ=1.0 选择失效一致，但**不定位**具体高阶模态、**不冒充双码 MAC**。
+- **阶段 B 已备（待老王外部跑）**：`odb_tools/extract_buckle_odb.py`（`abaqus python` 读现有 3 份 `.odb`，
+  **不重新求解**）、`_p2_abq_scaling/run_p2_abq_modes_MANUAL.bat`（外部 3 档 + 逐档校验）、
+  `check_p2_abq_modes_meta.py`（6/6 pins：meta/二进制大小/sha256/帧数/节点端点）、
+  `make_p2_two_code_mac.py`（bin→npz + 双码 MAC；**节点标签不一致即 fail-closed**，产物未齐时干净失败）。
+- **口径不变**：P0 仍未闭环（U10/U14 双码 MAC、U2/U3 网格与解析锚点），
+  6 条打样继续暂缓、λ 阈值不冻结、跨码数字仅 diagnostic。
