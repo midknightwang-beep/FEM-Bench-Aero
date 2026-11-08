@@ -87,11 +87,17 @@ def deck_node_ids(path: Path) -> set[int]:
 
 
 def frd_frame_lambda_count(path: Path) -> int:
-    """Number of 100CL result blocks in the frd (static baseline + modes)."""
+    """Number of 100CL result blocks in the frd (static baseline + modes).
+
+    Substring match, not startswith: the real-machine header is
+    "  100CL  101 0.00000E+00 ..." (two leading spaces) and a one-space
+    typo in the first run silently counted 0 while the frd itself was
+    complete -- same class as the R77 "keyword in text" lesson.
+    """
     n = 0
     with path.open(encoding="utf-8", errors="replace") as fh:
         for line in fh:
-            if line.startswith(" 100CL") or line.startswith("100CL"):
+            if "100CL" in line:
                 n += 1
     return n
 
@@ -104,15 +110,35 @@ def check_deck(deck: Path) -> None:
             raise AssertionError(f"{deck.name}:{i + 1}: bare *NODE FILE leaked")
 
 
-def main() -> int:
+def main(argv=None) -> int:
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--tags", default="",
+                    help="comma-separated subset (e.g. p100) to re-run; "
+                         "default = all three tiers")
+    ap.add_argument("--timeout", type=int, default=2400,
+                    help="per-tier solver timeout in seconds (p100 hit 2400 "
+                         "on the contended first run 2026-11-08)")
+    a = ap.parse_args(argv)
+    tags_wanted = [t.strip() for t in a.tags.split(",") if t.strip()] or None
+
     _JOBS.mkdir(parents=True, exist_ok=True)
     _ARCH.mkdir(parents=True, exist_ok=True)
     prev = json.loads(_PREV.read_text(encoding="utf-8"))
     prev_lambda = {r["tag"]: r["lambdas"] for r in prev["rows"]}
 
-    rows = []
+    # Single-tier re-runs must merge into an existing report instead of
+    # wiping the tiers that already succeeded.
+    if tags_wanted and _OUT.exists():
+        old = json.loads(_OUT.read_text(encoding="utf-8"))
+        rows = [r for r in old.get("rows", []) if r.get("tag") not in tags_wanted]
+    else:
+        rows = []
+
     for pref in P_REFS:
         tag = f"p{int(round(pref * 1000)):03d}"
+        if tags_wanted and tag not in tags_wanted:
+            continue
         name = f"{BASE}_buckle_{tag}"
         d = json.loads((_V11 / BASE / "spec.json").read_text(encoding="utf-8"))
         d["name"] = name
@@ -130,7 +156,7 @@ def main() -> int:
                            deck_only=True, solver_name="ccx")
         deck = Path(res.artifacts["inp"])
         check_deck(deck)                       # gate 1: output request line
-        run = solver.run(deck, solver="ccx", timeout=2400)
+        run = solver.run(deck, solver="ccx", timeout=a.timeout)
         dat = outdir / f"{name}.dat"
         frd = outdir / f"{name}.frd"
         if dat.exists():
@@ -181,7 +207,8 @@ def main() -> int:
                   "2026-11-08 batch",
         "case": BASE, "p_refs_mpa": P_REFS, "n_modes_requested": N_MODES,
         "rows": rows,
-        "repro": ["python probe_p2_modes_frd_2d.py"],
+        "repro": ["python probe_p2_modes_frd_2d.py",
+                  "python probe_p2_modes_frd_2d.py --tags p100 --timeout 3600"],
     }
     _OUT.write_text(json.dumps(out, ensure_ascii=False, indent=1),
                     encoding="utf-8")

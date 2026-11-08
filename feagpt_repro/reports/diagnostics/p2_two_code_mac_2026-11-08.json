@@ -1,0 +1,94 @@
+{
+ "what": "EX01 U10/U14: first TWO-CODE mode-shape MAC (ccx p020 vs Abaqus p020)",
+ "date": "2026-11-08",
+ "status": "diagnostic; P0 still open until U2/U3 (mesh + analytical anchors)",
+ "domain": "same case, same P_ref = 0.02 MPa, same mesh / node labels",
+ "node_ids_match": true,
+ "n_nodes": 103715,
+ "ccx_modes": 3,
+ "abaqus_modes": 6,
+ "equations": {
+  "MAC": "MAC(a,b) = (a·b)^2 / ((a·a)(b·b)) over flattened nodal U",
+  "subspace": "principal cosines = singular values of qr(U_ccx)^T @ qr(U_abq); subspace MAC = cos^2"
+ },
+ "mac_matrix_rows_ccx_cols_abq": [
+  [
+   0.20489414096598124,
+   0.7950136774960183,
+   0.00029624261289491126,
+   0.00013637371136884964,
+   5.322311503539459e-05,
+   9.720827212279666e-06
+  ],
+  [
+   0.7947857120984578,
+   0.20452175530901892,
+   8.689713930548315e-06,
+   3.0409232706907582e-06,
+   6.0400442853440243e-05,
+   6.578078565071039e-07
+  ],
+  [
+   0.00016455959706521028,
+   0.0002991018528797989,
+   0.9972176883338264,
+   0.0006143263155120774,
+   0.0016911168578267423,
+   5.665335896379911e-09
+  ]
+ ],
+ "ccx_best_abq_match": {
+  "ccx_m1": {
+   "best_abq_mode": 2,
+   "mac": 0.7950136774960183,
+   "paired": false
+  },
+  "ccx_m2": {
+   "best_abq_mode": 1,
+   "mac": 0.7947857120984578,
+   "paired": false
+  },
+  "ccx_m3": {
+   "best_abq_mode": 3,
+   "mac": 0.9972176883338264,
+   "paired": true
+  }
+ },
+ "subspace_principal_cosines": {
+  "m1_m2": [
+   0.9999054379176172,
+   0.9997022659046533
+  ],
+  "m1_m2_m3": [
+   0.9999324492146361,
+   0.9998562253257808,
+   0.998811214499512
+  ],
+  "threshold": 0.99,
+  "interpretation": "m1/m2 are a near-degenerate pair; the one-to-one MAC crosses (0.20/0.79) while the subspace cosines stay ~0.9999 -> the two codes span the same modal subspace"
+ },
+ "abq_npz": {
+  "p100": {
+   "path": "F:/AI FEA Modeling DataSets/feagpt_repro/reports/diagnostics/p2_abq_modes_p100_2026-11-08.npz",
+   "sha256": "7fe8926f2f2d429dc89457142257e8b56b1f9076d3301ed1e70c172f84874e1d",
+   "bytes": 7059322
+  },
+  "p050": {
+   "path": "F:/AI FEA Modeling DataSets/feagpt_repro/reports/diagnostics/p2_abq_modes_p050_2026-11-08.npz",
+   "sha256": "7fe8926f2f2d429dc89457142257e8b56b1f9076d3301ed1e70c172f84874e1d",
+   "bytes": 7059322
+  },
+  "p020": {
+   "path": "F:/AI FEA Modeling DataSets/feagpt_repro/reports/diagnostics/p2_abq_modes_p020_2026-11-08.npz",
+   "sha256": "59952f20efa4a2b625db0fe333c1209e7731710f73f415f1b17b2436cdbcb9d1",
+   "bytes": 7059087
+  }
+ },
+ "repro": [
+  "python make_p2_two_code_mac.py (after the external bat)"
+ ],
+ "still_open": [
+  "U2/U3 mesh convergence + analytical buckling anchor",
+  "EX01 D5: 6-case pilot deferred, lambda threshold frozen"
+ ]
+}
