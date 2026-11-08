@@ -1,13 +1,18 @@
-"""Prepare the C6-P2 Abaqus external smoke job (2026-11-07).
+"""Prepare the C6-P2 Abaqus external smoke job (v2, 2026-11-08).
 
-Two decks (one stiffened panel, one barrel) are written with the abaqus
-dialect but NOT solved here: Abaqus inside the agent always fails (tsbx.dll).
-The generated .bat is to be run by the user OUTSIDE WorkBuddy.
+v1 (2 decks: panel + barrel) FAILED on the real machine: the panel's
+downward skin pressure is transverse bending, not axial compression, and
+Abaqus SUBSPACE did not converge a single eigenvalue in 30 iterations
+(negative eigenvalues, 63539 negative diagonal entries).
 
-Family-specific values (pressure group / dload sign) are deliberately NOT
-written into analysis.buckling.reference_load -- the pipeline supplies the
-builder's declaration (D21), keeping dataset meta and execution config apart
-(N-35).
+v2 deliberately narrows to ONE physically correct case -- barrel EXTERNAL
+pressure -- to get the dialect/output chain right first (R-A1).  The
+stiffened-panel axial-compression capability needs a new builder-level
+end-node group and is a separate task.
+
+Abaqus inside the agent always fails (tsbx.dll), so the generated .bat is
+run by the user OUTSIDE WorkBuddy.  Group / base sign come from the builder
+(D21/N-35); ``pressure_sign`` is a relative multiplier for external pressure.
 """
 from __future__ import annotations
 
@@ -23,14 +28,15 @@ from feagpt import pipeline              # noqa: E402
 
 _V11 = _HERE.parent / "FEM-Bench-Aero" / "modeling"
 _JOBS = _HERE / "_p2_abq_jobs"
-CASES = ["stiffened_panel_600x600", "fuselage_barrel_d1600_l1600_str8_frm3"]
+CASES = ["fuselage_barrel_d1600_l1600_str8_frm3"]
 
 BAT_HEAD = """@echo off
 REM ============================================================
-REM  C6-P2 Abaqus *BUCKLE smoke -- run OUTSIDE WorkBuddy.
-REM  2 decks, ccx side already proven (rc=0, .dat BUCKLING FACTOR OUTPUT).
-REM  Purpose: verify the Abaqus data line (n, 1.0e6 / SUBSPACE) and
-REM  capture the eigenvalue table layout for extract_buckle_dat.py.
+REM  C6-P2 Abaqus *BUCKLE smoke v2 -- run OUTSIDE WorkBuddy.
+REM  1 deck: barrel EXTERNAL pressure (the physically correct case).
+REM  v1 failed: panel transverse pressure gave negative eigenvalues,
+REM  SUBSPACE did not converge.  v2 = LANCZOS + explicit [0,1e6] interval.
+REM  Purpose: capture the eigenvalue table layout for extract_buckle_dat.py.
 REM  When you see "ALL DONE", tell WOONZI and he takes over.
 REM ============================================================
 setlocal enabledelayedexpansion
@@ -69,7 +75,7 @@ findstr /i /c:"EIGENVALUE" /c:"BUCKLING" /c:"MODE NO" "%CASE%.dat"
 
 BAT_TAIL = """
 echo.
-echo === ALL DONE - 2/2 submitted ===
+echo === ALL DONE - 1/1 submitted ===
 echo Paste the .sta tails and the eigenvalue-table lines back to WOONZI.
 pause
 exit /b 0
@@ -85,8 +91,10 @@ def main() -> int:
         d["analysis"]["step_type"] = "buckle"
         d["analysis"]["buckling"] = {
             "n_modes": 2,
-            # kind + magnitude only; group/sign come from the builder (D21)
-            "reference_load": {"kind": "pressure", "magnitude": 0.1},
+            # external pressure: -1 relative to the builder's internal-pressure
+            # declaration.  Group and base sign still come from the builder (D21).
+            "reference_load": {"kind": "pressure", "magnitude": 0.1,
+                               "pressure_sign": -1.0},
         }
         spec = FEASpec.from_dict(d)
         outdir = _JOBS / spec.name
@@ -97,7 +105,8 @@ def main() -> int:
         txt = deck.read_text(encoding="utf-8")
         checks = {
             "*BUCKLE present": "*BUCKLE" in txt,
-            "SUBSPACE eigensolver": "EIGENSOLVER=SUBSPACE" in txt,
+            "LANCZOS eigensolver": "EIGENSOLVER=LANCZOS" in txt,
+            "explicit interval": ", 0.0, 1.0e6" in txt,
             "*STATIC absent": "*STATIC" not in txt,
             "no OUTPUT=2D": "OUTPUT=2D" not in txt,
             "no NUMBER INTERVAL": "NUMBER INTERVAL" not in txt,

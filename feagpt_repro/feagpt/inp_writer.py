@@ -302,8 +302,15 @@ def write_inp(
             L.append("*BUCKLE")
             L.append(f"{n_buckle}")
         else:
-            L.append("*BUCKLE, EIGENSOLVER=SUBSPACE")
-            L.append(f"{n_buckle}, 1.0e6")
+            # REAL-MACHINE FINDING 2026-11-08: SUBSPACE with the default
+            # 30 iterations did NOT converge a single eigenvalue on the
+            # pilot deck (msg: "INCREASE THE NUMBER OF ITERATIONS").  LANCZOS
+            # with an explicit [min,max] interval is the same eigensolver that
+            # worked for the P1 *FREQUENCY step, and avoids the [0,0]
+            # placeholder-zero trap.  Data line (Abaqus keyword reference):
+            # n_modes, min eigenvalue, max eigenvalue [, block size, max steps]
+            L.append("*BUCKLE, EIGENSOLVER=LANCZOS")
+            L.append(f"{n_buckle}, 0.0, 1.0e6")
         _emit_reference_load(L, spec, elements, groups, load_group,
                              pressure_group, pressure_dload_sign)
         if dialect == "ccx":
@@ -459,7 +466,16 @@ def _emit_reference_load(L: list[str], spec: FEASpec, elements: dict, groups: di
     mag = float(ref["magnitude"])
     lg = ref.get("load_group", load_group)
     pg = ref.get("pressure_group", pressure_group)
+    # The builder's sign declares what a POSITIVE magnitude means for this
+    # family (D21: barrel + => internal pressure, panel - => downward).  A
+    # buckling reference load often needs the OPPOSITE sense (external
+    # pressure / in-plane compression), so ``pressure_sign`` is a relative
+    # multiplier on top of the builder's declaration, not a replacement.
+    # Real-machine finding 2026-11-08: using the builder's sign as-is made the
+    # Abaqus differential matrix carry 63539 negative diagonal entries and
+    # produced negative eigenvalues (tension, not compression).
     sign = float(ref.get("pressure_dload_sign", pressure_dload_sign))
+    sign *= float(ref.get("pressure_sign", 1.0))
     if kind == "pressure" and elements.get(pg):
         L.append("*DLOAD")
         L.append(f"E_{pg.upper()}, P, {_fmt(sign * mag)}")

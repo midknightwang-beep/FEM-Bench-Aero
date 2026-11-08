@@ -46,9 +46,55 @@ CalculiX 官方论坛「A Guide to Modifying Abaqus Input Files」对两码数�
   P_ref 尚未按族定义；λ 随 P_ref 变化（λ×P_ref 才是临界载荷）。
 - **Abaqus 侧数据行（`n, 1.0e6` / `EIGENSOLVER=SUBSPACE`）尚未真机验证** ⇒
   必须由老王在 WorkBuddy 外跑 bat（agent 内 `tsbx.dll` 必失败），小批 2 条先验再用。
-- **已备好待跑**：`make_p2_abq_jobs.py` 生成 2 条 abaqus deck（加筋板 1 + 柱壳 1）+
-  `feagpt_repro/_p2_abq_jobs/run_p2_abq_MANUAL.bat`；deck 六项自检全绿
-  （`*BUCKLE`/SUBSPACE 在、`*STATIC`/`OUTPUT=2D`/`NUMBER INTERVAL` 不在、参考载荷在步内），
+### 2.2 Abaqus 首次真机失败实录（2026-11-08 早，老王在 WorkBuddy 外跑 bat）
+
+**结论：v1 的两条 deck 都没拿到 eigenvalue，`.sta` 未生成，bat 的 `.sta` 闸正确拦住第二条。**
+产物实读（`_p2_abq_jobs/stiffened_panel_600x600_buckle/`）：
+
+| 证据 | 原文 / 数值 |
+|---|---|
+| `.dat` 末尾 | `ANALYSIS IS ENDED ... WITH 1 ERROR MESSAGES ON THE MSG FILE` |
+| `.msg` 报错 | `***ERROR: INCREASE THE NUMBER OF ITERATIONS TO GET THE REQUESTED NUMBER OF EIGENVALUES.`（SUBSPACE 默认 30 次，`NUMBER OF EIGENVALUES CONVERGED UPTO THIS ITERATION = 0` 一路） |
+| `.msg` 警告 | `***WARNING: THE DIFFERENTIAL MATRIX HAS 63539 NEGATIVE DIAGONAL ENTRIES`；迭代值 `-3.541038E+03`（**负特征值**） |
+| `.dat` 设置 | `NUMBER OF EIGENVALUES 2`、`LARGEST EIGENVALUE OF INTEREST 1.00000E+06`、`MAXIMUM NUMBER OF ITERATIONS 30` |
+
+**根因两处，都是我方设计错，不是 Abaqus 或操作问题**：
+1. **物理错**：给加筋板用了 `kind="pressure"`（法向面压 = 横向弯曲），而提案要的是 **轴压 N_x（面内压缩）**。
+   实读 `feagpt/geometry.py:1019`：`build_stiffened_panel` **明确拒绝 `tip_force`**，
+   注释写「panel has no tip/root node group to carry a concentrated force」；
+   现成能力只有「四边简支 + 法向面压」。负特征值正是「载荷不是压缩」的信号。
+2. **求解设置错**：Abaqus `EIGENSOLVER=SUBSPACE` 默认 30 次迭代不收敛；
+   P1 频率步已证 LANCZOS + 显式区间更稳。
+
+**修正（v2，R-A1 只做一件事：用柱壳外压单族把双码链路打通）**：
+- Abaqus buckle 数据行改 `*BUCKLE, EIGENSOLVER=LANCZOS` + `n, 0.0, 1.0e6`（避开 [0,0] 占位零值坑）。
+- 柱壳：builder 的 `PRESSURE_DLOAD_SIGN` 正数 = **内压**（v1.1 静力 deck 实读 `E_SKIN, P, 0.05`）；
+  外压需要反号 ⇒ `analysis.buckling.reference_load.pressure_sign = -1.0` 作为**相对乘数**
+  （Q4 决议仍成立：族相关的 group/基准 sign 由 builder 传，压缩/外压方向是参考载荷自己的属性）。
+- 加筋板轴压**从本轮移除**，另立一单（见 §11）。
+
+### 2.3 加筋板轴压能力缺口（下一单，待拍板）
+
+提案 §2 的「加筋板轴压（N_x 扫描）」在现有 feagpt 里**没有现成实现**：
+builder 只有四边简支 + 法向面压，没有端部节点组可挂面内压缩载荷。
+要做必须新增 builder 级能力（端部节点组 + 轴向 *CLOAD 分布 / 等效面内载荷），
+并补一套物理自证（轴压杆/板的解析 λ 或网格收敛），否则重演「负特征值还以为跑通了」。
+**这是实现方案决策，先出方案再拍板，不与双码链路打通并行。**
+
+### 2.4 v2 ccx 侧复验（2026-11-08，`reports/diagnostics/p2_ccx_barrel_buckle_smoke.txt`）
+
+- 零扰动重跑 **5/5** 全绿（改完 inp_writer 后再验）；新 deck 实读
+  `*BUCKLE, EIGENSOLVER=LANCZOS` / `2, 0.0, 1.0e6` / `E_SKIN, P, -0.1`（外压符号正确）。
+- ccx 2.23 柱壳外压真机：`rc=0`、`dat/frd` 都有、656 s/条，
+  `.dat` 排版与 v1 完全一致（`B U C K L I N G FACTOR OUTPUT` / `MODE NO` / `BUCKLING FACTOR`），
+  两阶 **λ = 1.008207 / 1.009420 全为正**（v1 的负特征值错误信号消失）。
+- **★ 诚实边界**：λ≈1.008 的**绝对值合理性尚未核对**（0.1 MPa 参考外压下是否该如此早屈曲，
+  需解析解或网格收敛自证）。本结果只证明「双码语法链路 + 载荷方向」成立，
+  **不作 truth、不进阈值**；正式 P_ref 与打样卷定下后必须重算并做物理自证。
+
+- **已备好待跑（v2）**：`make_p2_abq_jobs.py` 生成 1 条柱壳外压 abaqus deck +
+  `feagpt_repro/_p2_abq_jobs/run_p2_abq_MANUAL.bat`；deck 七项自检
+  （`*BUCKLE`/LANCZOS/显式区间在，`*STATIC`/`OUTPUT=2D`/`NUMBER INTERVAL` 不在、参考载荷在步内），
   bat 带 `.sta` 存在性检查与 eigenvalue 命中打印。作业目录不入库，换机用脚本重生成。
 
 **★ 与 P1 最大的不同**：模态步**载荷无关**（P1 直接省略整个 load 块，两码共用一张数据行即可）；
