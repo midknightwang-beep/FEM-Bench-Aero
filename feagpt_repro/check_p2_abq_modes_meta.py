@@ -41,6 +41,15 @@ def check_one(tag: str) -> dict:
     n_nodes = int(m["n_nodes"])
     n_frames = int(m["n_u_frames"])
     assert n_nodes > 0 and n_frames > 0
+    # The extractor must keep ONLY eigenmode frames (mode>=1) in u.bin and
+    # record the excluded baseline frame(s) as evidence.  Both directions:
+    # missing key -> red; account not balancing -> red.
+    baseline = m.get("baseline_frames")
+    assert isinstance(baseline, list), \
+        f"{tag}: meta has no baseline_frames list (stale extractor output?)"
+    n_step = int(m["n_frames_in_step"])
+    assert n_step == n_frames + len(baseline), \
+        f"{tag}: n_frames_in_step={n_step} != modes {n_frames} + baseline {len(baseline)}"
     assert nodes_p.stat().st_size == n_nodes * 8, f"{tag}: nodes.bin size mismatch"
     assert u_p.stat().st_size == n_frames * n_nodes * 3 * 8, \
         f"{tag}: u.bin size mismatch ({u_p.stat().st_size} vs expected)"
@@ -91,6 +100,8 @@ def self_test() -> int:
                     for j in range(n_nodes):
                         fh.write(struct.pack("<3d", 1.0 + i, 0.0, 0.0))
             m = {"n_nodes": n_nodes, "n_u_frames": n_frames,
+                 "n_frames_in_step": n_frames + 1,
+                 "baseline_frames": [{"index": 0, "frame_value": 0.0, "mode": 0}],
                  "node_label_first": 101, "node_label_last": 104,
                  "nodes_bin_sha256": sha(nodes), "u_bin_sha256": sha(u)}
             meta.write_text(json.dumps(m), encoding="utf-8")
@@ -116,9 +127,21 @@ def self_test() -> int:
             meta.write_text(json.dumps(m), encoding="utf-8")
             pin("n_u_frames != 6 rejected", main(["p020"]) == 1)
 
-            # mutation 3: missing u.bin
+            # restore frame count, then mutation 4: baseline evidence missing
             m["n_u_frames"] = 6
+            m2 = dict(m)
+            m2.pop("baseline_frames")
+            meta.write_text(json.dumps(m2), encoding="utf-8")
+            pin("missing baseline_frames key rejected", main(["p020"]) == 1)
+
+            # mutation 5: baseline account does not balance
+            m3 = dict(m)
+            m3["baseline_frames"] = []
+            meta.write_text(json.dumps(m3), encoding="utf-8")
+            pin("baseline count inconsistent rejected", main(["p020"]) == 1)
+
             meta.write_text(json.dumps(m), encoding="utf-8")
+            # mutation 3: missing u.bin
             u.unlink()
             pin("missing u.bin rejected", main(["p020"]) == 1)
     finally:

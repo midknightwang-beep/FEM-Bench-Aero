@@ -39,6 +39,28 @@ def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def classify_frames(u_frames, expect_modes: int):
+    """Split U frames into (mode_frames, baseline, count_ok).
+
+    Shared by extract() and the offline self-test (pure logic, no odbAccess).
+    A *BUCKLE step carries ONE baseline frame (mode=0: the static base state,
+    same role as the lambda=0 static field in frame 1 of a ccx .frd) followed
+    by one frame per eigenmode (mode=1..N).  Verified on the real machine
+    2026-11-08: 7 U frames -> mode 0..6; frame 0 is the baseline and must NOT
+    enter the mode-shape bins.  A missing baseline is tolerated (not every
+    solver/version emits one); a U frame without a 'mode' attribute is not
+    classifiable -> fail closed.
+    """
+    baseline, mode_frames = [], []
+    for f in u_frames:
+        mv = f.get("mode")
+        if mv is None:
+            raise RuntimeError("U frame without a 'mode' attribute; cannot "
+                               "distinguish the baseline frame from eigenmodes")
+        (mode_frames if int(mv) >= 1 else baseline).append(f)
+    return mode_frames, baseline, len(mode_frames) == expect_modes
+
+
 def extract(odb_path: Path, prefix: Path, expect_modes: int = 6) -> int:
     from odbAccess import openOdb  # Abaqus Python only
 
@@ -73,13 +95,18 @@ def extract(odb_path: Path, prefix: Path, expect_modes: int = 6) -> int:
                            "frame_value": getattr(frame, "frameValue", None),
                            "mode": getattr(frame, "mode", None),
                            "fields": sorted(frame.fieldOutputs.keys())})
-        good = [f for f in frames if f["has_U"]]
-        if not good:
+        u_frames = [f for f in frames if f["has_U"]]
+        if not u_frames:
             raise RuntimeError("no frame contains a U field; is *OUTPUT, FIELD / "
                                "*NODE OUTPUT U present in the *BUCKLE step?")
-        if len(good) != expect_modes:
-            print(f"WARNING: got {len(good)} U frames, expected {expect_modes}",
-                  file=sys.stderr)
+        # Baseline vs eigenmode split: see classify_frames().  The real-machine
+        # evidence for this exact split lives in each job's meta.json.
+        mode_frames, baseline, count_ok = classify_frames(u_frames, expect_modes)
+        count_bad = not count_ok
+        if count_bad:
+            print(f"[FAILED] got {len(mode_frames)} eigenmode frames (mode>=1) "
+                  f"+ {len(baseline)} baseline frame(s); expected "
+                  f"{expect_modes} modes", file=sys.stderr)
 
         nodes_bin = prefix.with_suffix(".nodes.bin")
         u_bin = prefix.with_suffix(".u.bin")
@@ -88,7 +115,7 @@ def extract(odb_path: Path, prefix: Path, expect_modes: int = 6) -> int:
             for n in node_labels:
                 fh.write(struct.pack("<q", n))
         with u_bin.open("wb") as fh:
-            for f in good:
+            for f in mode_frames:
                 u = _field(step.frames[f["index"]], "U")
                 for v in u.values:
                     d = v.data
@@ -101,7 +128,11 @@ def extract(odb_path: Path, prefix: Path, expect_modes: int = 6) -> int:
             "all_steps": step_names,
             "n_frames_in_step": len(step.frames),
             "frames": frames,
-            "n_u_frames": len(good),
+            "n_u_frames": len(mode_frames),
+            "n_baseline_frames": len(baseline),
+            "baseline_frames": [{"index": f["index"],
+                                 "frame_value": f["frame_value"],
+                                 "mode": f["mode"]} for f in baseline],
             "n_nodes": len(node_labels),
             "node_label_first": node_labels[0],
             "node_label_last": node_labels[-1],
@@ -111,17 +142,70 @@ def extract(odb_path: Path, prefix: Path, expect_modes: int = 6) -> int:
             "u_bin_sha256": _sha(u_bin),
             "layout": "u.bin = frame-major, node-major, xyz, little-endian float64; "
                       "nodes.bin = little-endian int64, same order for every frame",
-            "note": "U frames here are mode shapes, NOT static displacements. "
-                    "Normalize per frame before MAC (scale invariant).",
+            "note": "u.bin holds ONLY eigenmode frames (mode>=1). The baseline/"
+                    "static frame (mode=0, the lambda=0 analogue of the ccx .frd "
+                    "first frame) is recorded in baseline_frames but NOT written "
+                    "to u.bin. Normalize per frame before MAC (scale invariant).",
         }
         meta_path.write_text(json.dumps(meta, ensure_ascii=False, indent=1),
                              encoding="utf-8")
         print(f"OK step={step_name} frames={len(step.frames)} "
-              f"u_frames={len(good)} nodes={len(node_labels)}")
+              f"u_frames={len(mode_frames)} baseline={len(baseline)} "
+              f"nodes={len(node_labels)}")
         print(f"   nodes_bin={nodes_bin.name} u_bin={u_bin.name} meta={meta_path.name}")
-        return 0
+        return 1 if count_bad else 0
     finally:
         odb.close()
+
+
+def self_test() -> int:
+    """Offline logic test (no odbAccess).  The test input is the REAL frame
+    list recorded by the failed 2026-11-08 manual run (p100 meta.json,
+    7 U frames with mode 0..6) -- not a hand-written fragment, so the
+    self-test cannot drift from the real machine."""
+    pins = []
+
+    def pin(name, cond):
+        pins.append((name, bool(cond)))
+
+    real_meta = Path(__file__).resolve().parent.parent / (
+        "_p2_abq_scaling/fuselage_barrel_d1600_l1600_str8_frm3_buckle_p100_abq"
+        "/p100_modes.meta.json")
+    assert real_meta.is_file(), f"self-test needs the real-machine meta: {real_meta}"
+    real_frames = json.loads(real_meta.read_text(encoding="utf-8"))["frames"]
+    real_u = [f for f in real_frames if f.get("has_U")]
+    assert len(real_u) == 7, f"expected the 7-frame real batch, got {len(real_u)}"
+
+    modes, baseline, ok = classify_frames(real_u, 6)
+    pin("real 7 frames -> 6 modes + 1 baseline, count ok",
+        len(modes) == 6 and len(baseline) == 1 and ok)
+    pin("baseline is the mode=0 / frame_value=0.0 frame (real-machine anchor)",
+        len(baseline) == 1 and int(baseline[0]["mode"]) == 0
+        and float(baseline[0]["frame_value"]) == 0.0
+        and int(baseline[0]["index"]) == 0)
+    pin("mode frames are mode 1..6 in file order",
+        [int(f["mode"]) for f in modes] == [1, 2, 3, 4, 5, 6])
+
+    no_mode = [dict(f, mode=None) for f in real_u]
+    try:
+        classify_frames(no_mode, 6)
+        pin("unclassifiable frame (mode=None) rejected", False)
+    except RuntimeError:
+        pin("unclassifiable frame (mode=None) rejected", True)
+
+    no_baseline = [f for f in real_u if int(f["mode"]) >= 1]
+    m2, b2, ok2 = classify_frames(no_baseline, 6)
+    pin("missing baseline tolerated, 6 modes still pass",
+        len(m2) == 6 and len(b2) == 0 and ok2)
+
+    short = [f for f in real_u if 1 <= int(f["mode"]) <= 5]
+    _, _, ok3 = classify_frames(short, 6)
+    pin("5 modes -> count_bad", ok3 is False)
+
+    for name, ok_flag in pins:
+        print(f"  [{'ok' if ok_flag else 'FAIL'}] {name}")
+    print(f"self-test: {sum(1 for _, o in pins if o)}/{len(pins)} pins")
+    return 0 if all(o for _, o in pins) else 1
 
 
 def main(argv=None) -> int:
@@ -135,6 +219,8 @@ def main(argv=None) -> int:
     Optional flags are still accepted when run by a normal python.
     """
     args = list(sys.argv[1:] if argv is None else argv)
+    if "--self-test" in args:
+        return self_test()
     if len(args) >= 2 and not args[0].startswith("-"):
         expect = int(args[2]) if len(args) > 2 else 6
         return extract(Path(args[0]), Path(args[1]), expect)

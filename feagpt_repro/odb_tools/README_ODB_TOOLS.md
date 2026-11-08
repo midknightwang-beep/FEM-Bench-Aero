@@ -62,3 +62,10 @@ job 布局：根目录下直接放 `<name>.inp`，或每个 job 一个子目录�
 - **平衡自证**：`*DLOAD` 面压 `P=-1e-4 MPa × 600×600 mm² = 36 N` 解析值，两 job RF 合力实读 `35.9999997 / 36.0000000 N`（相对误差 ~1e-8）——独立解析锚点通过。
 - 量级自检：max|U| 0.964 mm（无筋 s0）vs 0.0152 mm（3 筋 s3），比值 ~63×，弯曲主导薄板加筋合理。
 - 已知口径差：剥掉 `OUTPUT=2D` 后 Abaqus odb 无表面膜应力场，s0 的 `vm_membrane` 读 0（s3 因 section point 布局读到 1.556）；与 ccx 的 OUTPUT=2D 膜应力直比需原生长 `OUTPUT=2D` 的 ccx 结果，属预期，非缺陷。
+
+## P0-3 模态提取实录（2026-11-08，C6-P2 屈曲）
+
+- **`*BUCKLE` 步的 frame 0 是静力基准帧不是模态**：真机实测 Step-1 共 7 帧，frame 0 `mode=0, frame_value=0.0`（对应 ccx `.frd` 第 1 帧 λ=0 静力场的同构物），frame 1–6 才是六个特征模态。首版提取器把 7 个 U 帧全收（只 WARNING 不拦截），meta 校验按 `n_u_frames==6` 硬红拦停——闸起作用，但错在提取器没处理自己 docstring 里写的 "possibly a zero frame"。修法：`classify_frames()` 按 `mode>=1` 选模态帧，静力帧记进 meta 的 `baseline_frames` 作证据但不入 u.bin；数量不符提取器本身 rc=1（同类闸装在两个调用点）。
+- 自检输入取**真机失败批的 meta.json frames**（7 帧 mode 0..6），不是手造片段——手造片段与真机缩进/格式不一致的坑已复发三次，一律从真机数据抄。
+- 校验器加双向判据：meta 缺 `baseline_frames` key 红；`n_frames_in_step == n_u_frames + len(baseline_frames)` 账目不平也红。
+- 节点数口径提醒：Abaqus ODB `nodes=103715` ≠ ccx `.frd` `213270`（S4 膨胀/编号差异），两码 MAC 前必须先解决节点映射，不能沿用 ccx 三档内部的「免重映射」结论。
