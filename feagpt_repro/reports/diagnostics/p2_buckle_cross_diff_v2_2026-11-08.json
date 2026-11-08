@@ -1,0 +1,60 @@
+{
+ "what": "C6-P2 v2 first dual-code buckling cross-diff (1 case, diagnostic)",
+ "date": "2026-11-08",
+ "status": "diagnostic; NOT a threshold input; NOT truth",
+ "case": "fuselage_barrel_d1600_l1600_str8_frm3_buckle",
+ "reference_load": {
+  "kind": "pressure",
+  "magnitude": 0.1,
+  "pressure_sign": -1.0,
+  "note": "external pressure, same P_ref on both codes"
+ },
+ "ccx": {
+  "dialect": "ccx",
+  "lambdas": [
+   1.008207,
+   1.00942
+  ],
+  "source": "reports/diagnostics/p2_ccx_barrel_buckle_smoke.txt",
+  "solve": "rc=0, 656 s, 2 modes"
+ },
+ "abaqus": {
+  "dialect": "abaqus",
+  "lambdas": [
+   0.68716,
+   0.68716
+  ],
+  "source": "external job .dat (user-run bat, 2026-11-08 09:31)",
+  "sta": "THE ANALYSIS HAS COMPLETED SUCCESSFULLY",
+  "solve": "0 errors, 1 warning (more eigenvalues in range than requested), 125 s"
+ },
+ "rows": [
+  {
+   "mode": 1,
+   "lambda_ccx": 1.008207,
+   "lambda_abaqus": 0.68716,
+   "rel_diff": 0.378735
+  },
+  {
+   "mode": 2,
+   "lambda_ccx": 1.00942,
+   "lambda_abaqus": 0.68716,
+   "rel_diff": 0.379894
+  }
+ ],
+ "lambda1_rel_diff": 0.378735,
+ "findings": [
+  "Cross-code lambda1 relative difference is ~38%, far beyond the P1 modal f1 threshold of 1%.",
+  "Abaqus returns a repeated root (two identical lambdas) for the axisymmetric barrel; ccx splits it slightly. Repeated eigenvalues are physical, so the spectrum check must be non-decreasing, not strictly monotonic.",
+  "A cross-code lambda threshold near 1% is impossible on this formulation difference. The P1 same-code self-comparison (candidate and reference solved by the SAME code) is the natural way to cancel it -- requires a decision before the 6-case pilot.",
+  "One case is not a distribution. The Q3 threshold stays 'measure first, fix later' until the 6-case pilot produces the lambda spread."
+ ],
+ "raw_excerpts": {
+  "ccx_dat_tail": "S T E P       1\n    \n    \n         B U C K L I N G   F A C T O R   O U T P U T\n    \n     MODE NO       BUCKLING\n                    FACTOR\n    \n          1   0.1008207E+01\n          2   0.1009420E+01",
+  "abaqus_dat_table": "E I G E N V A L U E S\n\n                                            F O R   B U C K L I N G   P R E D I C T I O N\n\n\n\n                                                                                          \n\n     THE LANCZOS EIGENSOLVER IS USED FOR THIS ANALYSIS\n     SYSTEM DATA WILL BE WRITTEN TO THE .SIM FILE\n\n     Abaqus WILL COMPUTE UNCOUPLED\n      STRUCTURAL AND ACOUSTIC MODES\n     NUMBER OF EIGENVALUES                      2\n     LARGEST EIGENVALUE OF INTEREST                 1.00000E+06\n     SMALLEST EIGENVALUE OF INTEREST                 0.0000    \n     MAXIMUM NUMBER OF STEPS WITHIN RUN               40\n     BLOCK SIZE FOR LANCZOS PROCEDURE                  2\n                              ONLY INITIAL STRESS EFFECTS ARE INCLUDED IN THE\n                              STIFFNESS MATRIX\n\n     THIS IS A LINEAR PERTURBATION STEP.\n     ALL LOADS ARE DEFINED AS CHANGE IN LOAD TO THE REFERENCE STATE\n\n\n\n                    TOTAL MASS OF MODEL\n\n                      7.3000035E-02\n\n\n                    LOCATION OF THE CENTER OF MASS OF THE MODEL\n\n                     -1.4404000E-05      9.9013098E-06       800.0000    \n\n\n                    MOMENTS OF INERTIA ABOUT THE ORIGIN\n                           I(XX)               I(YY)               I(ZZ)\n\n                       86378.86           86378.85           46588.93    \n\n\n                    PRODUCTS OF INERTIA ABOUT THE ORIGIN\n                           I(XY)               I(XZ)               I(YZ)\n\n                     -1.9643249E-03     -5.2918569E-05     -2.8727502E-03\n\n\n                    MOMENTS OF INERTIA ABOUT THE CENTER OF MASS\n                           I(XX)               I(YY)               I(ZZ)\n\n                       39658.84           39658.83           46588.93    \n\n\n                    PRODUCTS OF INERTIA ABOUT THE CENTER OF MASS\n                           I(XY)               I(XZ)               I(YZ)\n\n                     -1.9643249E-03     -8.9411259E-04     -2.2945134E-03\n  \n                   M E M O R Y   E S T I M A T E\n  \n PROCESS      FLOATING PT       MINIMUM MEMORY        MEMORY TO\n              OPERATIONS           REQUIRED          MINIMIZE I/O\n             PER ITERATION           (MB)               (MB)\n  \n     1          1.31E+11              327               3846\n  \n NOTE:\n      (1) SINCE ABAQUS DOES NOT PRE-ALLOCATE MEMORY AND ONLY ALLOCATES MEMORY AS NEEDED DURING THE ANALYSIS,\n          THE MEMORY REQUIREMENT PRINTED HERE CAN ONLY BE VIEWED AS A GENERAL GUIDELINE BASED ON THE BEST\n          KNOWLEDGE AVAILABLE AT THE BEGINNING OF A STEP BEFORE THE SOLUTION PROCESS HAS BEGUN.\n      (2) THE ESTIMATE IS NORMALLY UPDATED AT THE BEGINNING OF EVERY STEP. IT IS THE MAXIMUM VALUE OF THE\n          ESTIMATE FROM THE CURRENT STEP TO THE LAST STEP OF THE ANALYSIS, WITH UNSYMMETRIC SOLUTION TAKEN\n          INTO ACCOUNT IF APPLICABLE. \n      (3) SINCE THE ESTIMATE IS BASED ON THE ACTIVE DEGREES OF FREEDOM IN THE FIRST ITERATION OF THE \n          CURRENT STEP, THE MEMORY ESTIMATE MIGHT BE SIGNIFICANTLY DIFFERENT THAN ACTUAL USAGE FOR \n          PROBLEMS WITH SUBSTANTIAL CHANGES IN ACTIVE DEGREES OF FREEDOM BETWEEN STEPS (OR EVEN WITHIN\n          THE SAME STEP). EXAMPLES ARE: PROBLEMS WITH SIGNIFICANT CONTACT CHANGES, PROBLEMS WITH MODEL\n          CHANGE, PROBLEMS WITH BOTH STATIC STEP AND STEADY STATE DYNAMIC PROCEDURES WHERE ACOUSTIC \n          ELEMENTS WILL ONLY BE ACTIVATED IN THE STEADY STATE DYNAMIC STEPS.\n      (4) FOR MULTI-PROCESS EXECUTION, THE ESTIMATED VALUE OF FLOATING POINT OPERATIONS FOR EACH PROCESS\n          IS BASED ON AN INITIAL SCHEDULING OF OPERATIONS AND MIGHT NOT REFLECT THE ACTUAL FLOATING \n          POINT OPERATIONS COMPLETED ON EACH PROCESS. OPERATIONS ARE DYNAMICALLY BALANCED DURING EXECUTION, \n          SO THE ACTUAL BALANCE OF OPERATIONS BETWEEN PROCESSES IS EXPECTED TO BE BETTER THAN THE ESTIMATE\n          PRINTED HERE.\n      (5) THE UPPER LIMIT OF MEMORY THAT CAN BE ALLOCATED BY ABAQUS WILL IN GENERAL DEPEND ON THE VALUE OF\n          THE \"MEMORY\" PARAMETER AND THE AMOUNT OF PHYSICAL MEMORY AVAILABLE ON THE MACHINE. PLEASE SEE\n          THE \"ABAQUS ANALYSIS USER'S MANUAL\" FOR MORE DETAILS. THE ACTUAL USAGE OF MEMORY AND OF DISK\n          SPACE FOR SCRATCH DATA WILL DEPEND ON THIS UPPER LIMIT AS WELL AS THE MEMORY REQUIRED TO MINIMIZE\n          I/O. IF THE MEMORY UPPER LIMIT IS GREATER THAN THE MEMORY REQUIRED TO MINIMIZE I/O, THEN THE ACTUAL\n          MEMORY USAGE WILL BE CLOSE TO THE ESTIMATED \"MEMORY TO MINIMIZE I/O\" VALUE, AND THE SCRATCH DISK\n          USAGE WILL BE CLOSE-TO-ZERO; OTHERWISE, THE ACTUAL MEMORY USED WILL BE CLOSE TO THE PREVIOUSLY\n          MENTIONED MEMORY LIMIT, AND THE SCRATCH DISK USAGE WILL BE ROUGHLY PROPORTIONAL TO THE DIFFERENCE\n          BETWEEN THE ESTIMATED \"MEMORY TO MINIMIZE I/O\" AND THE MEMORY UPPER LIMIT. HOWEVER ACCURATE\n          ESTIMATE OF THE SCRATCH DISK SPACE IS NOT POSSIBLE.\n      (6) USING \"*RESTART, WRITE\" CAN GENERATE A LARGE AMOUNT OF DATA WRITTEN IN THE WORK DIRECTORY.\n\n\n                              E I G E N V A L U E    O U T P U T     \n\n BUCKLING LOAD ESTIMATE = (\"DEAD\" LOADS) + EIGENVALUE * (\"LIVE\" LOADS).\n          \"DEAD\" LOADS = TOTAL LOAD BEFORE  *BUCKLE STEP.\n          \"LIVE\" LOADS = INCREMENTAL LOAD IN *BUCKLE STEP\n\n\n MODE NO      EIGENVALUE\n\n\n       1      0.68716    \n       2      0.68716"
+ },
+ "repro": [
+  "python extract_buckle_dat.py --self-test   # 12/12 pins",
+  "python make_p2_buckle_cross_diff.py        # this artifact"
+ ]
+}

@@ -92,10 +92,28 @@ builder 只有四边简支 + 法向面压，没有端部节点组可挂面内压
   需解析解或网格收敛自证）。本结果只证明「双码语法链路 + 载荷方向」成立，
   **不作 truth、不进阈值**；正式 P_ref 与打样卷定下后必须重算并做物理自证。
 
-- **已备好待跑（v2）**：`make_p2_abq_jobs.py` 生成 1 条柱壳外压 abaqus deck +
-  `feagpt_repro/_p2_abq_jobs/run_p2_abq_MANUAL.bat`；deck 七项自检
-  （`*BUCKLE`/LANCZOS/显式区间在，`*STATIC`/`OUTPUT=2D`/`NUMBER INTERVAL` 不在、参考载荷在步内），
-  bat 带 `.sta` 存在性检查与 eigenvalue 命中打印。作业目录不入库，换机用脚本重生成。
+### 2.5 v2 Abaqus 真机成功 + 首份双码交叉差（2026-11-08 09:31，老王外部跑 bat）
+
+- `.sta`：`THE ANALYSIS HAS COMPLETED SUCCESSFULLY`；`.msg`：**0 errors**、
+  1 warning（`THERE ARE MORE EIGENVALUES IN THE SPECIFIED RANGE THAN REQUESTED`，
+  区间内重根多于请求阶数，非错误）；`NUMBER OF NEGATIVE EIGENVALUES 0`（v1 负根问题消失）。
+- `.dat` 排版（提取器照它写）：横幅 `E I G E N V A L U E    O U T P U T` →
+  `BUCKLING LOAD ESTIMATE = ...` 三行说明 → `MODE NO      EIGENVALUE` →
+  数据行 `       1      0.68716`（Abaqus 是定点小数，ccx 是科学计数法）。
+- **两阶完全相同（重根）**：柱壳轴对称模态的物理现象 ⇒ 谱检查必须**非递减**，
+  不能照抄 P1 频率提取器的「严格单调递增」，否则把正常重根判红。
+- 提取器 `extract_buckle_dat.py`：**12/12 pins**（含两段真机片段、负 λ / 缺阶 /
+  递减 / 横幅误命中 / 未知 dialect 等双向变异），并已对真机 `.dat` 实解析通过。
+- **★ 首份双码交叉差**（`reports/diagnostics/p2_buckle_cross_diff_v2_2026-11-08.json`，
+  内含两侧 raw 表格片段可离线复算）：同一 spec、同一 P_ref（-0.1 MPa 外压），
+  **ccx λ = 1.008207 / 1.009420，Abaqus λ = 0.68716 / 0.68716，
+  λ1 相对差 37.87%（λ2 37.99%）** —— 两阶一致 ⇒ 系统性公式级差异，不是配对错位。
+- **判据含义（必须拍板）**：P1 模态 f1 的 1% 跨码阈值在屈曲上**不可能成立**；
+  跨码阈值放宽到 ~40% 又等于没有鉴别力。可行路径是 **P1 同款「同码自比」**
+  （候选与参考走同一码求解，公式差异在差值中抵消），Abaqus 侧降为链路一致性诊断。
+  1 条样本不是分布，Q3 阈值仍「先测后定」；6 条打样时再验证同码自比的稳定性。
+- **已备好待跑（v2）的 bat 已完成使命**；作业目录不入库（换机用 `make_p2_abq_jobs.py` 重生成），
+  真机数字已固化进上面那份 diagnostics artifact。
 
 **★ 与 P1 最大的不同**：模态步**载荷无关**（P1 直接省略整个 load 块，两码共用一张数据行即可）；
 屈曲步**载荷相关**，且两码数据行语义完全不同 ⇒ 必须按 dialect 分别写 step 段，
