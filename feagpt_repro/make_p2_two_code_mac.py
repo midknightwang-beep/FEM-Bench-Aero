@@ -5,7 +5,13 @@ outside WorkBuddy.  Uses the project venv python (numpy), NOT abaqus python.
 
 Inputs:
   _p2_abq_scaling/<job>/<tag>_modes.{meta.json,nodes.bin,u.bin}
-  reports/diagnostics/p2_ccx_modes_p020_2026-11-08.npz  (ccx safe tier)
+  reports/diagnostics/p2_ccx_modes_p020_2d_2026-11-08.npz  (ccx safe tier)
+
+  2026-11-08: the pointer was moved to the _2d npz on purpose.  The first
+  frd batch (bare *NODE FILE) holds the EXPANDED 3D shell -- 213270
+  renumbered surface nodes with ZERO id overlap to the Abaqus ODB -- so
+  its npz must NEVER feed this MAC; pointing at a not-yet-existing _2d
+  file makes that misuse fail loudly instead of silently.
 
 Outputs:
   reports/diagnostics/p2_abq_modes_<tag>_2026-11-08.npz
@@ -29,7 +35,7 @@ _JOBS = _HERE / "_p2_abq_scaling"
 _DIAG = _HERE / "reports" / "diagnostics"
 _BASE = "fuselage_barrel_d1600_l1600_str8_frm3_buckle"
 TAGS = ("p100", "p050", "p020")
-CCX_NPZ = _DIAG / "p2_ccx_modes_p020_2026-11-08.npz"
+CCX_NPZ = _DIAG / "p2_ccx_modes_p020_2d_2026-11-08.npz"
 
 
 def load_abq(tag: str):

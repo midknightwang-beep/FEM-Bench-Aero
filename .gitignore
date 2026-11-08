@@ -88,3 +88,4 @@ feagpt_repro/reports/diagnostics/_*_run.txt
 # P0 载荷缩放作业目录（deck/结果由脚本重生成，不入库）
 feagpt_repro/_p2_scaling_ccx/
 feagpt_repro/_p2_abq_scaling/
+_p2_scaling_ccx_2d/

@@ -2,13 +2,17 @@
  "claims_file": "FEM-Bench-Aero/CLAIMS.md",
  "n_active_claims": 36,
  "n_artifacts": 83,
- "n_fail": 0,
+ "n_fail": 1,
  "n_fail_structural": 0,
- "n_fail_semantic": 0,
- "all_ok": true,
- "fails": [],
+ "n_fail_semantic": 1,
+ "all_ok": false,
+ "fails": [
+  "S-47: 求解串行：solver.py 的全局锁机制在场且无残留锁（R61） -> 声称 存在求解锁 `.solve.lock` ⇒ 有求解在跑或上次崩溃残留：{\"pid\": 40136, \"start\": 1794141584.1088104, \"inp\": \"F:\\\\AI FEA Modeling DataSets\\\\feagpt_repro\\\\_p2_scaling_ccx_2d\\\\fuselage_barrel_d1600_l1600_str8_frm3_buckle / 实测 solver.py 含 _acquire_solve_lock / _release_solve_lock / SOLVE_LOCK / _run_unlocked；.solve.lock 不存在"
+ ],
  "structural_fails": [],
- "semantic_fails": [],
+ "semantic_fails": [
+  "S-47: 求解串行：solver.py 的全局锁机制在场且无残留锁（R61） -> 声称 存在求解锁 `.solve.lock` ⇒ 有求解在跑或上次崩溃残留：{\"pid\": 40136, \"start\": 1794141584.1088104, \"inp\": \"F:\\\\AI FEA Modeling DataSets\\\\feagpt_repro\\\\_p2_scaling_ccx_2d\\\\fuselage_barrel_d1600_l1600_str8_frm3_buckle / 实测 solver.py 含 _acquire_solve_lock / _release_solve_lock / SOLVE_LOCK / _run_unlocked；.solve.lock 不存在"
+ ],
  "semantic": [
   {
    "id": "S-00",
@@ -374,7 +378,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1794014027/1794014027；check 1794140016 vs 负控 1794014027",
+   "actual": "C-019 mtime 记录/实际 = 1794014027/1794014027；check 1794140296 vs 负控 1794014027",
    "ok": true,
    "skip": false
   },
@@ -398,8 +402,8 @@
    "id": "S-47",
    "desc": "求解串行：solver.py 的全局锁机制在场且无残留锁（R61）",
    "expect": "solver.py 含 _acquire_solve_lock / _release_solve_lock / SOLVE_LOCK / _run_unlocked；.solve.lock 不存在",
-   "actual": "机制在场、无残留锁",
-   "ok": true,
+   "actual": "存在求解锁 `.solve.lock` ⇒ 有求解在跑或上次崩溃残留：{\"pid\": 40136, \"start\": 1794141584.1088104, \"inp\": \"F:\\\\AI FEA Modeling DataSets\\\\feagpt_repro\\\\_p2_scaling_ccx_2d\\\\fuselage_barrel_d1600_l1600_str8_frm3_buckle",
+   "ok": false,
    "skip": false
   },
   {

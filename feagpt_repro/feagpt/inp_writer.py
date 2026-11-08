@@ -264,7 +264,15 @@ def write_inp(
             L.append("*FREQUENCY, SOLVER=ARPACK")
             # data line: number of eigenvalues, lower bound, upper bound
             L.append(f"{n_modes}, 0.0, 1.0e6")
-            L.append("*NODE FILE")
+            # REAL-MACHINE FINDING (2026-11-08, C6-P2): a bare "*NODE FILE" on
+            # a shell model makes ccx 2.23 emit the EXPANDED 3D shell (every
+            # mid-surface node split into +/- t/2 surface nodes) with fully
+            # renumbered ids -- 103715 deck nodes became 213270 frd nodes,
+            # 25..103739 became 103740..446884, ZERO id overlap with the
+            # Abaqus ODB.  OUTPUT=2D keeps the mid-surface under the deck's
+            # own labels, which is what mode-shape pairing needs.  (The
+            # layer-mean caveat of OUTPUT=2D only affects STRESS, not U.)
+            L.append("*NODE FILE, OUTPUT=2D")
             L.append("U")
         else:
             L.append("*FREQUENCY, EIGENSOLVER=LANCZOS")
@@ -314,7 +322,11 @@ def write_inp(
         _emit_reference_load(L, spec, elements, groups, load_group,
                              pressure_group, pressure_dload_sign)
         if dialect == "ccx":
-            L.append("*NODE FILE")
+            # OUTPUT=2D (mid-surface, deck's own node labels): see the
+            # *FREQUENCY branch above for the 2026-11-08 expanded-shell /
+            # renumbering finding.  Mode shapes pair by node id against the
+            # Abaqus ODB, so the expanded 3D output is unusable here too.
+            L.append("*NODE FILE, OUTPUT=2D")
             L.append("U")
         else:
             L.append("*OUTPUT, FIELD")
