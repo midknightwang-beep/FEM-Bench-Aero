@@ -1,0 +1,170 @@
+{
+ "what": "EX01 P0-1 Abaqus-side 3-tier load scaling + SAME-P_ref dual-code comparison",
+ "date": "2026-11-08",
+ "status": "diagnostic; NOT a final cause conclusion, NOT a lambda threshold",
+ "sources": {
+  "abaqus_jobs": "_p2_abq_scaling/fuselage_barrel_d1600_l1600_str8_frm3_buckle_<tag>_abq/ (user ran bat outside WorkBuddy)",
+  "ccx_scaling_artifact": "reports/diagnostics/p2_load_scaling_ccx_2026-11-08.json",
+  "ccx_scaling_sha256": "93624a0e93c1e8188b8c1022ddb79f531845839bd5ef5e72f1835820094ab8b0"
+ },
+ "equations": {
+  "N_cr": "N_cr = lambda * P_ref",
+  "rel": "rel(a,b) = |a-b| / ((a+b)/2)",
+  "abq_spread_rel": "(max(N_cr1) - min(N_cr1)) / mean(N_cr1) over three tiers",
+  "same_pref_lambda1_rel": "rel(lambda1_ccx[tag], lambda1_abq[tag]) at identical P_ref"
+ },
+ "abaqus": {
+  "p100": {
+   "p_ref_mpa": 0.1,
+   "lambdas_full_precision": [
+    0.687156,
+    0.687161,
+    0.697167,
+    0.720372,
+    0.720381,
+    0.723684
+   ],
+   "lambda1": 0.687156,
+   "n_cr_all_modes": [
+    0.0687156,
+    0.0687161,
+    0.0697167,
+    0.07203720000000001,
+    0.07203810000000001,
+    0.0723684
+   ],
+   "n_cr1": 0.0687156,
+   "sta": "THE ANALYSIS HAS COMPLETED SUCCESSFULLY",
+   "n_errors": 0,
+   "warning": "THERE MAY BE MORE EIGENVALUES IN THE SPECIFIED RANGE THAN REQUESTED (benign; 6 explicitly requested and 6 accepted)",
+   "dat_display_table": [
+    "1",
+    "1301 Atwood Avenue, Suite 101W",
+    "1",
+    "39658.84           39658.83           46588.93",
+    "1          1.31E+11              327               5403",
+    "1      0.68716"
+   ],
+   "sha256": {
+    "msg": "e5badaf6300d32da2da47eb10f43796e8b4e16efeee0f953093ddc7ff0cee972",
+    "dat": "196e509583a65fce865dd285d226b427fca29e4ac31e1ac454e5ab480e744098",
+    "sta": "5d2527451e16f9d027bc5a56190e57112dbe04042d78ec2a15e301d7983478b9",
+    "inp": "e8cbee09886c744d04c2eaaf5abe13973650cb4f9ee400c7c68ce72ee47c1543"
+   }
+  },
+  "p050": {
+   "p_ref_mpa": 0.05,
+   "lambdas_full_precision": [
+    1.37431,
+    1.37432,
+    1.39433,
+    1.44074,
+    1.44076,
+    1.44737
+   ],
+   "lambda1": 1.37431,
+   "n_cr_all_modes": [
+    0.0687155,
+    0.068716,
+    0.0697165,
+    0.072037,
+    0.072038,
+    0.0723685
+   ],
+   "n_cr1": 0.0687155,
+   "sta": "THE ANALYSIS HAS COMPLETED SUCCESSFULLY",
+   "n_errors": 0,
+   "warning": "THERE MAY BE MORE EIGENVALUES IN THE SPECIFIED RANGE THAN REQUESTED (benign; 6 explicitly requested and 6 accepted)",
+   "dat_display_table": [
+    "1",
+    "1301 Atwood Avenue, Suite 101W",
+    "1",
+    "39658.84           39658.83           46588.93",
+    "1          1.31E+11              327               5403",
+    "1       1.3743"
+   ],
+   "sha256": {
+    "msg": "8e94d99e01b6e720cf65ec4a51e42d6da3300f498da85d8e2d76c441d80910d4",
+    "dat": "d4ca632b0a419c6815355c72a8549f9de2030292cedd8474822f741b8f66ed16",
+    "sta": "52d2344449058106cb41907974fc958a72c1c068e716befa724dc85908d1f64c",
+    "inp": "7e99149250d3804051f1c045e8ff54b85334aa2c634a25dd78ca9dba27ff04d5"
+   }
+  },
+  "p020": {
+   "p_ref_mpa": 0.02,
+   "lambdas_full_precision": [
+    3.43578,
+    3.43581,
+    3.48583,
+    3.60186,
+    3.6019,
+    3.61842
+   ],
+   "lambda1": 3.43578,
+   "n_cr_all_modes": [
+    0.0687156,
+    0.0687162,
+    0.0697166,
+    0.0720372,
+    0.072038,
+    0.0723684
+   ],
+   "n_cr1": 0.0687156,
+   "sta": "THE ANALYSIS HAS COMPLETED SUCCESSFULLY",
+   "n_errors": 0,
+   "warning": "THERE MAY BE MORE EIGENVALUES IN THE SPECIFIED RANGE THAN REQUESTED (benign; 6 explicitly requested and 6 accepted)",
+   "dat_display_table": [
+    "1",
+    "1301 Atwood Avenue, Suite 101W",
+    "1",
+    "39658.84           39658.83           46588.93",
+    "1          1.31E+11              327               5403",
+    "1       3.4358"
+   ],
+   "sha256": {
+    "msg": "42bba243a3995816c6c76fe71202a750ffd532b8ce8f05864ae45bf00dbc1f6c",
+    "dat": "6ee920e15341a97be07d8f15bd976584d39da5f133b6b82d77d9c0759733633f",
+    "sta": "736b367df79d6ba1ed26a6f961690ed64413c40199b599feca7d76d68b3d47c5",
+    "inp": "c3524066e8c4ba95bbd98ca605fe623fb4c1dc654ab9338553223e93d5331f4c"
+   }
+  }
+ },
+ "recomputed": {
+  "abaqus_n_cr1_by_tier": {
+   "p100": 0.0687156,
+   "p050": 0.0687155,
+   "p020": 0.0687156
+  },
+  "abaqus_n_cr1_mean": 0.06871556666666667,
+  "abaqus_invariance_spread_rel": 1.4552743265287617e-06,
+  "abaqus_pairwise_rel": {
+   "p100_vs_p050": 1.4552746794994083e-06,
+   "p050_vs_p020": 1.4552746794994083e-06,
+   "p100_vs_p020": 0.0
+  },
+  "same_pref_lambda1_rel_p050": 0.0222546895197746,
+  "same_pref_lambda1_rel_p020": 0.022261345886676366,
+  "safe_tier_gap_spread_rel": 0.00029905479412041416
+ },
+ "confirmed_facts": [
+  "F-a1: all three Abaqus jobs .sta = THE ANALYSIS HAS COMPLETED SUCCESSFULLY, 0 errors, 6 accepted eigenvalues each; only a benign 'more eigenvalues in range' warning.",
+  "F-a2: Abaqus lambda1 = 0.687156 / 1.37431 / 3.43578 at P_ref 0.1 / 0.05 / 0.02 MPa => N_cr1 = 0.06871560 / 0.06871550 / 0.06871560 MPa; three-tier spread rel = 1.46e-06. ABAQUS-SIDE LOAD-SCALING INVARIANCE HOLDS.",
+  "F-a3: at IDENTICAL P_ref = 0.05 MPa, rel(ccx lambda1 1.405239, abq lambda1 1.37431) = 2.2255%; at 0.02 MPa, rel(3.513126, 3.43578) = 2.2261%; the two agree to rel = 0.000299.",
+  "F-a4: therefore AFTER excluding the sigma-contaminated 0.1 MPa ccx tier, the same-condition dual-code lambda1 difference is a STABLE ~2.23% (not 37.87%, not 32.06%, not zero). Its cause is NOT determined.",
+  "F-a5: at P_ref = 0.1 MPa the ccx 6-mode spectrum still lacks the lambda1 = 0.702622 predicted from its own safe-tier N_cr, so the 32% gap at that tier is a solver artifact and MUST NOT be quoted as a dual-code difference.",
+  "F-a6: new 6-mode Abaqus p100 lambda1 = 0.687156 vs the earlier 2-mode job 0.687155 (delta 1e-6, eigenvalue-request-count effect); both are far from the ccx p100 value 0.9495004.",
+  "F-a7: per-mode same-P_ref rel (p050 / p020) = [0.02225, 0.02339, 0.02258, 0.02221, 0.02307, 0.02246] / [0.02226, 0.02339, 0.02258, 0.02268, 0.02702, 0.07867]; low modes stable ~2.2%, higher modes diverge => supports judging lambda1 ONLY (Q3)."
+ ],
+ "still_open": [
+  "Mode-shape MAC pairing (P0-3 / U10) still absent: the ~2.2% same-P_ref gap cannot be attributed to any formulation before modes are paired.",
+  "Mesh convergence and analytical shell-buckling anchor absent (U2, U3).",
+  "Abaqus warning 'there may be more eigenvalues in the specified range than requested' is benign here (6 requested, 6 accepted) but the completeness of the lowest-6 spectrum is not independently proven.",
+  "Physical correctness of the absolute N_cr is NOT established; diagnostic only.",
+  "EX01 10.2 'no final cause conclusion at this stage' REMAINS VALID; EX01 D5 (6-case pilot deferred) and the frozen lambda threshold REMAIN."
+ ],
+ "repro": [
+  "make_p2_abq_scaling_jobs.py  (regenerate 3 decks + bat)",
+  "_p2_abq_scaling/run_p2_abq_scaling_MANUAL.bat  (run OUTSIDE WorkBuddy)",
+  "python make_p2_abq_scaling_finding.py  (this recomputation)"
+ ]
+}

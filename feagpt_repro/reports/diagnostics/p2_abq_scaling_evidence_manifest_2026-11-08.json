@@ -1,0 +1,137 @@
+{
+ "what": "EX01 P0-1 Abaqus 3-tier scaling: verbatim small-text evidence + big-file sha256",
+ "date": "2026-11-08",
+ "source_root": "_p2_abq_scaling/ (user ran run_p2_abq_scaling_MANUAL.bat outside WorkBuddy)",
+ "jobs": {
+  "p100": {
+   "dir": "_p2_abq_scaling/fuselage_barrel_d1600_l1600_str8_frm3_buckle_p100_abq",
+   "files": {
+    "sta": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p100_abq.sta",
+     "bytes": 444,
+     "sha256": "5d2527451e16f9d027bc5a56190e57112dbe04042d78ec2a15e301d7983478b9",
+     "archived": true,
+     "archive_path": "reports/diagnostics/p2_abq_scaling_evidence_2026-11-08/p100.sta"
+    },
+    "dat": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p100_abq.dat",
+     "bytes": 11752,
+     "sha256": "196e509583a65fce865dd285d226b427fca29e4ac31e1ac454e5ab480e744098",
+     "archived": true,
+     "archive_path": "reports/diagnostics/p2_abq_scaling_evidence_2026-11-08/p100.dat"
+    },
+    "msg": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p100_abq.msg",
+     "bytes": 7527,
+     "sha256": "e5badaf6300d32da2da47eb10f43796e8b4e16efeee0f953093ddc7ff0cee972",
+     "archived": true,
+     "archive_path": "reports/diagnostics/p2_abq_scaling_evidence_2026-11-08/p100.msg"
+    },
+    "inp": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p100_abq.inp",
+     "bytes": 7139164,
+     "sha256": "e8cbee09886c744d04c2eaaf5abe13973650cb4f9ee400c7c68ce72ee47c1543",
+     "archived": false
+    },
+    "odb": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p100_abq.odb",
+     "bytes": 23540440,
+     "sha256": "c5630da4d2f486c9ec7b42573f2349143799c90d2a7bd7c425810f6c96bbbcd4",
+     "archived": false
+    }
+   },
+   "checks": {
+    "sta_completed": true,
+    "dat_has_table": true,
+    "msg_has_accepted": true
+   }
+  },
+  "p050": {
+   "dir": "_p2_abq_scaling/fuselage_barrel_d1600_l1600_str8_frm3_buckle_p050_abq",
+   "files": {
+    "sta": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p050_abq.sta",
+     "bytes": 444,
+     "sha256": "52d2344449058106cb41907974fc958a72c1c068e716befa724dc85908d1f64c",
+     "archived": true,
+     "archive_path": "reports/diagnostics/p2_abq_scaling_evidence_2026-11-08/p050.sta"
+    },
+    "dat": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p050_abq.dat",
+     "bytes": 11752,
+     "sha256": "d4ca632b0a419c6815355c72a8549f9de2030292cedd8474822f741b8f66ed16",
+     "archived": true,
+     "archive_path": "reports/diagnostics/p2_abq_scaling_evidence_2026-11-08/p050.dat"
+    },
+    "msg": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p050_abq.msg",
+     "bytes": 7528,
+     "sha256": "8e94d99e01b6e720cf65ec4a51e42d6da3300f498da85d8e2d76c441d80910d4",
+     "archived": true,
+     "archive_path": "reports/diagnostics/p2_abq_scaling_evidence_2026-11-08/p050.msg"
+    },
+    "inp": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p050_abq.inp",
+     "bytes": 7139165,
+     "sha256": "7e99149250d3804051f1c045e8ff54b85334aa2c634a25dd78ca9dba27ff04d5",
+     "archived": false
+    },
+    "odb": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p050_abq.odb",
+     "bytes": 23540440,
+     "sha256": "e755212f08eea4196efaab62f62ba0b7b22556db1c6294d23befc266a70fe700",
+     "archived": false
+    }
+   },
+   "checks": {
+    "sta_completed": true,
+    "dat_has_table": true,
+    "msg_has_accepted": true
+   }
+  },
+  "p020": {
+   "dir": "_p2_abq_scaling/fuselage_barrel_d1600_l1600_str8_frm3_buckle_p020_abq",
+   "files": {
+    "sta": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p020_abq.sta",
+     "bytes": 444,
+     "sha256": "736b367df79d6ba1ed26a6f961690ed64413c40199b599feca7d76d68b3d47c5",
+     "archived": true,
+     "archive_path": "reports/diagnostics/p2_abq_scaling_evidence_2026-11-08/p020.sta"
+    },
+    "dat": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p020_abq.dat",
+     "bytes": 11752,
+     "sha256": "6ee920e15341a97be07d8f15bd976584d39da5f133b6b82d77d9c0759733633f",
+     "archived": true,
+     "archive_path": "reports/diagnostics/p2_abq_scaling_evidence_2026-11-08/p020.dat"
+    },
+    "msg": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p020_abq.msg",
+     "bytes": 7528,
+     "sha256": "42bba243a3995816c6c76fe71202a750ffd532b8ce8f05864ae45bf00dbc1f6c",
+     "archived": true,
+     "archive_path": "reports/diagnostics/p2_abq_scaling_evidence_2026-11-08/p020.msg"
+    },
+    "inp": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p020_abq.inp",
+     "bytes": 7139165,
+     "sha256": "c3524066e8c4ba95bbd98ca605fe623fb4c1dc654ab9338553223e93d5331f4c",
+     "archived": false
+    },
+    "odb": {
+     "path": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p020_abq.odb",
+     "bytes": 23540440,
+     "sha256": "c595ebf5a6afc743d4bf054da550da2430fe1a16e5ddb35e2a8b65af8a2df3ca",
+     "archived": false
+    }
+   },
+   "checks": {
+    "sta_completed": true,
+    "dat_has_table": true,
+    "msg_has_accepted": true
+   }
+  }
+ },
+ "cross_check": "all 12 sha256 values match p2_abq_scaling_2026-11-08.json"
+}

@@ -342,3 +342,28 @@ sha256sum -c SHA256SUMS.txt
   K-mode MAC、Abaqus 3 档、U2/U3 锚点仍缺 ⇒ **P0 未闭环、6 条打样继续暂缓、λ 阈值不冻结**。
 - **Abaqus 外部作业现可运行**：`feagpt_repro/_p2_abq_scaling/run_p2_abq_scaling_MANUAL.bat`（3 档 × 6 阶，
   8/8 自检 ×3）；ccx 求解已全部结束、`.solve.lock` 已释放（R61 允许）。
+
+
+### 7.11 阶段三：Abaqus 侧载荷缩放闭环与报告 v1.3（2026-11-08 下午）
+
+- **送审件升版**：`REVIEW_C6_P2_FORMULATION_DIFFERENCE.md` **v1.3**（674 行），新增 §8.8 阶段三、
+  §8.8.1 同 P_ref 双码对照、E17／E18；U13 **已关闭**、U14 标为 P0 最后一道；
+  回填 §8.5 计划表、§8.6／§8.7 状态行、§4.5 证据链、§2.3 适用范围、附录路径表。
+  **§10 专家结论原文一字未改**，仅在 §10.4 追加「阶段三复核记录（编制方，非专家意见）」。
+- **Abaqus 3 档 × 6 阶**（老王在 WorkBuddy 外跑 `run_p2_abq_scaling_MANUAL.bat`）：三档 `.sta` 全部
+  `COMPLETED SUCCESSFULLY`、0 errors、各 6 个 accepted eigenvalues；唯一 warning 是「区间内特征值
+  可能多于请求数」（显式请求 6 阶、接受 6 阶，属提示）。
+  `N_cr1` = 0.06871560 / 0.06871550 /
+  0.06871560 MPa，三档离散 **1.46e-06** ⇒ **Abaqus 自身不变性成立**，
+  且 λ1<1 的 0.1 档同样自洽（LANCZOS + 显式区间 `[0, 1.0e6]`，不涉及 ccx 的固定 σ）。
+- **Q3 口径首次成立**：同 P_ref 下双码 λ1 对称相对差 0.05 MPa **2.2255%**、0.02 MPa **2.2261%**，
+  一致到 0.000299 ⇒ 排除 σ 污染后差异稳定约 **2.23%**；0.1 MPa 的 ccx 档**继续排除**
+  （谱中缺真最低根 0.702622），该档 32.06% 不得引用。
+- **口径独立性**：§7.10 的 2.2259%（跨 P_ref 比 `N_cr`）与本节同 P_ref 的 2.2255%/2.2261%
+  是同一数学关系的不同写法，**不是两份独立证据**，不得当交叉印证。
+- **产物**：`reports/diagnostics/p2_abq_scaling_2026-11-08.json`（算式 + 12 项 sha256 + 逐阶对照）、
+  `p2_abq_scaling_evidence_manifest_2026-11-08.json`、`p2_abq_scaling_evidence_2026-11-08/`
+  （9 份 `.sta`/`.dat`/`.msg` 原文）；脚本 `make_p2_abq_scaling_finding.py`、
+  `archive_p2_abq_scaling_evidence.py`、`apply_p2_stage3_revisions.py`。
+- **口径不变**：成因未定；**P0 未闭环**（MAC／网格／解析锚点仍缺）⇒ 6 条打样继续暂缓（D5）、
+  λ 阈值不冻结、跨码数字仅 diagnostic。专家「现阶段不能定论」维持有效。
