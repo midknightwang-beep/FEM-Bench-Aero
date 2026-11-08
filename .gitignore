@@ -81,3 +81,10 @@ feagpt_repro/candidates_v2_modal_*/
 feagpt_repro/eval_runs_v2*/
 # C6-P2 Abaqus 外部作业目录：deck/bat 由 make_p2_abq_jobs.py 本机现生成，不入库
 feagpt_repro/_p2_abq_jobs/
+
+# P0 实验的临时运行日志（结果以正式 artifact 为准）
+feagpt_repro/reports/diagnostics/_*_run.txt
+
+# P0 载荷缩放作业目录（deck/结果由脚本重生成，不入库）
+feagpt_repro/_p2_scaling_ccx/
+feagpt_repro/_p2_abq_scaling/

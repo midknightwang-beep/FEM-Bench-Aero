@@ -1,0 +1,144 @@
+{
+ "what": "C6-P2 P0-1/P0-2 ccx load-scaling invariance + 6-mode probe",
+ "date": "2026-11-08",
+ "expert_trigger": "FBA-C6P2-REV-001-EX01: ccx sigma=1.0 shift-invert candidate",
+ "status": "diagnostic evidence; NOT a final cause conclusion",
+ "case": "fuselage_barrel_d1600_l1600_str8_frm3",
+ "p_refs_mpa": [
+  0.1,
+  0.05,
+  0.02
+ ],
+ "n_modes_requested": 6,
+ "rows": [
+  {
+   "p_ref_mpa": 0.1,
+   "tag": "p100",
+   "n_modes_requested": 6,
+   "solve_rc": 0,
+   "solve_ok": true,
+   "wall_seconds": 1975.3,
+   "deck_sha256": "a56379a6ad4ae15e28bcbe2a3b14c313960c232c3d630b4914e94a4c5c10db08",
+   "deck_bytes": 7139111,
+   "dat_archived": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\reports\\diagnostics\\p2_scaling_ccx\\fuselage_barrel_d1600_l1600_str8_frm3_buckle_p100.dat",
+   "lambdas": [
+    0.9495004,
+    0.9582389,
+    0.9591942,
+    1.008207,
+    1.00942,
+    1.041865
+   ],
+   "modes": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "n_cr": [
+    0.09495004,
+    0.09582389,
+    0.09591942,
+    0.1008207,
+    0.100942,
+    0.1041865
+   ],
+   "has_lambda_below_1": true,
+   "sigma_log_lines": [
+    "sigma=1.000000,d[0]=0.949500"
+   ],
+   "parse_error": null
+  },
+  {
+   "p_ref_mpa": 0.05,
+   "tag": "p050",
+   "n_modes_requested": 6,
+   "solve_rc": 0,
+   "solve_ok": true,
+   "wall_seconds": 1516.5,
+   "deck_sha256": "adc442cd77c65def734eb0c6734dadfe7b7fffeabfe314562f36aa5536fec67d",
+   "deck_bytes": 7139112,
+   "dat_archived": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\reports\\diagnostics\\p2_scaling_ccx\\fuselage_barrel_d1600_l1600_str8_frm3_buckle_p050.dat",
+   "lambdas": [
+    1.405239,
+    1.406851,
+    1.42618,
+    1.473102,
+    1.474388,
+    1.480252
+   ],
+   "modes": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "n_cr": [
+    0.07026195,
+    0.07034255,
+    0.071309,
+    0.0736551,
+    0.0737194,
+    0.0740126
+   ],
+   "has_lambda_below_1": false,
+   "sigma_log_lines": [
+    "sigma=1.000000,d[0]=1.405239"
+   ],
+   "parse_error": null
+  },
+  {
+   "p_ref_mpa": 0.02,
+   "tag": "p020",
+   "n_modes_requested": 6,
+   "solve_rc": 0,
+   "solve_ok": true,
+   "wall_seconds": 1382.2,
+   "deck_sha256": "224b8d93d30da3dbfe9676bbeefc7bc44169f44f8314e5d7fe898ff759c6508d",
+   "deck_bytes": 7139112,
+   "dat_archived": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\reports\\diagnostics\\p2_scaling_ccx\\fuselage_barrel_d1600_l1600_str8_frm3_buckle_p020.dat",
+   "lambdas": [
+    3.513126,
+    3.517131,
+    3.56545,
+    3.684502,
+    3.700562,
+    3.914734
+   ],
+   "modes": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "n_cr": [
+    0.07026252,
+    0.07034262,
+    0.071309,
+    0.07369004,
+    0.07401124,
+    0.07829468
+   ],
+   "has_lambda_below_1": false,
+   "sigma_log_lines": [
+    "sigma=1.000000,d[0]=3.513126"
+   ],
+   "parse_error": null
+  }
+ ],
+ "n_cr_lambda1_spread_rel": 0.314532,
+ "interpretation_rules": [
+  "If lambda scales ~1/P_ref (N_cr stable) and modes below 1.0 appear, the previous 2-mode result near sigma=1.0 was a mode-selection artifact.",
+  "If lambda stays pinned near 1.0 regardless of P_ref, shift contamination is indicated and ccx 2.23 *BUCKLE is unusable for this case without mitigation.",
+  "If N_cr is stable but still ~38% above Abaqus, the residual difference remains a formulation candidate (C1/C2), subject to mode-shape pairing."
+ ],
+ "repro": [
+  "python probe_p2_load_scaling.py"
+ ]
+}

@@ -89,20 +89,77 @@ def parse_abaqus_text(text: str) -> list[dict]:
     return _parse(text, "abaqus")
 
 
+_MSG_VAL = re.compile(r"[-+]?(?:\d+\.?\d*|\.\d+)(?:[EeDd][-+]?\d+)?")
+
+
+def parse_abaqus_msg(text: str) -> list[float]:
+    """Full-precision eigenvalues from the last ACCEPTED EIGENVALUES block.
+
+    Expert review FBA-C6P2-REV-001-EX01: the .dat table is rounded to 5
+    decimals (two modes both print 0.68716), while .msg prints
+    ``6.87155e-01  6.87161e-01  6.97166e-01``.  Use .msg for values; keep
+    .dat only as a display/ordering check.
+    """
+    lines = text.splitlines()
+    blocks = [i for i, x in enumerate(lines)
+              if x.strip().upper() == "ACCEPTED EIGENVALUES"]
+    if not blocks:
+        raise ValueError("no ACCEPTED EIGENVALUES block in .msg")
+    start = blocks[-1] + 1
+    vals: list[float] = []
+    for line in lines[start:]:
+        s = line.strip()
+        if not s:
+            if vals:
+                break
+            continue
+        nums = _MSG_VAL.findall(s)
+        if not nums:
+            break
+        vals.extend(float(n.replace("D", "E").replace("d", "e")) for n in nums)
+    if not vals:
+        raise ValueError("ACCEPTED EIGENVALUES block has no numeric rows")
+    return vals
+
+
 def extract(path: str | Path, dialect: str, expect: int | None = None) -> dict:
-    """Parse a .dat file into a dict (same shape convention as extract_modal_dat)."""
-    text = Path(path).read_text(encoding="utf-8", errors="replace")
+    """Parse a .dat file into a dict (same shape convention as extract_modal_dat).
+
+    Abaqus: if a sibling .msg exists, its full-precision eigenvalues replace
+    the rounded .dat values (same order, first n modes).  ``precision`` says
+    which source was used -- never silently treat a rounded .dat as exact.
+    """
+    dat = Path(path)
+    text = dat.read_text(encoding="utf-8", errors="replace")
     modes = _parse(text, dialect)
     lambdas = [m["lambda"] for m in modes]
+    precision = "dat (rounded)"
+    msg_vals: list[float] = []
+    if dialect == "abaqus":
+        msg = dat.with_suffix(".msg")
+        if msg.exists():
+            try:
+                msg_vals = parse_abaqus_msg(msg.read_text(encoding="utf-8", errors="replace"))
+                lambdas = msg_vals[:len(modes)]
+                for m, v in zip(modes, lambdas):
+                    m["lambda"] = v
+                precision = "msg (full precision)"
+            except ValueError:
+                pass
     seq_ok = [m["mode"] for m in modes] == list(range(1, len(modes) + 1))
     positive = all(x > 0 for x in lambdas)
-    # repeated eigenvalues are physical -> non-decreasing, NOT strictly increasing
-    nondecreasing = all(b >= a for a, b in zip(lambdas, lambdas[1:]))
+    # repeated eigenvalues are physical; use a TOLERANCE, not >= on raw floats:
+    # near-repeated roots (0.687155 / 0.687161) must not be flagged as noise,
+    # and a tiny negative rounding drift must not be flagged as descending.
+    tol = 1e-6
+    nondecreasing = all(b >= a - tol * max(1.0, abs(a))
+                        for a, b in zip(lambdas, lambdas[1:]))
     complete = (expect is None or len(modes) == expect) and seq_ok
     return {"dialect": dialect, "n_modes_found": len(modes),
             "modes": modes, "lambdas": lambdas,
             "positive": positive, "nondecreasing": nondecreasing,
-            "complete": complete}
+            "complete": complete, "precision": precision,
+            "msg_full_spectrum": msg_vals or None}
 
 
 # --------------------------------------------------------------------------- #
@@ -134,11 +191,19 @@ _ABQ_REAL = """                              E I G E N V A L U E    O U T P U T
 
           THE ANALYSIS HAS BEEN COMPLETED
 """
+# verbatim .msg block from the real-machine job (expert review EX01)
+_ABQ_MSG_REAL = """ NUMBER OF ACCEPTED EIGENVALUES    3
+
+ ACCEPTED EIGENVALUES
+   6.87155e-01  6.87161e-01  6.97166e-01
+
+ FACTORIZATION WITH NEW SHIFT VALUE IS REQUIRED
+"""
 
 
 def self_test() -> int:
     ok = 0
-    total = 12
+    total = 17
 
     def pin(name: str, cond: bool) -> None:
         nonlocal ok
@@ -151,11 +216,30 @@ def self_test() -> int:
     pin("ccx real values", abs(c[0]["lambda"] - 1.008207) < 1e-9
         and abs(c[1]["lambda"] - 1.009420) < 1e-9)
     pin("abaqus real excerpt: 2 rows", len(a) == 2)
-    pin("abaqus real values (repeated root)", abs(a[0]["lambda"] - 0.68716) < 1e-9
-        and a[0]["lambda"] == a[1]["lambda"])
+    # .dat values are ROUNDED to 5 decimals; do NOT use == for root equality
+    pin("abaqus .dat rounded values (near-repeated, tolerance)",
+        abs(a[0]["lambda"] - 0.68716) < 1e-9
+        and abs(a[0]["lambda"] - a[1]["lambda"])
+        <= 1e-6 * max(1.0, abs(a[0]["lambda"])))
     pin("repeated root is NOT flagged as non-monotonic",
         extract_from_text(_ABQ_REAL, "abaqus")["nondecreasing"] is True)
     pin("ccx scientific notation parsed", c[0]["lambda"] > 1.0)
+
+    # EX01 P0-5: full precision comes from .msg, not the rounded .dat
+    full = parse_abaqus_msg(_ABQ_MSG_REAL)
+    pin("msg full-precision 3 values", len(full) == 3
+        and abs(full[0] - 0.687155) < 1e-9
+        and abs(full[1] - 0.687161) < 1e-9
+        and abs(full[2] - 0.697166) < 1e-9)
+    pin("msg values differ from .dat rounding",
+        full[0] != a[0]["lambda"] and full[1] != a[1]["lambda"])
+    pin("near-repeated roots are distinct in msg",
+        full[0] != full[1] and abs(full[0] - full[1]) < 1e-4)
+    pin("near-repeated roots pass tolerance check",
+        extract_from_text(_ABQ_REAL, "abaqus")["nondecreasing"] is True
+        and full[1] >= full[0] - 1e-6 * max(1.0, abs(full[0])))
+    pin("msg block with no numeric rows raises",
+        raises(lambda: parse_abaqus_msg("ACCEPTED EIGENVALUES\n\n text")))
 
     # mutations, both directions
     neg = _ABQ_REAL.replace("       1      0.68716", "       1      -0.68716")
@@ -178,9 +262,11 @@ def extract_from_text(text: str, dialect: str, expect: int | None = None) -> dic
     """Pure-function variant of extract() for self-test pins."""
     modes = _parse(text, dialect)
     lam = [m["lambda"] for m in modes]
+    tol = 1e-6
     return {"n_modes_found": len(modes), "lambdas": lam,
             "positive": all(x > 0 for x in lam),
-            "nondecreasing": all(b >= a for a, b in zip(lam, lam[1:])),
+            "nondecreasing": all(b >= a - tol * max(1.0, abs(a))
+                                 for a, b in zip(lam, lam[1:])),
             "complete": (expect is None or len(modes) == expect)
                         and [m["mode"] for m in modes] == list(range(1, len(modes) + 1))}
 

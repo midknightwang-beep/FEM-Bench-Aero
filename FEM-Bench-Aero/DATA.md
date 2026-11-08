@@ -311,3 +311,34 @@ sha256sum -c SHA256SUMS.txt
   （两码 pre-`*STEP` 结构段**除 2 行 `*HEADING` 方言标签外 207190 行逐字节一致、0 差异行**，
   `*DLOAD`/`*BOUNDARY`/`*ELASTIC`/`S4` 逐值相同）⇒ deck 翻译层已排除，成因仍待专家核验。
 - 缺失材料 U1–U12 在报告第 9 节统一标注「待补充」。
+
+### 7.9 专家审查决议与 P0 执行（2026-11-08）
+
+- 审查意见原件：`reviews/FBA-C6P2-REV-001-EX01.md`；报告按意见修订为 **v1.1**
+  （`REVIEW_C6_P2_FORMULATION_DIFFERENCE.md`，§10 已填审查结论、§8.5 验证计划）。
+- **口径降级**：λ1 37.87% 差异真实，但「系统性 S4 公式差异」不成立；
+  CalculiX 2.23 `*BUCKLE` 固定 σ=1.0 的 shift-invert 漏低阶模态是首选排除项。
+- **决议**：S1 同码自比采纳（须过 solver-health 闸）／S4 前置且先 shift 模态／S2 不采纳／
+  **6 条打样暂缓**／跨码数字仅 diagnostic／物理正确性另设锚点。详见 `DESIGN_C6_P2_BUCKLE.md` §11。
+- **P0 产物**：`reports/diagnostics/p2_evidence_manifest_2026-11-08.json` +
+  `p2_evidence_2026-11-08/step_diff_full.json`（U5 关闭、U6 部分关闭）；
+  `extract_buckle_dat.py` 17/17 pins（`.msg` 全精度）；
+  `p2_load_scaling_ccx_2026-11-08.json` 与 Abaqus 外部 3 档作业（结果待回填）。
+
+
+### 7.10 P0 阶段二回填与报告 v1.2（2026-11-08）
+
+- **送审件升版**：`REVIEW_C6_P2_FORMULATION_DIFFERENCE.md` **v1.2**（620 行），新增 §8.7 阶段二实测、
+  E14／E15／E16、U13／U14；§8.5 计划表与 §8.6 末行状态回填；**§10 专家结论原文一字未改**，
+  仅在 §10.4 追加「阶段二复核记录（编制方，非专家意见）」。禁用词／表格竖线／14 项数字对账全绿。
+- **ccx 载荷缩放 3 档 × 6 阶**（`probe_p2_load_scaling.py`，81 min，全 `rc=0`）：
+  `reports/diagnostics/p2_load_scaling_ccx_2026-11-08.json` + 三份 `.dat` 原文
+  （`p2_scaling_ccx/`）；独立复算 `p2_stage2_load_scaling_2026-11-08.json`（算式随盘）。
+- **已确认事实**：安全档 `N_cr1` = 0.07026195 / 0.07026252 MPa
+  （对称相对差 **8.11e-06**）；0.1 档 0.09495004 MPa 偏离 **29.89%**，
+  6 阶谱中**无**由安全值反推的 λ1 = **0.702622**；Abaqus `.msg` 全精度 λ1 = 0.687155
+  ⇒ `N_cr` = 0.0687155 MPa，与 ccx 安全均值差 **2.2259%**（**跨 P_ref，Abaqus 侧不变性未验，不作双码最终差值**）。
+- **口径不变**：C3 由「首选排除」升为「本案例内已实测证实」，但**专家「现阶段不能定论」维持有效**；
+  K-mode MAC、Abaqus 3 档、U2/U3 锚点仍缺 ⇒ **P0 未闭环、6 条打样继续暂缓、λ 阈值不冻结**。
+- **Abaqus 外部作业现可运行**：`feagpt_repro/_p2_abq_scaling/run_p2_abq_scaling_MANUAL.bat`（3 档 × 6 阶，
+  8/8 自检 ×3）；ccx 求解已全部结束、`.solve.lock` 已释放（R61 允许）。

@@ -1,0 +1,134 @@
+{
+ "what": "EX01 P0 stage-2: ccx load-scaling invariance + Abaqus N_cr comparison",
+ "date": "2026-11-08",
+ "status": "diagnostic; NOT a final cause conclusion (EX01 10.2 still stands)",
+ "sources": {
+  "ccx_scaling_artifact": "reports/diagnostics/p2_load_scaling_ccx_2026-11-08.json",
+  "ccx_scaling_sha256": "93624a0e93c1e8188b8c1022ddb79f531845839bd5ef5e72f1835820094ab8b0",
+  "abaqus_msg": "_p2_abq_jobs/fuselage_barrel_d1600_l1600_str8_frm3_buckle/fuselage_barrel_d1600_l1600_str8_frm3_buckle.msg",
+  "abaqus_msg_sha256": "5aea07b7432b3c3c22896861ef7610a172194436aceb4d097382728c0e6e542a"
+ },
+ "equations": {
+  "N_cr": "N_cr = lambda * P_ref  (linear buckling; load multiplier times reference pressure)",
+  "rel": "rel(a,b) = |a-b| / ((a+b)/2)",
+  "safe_mean": "safe_mean = (N_cr1[p050] + N_cr1[p020]) / 2",
+  "p100_dev_rel": "rel(N_cr1[p100], safe_mean)",
+  "ncr_gap_rel": "rel(safe_mean, lambda1_abq_msg * 0.1)",
+  "expected_l1_at_p100": "safe_mean / 0.1"
+ },
+ "ccx": {
+  "p100": {
+   "p_ref_mpa": 0.1,
+   "lambda1": 0.9495004,
+   "n_cr1": 0.09495004,
+   "n_cr_all_modes": [
+    0.09495004,
+    0.09582389,
+    0.09591942,
+    0.1008207,
+    0.100942,
+    0.1041865
+   ],
+   "n_lambdas_below_1": 3,
+   "lambda_span": [
+    0.9495004,
+    1.041865
+   ],
+   "sigma_log": [
+    "sigma=1.000000,d[0]=0.949500"
+   ]
+  },
+  "p050": {
+   "p_ref_mpa": 0.05,
+   "lambda1": 1.405239,
+   "n_cr1": 0.07026195,
+   "n_cr_all_modes": [
+    0.07026195,
+    0.07034255,
+    0.071309,
+    0.0736551,
+    0.0737194,
+    0.0740126
+   ],
+   "n_lambdas_below_1": 0,
+   "lambda_span": [
+    1.405239,
+    1.480252
+   ],
+   "sigma_log": [
+    "sigma=1.000000,d[0]=1.405239"
+   ]
+  },
+  "p020": {
+   "p_ref_mpa": 0.02,
+   "lambda1": 3.513126,
+   "n_cr1": 0.07026252,
+   "n_cr_all_modes": [
+    0.07026252,
+    0.07034262,
+    0.071309,
+    0.07369004,
+    0.07401124,
+    0.07829468
+   ],
+   "n_lambdas_below_1": 0,
+   "lambda_span": [
+    3.513126,
+    3.914734
+   ],
+   "sigma_log": [
+    "sigma=1.000000,d[0]=3.513126"
+   ]
+  }
+ },
+ "abaqus": {
+  "lambda1_msg_full_precision": 0.687155,
+  "accepted_eigenvalues": [
+   0.687155,
+   0.687161,
+   0.697166
+  ],
+  "p_ref_mpa": 0.1,
+  "n_cr1": 0.0687155,
+  "note": "N_cr is compared across DIFFERENT P_ref on purpose: for linear buckling N_cr should be P_ref-invariant. Abaqus-side 3-tier invariance is still unverified (external bat pending)."
+ },
+ "recomputed": {
+  "safe_pair": [
+   "p050",
+   "p020"
+  ],
+  "safe_spread_rel": 8.11246610631459e-06,
+  "safe_mean_n_cr1": 0.070262235,
+  "p100_deviation_rel_vs_safe_mean": 0.2988616311953817,
+  "per_mode_n_cr_rel_p050_vs_p020": [
+   8.11246610631459e-06,
+   9.95129763725781e-07,
+   0.0,
+   0.0004742606373036423,
+   0.0039509745574784145,
+   0.05622948555052664
+  ],
+  "n_cr_gap_rel_ccx_safe_vs_abaqus": 0.022258745258728063,
+  "expected_lambda1_at_p100_from_safe_n_cr": 0.7026223500000001,
+  "expected_lambda1_present_in_p100_six_mode_spectrum": false
+ },
+ "confirmed_facts": [
+  "F-s2-1: p050 and p020 (no lambda<1, lambda1 = 1.405239 / 3.513126) give N_cr1 = 0.07026195 / 0.07026252 MPa, rel = 8.11e-06 (0.00081%) -- load-scaling invariance HOLDS in the safe lambda region.",
+  "F-s2-2: p100 (3 eigenvalues below 1.0, whole 6-mode spectrum inside [0.9495, 1.0419]) gives N_cr1 = 0.09495004 MPa, 29.89% above the safe mean -- the sigma=1.0 neighbourhood tier is NOT invariant.",
+  "F-s2-3: lambda scales as 1/P_ref between safe tiers: 1.405239 x 0.05 = 0.07026195 and 3.513126 x 0.02 = 0.07026252.",
+  "F-s2-4: if the safe N_cr is physical, ccx at P_ref=0.1 should have lambda1 = 0.702622; that value is ABSENT in the 6-mode p100 spectrum -- 6 modes still missed the true lowest root near sigma=1.0.",
+  "F-s2-5: Abaqus .msg full precision lambda1 = 0.687155 => N_cr = 0.0687155 MPa; vs ccx safe mean 0.07026224 MPa => rel = 2.2259%.",
+  "F-s2-6: per-mode N_cr rel(p050,p020) for modes 1..6 = [8e-06, 1e-06, 0.0, 0.000474, 0.003951, 0.056229] -- low modes stable, high modes drift => supports judging lambda1 ONLY (Q3)."
+ ],
+ "still_open": [
+  "Abaqus-side 3-tier load scaling (external bat not yet run): its own N_cr invariance unverified.",
+  "Mode-shape MAC pairing (P0-3) still absent; the ~2% N_cr gap cannot be attributed to any formulation yet.",
+  "Mesh convergence / analytical shell buckling anchor absent (U2, U3).",
+  "Physical correctness of the absolute N_cr is NOT established; diagnostic only.",
+  "EX01 10.2 'no final cause conclusion at this stage' REMAINS VALID."
+ ],
+ "repro": [
+  "python make_p2_stage2_finding.py",
+  "python probe_p2_load_scaling.py  (~81 min, 3 ccx solves)"
+ ]
+}

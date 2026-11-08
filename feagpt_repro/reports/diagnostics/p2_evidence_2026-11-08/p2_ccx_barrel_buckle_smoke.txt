@@ -1,0 +1,40 @@
+deck: 7139099 B
+solve: rc=0 ok=True dat=True frd=True
+--- log tail ---
+7721e-21
+    - iteration 49 :
+         total iteration time                   1.35 s
+         error                                  1.1827e-21
+    - iteration 50 :
+         total iteration time                   0.951 s
+         error                                  1.4167e-21
+    Time for refinement                   7.909889e+01 s
+sigma=1.000000,d[0]=1.008207
+
+ Using up to 1 cpu(s) for the stress calculation.
+
+ Using up to 1 cpu(s) for the stress calculation.
+
+
+ Job finished
+
+________________________________________
+
+Total CalculiX Time: 656.002228
+________________________________________
+
+--- .dat keyword hits: 2 ---
+      6:  MODE NO       BUCKLING
+      7:                 FACTOR
+--- .dat tail ---
+    
+                            S T E P       1
+    
+    
+         B U C K L I N G   F A C T O R   O U T P U T
+    
+     MODE NO       BUCKLING
+                    FACTOR
+    
+          1   0.1008207E+01
+          2   0.1009420E+01

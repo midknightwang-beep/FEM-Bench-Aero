@@ -1,0 +1,70 @@
+{
+ "what": "C6-P2 P0-4 evidence archive manifest",
+ "date": "2026-11-08",
+ "status": "U5 CLOSED (full step diff). U6 PARTIALLY CLOSED: small text artifacts copied verbatim into git; large deck/odb files anchored by sha256 + local path, full external archival TO BE SUPPLIED.",
+ "copied_verbatim": {
+  "abaqus_dat": {
+   "file": "fuselage_barrel_d1600_l1600_str8_frm3_buckle.dat",
+   "sha256": "30f9b28dce814091d03a1783387412b1807cab64467bf45839d6fb09f36da273",
+   "bytes": 11644,
+   "lines": 265
+  },
+  "abaqus_msg": {
+   "file": "fuselage_barrel_d1600_l1600_str8_frm3_buckle.msg",
+   "sha256": "5aea07b7432b3c3c22896861ef7610a172194436aceb4d097382728c0e6e542a",
+   "bytes": 14590,
+   "lines": 346
+  },
+  "abaqus_sta": {
+   "file": "fuselage_barrel_d1600_l1600_str8_frm3_buckle.sta",
+   "sha256": "b48c3759fb41145009a3c8ad5feef6ad454dd7761d5d105e21f6abaa1dc25bfe",
+   "bytes": 444,
+   "lines": 8
+  },
+  "ccx_smoke_log": {
+   "file": "p2_ccx_barrel_buckle_smoke.txt",
+   "sha256": "59fa725c03a38d13d33183fa3c03352446cd83ee5196b51088951613b74d1bf6",
+   "bytes": 1057,
+   "lines": 40
+  },
+  "ccx_dat_p100": {
+   "file": "fuselage_barrel_d1600_l1600_str8_frm3_buckle_p100.dat",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  }
+ },
+ "large_files_anchored_not_copied": {
+  "ccx_deck_2m": {
+   "path": "C:\\Users\\22207\\AppData\\Local\\Temp\\p2_archive__dkb3irv\\fuselage_barrel_d1600_l1600_str8_frm3_buckle.inp",
+   "sha256": "88dfa06e392d7439f0d1694d2559cb12564b0bae0f85e0edd508ad53ac8cd23a",
+   "bytes": 7139106,
+   "copied_into_repo": false
+  },
+  "abaqus_deck": {
+   "path": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\_p2_abq_jobs\\fuselage_barrel_d1600_l1600_str8_frm3_buckle\\fuselage_barrel_d1600_l1600_str8_frm3_buckle.inp",
+   "sha256": "6536cb0e595c2fe1e0df175a43b8edc56ab3c221e90a694e0a8ba13a3ffefb82",
+   "bytes": 7139155,
+   "copied_into_repo": false
+  },
+  "abaqus_odb": {
+   "path": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\_p2_abq_jobs\\fuselage_barrel_d1600_l1600_str8_frm3_buckle\\fuselage_barrel_d1600_l1600_str8_frm3_buckle.odb",
+   "sha256": "364688570f1f58d644b3c89cbc548de600ea618e887539bcb789c4f127ee2324",
+   "bytes": 13579104,
+   "copied_into_repo": false
+  },
+  "ccx_deck_p100": {
+   "path": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\_p2_scaling_ccx\\fuselage_barrel_d1600_l1600_str8_frm3_buckle_p100\\fuselage_barrel_d1600_l1600_str8_frm3_buckle_p100.inp",
+   "sha256": "a56379a6ad4ae15e28bcbe2a3b14c313960c232c3d630b4914e94a4c5c10db08",
+   "bytes": 7139111,
+   "copied_into_repo": false
+  }
+ },
+ "step_diff": {
+  "file": "step_diff_full.json",
+  "n_differing_lines": 6
+ },
+ "expert_review": "FBA-C6P2-REV-001-EX01",
+ "repro": [
+  "python archive_p2_evidence.py"
+ ]
+}

@@ -1,0 +1,59 @@
+{
+ "what": "EX01 P0 stage-1: ccx 6-mode buckling on the SAME 0.1 MPa case",
+ "date": "2026-11-08",
+ "status": "stage-1 diagnostic; p050/p020 scaling still running; NOT final",
+ "source_dat": "reports\\diagnostics\\p2_scaling_ccx\\fuselage_barrel_d1600_l1600_str8_frm3_buckle_p100.dat",
+ "p_ref_mpa": 0.1,
+ "n_modes_requested": 6,
+ "six_lambdas": [
+  0.9495004,
+  0.9582389,
+  0.9591942,
+  1.008207,
+  1.00942,
+  1.041865
+ ],
+ "n_cr_mpa": [
+  0.09495004,
+  0.09582389,
+  0.09591942,
+  0.1008207,
+  0.100942,
+  0.1041865
+ ],
+ "previous_two_mode_lambdas": [
+  1.008207,
+  1.00942
+ ],
+ "previous_two_mode_are_these_indices": [
+  {
+   "old_value": 1.008207,
+   "six_mode_index": [
+    4
+   ]
+  },
+  {
+   "old_value": 1.00942,
+   "six_mode_index": [
+    5
+   ]
+  }
+ ],
+ "n_lambdas_below_1": 3,
+ "sigma_log": "sigma=1.000000,d[0]=0.949500 (fixed shift, d[0] now the true lowest root)",
+ "abaqus_lambda1_full_precision": 0.687155,
+ "abaqus_lambda1_dat_rounded": 0.68716,
+ "rel_diff_old_pair": 0.378735,
+ "rel_diff_new_l1_vs_abaqus_l1": 0.320587,
+ "findings": [
+  "The 2-mode request MISSED three eigenvalues below 1.0 (0.9495 / 0.9582 / 0.9592).",
+  "The values previously reported as lambda1/lambda2 (1.008207 / 1.009420) are modes 4 and 5 of the 6-mode spectrum.",
+  "Therefore the 37.87% figure was NOT a same-mode difference: it compared a shifted higher mode pair with the Abaqus fundamental pair. EX01 C3 is confirmed for this case.",
+  "A residual ~32% gap remains between the new ccx lambda1 (0.9495) and Abaqus lambda1 (0.687155); its cause is still unassigned and REQUIRES mode-shape pairing (MAC) before any formula attribution.",
+  "Load-scaling invariance (p050 / p020) is still running; N_cr stability is not yet established."
+ ],
+ "repro": [
+  "python extract_buckle_dat.py reports/diagnostics/p2_scaling_ccx/fuselage_barrel_d1600_l1600_str8_frm3_buckle_p100.dat --dialect ccx --expect 6",
+  "python make_p2_stage1_finding.py"
+ ]
+}

@@ -1,0 +1,60 @@
+{
+ "what": "FULL step-section line diff, same configuration (2 modes, 0.1 MPa external pressure)",
+ "ccx_step_lines": [
+  "*STEP",
+  "*BUCKLE",
+  "2",
+  "*DLOAD",
+  "E_SKIN, P, -0.1",
+  "*NODE FILE",
+  "U",
+  "*END STEP"
+ ],
+ "abaqus_step_lines": [
+  "*STEP",
+  "*BUCKLE, EIGENSOLVER=LANCZOS",
+  "2, 0.0, 1.0e6",
+  "*DLOAD",
+  "E_SKIN, P, -0.1",
+  "*OUTPUT, FIELD",
+  "*NODE OUTPUT",
+  "U",
+  "*END STEP"
+ ],
+ "n_ccx_lines": 8,
+ "n_abaqus_lines": 9,
+ "n_differing_lines": 6,
+ "all_differences": [
+  {
+   "line": 2,
+   "ccx": "*BUCKLE",
+   "abaqus": "*BUCKLE, EIGENSOLVER=LANCZOS"
+  },
+  {
+   "line": 3,
+   "ccx": "2",
+   "abaqus": "2, 0.0, 1.0e6"
+  },
+  {
+   "line": 6,
+   "ccx": "*NODE FILE",
+   "abaqus": "*OUTPUT, FIELD"
+  },
+  {
+   "line": 7,
+   "ccx": "U",
+   "abaqus": "*NODE OUTPUT"
+  },
+  {
+   "line": 8,
+   "ccx": "*END STEP",
+   "abaqus": "U"
+  },
+  {
+   "line": 9,
+   "ccx": "<missing>",
+   "abaqus": "*END STEP"
+  }
+ ],
+ "note": "Differences are: the *BUCKLE keyword/data line (ccx '2' vs abaqus EIGENSOLVER=LANCZOS '2, 0.0, 1.0e6') and the output requests (*NODE FILE U vs *OUTPUT, FIELD / *NODE OUTPUT U). *DLOAD reference load is IDENTICAL in both. The keyword difference encodes DIFFERENT EIGENSOLVER ALGORITHMS, which is a substantive candidate cause (EX01 C3), not mere syntax."
+}
