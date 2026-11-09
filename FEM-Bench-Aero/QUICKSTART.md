@@ -11,7 +11,7 @@
 |---|---|
 | 判分器 `evaluate.py` / 成绩汇总 `score_baseline.py` / 负控 `negative_controls.py` | **数据集本体** `modeling/`（236 MB，64 条算例的 `spec.json` + `truth.json` + `model.inp`） |
 | 任务卷 `tasks/tasks.jsonl`（v7，192 行）+ 历史快照 `reports/papers/tasks_v6c.jsonl`（v6c，165 行） | **求解器** CalculiX `ccx`（跑 TSR / SFR **不需要**；只有 MSR 需要） |
-| **候选集**（`candidates_l3_v6c_glm_p2` 等，55 条 LLM 原始输出） | |
+| **候选集**（`candidates_l3_v7sysfix_glm` 等，55 条 LLM 原始输出） | |
 | 全部成绩单 artifact（`reports/`）与主张账本 `CLAIMS.md` | |
 
 **关键前提**：候选集已在 git 里 ⇒ **复现 headline 不需要任何大模型 API key**。
@@ -47,8 +47,19 @@ git clone FEM-Bench-Aero.bundle repo
 
 | 你要跑 | 下哪个包 |
 |---|---|
-| headline **C-032**（v6c 卷，55 题） | `FEM-Bench-Aero-v1.0-data.tar.gz`（用 v1.1 也行，它是超集） |
-| 当前主卷 **v7**（64 题） | `FEM-Bench-Aero-v1.1-data.tar.gz` |
+| headline **C-032**（v6c 卷，55 题） | `FEM-Bench-Aero-v1.0-data.tar.gz`（**85.4 MiB**；用 v1.1 也行，它是超集） |
+| 当前主卷 **v7 / v8**（64 题） | `FEM-Bench-Aero-v1.1-data.tar.gz`（**100.2 MiB**） |
+
+**「v1.1 是超集」已实测（2026-11-09）**：v1.1 = 64 条、v1.0 = 55 条，多出的 9 条正是
+`interpolation_v11` 的 9 个案例；两者**共同的 55 条 `spec.json` / `truth.json` / `model.inp`
+逐字节相同（差异 0）**。所以跑 headline 时用哪个包结果都一样。
+
+两个包的 sha256（与 Release 的 `SHA256SUMS.txt` 一致）：
+
+```
+8cec47ce65486d00a6cad8777894f3f996d703a5aa70d6c0d0411ec0fc181dd3  v1.0
+8b6295d16f8505bca80971432c205e819d3e466c2a19a26407c08e2d76af0a4e  v1.1
+```
 
 包的内容、校验方法与**版本匹配**要求见 [DATA.md](DATA.md)（**别混用包和卷**）。
 
@@ -101,21 +112,55 @@ npm install          # 只装 package-lock.json 里锁定的依赖（ajv 等）
 ```bash
 cd repo/feagpt_repro
 "$PY" score_baseline.py \
-  --candidates candidates_l3_v6c_glm_p2 \
+  --candidates candidates_l3_v7sysfix_glm \
   --tasks      reports/papers/tasks_v6c.jsonl \
   --trivial    reports/trivial_baselines_L3_v6c.json \
-  --report     /tmp/my_c032.json \
-  --label      "C-032 v6c x glm prompt-v2 (paper v6c, candidates glm_p2)"
+  --report     my_c032.json \
+  --label      l3_v6c_p2_sysfix
 ```
 
-**预期看到（逐字）：**
+**预期看到（逐字，两行都要对）：**
 
 ```
   EXAM  TSR 23/25 (92.0%)  SFR 20/22 (90.9%)   underpowered=False
+  DEV   TSR 23/30 (76.7%)  SFR 22/29 (75.9%)  (不进对外)
 ```
 
 这就是对外 headline（`CLAIMS.md` C-032）。它与你仓库里 `reports/baseline_scorecard_L3_v6c_p2.json`
-的共同字段**应当逐字段相同**（多出来的 `msr_section` / `exam_v11` 字段要跑完 §5 才有）。
+的共同字段**应当逐字段相同**（多出来的 `msr_section` 要跑完 §5 才有）。
+
+> **★★ 候选集必须是 `candidates_l3_v7sysfix_glm`**（2026-11-09 修正：本节原先写的是
+> `candidates_l3_v6c_glm_p2`，那是更早一代的候选）。用错的表现很隐蔽：**EXAM 仍然是
+> `23/25 (92.0%)`**，只有 `DEV` 会变成 `22/30`，`first_pass_valid` 3 vs 4 —— 光看 headline
+> 看不出来。仓库成绩单的 `provenance.candidates_dir` 写的就是 `v7sysfix_glm`。
+> `--label` 也照抄 `l3_v6c_p2_sysfix`，否则 `provenance.label` 会差一格。
+>
+> **逐字段自证**（1 秒）：跑完用下面的片段比一遍，**应当恰好 6 处差异且全部是本该如此的**
+> （5 处 MSR 相关要跑 §5 才有、1 处 label）：
+>
+> ```bash
+> "$PY" - <<'EOF'
+> import json
+> new = json.load(open('my_c032.json', encoding='utf-8'))
+> old = json.load(open('reports/baseline_scorecard_L3_v6c_p2.json', encoding='utf-8'))
+> def walk(a, b, p='', d=None):
+>     d = [] if d is None else d
+>     if isinstance(a, dict) and isinstance(b, dict):
+>         for k in sorted(set(a) | set(b)):
+>             if k not in a: d.append((p+'/'+k, 'missing', b[k]))
+>             elif k not in b: d.append((p+'/'+k, a[k], 'missing'))
+>             else: walk(a[k], b[k], p+'/'+k, d)
+>     elif a != b: d.append((p, a, b))
+>     return d
+> for x in walk(new, old): print(' ', x[0], '| new=', str(x[1])[:40], '| old=', str(x[2])[:40])
+> EOF
+> ```
+>
+> 出现别的差异就是没复现成功（2026-11-09 本机预演实测：正确候选 6 处、错误候选 29 处）。
+
+> **Windows 路径提示**：`--report` 用**相对路径**（如上 `my_c032.json`）。Git Bash 会把
+> `/tmp/x.json` 自动转成 `C:\Users\…\Temp\x.json` 再传给程序，但 python 自己读 `/tmp/x.json`
+> 会去找 `C:\tmp\x.json` —— 两个程序对同一字符串的理解不同，容易白找半天。
 
 > **没跑出来怎么办**：现在的前置闸会明确告诉你差什么，不会静默给你一张假成绩单。
 > - `缺少金标准数据集：…` → §2 没做
@@ -133,23 +178,23 @@ MSR 是「模型产出的 spec 真的能算出一个正确结果吗」，要真�
 cd repo/feagpt_repro
 export FEAGPT_CCX=/path/to/ccx          # Windows Git Bash: export FEAGPT_CCX="C:/path/to/ccx.exe"
 "$PY" msr_l3.py \
-  --candidates candidates_l3_v6c_glm_p2 \
+  --candidates candidates_l3_v7sysfix_glm \
   --tasks      reports/papers/tasks_v6c.jsonl \
-  --report     /tmp/my_c032.json
+  --report     my_c032.json
 ```
 
 单条题约 **7 秒**（实测 `L3_open_hole_panel_400x200_d40`，本机 4 核）。跑全量前建议先单条试
 （注意这里复用的是 §4 那个文件）：
 
 ```bash
-"$PY" msr_l3.py --candidates candidates_l3_v6c_glm_p2 \
-  --tasks reports/papers/tasks_v6c.jsonl --report /tmp/my_c032.json \
+"$PY" msr_l3.py --candidates candidates_l3_v7sysfix_glm \
+  --tasks reports/papers/tasks_v6c.jsonl --report my_c032.json \
   --only L3_open_hole_panel_400x200_d40
 ```
 
 预期：`rc=0`、最后印 `MSR = 1/1 (100.0%)`（只算你指定的那一条；其余记 `待补齐`，是正常的）。
 
-> ⚠️ **`--report` 必须指向 §4 已经生成的那个成绩单文件**（上例里是 `/tmp/my_c032.json`）——
+> ⚠️ **`--report` 必须指向 §4 已经生成的那个成绩单文件**（上例里是 `my_c032.json`）——
 > `msr_l3` 的行为是**读入它、把 MSR 段合并进去、再写回**，不是新建。
 > 指向一个不存在的路径会得到 `FileNotFoundError`（**已知待改进**：这里应该给一句人话提示）。
 > 所以正确顺序永远是：**先 §4，再 §5**。
@@ -167,7 +212,9 @@ export FEAGPT_CCX=/path/to/ccx          # Windows Git Bash: export FEAGPT_CCX="C
 | ~~本仓库没有公开远端地址~~ | **已发布**（2026-10-31） | 直接 clone：`https://github.com/midknightwang-beep/FEM-Bench-Aero.git` |
 | ~~数据包没有公开下载地址~~ | **已发布**（2026-10-31） | Release 页见 §2 与 [DATA.md](DATA.md) §2 |
 | ~~`check_claims.py` 在 clone 里红几项，sha 值对不上~~ | **已修**（2026-10-31 / T-D3）：仓库加了 `.gitattributes`，行尾统一 CRLF，7 处活锚点重算 | 重新 clone 即可。行尾不再造成 sha 不一致（详见 [DATA.md](DATA.md) §6.1） |
-| `check_claims.py` 的 `S-39`/`S-43` 红 | 缺 `node_modules`（有一项要 `node --print-prompt-sha`，依赖 `ajv`） | 按 **§3.5** 跑 `npm install` 即可 |
+| `check_claims.py` 的 `S-39`/`S-43` 红 | 缺 `node_modules`（有一项要 `node --print-prompt-sha`，依赖 `ajv`） | 按 **§3.5** 跑 `npm install`（实测 6 s）⇒ **`--public` 后全绿 0 红**（2026-11-09 干净 clone 实测） |
+| 首跑 `check_claims --public` 比第二次多红一项（3 项 vs 2 项） | 语义项会读「上一轮 JSON」，首跑时那份 JSON 是 clone 带来的 | **再跑一次**，以第二次为准（未装 node = 2 项；装完 = 0 项） |
+| `--report /tmp/x.json` 在 Windows 上「写进去了却读不到」 | Git Bash 把 `/tmp` 转成 `C:\Users\…\Temp`，python 不转 | 用**相对路径** `--report my_c032.json`（见 §4 末尾提示） |
 | `check_claims.py` 还红 `C-013`/`S-46`/`S-51`/`S-56`/`S-61` | 这五项的**对象不在公开集里**（外部归档的数据包清单、被脱敏的 `PY=`、按发布决定移出的 `AGENTS.md`/`CLAUDE.md`、以及不分发的 `.git/hooks`）—— 不是你的环境错 | 加 `--public` 重跑：它们会标 `exempt` 并写明原因，**不计入通过数**（R75）。**加了之后仍然红的项才是要处理的** |
 | `fetch_data.py` 对不上 sha256 | 包没下全，或下的是另一个版本 | 用 Release 里的 `SHA256SUMS.txt` 跑 `sha256sum -c`，见 [DATA.md](DATA.md) §3.1 |
 

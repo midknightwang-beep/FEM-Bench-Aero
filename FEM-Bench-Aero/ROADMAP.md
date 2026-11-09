@@ -267,7 +267,7 @@ v1.0 只写了「L2/L3 输入」这一条，**没有为 L2 的判分单独立段
 |---|---|---|
 | P0-1 | **P2 屈曲收口**：只做已拍板的 U2 两档网格 + U3 板锚点；跨码 2.23% 与板锚点 k=2.18 **不再追根因**；6 条打样**不启动**；证据口径见 `DECISION_C6_P2.md` | ✅ 已落盘（`DECISION_C6_P2.md`）；U2/U3 现状作为 diagnostic 记录，P2 延期 |
 | P0-2 | **headline 决策**：**已拍板方案 ①**（2026-11-09 22:4x）——C-032 保持唯一 headline，另发「产品成绩单 v8」（五模块 / 五分母 25 / 34 / 64 / 45 / 16 并列） | ✅ 已落盘：`PRODUCT_REPORT_V8.md` + C-045；数字块由 `make_product_report.py --check` 双向守；同轮更正 C-041（「glm 第二遍 48/64」无 artifact → 实为 ds 第二批候选） |
-| P0-3 | **外部复现 1 人**：只给 README + QUICKSTART + 数据包，记录装依赖时间 / 首次跑分时间 / 卡点，落 `diagnostics/external_repro_1.md` —— 这是 A9 的另一半 | ⏳ 待执行（需要一台非本人机器） |
+| P0-3 | **外部复现 1 人**：只给 README + QUICKSTART + 数据包，记录装依赖时间 / 首次跑分时间 / 卡点，落 `diagnostics/external_repro_1.md` —— 这是 A9 的另一半 | 🟡 **执行卡已备好**（`EXTERNAL_REPRO_CARD.md`）+ 作者侧预演完成（`feagpt_repro/reports/diagnostics/external_repro_0_dryrun.md`：A 阶段 57 s 跑出 23/25，并撞出 QUICKSTART §4 的候选集真 bug 已修）；**待老王换机器执行** |
 
 ### 17.2 P1（两周内）：SOT 减重（token 结构性治理）
 

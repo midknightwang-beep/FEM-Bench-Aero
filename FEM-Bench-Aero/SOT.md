@@ -1,6 +1,6 @@
 # SOT（机器生成的一页真相 / 不要手改）
 
-> 生成时间 2026-11-09 22:38 · `python sot.py` 重建 · 权威顺序 AGENTS > CLAIMS > RUBRIC > INDEX
+> 生成时间 2026-11-09 22:52 · `python sot.py` 重建 · 权威顺序 AGENTS > CLAIMS > RUBRIC > INDEX
 > **这一页取代 §0 的五文件整读。** 需要细节时按指针读单个 artifact；禁止整读 CLAIMS/RUBRIC/tasks*.jsonl。
 
 ## 1. 唯一 headline（对外数字只认这一条）
@@ -21,7 +21,7 @@
 
 ## 4. 两道闸（读缓存，不是本次重跑；收口时必须重跑全量）
 
-- check_claims：all_ok=True · 37 claims / 85 artifacts · check_claims.json @ 2026-11-09 22:37
+- check_claims：all_ok=True · 37 claims / 85 artifacts · check_claims.json @ 2026-11-09 22:40
 - negative_controls：all_ok=True · 87/87 · negative_controls_87.json @ 2026-11-09 22:07
 
 ## 5. 里程碑看板（估算，非 artifact，不得进 claim）
@@ -36,7 +36,7 @@
 
 ## 6. 下一步（只有一条）
 
-- P0-3 外部复现 1 人：只给 README + QUICKSTART + 数据包，记录装依赖时间 / 首次跑分时间 / 卡点，落 `diagnostics/external_repro_1.md` —— 这是 A9 的另一半 —— ⏳ 待执行（需要一台非本人机器）
+- P0-3 外部复现 1 人：只给 README + QUICKSTART + 数据包，记录装依赖时间 / 首次跑分时间 / 卡点，落 `diagnostics/external_repro_1.md` —— 这是 A9 的另一半 —— 🟡 执行卡已备好（`EXTERNAL_REPRO_CARD.md`）+ 作者侧预演完成（`feagpt_repro/reports/diag
 - 来源：ROADMAP.md §17
 
 ## 7. 本次任务的读取预算（写进 TASK_CONTRACT）
