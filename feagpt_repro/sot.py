@@ -50,6 +50,24 @@ def _mtime(p: Path) -> str:
     return time.strftime("%Y-%m-%d %H:%M", time.localtime(p.stat().st_mtime))
 
 
+def _clip(text: str, n: int = 220) -> str:
+    """Cut at the last natural break rather than mid-phrase.
+
+    A hard ``text[:220]`` sliced the headline statement right after
+    "唯一变量", which reads like an abandoned sentence.  Cutting at the last
+    。/；/—— before the limit keeps the bullet readable; the SOT stays a
+    pointer, and the full text is always one artifact away.
+    """
+    if len(text) <= n:
+        return text
+    cut = text[:n]
+    for sep in ("。", "；", "——", "，"):
+        k = cut.rfind(sep)
+        if k > n * 0.5:
+            return cut[:k + len(sep)] + " …"
+    return cut + " …"
+
+
 def _headline() -> dict:
     """The ONE active claim whose STATUS column says it is the headline.
 
@@ -90,7 +108,7 @@ def _headline() -> dict:
     stmt = re.sub(r"\s+", " ", (r.get("statement") or "")).strip()
     return {
         "claim_id": r.get("claim_id", "?"),
-        "statement_head": stmt[:220],
+        "statement_head": _clip(stmt, 220),
         "artifact": (r.get("artifact") or "").strip().strip("`"),
         "status": (r.get("status") or "").strip(),
     }
@@ -202,19 +220,37 @@ def _milestones() -> list:
 
 
 def _next_step() -> tuple:
-    """ONE next step.  DECISION_C6_P2 (if present) outranks ROADMAP §13."""
-    if DECISION_P2.exists():
-        return ("P2 已收口（见 DECISION_C6_P2.md）：主线 = 外部复现 1 人 → "
-                "headline 决策 → SOT 减重", "DECISION_C6_P2.md")
+    """ONE next step, taken from the live plan rather than remembered here.
+
+    ROADMAP §17 (the 2026-11-09 correction plan) is the only execution plan, so
+    the next step is "its first P-row that is not done".  The previous version
+    hard-coded "外部复现 → headline 决策 → SOT 减重" and kept saying it after all
+    three were finished - a next-step line that is typed rather than read is a
+    next-step line that lies.
+    """
     txt = ROADMAP.read_text(encoding="utf-8", errors="replace")
-    seg = txt.split("## 13. 下一步", 1)
-    if len(seg) < 2:
-        return ("UNKNOWN", "ROADMAP §13 not found")
-    for line in seg[1].splitlines():
+    seg = txt.split("## 17.", 1)
+    if len(seg) == 2:
+        for line in seg[1].splitlines():
+            s = line.strip()
+            if not s.startswith("|"):
+                continue
+            cells = [c.strip() for c in s.strip("|").split("|")]
+            if len(cells) < 3 or not re.match(r"^P\d-\d+$", cells[0]):
+                continue
+            if "✅" in cells[-1]:
+                continue
+            item = re.sub(r"\*+", "", cells[1])[:150]
+            state = re.sub(r"\*+", "", cells[-1])[:70]
+            return (f"{cells[0]} {item} —— {state}", "ROADMAP.md §17")
+    seg13 = txt.split("## 13. 下一步", 1)
+    if len(seg13) < 2:
+        return ("UNKNOWN", "ROADMAP §17/§13 not found")
+    for line in seg13[1].splitlines():
         s = line.strip()
         if s.startswith(("- ", "* ", "1.")):
             return (re.sub(r"\*+", "", s[:200]), "ROADMAP.md §13")
-    return ("UNKNOWN", "ROADMAP §13 has no list item")
+    return ("UNKNOWN", "ROADMAP §17 has no pending P-row")
 
 
 def build() -> str:
@@ -242,6 +278,9 @@ def build() -> str:
         L.append(f"- **{cid or 'UNKNOWN'}** — {hl.get('why', 'unparsed')}")
     else:
         L.append(f"- **{hl['claim_id']}** · {hl['statement_head']}")
+        L.append("- 另有**产品成绩单 v8**（五模块 / 五分母并列，**不是 headline**，"
+                 "数字块由 `make_product_report.py --check` 守）："
+                 "`FEM-Bench-Aero/PRODUCT_REPORT_V8.md`（C-045）")
         L.append(f"- artifact：`{hl['artifact']}` · status：{hl['status']}")
     L.append("")
     L.append("## 2. 当前考卷（换卷即换 sha，数字不可跨卷相减）")

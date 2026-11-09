@@ -1,0 +1,138 @@
+{
+ "what": "产品成绩单 v8 的数字块（五模块/五分母）；每个格子标注来源 artifact 与 sha256",
+ "generated_by": "python make_product_report.py",
+ "rule": "五分母不可相减、不可排名、不可跨代引用；L2 与 L3 是两层不可互比",
+ "modules": {
+  "A_l3_legacy_exam": {
+   "denominator": 25,
+   "note": "唯一 headline（C-032）；prompt v2f（6b90daf0…）",
+   "glm_tsr": {
+    "value": "23/25 = 92.0%",
+    "source": "reports/baseline_scorecard_L3_v6c_p2.json",
+    "source_sha256": "289f505a80e703375a1c3e537176feea00cf20399655af51b9458d6609e26d45"
+   },
+   "glm_msr": {
+    "value": "20/22",
+    "source": "reports/baseline_scorecard_L3_v6c_p2.json",
+    "source_sha256": "289f505a80e703375a1c3e537176feea00cf20399655af51b9458d6609e26d45"
+   },
+   "glm_whole_paper_tsr": {
+    "value": "46/55 = 83.6%",
+    "source": "reports/baseline_scorecard_L3_v6c_p2.json",
+    "source_sha256": "289f505a80e703375a1c3e537176feea00cf20399655af51b9458d6609e26d45"
+   },
+   "glm_whole_paper_msr": {
+    "value": "41/51",
+    "source": "reports/baseline_scorecard_L3_v6c_p2.json",
+    "source_sha256": "289f505a80e703375a1c3e537176feea00cf20399655af51b9458d6609e26d45"
+   },
+   "prompt_sha256": "6b90daf0"
+  },
+  "B_l3_exam_v11": {
+   "denominator": 9,
+   "note": "内插 v1.1 新题型；两模型全对 ⇒ exam_full 的抬升来自换分母",
+   "glm_tsr": {
+    "value": "9/9 = 100.0%",
+    "source": "reports/baseline_scorecard_L3_v7sysfix_glm.json",
+    "source_sha256": "2fbc0120efa194000aab48949d493aa7fbcafdbdbad6a0723c8ca6ea8155599a"
+   },
+   "glm_msr": {
+    "value": "未测",
+    "source": "reports/baseline_scorecard_L3_v7sysfix_glm.json",
+    "source_sha256": "2fbc0120efa194000aab48949d493aa7fbcafdbdbad6a0723c8ca6ea8155599a"
+   },
+   "ds_tsr": {
+    "value": "9/9 = 100.0%",
+    "source": "reports/baseline_scorecard_L3_v7sysfix2_ds.json",
+    "source_sha256": "67f384628b1267ab31b2d112d5fe5fe6132c9faa44e2074deb9e910bfe201de1"
+   },
+   "ds_msr": {
+    "value": "未测",
+    "source": "reports/baseline_scorecard_L3_v7sysfix2_ds.json",
+    "source_sha256": "67f384628b1267ab31b2d112d5fe5fe6132c9faa44e2074deb9e910bfe201de1"
+   }
+  },
+  "C_l3_exam_full": {
+   "denominator": 34,
+   "note": "legacy 25 + v11 9；ds 为两批候选，报区间",
+   "glm_tsr": {
+    "value": "32/34 = 94.1%",
+    "source": "reports/baseline_scorecard_L3_v7sysfix_glm.json",
+    "source_sha256": "2fbc0120efa194000aab48949d493aa7fbcafdbdbad6a0723c8ca6ea8155599a"
+   },
+   "glm_msr": {
+    "value": "未测",
+    "source": "reports/baseline_scorecard_L3_v7sysfix_glm.json",
+    "source_sha256": "2fbc0120efa194000aab48949d493aa7fbcafdbdbad6a0723c8ca6ea8155599a"
+   },
+   "ds_tsr": {
+    "value": "[31,32]/34",
+    "source": "baseline_scorecard_L3_v7sysfix_ds.json + baseline_scorecard_L3_v7sysfix2_ds.json",
+    "source_sha256": "190b705aabe9fa30 + 67f384628b1267ab"
+   },
+   "ds_msr": {
+    "value": "未测",
+    "source": "reports/baseline_scorecard_L3_v7sysfix2_ds.json",
+    "source_sha256": "67f384628b1267ab31b2d112d5fe5fe6132c9faa44e2074deb9e910bfe201de1"
+   },
+   "ds_by_batch": {
+    "batch1": 31,
+    "batch2": 32,
+    "total": 34
+   }
+  },
+  "D_l2_clarified": {
+   "denominators": {
+    "clarify_all": 64,
+    "clarify_informative": 45,
+    "invalid": 19,
+    "derivation": "n_all = len(invalid.task_ids) + len(clarify_informative.task_ids)"
+   },
+   "note": "glm 同一批候选两次打分均为 46；ds 是两批候选 52/46 ⇒ 「ds 高 6 条」恰好等于 ds 自己的批间波动 ⇒ 不得排名",
+   "glm_all": {
+    "value": "46/64 = 71.9%",
+    "source": "reports/l2_clarify_dual.json",
+    "source_sha256": "f4dee0e5755a41b31687aff8404ede866f9b31e18953d3bb8b6596dcf9cb7bad"
+   },
+   "glm_inf": {
+    "value": "27/45 = 60.0%",
+    "source": "reports/l2_clarify_dual.json",
+    "source_sha256": "f4dee0e5755a41b31687aff8404ede866f9b31e18953d3bb8b6596dcf9cb7bad"
+   },
+   "glm_invalid": {
+    "value": "19/19 = 100.0%",
+    "source": "reports/l2_clarify_dual.json",
+    "source_sha256": "f4dee0e5755a41b31687aff8404ede866f9b31e18953d3bb8b6596dcf9cb7bad"
+   },
+   "ds_all": {
+    "value": "52/64 = 81.2%",
+    "source": "reports/l2_clarify_dual.json",
+    "source_sha256": "f4dee0e5755a41b31687aff8404ede866f9b31e18953d3bb8b6596dcf9cb7bad"
+   },
+   "ds_inf": {
+    "value": "33/45 = 73.3%",
+    "source": "reports/l2_clarify_dual.json",
+    "source_sha256": "f4dee0e5755a41b31687aff8404ede866f9b31e18953d3bb8b6596dcf9cb7bad"
+   },
+   "ds_invalid": {
+    "value": "19/19 = 100.0%",
+    "source": "reports/l2_clarify_dual.json",
+    "source_sha256": "f4dee0e5755a41b31687aff8404ede866f9b31e18953d3bb8b6596dcf9cb7bad"
+   }
+  },
+  "E_l2_informative": {
+   "denominator": 16,
+   "note": "该答不该问；ds 15 条属「该答却追问」（过度澄清）",
+   "glm": {
+    "value": "13/16 = 81.2%",
+    "source": "reports/diagnostics/l2_v8_scores_glm.json",
+    "source_sha256": "3151518b732bf8cd366250c5ef3857b2accffc36bf569abff8b11371caedf0d0"
+   },
+   "ds": {
+    "value": "1/16 = 6.2%",
+    "source": "reports/diagnostics/l2_v8_scores_ds.json",
+    "source_sha256": "999c9970235dac2ea368043dba009e6c5e8fe49e5c6b1a8300e986e7c82d7afa"
+   }
+  }
+ }
+}
