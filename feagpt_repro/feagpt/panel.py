@@ -246,3 +246,40 @@ def edge_nodes(nodes: dict, params: PanelParams, tol: float = EDGE_TOL) -> list[
 def clamp_nodes(spec, nodes: dict) -> list[int]:
     """The panel's clamp set for a spec - the family's own rule, from a node table."""
     return edge_nodes(nodes, parse_params(spec))
+
+def split_anchor_edges(nodes: dict, params: PanelParams,
+                       tol: float = EDGE_TOL) -> dict:
+    """U3a plate anchor (2026-11-09): the Navier-plate edge groups.
+
+    Returns the two LOADED edges (x = 0 and x = L, the short edges carrying
+    the uniaxial compression) plus two in-plane datum nodes picked on the
+    UNLOADED edge y = 0: the lowest-label node gets DOF 1,2 = 0, another node
+    at a different x gets DOF 2 = 0.  Two x-separated y restraints kill the
+    in-plane translations AND the rotation about z, without constraining the
+    loaded edges (a datum on a loaded edge would fight its own CLOAD).
+    """
+    L, W = float(params.length), float(params.width)
+    ex0, exL, y0 = [], [], []
+    for tag, (x, y, _z) in nodes.items():
+        if abs(x) < tol:
+            ex0.append(tag)
+        elif abs(x - L) < tol:
+            exL.append(tag)
+        if abs(y) < tol:
+            y0.append(tag)
+    if not ex0 or not exL or not y0:
+        raise RuntimeError("anchor edge split found an empty edge set")
+    # Datum nodes must sit on the UNLOADED edge MIDDLE, away from the corners:
+    # the first build picked the lowest-label y=0 node, which happened to be
+    # the (0,0) corner - i.e. exactly the reference node of the ex0 CLOAD, so
+    # its DOF 1 lock silently swallowed that edge's whole force AND, through
+    # the u_x coupling EQUATION, turned the whole x=0 edge into an axial
+    # clamp (measured: lambda 1.959 -> F = 3917 N, -45.6 % vs analytic).
+    mid = [t for t in y0
+           if abs(nodes[t][0] - L / 2.0) < L / 4.0]
+    assert len(mid) >= 2, "not enough mid-edge y=0 nodes for the datum pair"
+    mid.sort(key=lambda t: nodes[t][0])
+    datum_a = [mid[0]]
+    datum_b = [t for t in mid if nodes[t][0] != nodes[datum_a[0]][0]][-1]
+    return {"ex0": ex0, "exL": exL, "datum_a": datum_a, "datum_b": [datum_b]}
+

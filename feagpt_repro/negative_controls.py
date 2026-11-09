@@ -241,12 +241,19 @@ def resolve_volume_by_sha(sha):
     return None
 
 
+_BRIEF = False  # --brief: one line out, all checks still run
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--tasks', default=os.path.join(HERE, 'tasks', 'tasks.jsonl'))
     ap.add_argument('--full-pc1', action='store_true',
                     help='PC-1 额外跑完整 pipeline（ccx，~3 min）；默认快通道')
+    ap.add_argument('--brief', action='store_true',
+                    help='只打印一行结论（AGENTS §0 开工闸；判据全跑，不跳过）')
     args = ap.parse_args()
+    global _BRIEF
+    _BRIEF = bool(args.brief)
 
     tasks = {t['task_id']: t for t in load_tasks(args.tasks)}
     base = tasks[BASE_TASK]
@@ -262,10 +269,12 @@ def main():
             sf = r['gates'].get('spec_fidelity', {})
             row['detail'] = sf.get('failed', [])[:3]
         results.append(row)
-        print(f"  [{ 'ok ' if row['ok'] else 'BAD!' }] {nc_id:5s} {desc:44s} "
-              f"expect={row['expect']} actual={row['actual']}")
+        if not _BRIEF:
+            print(f"  [{ 'ok ' if row['ok'] else 'BAD!' }] {nc_id:5s} {desc:44s} "
+                  f"expect={row['expect']} actual={row['actual']}")
 
-    print('== 负控套件（spec_fidelity 快通道）==')
+    if not _BRIEF:
+        print('== 负控套件（spec_fidelity 快通道）==')
     # PC-1
     p = write_cand('pc1_gold', gold_spec())
     run('PC-1', 'gold spec', base, p, skip_solve=True)
@@ -4157,7 +4166,11 @@ def main():
     else:
         json.dump(report, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
         print(f"\n负控: {n_ok}/{len(results)} ok -> reports/negative_controls_{len(results)}.json（已更新）")
-    print(report['gate_message'])
+    if _BRIEF:
+        print(f"[brief] negative_controls {n_ok}/{len(results)} "
+              f"all_ok={report['all_ok']}")
+    else:
+        print(report['gate_message'])
     return 0 if report['all_ok'] else 2
 
 if __name__ == '__main__':

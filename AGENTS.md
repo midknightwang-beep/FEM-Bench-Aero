@@ -6,15 +6,35 @@
 
 ---
 
-## 0. 开工前必须先读的 5 个文件 + 2 个命令
+## 0. 开工前：读一页 SOT + 跑两道闸（不再整读五文件）
 
-| # | 文件 | 你要从中确认什么 |
+> **2026-11-09 专家审查结论**：§0 原先要求的五文件（CLAIMS 142 KB + RUBRIC 157 KB +
+> INDEX 68 KB + 成绩单 68 KB + 考卷 289 KB）合计约 **24.5 万 tokens，已超过 200k 上下文**
+> ——每个会话开工前就接近上限，必然压缩/重读/漂移。**这是 token 飞涨的根因，不是模型的问题。**
+
+**开工三件事（替代原来的五文件整读）：**
+
+| # | 做什么 | 你要从中确认什么 |
 |---|---|---|
-| 1 | `FEM-Bench-Aero/CLAIMS.md` | 当前唯一 **headline** 是哪条 claim；哪些是 supporting / historical / diagnostic |
-| 2 | `FEM-Bench-Aero/RUBRIC.md` | **当前 rubric 版本 + 红线判定表**（版本号与规则范围**一律以该文件顶部版本行与判定表为准，本文件不写死** —— R63/S-56：写死必漂）；分母/判分口径；更早的挂账规则见 `CLAIMS.md` 的「红线条（挂账常设）」 |
-| 3 | `feagpt_repro/reports/INDEX.md` | 官方 artifact vs 诊断；当前成绩单路径；当前考卷 sha |
-| 4 | 当前成绩单（INDEX 指向的那份 `reports/baseline_scorecard_*.json`） | `model` / `prompt_sha` / `tasks_sha256` / 分母构成 / headline 数字 |
-| 5 | 当前卷 + prompt | **哪份是当前卷、sha 是多少，一律从 `reports/INDEX.md` 取**（本文件不写死卷名/候选目录 —— 这一格已经漂过一次：v7 冻结后这里还写着 v6c） |
+| 1 | 读 `FEM-Bench-Aero/SOT.md`（机器生成一页，≈3 KB） | 唯一 headline + 数字 / 当前卷 path+sha+条数 / prompt sha / rubric 版本 / 两道闸状态 / 下一步 1 条 |
+| 2 | `"$PY" negative_controls.py --brief` | 一行结论：N/N + all_ok |
+| 3 | `"$PY" check_claims.py --brief` | 一行结论：claims/artifacts + all_ok |
+
+- **`SOT.md` 由 `python sot.py` 生成，禁止手改**；它过期时 `python sot.py --check` 会红。
+- 需要细节时**按 SOT 里的指针读单个 artifact**；**禁止整读 CLAIMS.md / RUBRIC.md / tasks*.jsonl**
+  （CLAIMS 48k + RUBRIC 53k + 卷 98k tokens，一次整读就把预算烧光）。
+- 数字一律以 artifact 实读为准（R63）；SOT 只是指针与摘要，不产出新数字。
+
+**读取/写入预算（写进每个任务的 TASK_CONTRACT）：**
+
+```markdown
+- 读取 ≤30k tokens：SOT.md + 本任务直接相关的 1 个 artifact；禁止整读 CLAIMS/RUBRIC/tasks*.jsonl。
+- 写入 ≤10k tokens：每任务最多 1 条 claim + 1 个 artifact + 1 段记忆（≤2KB）。
+- 闸：开工跑 --brief；只在收口跑全量 negative_controls + check_claims。
+- 停止条件：超出预算、或发现新方向 → 写 CONFLICT，不继续挖。
+```
+
+**前置检查命令（venv 路径；换机请改这一行）：**
 
 ```bash
 cd "F:/AI FEA Modeling DataSets/feagpt_repro"

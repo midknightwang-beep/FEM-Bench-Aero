@@ -295,7 +295,14 @@ class FuselageParams:
         (both ends only) is the degenerate barrel the closed-form check uses.
         """
         n = int(self.n_frames)
-        if n <= 1:
+        if n == 0:
+            # Frame-less (anchor) barrel: the two END stations are the physical
+            # ends, not a single degenerate station.  Returning (0.0,) here made
+            # the zL end-node set silently alias to z=0 in the builder's
+            # bc_nodes callback - the anchor shell is the first n_frames=0 case
+            # (2026-11-09, U3a), caught by reading the callback, not by running.
+            return (0.0, float(self.length))
+        if n == 1:
             return (0.0,)
         step = float(self.length) / (n - 1)
         return tuple(j * step for j in range(n))
@@ -323,11 +330,17 @@ def parse_params(spec) -> FuselageParams:
             f"would silently build a different barrel."
         )
     p = FuselageParams(**{k: raw[k] for k in raw})
-    _validate(p)
+    # A frame-less barrel (n_frames = 0) is legal ONLY for the U3a anchor
+    # diagnostic (2026-11-09).  For every normal/dataset spec it stays ILLEGAL
+    # - the B2 refuse-rule table asserts exactly that (rule [fus_nfrm]
+    # outside {'n_frames': 0} must raise), and widening the generator's
+    # boundary flipped that negative control to red (measured: NC-75 T0).
+    _validate(p, allow_frame_less=bool((getattr(spec, "extra", None) or {})
+                                       .get("bc_kind")))
     return p
 
 
-def _validate(p: FuselageParams) -> None:
+def _validate(p: FuselageParams, allow_frame_less: bool = False) -> None:
     for name in ("diameter", "length", "thickness",
                  "stringer_height", "stringer_thickness",
                  "frame_height", "frame_thickness"):
@@ -338,9 +351,16 @@ def _validate(p: FuselageParams) -> None:
     if n < 0:
         raise ValueError(f"{FAMILY}: n_stringers must be >= 0, got {n}")
     nf = int(p.n_frames)
-    if nf < 2:
+    # n_frames == 0 is the frame-less PLAIN shell: the U3a anchor case (2026-
+    # 11-09) is the first legitimate user - the von Mises / DTMB formulas
+    # assume an UNSTIFFENED cylinder, so the anchor must not carry frames or
+    # stringers.  n_frames == 1 is still refused: one frame mid-span without
+    # end frames has no coherent support story and no analytic counterpart.
+    if nf < 2 and not (nf == 0 and allow_frame_less):
         raise ValueError(
-            f"{FAMILY}: n_frames must be >= 2 (both ends are frames), got {nf}"
+            f"{FAMILY}: n_frames must be >= 2 (both ends are frames); got {nf}. "
+            f"n_frames = 0 (frame-less plain shell) is accepted ONLY for the "
+            f"U3a anchor diagnostic, which declares extra.bc_kind."
         )
     # D19 (2026-10-05): the stringer count is not free below five.  Measured at
     # the family defaults, 1-4 stringers always leave triangles (20 / 16 / 22 at

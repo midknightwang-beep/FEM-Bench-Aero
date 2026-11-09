@@ -1,0 +1,34 @@
+{
+ "what": "U3a analytical anchor: unstiffened SS-hydrostatic barrel vs von Mises / DTMB (ccx side)",
+ "date": "2026-11-09",
+ "decisions": "SS-3 ring BC / 5 % threshold / mesh 1.4x plan per DESIGN 11.6.4; anchor mesh size 28 (measured blossom minSICN 0.441, only passing size in the 20-28 sweep)",
+ "p_ref_mpa": 0.01,
+ "n_modes": 6,
+ "deck_ccx_sha256": "547c1a42040ded30b283f8fdf48f1920fc135cc2f9a53cacf1f3e20be2e558fd",
+ "deck_abq": "F:/AI FEA Modeling DataSets/feagpt_repro/_p2_anchor/anchor_unstiffened_d1600_l1600_t3_buckle_p010_abq/anchor_unstiffened_d1600_l1600_t3_buckle_p010.inp",
+ "deck_abq_sha256": "250de0487cfdc9e099b01675d8eae8613f102435465a469ac04c34377814e814",
+ "solve_rc": 0,
+ "solve_ok": true,
+ "lambdas": [
+  3.3248,
+  3.33547,
+  3.444905,
+  3.448224,
+  3.721518,
+  3.722772
+ ],
+ "parse_error": null,
+ "analytic": {
+  "von_mises_complete": 0.029935145104252388,
+  "lobes_n": 8,
+  "dtmb_envelope": 0.029941914627560122,
+  "ratio_mises_dtmb": 0.9997739114752033,
+  "source": "JOT eq.1 / Porto 2.15 (complete); OSTI eq.19 / JOT eq.2 (DTMB); recomputed in-process, not hand-copied"
+ },
+ "n_cr1_mpa": 0.033248,
+ "rel_dev_vs_analytic": 0.11066774135252179,
+ "gate_rel_threshold": 0.05,
+ "lobes_num": 3,
+ "lobes_error": null,
+ "status": "fail"
+}

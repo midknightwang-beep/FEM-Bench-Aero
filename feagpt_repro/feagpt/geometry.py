@@ -1100,7 +1100,16 @@ def build_stiffened_panel(gmsh, spec: FEASpec, step_path=None) -> GeometryResult
             f"pitch {p.pitch() if p.pitch() else 0:g} mm"
         ],
         bc_groups={"clamp": "edges"},
-        bc_nodes=lambda nodes: {"edges": panel.edge_nodes(nodes, p)},
+        bc_nodes=lambda nodes: {
+            "edges": panel.edge_nodes(nodes, p),
+            # U3a plate anchor (2026-11-09, woonzee): the Navier-plate anchor
+            # needs the two LOADED edges split out (CLOAD along x, equal and
+            # opposite -> self-equilibrated) plus two in-plane datum nodes on
+            # an UNLOADED edge (killing the in-plane rigid-body modes without
+            # touching the loaded edges).
+            **(panel.split_anchor_edges(nodes, p)
+               if (spec.extra or {}).get("anchor_split_edges") else {}),
+        },
         shell_thickness={"panel": float(p.thickness),
                          "stringers": float(p.stringer_thickness)},
         clamp_dofs=(1, 3),
@@ -1504,11 +1513,25 @@ def build_fuselage_barrel(gmsh, spec: FEASpec, step_path=None) -> GeometryResult
         all_shell = [t for d, t in out_dimtags if d == 2]
         surfaces, tag_notes = _assign_from_map(
             all_shell, out_map, named_inputs, FUSELAGE_GROUPS)
-    else:                                    # pragma: no cover - defensive
-        surfaces = _assign_from_names(
-            [(t, "skin") for t in skin_faces], FUSELAGE_GROUPS)
-        tag_notes = ["no frames requested"]
-        all_shell = list(skin_faces)
+    else:
+        # U3a frame-less plain shell (2026-11-09): the patches are built by
+        # independent revolves, so WITHOUT a fragment their shared meridian
+        # edges stay free boundaries - the mesh carries duplicated seam nodes
+        # (measured on the first anchor build: 616 end-ring nodes where the
+        # 25 mm size promises ~201, 3 duplicated positions, and 72 quads at
+        # minSICN 0.030, ALL pairs sitting on the two ends at the seam
+        # angles).  The shells would be physically split at every seam and
+        # the hydrostatic load could not flow around the circumference.
+        # fragment(face-set, ITSELF) is the same bonding op the stiffened
+        # path gets for free, so the plain shell is stitched exactly the
+        # same way.
+        out_dimtags, out_map = occ.fragment(objects, objects)
+        occ.synchronize()
+        all_shell = [t for d, t in out_dimtags if d == 2]
+        surfaces, tag_notes = _assign_from_map(
+            all_shell, out_map, named_inputs, FUSELAGE_GROUPS)
+        tag_notes.append("no frames requested; skin self-fragmented to bond "
+                         "the meridian seams")
 
     occ.synchronize()
 
@@ -1521,6 +1544,36 @@ def build_fuselage_barrel(gmsh, spec: FEASpec, step_path=None) -> GeometryResult
 
     area = _surface_area(gmsh, all_shell)
     xmin, ymin, zmin, xmax, ymax, zmax = gmsh.model.getBoundingBox(-1, -1)
+    # The barrel's mesh-size cap follows the strips that ACTUALLY exist
+    # (2026-11-09, U3a anchor).  Strips are the axial stringer webs (``h_str``
+    # wide) and the frame sectors (``h_frm`` wide).  Blossom needs at least two
+    # elements *across* a strip or it fills the leftover with triangles - the
+    # same failure the wing box's T5 flange cap exists for - and here the cliff
+    # is sharp and measured: with ``h_str = 25`` the mesh is clean at cap 12.5
+    # and leaves 48 triangles at 15.  So the cap is the narrowest strip's full
+    # width times T5's own ``0.4`` constant, and it holds across eight barrels
+    # (``_m5_probe/t3_cap_sweep.py`` / ``t3_cap_rule.py``, 2026-10-05).
+    #
+    # A stringer-free barrel has no stringer strip, so ``h_str`` must not enter
+    # the cap: reading it would let a *stringer* parameter move a model that
+    # contains no stringer, which is exactly what ``check_forms.check_T3``'s
+    # invariance half forbids.  The frame-less plain shell (n_frames == 0,
+    # first legal use is the U3a anchor) has NEITHER strip, and the old
+    # ``else h_frm`` branch still tightened its mesh to ~3 mm around the whole
+    # circumference (1700 end-ring nodes at size 25) - mesh cost with no
+    # blossom cliff to guard.  n_frames == 0 was refused by _validate until
+    # today, so no archived deck ever took the new None path.
+    strip_widths = []
+    if str_angles:
+        strip_widths.append(h_str)
+    # NOTE: do NOT use "p.frame_z()" as the frame-strip test - since the U3a
+    # fix it returns BOTH end stations even for n_frames == 0, which would
+    # re-tighten the cap on the frame-less anchor shell (measured: 1700
+    # end-ring nodes at size 25, mesh cost with no blossom cliff to guard).
+    if int(p.n_frames) >= 2:
+        strip_widths.append(h_frm)
+    mesh_cap = _STRIP_SIZE_CAP * min(strip_widths) if strip_widths else None
+
     return GeometryResult(
         surfaces=surfaces,
         # span/chord are the wing box's vocabulary; the barrel keeps them filled
@@ -1551,22 +1604,7 @@ def build_fuselage_barrel(gmsh, spec: FEASpec, step_path=None) -> GeometryResult
         # defect this fixes: with the writer's old ``-abs(p)`` the barrel read
         # -0.22725 mm of radial growth against a +0.228 mm closed form.
         pressure_dload_sign=fuselage.PRESSURE_DLOAD_SIGN,
-        # The barrel's strips are the axial stringer webs (``h_str`` wide) and
-        # the frame sectors (``h_frm`` wide).  Blossom needs at least two
-        # elements *across* a strip or it fills the leftover with triangles -
-        # the same failure the wing box's T5 flange cap exists for - and here the
-        # cliff is sharp and measured: with ``h_str = 25`` the mesh is clean at
-        # cap 12.5 and leaves 48 triangles at 15.  So the cap is the narrower
-        # strip's full width times T5's own ``0.4`` constant, and it holds across
-        # eight barrels - the default, a denser 12/4, a 16-stringer, a five-frame
-        # and a shallower-web shape, i.e. the region D18 will generate
-        # (``_m5_probe/t3_cap_sweep.py`` and ``t3_cap_rule.py``, 2026-10-05).
-        #
-        # A stringer-free barrel has no stringer strip, so ``h_str`` must not
-        # enter the cap: reading it would let a *stringer* parameter move a model
-        # that contains no stringer, which is exactly what
-        # ``check_forms.check_T3``'s invariance half forbids.
-        mesh_size_cap=_STRIP_SIZE_CAP * (min(h_str, h_frm) if str_angles else h_frm),
+        mesh_size_cap=mesh_cap,
         # Blossom, unconditionally.  A single extruded circle is periodic and
         # full-quad refuses it outright; the segmented patches are not periodic
         # but still defeat it ("1D mesh cannot be divided by 2" on the shipped

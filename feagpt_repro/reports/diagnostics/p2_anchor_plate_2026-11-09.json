@@ -1,0 +1,37 @@
+{
+ "what": "U3a plate anchor: Navier SS plate under uniaxial compression vs the exact closed form (ccx side)",
+ "date": "2026-11-09",
+ "decision": "woonzee route B (plate anchor) - DESIGN 11.6.6; barrel route kept as physical-band statement only",
+ "p_ref_n": 2000.0,
+ "n_modes": 6,
+ "mesh_size": 15.0,
+ "deck_ccx_sha256": "77fd06be1a7c057fc77f4da582cafa2b22e8236d94e810825f480ca94adc445a",
+ "deck_abq": "F:/AI FEA Modeling DataSets/feagpt_repro/_p2_anchor_plate/anchor_plate_600x600_t2_buckle_p2000_abq/anchor_plate_600x600_t2_buckle_p2000.inp",
+ "deck_abq_sha256": "8ddac1f192d97e959cfcbf72a516139bd30d947c1bfe6ccfbb2ee4af8fb39f64",
+ "solve_rc": 0,
+ "solve_ok": true,
+ "lambdas": [
+  1.958558,
+  2.990039,
+  5.346317,
+  7.786629,
+  8.73714,
+  9.268106
+ ],
+ "parse_error": null,
+ "analytic": {
+  "sigma_cr_mpa": 5.997315691547542,
+  "f_cr_n": 7196.77882985705,
+  "k": 4.0,
+  "source": "Navier closed form for the simply-supported rectangular plate, exact (not an approximate formula)"
+ },
+ "f_cr_num_n": 3917.116,
+ "rel_dev_vs_analytic": 0.4557126052353889,
+ "gate_rel_threshold": 0.05,
+ "mode_half_waves": {
+  "m_along_x": 1,
+  "n_along_y": 1
+ },
+ "mode_error": null,
+ "status": "fail"
+}

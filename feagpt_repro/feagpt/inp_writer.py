@@ -244,7 +244,74 @@ def write_inp(
     # and turn a plate problem into something else entirely (and the deflection
     # would only be ~30 % smaller, which no numerical gate is looking at).
     root_nodes = groups.get(clamp_group, [])
-    if root_nodes:
+    if (spec.extra or {}).get("bc_kind") == "ss3_ring":
+        # U3a anchor shell (2026-11-09, woonzee): classical SS ends for the
+        # von Mises / DTMB comparison.  Authoritative boundary reading (HAL
+        # hal-05340758, 2024, sec 2.2, matching von Mises' derivation): "the
+        # radial and circumferential displacements are fixed, whereas the
+        # LONGITUDINAL displacement and the rotation about the circular edges
+        # are let free".  In a global xyz frame the radial/circumferential
+        # directions differ at every node of an end ring, so that pair is
+        # realised as DOF 1,2 = 0 on BOTH end rings; the rings still slide
+        # axially.  Axial datum: ONE node (z=0 ring, lowest label) gets
+        # DOF 3 = 0 - a point constraint that kills the rigid-body mode
+        # without membrane action.  Locking a whole end ring axially was
+        # measured +33.7 % against the analytic P_cr on the first anchor
+        # build - exactly the direction a stronger-than-formula boundary
+        # must push.  The hydrostatic end thrusts on BOTH rings are equal
+        # and opposite, so the model is self-equilibrated axially.
+        # Rotations stay free (SS, not clamped); the 5 % gate absorbs what
+        # remains (DESIGN_C6_P2_BUCKLE.md 11.6.4).
+        free_group = roles.get("load", "tip")
+        root_set = groups.get(clamp_group, [])
+        free_set = groups.get(free_group, [])
+        assert root_set and free_set, (
+            f"ss3_ring needs both end node sets; got "
+            f"{clamp_group}={len(root_set)}, {free_group}={len(free_set)}")
+        L.append(f"*NSET, NSET=N{clamp_group.upper()}")
+        _emit_set(L, root_set)
+        L.append(f"*NSET, NSET=N{free_group.upper()}")
+        _emit_set(L, free_set)
+        L.append("*BOUNDARY")
+        L.append(f"N{clamp_group.upper()}, 1, 2, 0.0")
+        L.append(f"N{free_group.upper()}, 1, 2, 0.0")
+        L.append(f"{min(root_set)}, 3, 3, 0.0")
+    elif (spec.extra or {}).get("bc_kind") == "ss_plate_navier":
+        # U3a plate anchor (2026-11-09, woonzee): Navier simply-supported plate
+        # under uniaxial compression.  All four edges: DOF 3 = 0 (out-of-plane)
+        # with rotations free; the edge node groups come from the builder
+        # (groups["datum_a"]/["datum_b"] carry the in-plane datum, chosen on an
+        # UNLOADED edge so they never fight the edge CLOADs).  panel.plate
+        # decks without the marker keep the historical clamp_dofs=(1,3) path
+        # byte for byte.
+        datum_a = groups.get("datum_a", [])
+        datum_b = groups.get("datum_b", [])
+        assert datum_a and datum_b, (
+            "ss_plate_navier needs datum_a/datum_b node sets from the builder")
+        L.append(f"*NSET, NSET=N{clamp_group.upper()}")
+        _emit_set(L, root_nodes)
+        L.append("*BOUNDARY")
+        L.append(f"N{clamp_group.upper()}, 3, 3, 0.0")
+        L.append(f"{datum_a[0]}, 1, 2, 0.0")
+        L.append(f"{datum_b[0]}, 2, 2, 0.0")
+        # rigid edge coupling along the load direction (*EQUATION is model
+        # level: ccx rejects it inside a step).  Per loaded edge: every node
+        # except the reference follows the reference's u_x -> uniform edge
+        # displacement -> uniform pre-buckling sigma_x, which is exactly what
+        # the Navier closed form assumes.
+        ref_cfg = (spec.analysis.buckling or {}).get("reference_load") or {}
+        if ref_cfg.get("kind") == "edge_compression":
+            dof_l = int(ref_cfg.get("dof", 1))
+            for g in ref_cfg.get("load_edge_groups") or []:
+                s = sorted(groups.get(g, []))
+                assert s, f"edge coupling: group '{g}' is empty"
+                rn = s[0]
+                for nid in s[1:]:
+                    L.append("*EQUATION")
+                    L.append("2")
+                    L.append(f"{nid}, {dof_l}, 1.0")
+                    L.append(f"{rn}, {dof_l}, -1.0")
+    elif root_nodes:
         nset = f"N{clamp_group.upper()}"
         L.append(f"*NSET, NSET={nset}")
         _emit_set(L, root_nodes)
@@ -491,6 +558,71 @@ def _emit_reference_load(L: list[str], spec: FEASpec, elements: dict, groups: di
     if kind == "pressure" and elements.get(pg):
         L.append("*DLOAD")
         L.append(f"E_{pg.upper()}, P, {_fmt(sign * mag)}")
+        return mag
+    if kind == "hydrostatic_external" and elements.get(pg):
+        # U3a anchor shell (2026-11-09): the von Mises / DTMB formulas assume
+        # HYDROSTATIC external pressure = lateral pressure + an axial membrane
+        # force N_x = P*r/2 delivered by the (absent) end closures.  The
+        # reference load therefore carries BOTH, scaled together by lambda:
+        #   lateral:  *DLOAD on the skin, same sign convention as "pressure"
+        #   axial:    *CLOAD on BOTH end rings, DOF 3, pointing INTO the
+        #             cylinder (equal and opposite -> axially self-equilibrated,
+        #             no rigid-body drive).  Total per ring: N_x*2*pi*R =
+        #             mag*pi*R^2, split evenly over the ring nodes - the end
+        #             ring is meshed near-uniformly, and an 8-lobe mode sees no
+        #             asymmetry at that granularity.  (The first build pushed
+        #             only ONE ring and locked the other axially: +33.7 % vs
+        #             the analytic P_cr - the wrong direction to tune away.)
+        # lambda * mag is then directly comparable with the analytic P_cr.
+        import math as _math
+
+        L.append("*DLOAD")
+        L.append(f"E_{pg.upper()}, P, {_fmt(sign * mag)}")
+        free_group = ref.get("load_group", lg)
+        far_group = ref.get("axial_load_group")
+        assert far_group, ("hydrostatic_external needs reference_load"
+                           ".axial_load_group (the opposite end ring)")
+        free_set = groups.get(free_group, [])
+        far_set = groups.get(far_group, [])
+        if not free_set or not far_set:
+            raise ValueError("hydrostatic_external needs both end node sets; "
+                             f"got '{free_group}'={len(free_set)}, "
+                             f"'{far_group}'={len(far_set)}")
+        diameter = float(spec.structure.params.get("diameter", 0.0))
+        assert diameter > 0, "hydrostatic_external requires params.diameter"
+        radius = diameter / 2.0
+        total_axial = mag * _math.pi * radius ** 2        # N = (P*r/2)*(2*pi*r)
+        L.append("*CLOAD")
+        for nid in free_set:                              # z=L ring: inward -z
+            L.append(f"{nid}, 3, {_fmt(-total_axial / len(free_set))}")
+        for nid in far_set:                               # z=0 ring: inward +z
+            L.append(f"{nid}, 3, {_fmt(+total_axial / len(far_set))}")
+        return mag
+    if kind == "edge_compression":
+        # U3a plate anchor (2026-11-09): uniaxial compression, comparable with
+        # the Navier closed form F_cr = sigma_cr * b * t.  The FIRST build
+        # spread plain *CLOAD over the loaded edges and came out -45 % against
+        # the analytic force: a square plate's Saint-Venant decay length is the
+        # plate width itself, so point loads at the ends leave a NON-uniform
+        # pre-buckling stress field over the WHOLE plate, while the closed form
+        # assumes a UNIFORM uniaxial field.  Fix: each loaded edge is coupled
+        # rigidly along the load direction (*EQUATION, u_x(node) - u_x(ref) = 0,
+        # portable across ccx and Abaqus) and the force goes to the reference
+        # node only -> uniform edge displacement -> uniform sigma_x.
+        # Both edges are pushed INWARD (equal and opposite) -> self-equilibrated.
+        pairs = ref.get("load_edge_groups") or []
+        assert len(pairs) == 2, "edge_compression needs load_edge_groups: [a, b]"
+        dof = int(ref.get("dof", 1))
+        # the u_x coupling for these edges is emitted as *EQUATION in the BC
+        # section (model level: ccx refuses *EQUATION inside a step); here we
+        # only put the reference-node forces inside the step.
+        L.append("*CLOAD")
+        for gi, g in enumerate(pairs):
+            s = sorted(groups.get(g, []))
+            assert s, f"edge_compression: group '{g}' is empty"
+            ref_node = s[0]
+            direction = 1.0 if gi == 0 else -1.0
+            L.append(f"{ref_node}, {dof}, {_fmt(direction * mag)}")
         return mag
     if kind == "tip_force":
         tip = groups.get(lg, [])

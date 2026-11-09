@@ -89,3 +89,6 @@ feagpt_repro/reports/diagnostics/_*_run.txt
 feagpt_repro/_p2_scaling_ccx/
 feagpt_repro/_p2_abq_scaling/
 _p2_scaling_ccx_2d/
+
+feagpt_repro/_p2_anchor/
+feagpt_repro/_p2_anchor_plate/

@@ -339,10 +339,17 @@ class FEASpec:
             if not isinstance(n, int) or isinstance(n, bool) or n <= 0:
                 raise ValueError(f"analysis.buckling.n_modes must be a positive int; got {n!r}")
             ref = buck.get("reference_load")
-            if not isinstance(ref, dict) or ref.get("kind") not in ("pressure", "tip_force"):
+            # "hydrostatic_external" (U3a anchor shell, 2026-11-09): lateral
+            # pressure + an axial end load N_x = P*r/2, the load combination
+            # the von Mises / DTMB formulas assume.  Only the anchor probe
+            # emits it; existing decks keep kind="pressure" byte for byte.
+            if not isinstance(ref, dict) or ref.get("kind") not in (
+                    "pressure", "tip_force", "hydrostatic_external",
+                    "edge_compression"):
                 raise ValueError(
                     "analysis.buckling.reference_load must be an object with "
-                    "kind='pressure' or 'tip_force'")
+                    "kind='pressure', 'tip_force', 'hydrostatic_external' "
+                    "or 'edge_compression'")
             try:
                 mag = float(ref["magnitude"])
             except (KeyError, TypeError, ValueError) as exc:

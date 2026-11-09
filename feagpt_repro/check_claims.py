@@ -3055,6 +3055,8 @@ def main():
                          'S-61 无 .git/hooks）。按 R69：标 exempt + reason、不计入通过数，'
                          '且**只在失败原因确实是公开集造成时**才生效 —— 判据真的违规仍红。'
                          '不加本参数时行为与旧版完全一致')
+    ap.add_argument('--brief', action='store_true',
+                    help='只打印一行结论（AGENTS §0 开工闸；判据全跑，不跳过）')
     ap.add_argument('--skip-hook-guard', action='store_true',
                     help='显式跳过 S-61（pre-commit hook 存活判据）。仅在 CI / 第三方只跑复现时用；'
                          '按 R69 必须在当次报告里写明原因，且 S-61 会标 skip 而不是通过')
@@ -3187,14 +3189,17 @@ def main():
     json.dump(report, open(args.json, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 
     print('== CLAIMS 自检（R25/R26/R27 结构 + R29 语义计数）==')
+    brief = bool(getattr(args, 'brief', False))
     for rec in results:
+        if brief:
+            continue
         if rec.get('exempt'):
             print(f"  [EXEM] {rec['claim_id']:<7} {rec['artifact']}  <- {rec['reason']}")
             continue
         tag = 'ok  ' if rec['ok'] else 'FAIL'
         extra = '' if rec['ok'] else '  <- ' + '; '.join(rec['problems'])
         print(f"  [{tag}] {rec['claim_id']:<7} {rec['artifact']}{extra}")
-    if sem:
+    if sem and not brief:
         print('-- 语义计数（声称值 vs artifact 实读）--')
         for s in sem:
             if s.get('exempt'):
@@ -3206,7 +3211,11 @@ def main():
             tag = 'ok  ' if s['ok'] else 'FAIL'
             print(f"  [{tag}] {s['id']:<5} {s['desc']:<34} 声称={s['actual']} 实测={s['expect']}")
     _n_ex = n_ex_art + n_ex_sem
-    print(f"\nactive claims {report['n_active_claims']} 条 / artifact {report['n_artifacts']} 个 / "
+    if brief:
+        print(f"[brief] check_claims {report['n_active_claims']} claims / "
+              f"{report['n_artifacts']} artifacts / all_ok={report['all_ok']} "
+              f"(structural fails {len(fails)}, semantic fails {len(sem_fails)})")
+    print(("" if brief else "\n") + f"active claims {report['n_active_claims']} 条 / artifact {report['n_artifacts']} 个 / "
           f"语义项 {len([s for s in sem if not s.get('skip')])} 条 "
           + (f"；另有 {_n_ex} 项 --public 豁免（不计入通过）" if _n_ex else '')
           + f"-> {'全过' if report['all_ok'] else f'结构 {len(fails)} 项 + 语义 {len(sem_fails)} 项失败'}")
