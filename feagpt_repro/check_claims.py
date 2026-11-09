@@ -3188,8 +3188,9 @@ def main():
     os.makedirs(os.path.dirname(os.path.abspath(args.json)) or '.', exist_ok=True)
     json.dump(report, open(args.json, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 
-    print('== CLAIMS 自检（R25/R26/R27 结构 + R29 语义计数）==')
     brief = bool(getattr(args, 'brief', False))
+    if not brief:
+        print('== CLAIMS 自检（R25/R26/R27 结构 + R29 语义计数）==')
     for rec in results:
         if brief:
             continue
@@ -3212,14 +3213,19 @@ def main():
             print(f"  [{tag}] {s['id']:<5} {s['desc']:<34} 声称={s['actual']} 实测={s['expect']}")
     _n_ex = n_ex_art + n_ex_sem
     if brief:
+        # ONE line, that is the whole contract of --brief (AGENTS §0).  The
+        # first implementation still printed the two summary lines below and
+        # only suppressed the per-claim detail - caught by reading the actual
+        # output instead of trusting the flag.
         print(f"[brief] check_claims {report['n_active_claims']} claims / "
               f"{report['n_artifacts']} artifacts / all_ok={report['all_ok']} "
               f"(structural fails {len(fails)}, semantic fails {len(sem_fails)})")
-    print(("" if brief else "\n") + f"active claims {report['n_active_claims']} 条 / artifact {report['n_artifacts']} 个 / "
-          f"语义项 {len([s for s in sem if not s.get('skip')])} 条 "
-          + (f"；另有 {_n_ex} 项 --public 豁免（不计入通过）" if _n_ex else '')
-          + f"-> {'全过' if report['all_ok'] else f'结构 {len(fails)} 项 + 语义 {len(sem_fails)} 项失败'}")
-    print(f"report -> {args.json}")
+    else:
+        print(f"\nactive claims {report['n_active_claims']} 条 / artifact {report['n_artifacts']} 个 / "
+              f"语义项 {len([s for s in sem if not s.get('skip')])} 条 "
+              + (f"；另有 {_n_ex} 项 --public 豁免（不计入通过）" if _n_ex else '')
+              + f"-> {'全过' if report['all_ok'] else f'结构 {len(fails)} 项 + 语义 {len(sem_fails)} 项失败'}")
+        print(f"report -> {args.json}")
     if fails_all:
         print('红线条 R26/R29：CLAIMS 自检未过，不得对外引用这些数字。')
         return 1

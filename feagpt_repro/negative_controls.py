@@ -23,7 +23,7 @@ NC-23..25 W5a' CLAIMS 自检（artifact 缺失 / eval_runs 未追踪 / 官方·�
 输出：reports/negative_controls_<n>.json（**入库**，R25；不再写 eval_runs/ 工作目录）；
 全部秒级（spec_fidelity 快通道，不起求解器）。
 """
-import json, os, sys, re, glob, hashlib, argparse
+import json, os, sys, re, glob, hashlib, argparse, io
 
 try:  # P1-3（专家第五轮）：GBK 控制台直跑不因中文/符号输出崩
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -254,6 +254,15 @@ def main():
     args = ap.parse_args()
     global _BRIEF
     _BRIEF = bool(args.brief)
+    # --brief swallows every per-case line STRUCTURALLY: the NC-2/7/8/... prints
+    # are hand-written in dozens of separate check functions, so gating each one
+    # with an if is a list-maintenance job that will silently miss the next NC
+    # added.  Redirect stdout instead - whatever gets printed is discarded, and
+    # only the final one-liner is restored.  (First attempt gated one print site
+    # and shipped: `--brief 87/87` still dumped 87 lines.)
+    _real_stdout = sys.stdout
+    if _BRIEF:
+        sys.stdout = io.StringIO()
 
     tasks = {t['task_id']: t for t in load_tasks(args.tasks)}
     base = tasks[BASE_TASK]
@@ -4167,6 +4176,7 @@ def main():
         json.dump(report, open(out_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
         print(f"\n负控: {n_ok}/{len(results)} ok -> reports/negative_controls_{len(results)}.json（已更新）")
     if _BRIEF:
+        sys.stdout = _real_stdout
         print(f"[brief] negative_controls {n_ok}/{len(results)} "
               f"all_ok={report['all_ok']}")
     else:
