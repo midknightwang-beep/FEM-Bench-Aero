@@ -374,7 +374,7 @@
    "id": "S-45",
    "desc": "收口顺序固定：官方 check_claims.json 必须在负控之后写（R59）",
    "expect": "C-019 记录的 artifact mtime == 实际 mtime；check_claims.json mtime ≥ 负控 json mtime",
-   "actual": "C-019 mtime 记录/实际 = 1794233268/1794233268；check 1794236043 vs 负控 1794233268",
+   "actual": "C-019 mtime 记录/实际 = 1794233268/1794233268；check 1794316056 vs 负控 1794233268",
    "ok": true,
    "skip": false
   },

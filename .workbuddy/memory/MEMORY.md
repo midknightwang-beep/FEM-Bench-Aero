@@ -2,6 +2,7 @@
 
 > **SOT**：`AGENTS.md` > `CLAIMS.md`（数字）> `RUBRIC.md`（口径+红线）> `reports/INDEX.md`（路径）。本文件**不抄会漂的数字**，只留方法/坑/约定；叙事在 `CONFLICT.md` 与 `reports/diagnostics/`。
 > **用法**：写完任何判据/闸/自检，拿每条的问句过一遍刚写的那段代码。
+> **日志在哪**：`memory/2026-11-*.md` 是近期日记（默认只读最近一两篇）；**2026-10 及更早的 20 篇已移入 `memory/archive/2026-10/`，按 `INDEX.md` 的检索词定位，别整目录读**。
 
 ## 执行协议
 - R-A1..A12 见 `AGENTS.md`。命令**照抄** §0 的 `PY=`（末段 `/Scripts/python.exe`）；venv 在 `C:/Users/22207/.workbuddy/binaries/python/envs/default/`，**不在项目目录**（写错过三次）。
