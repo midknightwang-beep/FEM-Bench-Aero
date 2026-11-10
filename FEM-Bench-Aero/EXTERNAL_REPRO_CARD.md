@@ -6,13 +6,18 @@
 > `feagpt_repro/reports/diagnostics/external_repro_0_dryrun.md`），不是估计值。
 > 跑完请把结果填进 §5 的表格，落到 `feagpt_repro/reports/diagnostics/external_repro_1.md`。
 
-## 0. 你需要准备（3 件）
+## 0. 你需要准备（4 件）
 
 | # | 东西 | 说明 |
 |---|---|---|
-| 1 | 网络（能到 github.com） | clone 要下 **约 150 MB**（仓库 155 MB / 工作区 325 MB）。本机实测 **49 s** |
-| 2 | 数据包 `FEM-Bench-Aero-v1.1-data.tar.gz`（100.2 MiB） | 已在 Release；也可从 `_handoff/release/` 直接拷。**sha256 必须等于** `8b6295d16f8505bca80971432c205e819d3e466c2a19a26407c08e2d76af0a4e` |
-| 3 | Python 3.10+ | 预演用的是 **3.13.14 空 venv（零第三方包）**，A 阶段不需要 numpy/gmsh |
+| 1 | **一个 bash 终端** | 本卡所有命令都是 bash 语法（`PY=…`、`"$PY"`、`export`）。**Windows 上用 Git Bash**（装 Git for Windows 时自带）；**别用 cmd.exe / PowerShell**，它们的变量语法是 `%VAR%` / `$env:VAR`，照抄会全线失败 |
+| 2 | 网络（能到 github.com） | clone 要下 **约 150 MB**（仓库 155 MB / 工作区 325 MB）。本机实测 **49 s** |
+| 3 | 数据包 `FEM-Bench-Aero-v1.1-data.tar.gz`（100.2 MiB） | 已在 Release；也可从 `_handoff/release/` 直接拷。**sha256 必须等于** `8b6295d16f8505bca80971432c205e819d3e466c2a19a26407c08e2d76af0a4e` |
+| 4 | Python 3.10+ | 预演用的是 **3.13.14 空 venv（零第三方包）**，A 阶段不需要 numpy/gmsh |
+
+> **★ clone 完先确认版本**：`git log --oneline -1` 里应当出现 `external-reproduction card`
+> （提交 `146f3be` 或更新）。更早的提交里 QUICKSTART §4 的候选集参数是错的（见 §4 坑 1），
+> 按旧版跑会得到 `DEV 22/30` 而不是 `23/30`。
 
 ## A 阶段 —— 复现 headline（必做，本机实测 **≈ 1 分钟**）
 
