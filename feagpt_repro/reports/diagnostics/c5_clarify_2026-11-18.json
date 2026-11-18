@@ -1,0 +1,49 @@
+{
+  "ring": "clarify",
+  "task_id": "L2_fuselage_barrel_d1600_l1600_str8_frm3",
+  "family": "fuselage_barrel",
+  "input_level": "L2",
+  "source_scope": "柱壳 d1600 的 L2 题；与 C5 演示 case 不同题不同源，只证明澄清环判据链路可用，不代表演示 case 现场追问过",
+  "gap": {
+    "name": "fuselage_barrel_d1600_l1600_str8_frm3",
+    "name_mentions_frm3": true,
+    "params_keys": [
+      "diameter",
+      "length",
+      "n_stringers",
+      "thickness"
+    ],
+    "n_frames_in_params": false,
+    "gap_verified": true
+  },
+  "expected_clarifications": [
+    "n_frames"
+  ],
+  "model_clarify_raw": "[\"fuselage_barrel 族缺少字段 n_frames，请给出框的数量（题面 name 提及 frm3 但参数表中未给）。\"]",
+  "model_spec": null,
+  "judgement": {
+    "category": "clarify_ok",
+    "pass": true,
+    "detail": {
+      "text": "[\"fuselage_barrel 族缺少字段 n_frames，请给出框的数量（题面 name 提及 frm3 但参数表中未给）。\"]",
+      "expected": [
+        "n_frames"
+      ],
+      "alias_hits": {
+        "n_frames": [
+          "n_frames"
+        ]
+      }
+    }
+  },
+  "judge_source": "score_l2.classify -> score_baseline.judge_clarify_field_level (R17/R58)",
+  "anchors": {
+    "candidate": "candidates_l2_v7sysfix2_glm\\L2_fuselage_barrel_d1600_l1600_str8_frm3.json",
+    "candidate_sha256": "f8152c28db0d6a3d8c4dc02358bc9ab58a9ad3c5a87c75ba2fe31557c37141a7",
+    "tasks": "tasks\\tasks.jsonl",
+    "tasks_sha256": "54d8352bfdec40151fae4e0915f2a24364fdf0e114cc75d09a08735659b4c267",
+    "judge_script_sha256": "67261f3839eac511db8ae59fa889de34eada1cf4d4a855ce27016a898de3d981"
+  },
+  "model": "glm-5.3-flash",
+  "prompt_sha256": "c8de26d43bf76d137728b6ac4196077565ff12d3df64c7ece050d04e5555eeef"
+}

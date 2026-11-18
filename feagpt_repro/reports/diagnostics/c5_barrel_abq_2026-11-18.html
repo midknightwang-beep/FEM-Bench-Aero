@@ -47,10 +47,33 @@
 <header>
   <h1>fuselage_barrel_d1800_l2000_str8_frm3</h1>
   <div class="sub">fuselage_barrel · 由一句自然语言自动建模仿真 · 报告生成
-    2026-11-18 18:32</div>
+    2026-11-18 18:46</div>
 </header>
 
 <div class="verdict">跨求解器诊断：位移差 3.182%（Abaqus vs ccx 参考解） —— 仅记录，不作为 C5 通过/失败判据</div>
+
+
+<div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px 20px;margin-bottom:20px">
+  <div style="font-size:14px;color:var(--blue);font-weight:500;margin-bottom:10px">六环对账 · 6/6（生成环仍为半绿：用现成候选 spec，不是现场调模型）</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border:1px solid var(--line);border-radius:12px;font-size:12px;color:#3a4a58"><span style="width:7px;height:7px;border-radius:50%;background:#1e7a4d"></span>NL</span><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border:1px solid var(--line);border-radius:12px;font-size:12px;color:#3a4a58"><span style="width:7px;height:7px;border-radius:50%;background:#1e7a4d"></span>澄清</span><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border:1px solid var(--line);border-radius:12px;font-size:12px;color:#3a4a58"><span style="width:7px;height:7px;border-radius:50%;background:#BA7517"></span>生成</span><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border:1px solid var(--line);border-radius:12px;font-size:12px;color:#3a4a58"><span style="width:7px;height:7px;border-radius:50%;background:#1e7a4d"></span>求解</span><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border:1px solid var(--line);border-radius:12px;font-size:12px;color:#3a4a58"><span style="width:7px;height:7px;border-radius:50%;background:#1e7a4d"></span>云图</span><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border:1px solid var(--line);border-radius:12px;font-size:12px;color:#3a4a58"><span style="width:7px;height:7px;border-radius:50%;background:#1e7a4d"></span>报告</span></div>
+  <div style="font-size:13px;line-height:1.7;color:#3a4a58;margin-top:12px">
+    题面 <code>fuselage_barrel_d1600_l1600_str8_frm3</code> 声称 frm3，参数表只有
+    diameter、length、n_stringers、thickness —— 缺 <b>n_frames</b>。
+  </div>
+  <div style="font-size:13px;line-height:1.7;color:#3a4a58;margin-top:4px">
+    模型追问：<code>fuselage_barrel 族缺少字段 n_frames，请给出框的数量（题面 name 提及 frm3 但参数表中未给）。</code>
+  </div>
+  <div style="font-size:13px;line-height:1.7;color:#3a4a58;margin-top:4px">
+    L2 判据实判：<b>clarify_ok</b>（pass=True），
+    <b>模型未编造 spec</b>；判定来自 <code>score_l2.classify</code>，不是手抄结论。
+  </div>
+  <div style="font-size:12px;color:#8a6a1a;margin-top:8px">
+    证据来自柱壳 d1600 这条 L2 题，与本报告演示 case 不同题不同源 ——
+    只证明澄清环判据链路可用，不代表演示 case 现场追问过。
+  </div>
+  <span class="src" title="F:\AI FEA Modeling DataSets\feagpt_repro\reports\diagnostics\c5_clarify_2026-11-18.json · judgement / gap / anchors">澄清证据 <code>c5_clarify_2026-11-18.json</code> <span class="sha">sha:3afcc72e</span></span>
+</div>
+
 
 <section>
   <h2><span class="n">1</span>你说了一句什么</h2>

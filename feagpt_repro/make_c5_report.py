@@ -399,13 +399,55 @@ def build_html(ctx: dict) -> str:
                     f"这些是 schema 里<b>有默认值</b>的字段 —— 写不写，建出来是同一个模型。"
                     f"{('另有 %d 处属于其他族的占位段（翼型等），本族不用。' % c['sdiff']['n_unrelated']) if c['sdiff']['n_unrelated'] else ''}")
         can_html = (f"从一句中文任务书出发，几何、网格、求解、结果提取全链"
-                    f"自动跑通，且最大位移与标准答案的相对误差在 {c['tol'] * 100:.1f}% 判据线以内。")
+                    f"自动跑通，且最大位移与标准答案的相对误差在 {c['tol'] * 100:.1f}% 判据线以内。"
+                    f"澄清环由另一条 L2 题的判据证据支撑，生成环仍用现成候选 spec（半绿）。")
         footer_cmd = f"python make_c5_report.py --case {c['case']}"
 
     def src(name, path, field):
         return (f'<span class="src" title="{path} · {field}">'
                 f'{name} <code>{Path(path).name}</code>'
                 f' <span class="sha">sha:{sha8(Path(path))}</span></span>')
+
+    import html as _html
+    cl = c.get("clarify") or {}
+    cl_raw = cl.get("model_clarify_raw")
+    try:
+        _qs = json.loads(cl_raw) if isinstance(cl_raw, str) else (cl_raw or [])
+        q_text = "；".join(str(x) for x in _qs)
+    except (ValueError, TypeError):
+        q_text = str(cl_raw or "")
+    jd = cl.get("judgement") or {}
+    gap = cl.get("gap") or {}
+    rings = [("NL", True), ("澄清", True), ("生成", False),
+             ("求解", True), ("云图", True), ("报告", True)]
+    chips = "".join(
+        f'<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;'
+        f'border:1px solid var(--line);border-radius:12px;font-size:12px;color:#3a4a58">'
+        f'<span style="width:7px;height:7px;border-radius:50%;background:'
+        f'{"#1e7a4d" if good else "#BA7517"}"></span>{n}</span>'
+        for n, good in rings)
+    rings_html = f"""
+<div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px 20px;margin-bottom:20px">
+  <div style="font-size:14px;color:var(--blue);font-weight:500;margin-bottom:10px">六环对账 · 6/6（生成环仍为半绿：用现成候选 spec，不是现场调模型）</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">{chips}</div>
+  <div style="font-size:13px;line-height:1.7;color:#3a4a58;margin-top:12px">
+    题面 <code>{_html.escape(str(gap.get('name') or ''))}</code> 声称 frm3，参数表只有
+    {_html.escape('、'.join(gap.get('params_keys') or []))} —— 缺 <b>n_frames</b>。
+  </div>
+  <div style="font-size:13px;line-height:1.7;color:#3a4a58;margin-top:4px">
+    模型追问：<code>{_html.escape(q_text)}</code>
+  </div>
+  <div style="font-size:13px;line-height:1.7;color:#3a4a58;margin-top:4px">
+    L2 判据实判：<b>{_html.escape(str(jd.get('category') or ''))}</b>（pass={jd.get('pass')}），
+    <b>模型未编造 spec</b>；判定来自 <code>score_l2.classify</code>，不是手抄结论。
+  </div>
+  <div style="font-size:12px;color:#8a6a1a;margin-top:8px">
+    证据来自柱壳 d1600 这条 L2 题，与本报告演示 case 不同题不同源 ——
+    只证明澄清环判据链路可用，不代表演示 case 现场追问过。
+  </div>
+  {src('澄清证据', c['clarify_path'], 'judgement / gap / anchors')}
+</div>
+"""
 
     return f"""<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
@@ -460,6 +502,8 @@ def build_html(ctx: dict) -> str:
 </header>
 
 <div class="verdict">{verdict}</div>
+
+{rings_html}
 
 <section>
   <h2><span class="n">1</span>你说了一句什么</h2>
@@ -777,6 +821,16 @@ def main() -> int:
     gold_spec = json.loads((MODELING / args.case / "spec.json").read_text(encoding="utf-8"))
     sdiff = spec_diff(cand["spec"], gold_spec)
 
+    # 六环之「澄清环」：证据必须是机器生成的 artifact，且判据真的过了才敢标绿。
+    # 锚点缺失判红，不 skip（R29）——否则删掉证据就能静默退回 5/6。
+    clarify_path = HERE / "reports" / "diagnostics" / "c5_clarify_2026-11-18.json"
+    if not clarify_path.exists():
+        raise SystemExit(f"[FAIL] 缺澄清环证据，不能标 6/6：{clarify_path}")
+    clarify = json.loads(clarify_path.read_text(encoding="utf-8"))
+    if not ((clarify.get("judgement") or {}).get("pass")
+            and (clarify.get("gap") or {}).get("gap_verified")):
+        raise SystemExit("[FAIL] 澄清环判据或题面缺口核验未通过，不能标 6/6")
+
     ctx = {
         "sdiff": sdiff,
         "case": args.case,
@@ -790,6 +844,8 @@ def main() -> int:
         "field_label": ("STRESS_PEAK / STRESS 块 · ODB 提取的逐节点 6 分量"
                         if cross_solver else "STRESS 块 · FRD 逐节点 6 分量 → von Mises"),
         "cross_solver": cross_solver,
+        "clarify": clarify,
+        "clarify_path": str(clarify_path),
         "truth_path": str(truth_path),
         "spec_rows": build_spec_rows(cand["spec"], design, fam_key),
         "figs": figs,
