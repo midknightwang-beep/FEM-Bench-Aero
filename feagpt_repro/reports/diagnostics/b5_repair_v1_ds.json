@@ -1,0 +1,76 @@
+{
+ "n": 4,
+ "passed": 4,
+ "repair_rate_pct": 100.0,
+ "verdicts": {
+  "repair_correct": 4
+ },
+ "per_task": [
+  {
+   "verdict": "repair_correct",
+   "pass": true,
+   "diff_fields": [
+    "structure.params.hole_d"
+   ],
+   "out_diff_gold": [],
+   "task_id": "REPAIR_open_hole_panel",
+   "family": "open_hole_panel"
+  },
+  {
+   "verdict": "repair_correct",
+   "pass": true,
+   "diff_fields": [
+    "structure.params.n_stringers"
+   ],
+   "out_diff_gold": [],
+   "task_id": "REPAIR_stiffened_panel",
+   "family": "stiffened_panel"
+  },
+  {
+   "verdict": "repair_correct",
+   "pass": true,
+   "diff_fields": [
+    "structure.params.n_frames"
+   ],
+   "out_diff_gold": [],
+   "task_id": "REPAIR_fuselage_barrel",
+   "family": "fuselage_barrel"
+  },
+  {
+   "verdict": "repair_correct",
+   "pass": true,
+   "diff_fields": [
+    "airfoil.n_ribs"
+   ],
+   "out_diff_gold": [],
+   "task_id": "REPAIR_wingbox",
+   "family": "wingbox"
+  }
+ ],
+ "candidates_dir": "candidates_repair_v1_ds",
+ "models": [
+  "deepseek-v4-pro"
+ ],
+ "model": "deepseek-v4-pro",
+ "prompt_sha8": "2d3a5a78",
+ "tasks_sha8": "b5a1a002",
+ "judge_sha8": "db96d599",
+ "independent_recheck": {
+  "method": "独立脚本 canon()+dict==, 不 import judge_repair",
+  "n": 4,
+  "all_eq_gold": true,
+  "all_neq_broken": true
+ },
+ "scope": {
+  "verdict": "题型链路可用（诊断），不外推修复能力",
+  "why_ceiling": "单缺陷/name直给正确值/4条最小集 ⇒ 100% 是天花板效应，非复杂度指标",
+  "not_in_headline": true,
+  "not_into_exam": true,
+  "r65_paper_freeze": "not done",
+  "next_to_raise_difficulty": [
+   "多缺陷(2-3字段)",
+   "去掉name线索改靠schema/材料表推断",
+   "扩大到64条全族"
+  ]
+ }
+}

@@ -1,0 +1,30 @@
+# TASK_CONTRACT — B5 注入缺陷修复题最小验证（方案 A）
+
+- task_id: B5-REPAIR-V1
+- agent / date: 蜗子 / 2026-11-18
+- SOT read: FEM-Bench-Aero/SOT.md（2026-11-18 18:47）· ROADMAP §16 B5 行 / §17.3 第3项
+- 当前 headline（唯一）: C-032（L3 主基线 v2f 代）—— 本任务不动
+- 当前 paper path + sha: reports/papers/tasks_v8.jsonl · sha 54d8352bfdec…（本任务不进卷、不改 sha）
+- 当前 prompt path + sha: feagpt SYS（gen_candidates_v2.js）· 6b90daf0…（本任务不改 SYS，另写独立 REPAIR prompt）
+- 当前 rubric 版本: v6.27（不改）
+- 当前 model / scorecard: glm-5.3-flash + deepseek-v4-pro（与 headline 同 id，R13）
+- 单变量: candidates（题型：注入缺陷修复，独立小卷 + 独立 prompt）
+- 为什么只有这一个变量: B5 缺的是题型，不是判分口径/模型/卷；复用已冻结的 gold spec 作标准答案，只新增"给坏 spec→修复"这一种输入形态
+- allowlist（精确到文件/目录）:
+  - 新建 `tasks_repair_v1.jsonl`（小卷，从 gold 确定性变异）
+  - 新建 `gen_repair_candidates.js`（独立 prompt + 双模型生成，复用 cloud SDK 调用层）
+  - 新建 `judge_repair.py`（判据 + self-test + --json）
+  - 新建 `reports/diagnostics/b5_repair_v1_<model>.json`（成绩/诊断 artifact）
+  - 新建 `reports/diagnostics/b5_repair_v1_report.md`（结论 ≤5 行 + artifact 指针）
+- 默认不改: paper / rubric / prompt(SYS) / headline / 其他模型 / 其他报告 / tasks.jsonl 主卷
+- 验收命令 + 期望输出:
+  - `python judge_repair.py --self-test` → 全过（含反向闸：原样吐回坏 spec 判红）
+  - `node gen_repair_candidates.js --model glm-5.3-flash` + `--model deepseek-v4-pro` → 各产出候选 jsonl
+  - `python judge_repair.py --candidates <dir>` → 双模型各出 artifact，字段级修复率可复算
+  - 收口：`negative_controls.py` → `check_claims.py`（R59 顺序）全绿
+- 停止条件:
+  - 缺陷由 gold 派生导致判据恒真 / 或判据只在正例绿缺反向闸（N-26）⇒ 停下写 CONFLICT
+  - 双模型调用失败或数字不可从 artifact 复算 ⇒ 不进口径，只记诊断
+  - 任何改卷动作（R65 换代 / 冻结 v1.1）⇒ 停下交老王拍板，本任务不越界
+- post-hoc?: no（不进 headline，不动已发布数字，独立小卷只作 B5 题型可行性验证）
+- 交付报告路径: reports/diagnostics/b5_repair_v1_report.md
