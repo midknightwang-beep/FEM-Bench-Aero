@@ -129,7 +129,7 @@ def spec_diff(cand_spec: dict, gold_spec: dict) -> dict:
             "n_unrelated": sum(n for s, n in groups.items() if s in unrelated)}
 
 
-def _render(nodes, quads, xy_all, hole_center, zoom=None, title=""):
+def _render(nodes, quads, xy_all, hole=None, zoom=None, title=""):
     """网格渲染成 PNG（bytes）。中文字体不可靠，图内一律英文标签。"""
     import matplotlib
     matplotlib.use("Agg")
@@ -160,9 +160,9 @@ def _render(nodes, quads, xy_all, hole_center, zoom=None, title=""):
                     max(p[1] for p in xy_all.values()) + 5)
         ax.set_title(title, fontsize=9)
 
-    if hole_center:
-        hx, hy = hole_center
-        ax.add_patch(plt.Circle((hx, hy), 20.0, fill=False, color="#c0392b", lw=1.2))
+    if hole:                                     # (x, y, r); 曲面族没有孔，传 None
+        hx, hy, hr = hole
+        ax.add_patch(plt.Circle((hx, hy), hr, fill=False, color="#c0392b", lw=1.2))
         ax.plot([hx], [hy], "+", color="#c0392b", ms=6)
     ax.tick_params(labelsize=6)
     ax.set_xlabel("x [mm]", fontsize=7)
@@ -182,7 +182,7 @@ def pct(a: float, b: float) -> float:
     return abs(a - b) / abs(b) * 100.0 if b else float("nan")
 
 
-def _render_contour(nodes, quads, vm, hole_center, zoom=None, title=""):
+def _render_contour(xy_map, quads, vm, zoom=None, title=""):
     """von Mises 云图（PNG bytes）。
 
     三角剖分必须**显式给**（每个四边形拆两个三角形），不能交给 Delaunay：
@@ -196,8 +196,8 @@ def _render_contour(nodes, quads, vm, hole_center, zoom=None, title=""):
     import matplotlib.tri as mtri
     from matplotlib.colors import Normalize
 
-    tags = list(nodes)                      # 顺序即坐标顺序，z 必须同样排
-    xy = [nodes[t][:2] for t in tags]
+    tags = list(xy_map)                     # 顺序即坐标顺序，z 必须同样排
+    xy = [xy_map[t] for t in tags]
     idx = {t: i for i, t in enumerate(tags)}
     tris = []
     for q in quads:
@@ -238,7 +238,7 @@ def _render_contour(nodes, quads, vm, hole_center, zoom=None, title=""):
     ax.plot([xy[j][0]], [xy[j][1]], marker="o", ms=5, mfc="none",
             mec="white", mew=1.4)
     ax.annotate(f"{z[j]:.2f} MPa", (xy[j][0], xy[j][1]),
-                textcoords="offset points", xytext=(7, 7),
+                textcoords="offset points", xytext=(8, -14),
                 fontsize=7, color="white",
                 bbox=dict(boxstyle="round,pad=0.2", fc="black", alpha=.55, lw=0))
     ax.tick_params(labelsize=6)
@@ -249,7 +249,119 @@ def _render_contour(nodes, quads, vm, hole_center, zoom=None, title=""):
     buf = io.BytesIO()
     fig.savefig(buf, format="png")
     plt.close(fig)
-    return buf.getvalue()
+    # 连本图自己的峰值一起返回：页面上的「热点」必须是这张图上画出来的那个数，
+    # 不能沿用全场峰值 —— 蒙皮云图的范围和长桁上的全场峰值不是一回事。
+    return buf.getvalue(), float(vmax)
+
+
+def subset_mesh(nodes, quads, keep):
+    """只保留 keep(v) 为真的节点，以及其节点全在子集里的单元。"""
+    n2 = {t: v for t, v in nodes.items() if keep(v)}
+    q2 = [q for q in quads if all(t in n2 for t in q)]
+    return n2, q2
+
+
+def project(nodes, mode):
+    """把 3D 节点投到 2D。'xz' 看轴向剖面，'xy' 看端面/平面。"""
+    if mode == "xz":
+        return {t: (v[0], v[2]) for t, v in nodes.items()}
+    return {t: (v[0], v[1]) for t, v in nodes.items()}
+
+
+def view_plan(family, design):
+    """按族给出「看哪两张图」。
+
+    平面族（开孔板/加筋板）：整板 + 孔边放大，都投影到 xy。
+    回转族（柱壳）：曲面不能直接投到一张平面图上 —— 前后会重叠。所以拆成
+      ① 前半（y >= 0）投影到 xz：轴向鼓胀 + 纵向应力分布，无遮挡；
+      ② 中截面（|z - L/2| < tol）投影到 xy：整个圆环，看周向分布（长桁位置）。
+    这不是「模板不通用」，而是「几何可视化必须按族适配」——
+    数字链路（pipeline -> post -> truth）两族完全同一套。
+    """
+    if family == "fuselage_barrel":
+        L = float(design["length"])
+        zc, tol = L / 2.0, max(1.0, L * 0.01)
+        return [
+            {"tag": "front",
+             "title": "barrel: front half (x-z)",
+             "caption": ("整体（前半，x-z 投影）"),
+             "keep": lambda v: v[1] >= -1e-9,
+             "proj": "xz", "zoom": None},
+            {"tag": "section",
+             "title": f"barrel: cross-section at z={zc:.0f}",
+             "caption": (f"中截面 z={zc:.0f} mm（整个圆环，看周向分布）"),
+             "keep": lambda v: abs(v[2] - zc) < tol,
+             "proj": "xy", "zoom": None},
+        ]
+    # 加筋板族：无孔，第二张图看长桁交界（那是应力集中处）
+    if family == "stiffened_panel":
+        L, W = float(design["length"]), float(design["width"])
+        st = design.get("stringer_stations") or []
+        if st:
+            fx, fy, r = float(st[0]), W / 2.0, max(80.0, W * 0.25)
+            cap = f"长桁局部（x≈{fx:g} mm，半宽 {r:g} mm）—— 蒙皮与长桁交界是应力集中处"
+        else:
+            fx, fy, r = L / 2.0, W / 2.0, max(80.0, min(L, W) * 0.3)
+            cap = f"板中心局部（半宽 {r:g} mm）"
+        # 云图只画蒙皮（E_PANEL）：长桁凸出蒙皮 20 mm，直接投到 x-y 会盖住蒙皮，
+        # 图上就会看到「长桁位置应力≈0」这种假象。网格图仍然用全结构，
+        # 否则看不出「这是加筋板」。
+        return [
+            {"tag": "full", "title": "full panel (x-y)", "caption": "整体（x-y 投影，云图取蒙皮）",
+             "keep": None, "proj": "xy", "zoom": None, "contour_elset": "E_PANEL"},
+            {"tag": "detail", "title": "stringer detail", "caption": cap,
+             "keep": None, "proj": "xy", "zoom": (fx, fy, r),
+             "contour_elset": "E_PANEL"},
+        ]
+
+    # 开孔板族
+    hx, hy = (float(x) for x in design["hole_center"])
+    hole_d = float(design["hole_d"])
+    return [
+        {"tag": "full", "title": "full plate (x-y)",
+         "caption": "整体（x-y 投影）",
+         "keep": None, "proj": "xy", "zoom": None},
+        {"tag": "hole", "title": "hole region",
+         "caption": f"孔边局部（半宽 {hole_d * 1.5:g} mm）：孔周加密是判据要求的一部分",
+         "keep": None, "proj": "xy", "zoom": (hx, hy, hole_d * 1.5)},
+    ]
+
+
+
+def build_spec_rows(spec: dict, design: dict, family: str) -> list:
+    """按族列出「模型读成了什么」的关键参数。
+
+    不能写死「孔直径」这类字段名 —— 加第二个族时它就 KeyError 了。
+    这里只列该族真正有的参数，缺的不编。
+    """
+    rows = []
+    if design.get("diameter"):
+        rows.append(("直径 × 长度", f"{design['diameter']:g} × {design['length']:g} mm"))
+    elif design.get("length") and design.get("width"):
+        rows.append(("板长 × 板宽", f"{design['length']:g} × {design['width']:g} mm"))
+    if design.get("thickness"):
+        rows.append(("厚度", f"{design['thickness']:g} mm"))
+    if design.get("hole_d"):
+        rows.append(("孔直径", f"{design['hole_d']:g} mm"))
+    if design.get("n_stringers"):
+        desc = f"{int(design['n_stringers'])} 根"
+        if design.get("stringer_pitch"):
+            desc += f"（间距 {design['stringer_pitch']:g} mm）"
+        rows.append(("长桁", desc))
+    if design.get("n_frames"):
+        rows.append(("框", f"{int(design['n_frames'])} 个"))
+    mat = (spec.get("material") or {})
+    if mat.get("name"):
+        e = mat.get("youngs_modulus")
+        rows.append(("材料", f"{mat['name']}" + (f"（E={e:g} MPa）" if e else "")))
+    mesh = spec.get("mesh") or {}
+    if mesh.get("size_chord"):
+        rows.append(("网格尺寸", f"{mesh['size_chord']:g} mm"))
+    ld = spec.get("load") or {}
+    if ld.get("kind") and ld.get("magnitude") is not None:
+        unit = "MPa" if ld["kind"] == "pressure" else "N"
+        rows.append(("载荷", f"{ld['kind']} {ld['magnitude']:g} {unit}"))
+    return rows
 
 
 def build_html(ctx: dict) -> str:
@@ -334,11 +446,10 @@ def build_html(ctx: dict) -> str:
 <section>
   <h2><span class="n">2</span>它建成了什么</h2>
   <div class="figs">
-    <figure><img alt="mesh overview" src="{c['png_all']}">
-      <figcaption>整体：{c['n_elem']} 个四边形单元 / {c['n_nodes']} 个节点。
-        红线是设计孔径 D{c['hole_d']:g}。</figcaption></figure>
-    <figure><img alt="mesh hole region" src="{c['png_zoom']}">
-      <figcaption>孔边局部（半宽 {c['zoom_r']:g} mm）：孔周加密是判据要求的一部分。</figcaption></figure>
+    {''.join(f"""<figure><img alt="mesh {f['tag']}" src="{f['mesh']}">
+      <figcaption><b>网格 · {f['caption']}</b><br>该视图 {f['n_nodes']} 个节点；
+        全模型 <b>{c['n_elem']}</b> 个四边形单元 / <b>{c['n_nodes']}</b> 个节点。</figcaption></figure>"""
+      for f in c['figs'])}
   </div>
   {src('网格与节点', c['inp_path'], '*NODE / *ELEMENT')}
 </section>
@@ -373,14 +484,16 @@ def build_html(ctx: dict) -> str:
   {src('标准答案', c['truth_path'], 'scalars.max_disp / scalars.max_von_mises')}
 
   <div class="figs" style="margin-top:18px">
-    <figure><img alt="von Mises contour" src="{c['png_c_all']}">
-      <figcaption><b>von Mises 应力云图（整体）</b>：色标固定从 0 到峰值，
-        所以不同工况之间可以直接比。白圈标的是热点
-        （{c['vm_field_max']:.2f} MPa，与表中「最大 von Mises」同源）。</figcaption></figure>
-    <figure><img alt="von Mises contour hole" src="{c['png_c_zoom']}">
-      <figcaption><b>孔边应力集中</b>：孔口两侧明显高于远场，这是开孔板的
-        物理特征 —— 尺寸设计要看的正是这个峰值，不是平均应力。</figcaption></figure>
+    {''.join(f"""<figure><img alt="von Mises {f['tag']}" src="{f['contour']}">
+      <figcaption><b>von Mises 云图 · {f['caption']}</b><br>
+        本图 {f['contour_nodes']} 个{'（仅 ' + f['elset'] + '）' if f['elset'] else ''}节点，
+        色标 0…{f['contour_vmax']:.2f} MPa；白圈是本图热点（{f['contour_vmax']:.2f} MPa）。
+        <b>全场峰值看上表</b>{('（%.2f MPa 在长桁上，本图不含长桁）' % c['vm_field_max']) if abs(c['vm_field_max'] - f['contour_vmax']) > 1e-6 else ''}。</figcaption></figure>"""
+      for f in c['figs'])}
   </div>
+  <p style="margin:6px 0 0; font-size:12.5px; color:#5c6b7a">
+    云图取 <b>{c['vm_src']}</b>（{c['vm_src_note']}）。
+  </p>
   {src('云图数据', c['frd_path'], 'STRESS 块 · 逐节点 6 分量 → von Mises')}
   {"" if c['kt'] is None else f"""
   <p style="margin:12px 0 0; font-size:13.5px; color:#3a4a58">
@@ -419,6 +532,35 @@ def build_html(ctx: dict) -> str:
 """
 
 
+def rerun_with_solver(deck: Path, backend: str, outdir: Path, name: str):
+    """默认后端崩了就换一个再跑一次，然后自己接上 post。
+
+    为什么需要：ccx 2.23 的默认后端是 PaStiX，在 21 万 DOF 以上会以
+    0xC0000005（访问违规）崩掉，日志停在打印矩阵规模之后 —— 看起来像
+    「正在算」，其实进程已经死了。PARDISO 这个二进制没编译进来
+    （`the PARDISO library is not linked`），所以能用的只剩 SPOOLES。
+    这不是模型错、也不是数据错；把它写进报告，比悄悄换后端诚实。
+    """
+    sys.path.insert(0, str(HERE))
+    from feagpt import solver, post
+
+    alt = deck.with_name(f"{deck.stem}_{backend.lower()}.inp")
+    txt = deck.read_text(encoding="utf-8", errors="replace")
+    if "\n*STATIC\n" not in txt:
+        raise SystemExit(f"[FAIL] deck 里找不到独立的 *STATIC 行，无法换后端：{deck}")
+    alt.write_text(txt.replace("\n*STATIC\n", f"\n*STATIC, SOLVER={backend}\n", 1),
+                   encoding="utf-8")
+    run = solver.run(alt, solver="ccx", timeout=3600)
+    if not run.ok:
+        tail = "\n       ".join((run.log or "").strip().splitlines()[-6:])
+        raise SystemExit(f"[FAIL] SOLVER={backend} 也失败（rc={run.returncode}）：\n       {tail}")
+    frd = alt.with_suffix(".frd")
+    data = post.load_any(frd)
+    summary = post.dump_results_data(data, outdir / f"{name}.results.json",
+                                     outdir / f"{name}.nodes.csv")
+    return alt, frd, summary
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--case", default="open_hole_panel_400x200_d40")
@@ -449,18 +591,25 @@ def main() -> int:
     inp = outdir / f"{spec.name}.inp"
     results_path = outdir / f"{spec.name}.results.json"
 
+    solver_note = "复用已有结果"
     if args.reuse and results_path.exists():
         print(f"[reuse] 复用已有求解结果：{results_path.name}")
         summary = json.loads(results_path.read_text(encoding="utf-8"))
     else:
         print(f"[run] {spec.name} —— 建模型 / 划网格 / 求解（ccx）…")
         res = pipeline.run(spec, outdir=outdir, solver_name="ccx")
-        if not res.ok:
-            raise SystemExit("[FAIL] 求解链路未通过，不出报告。\n       "
-                             + "\n       ".join((res.messages or [])[-4:]))
-        summary = res.results
         inp = Path(res.artifacts["inp"])
         results_path = Path(res.artifacts["results"])
+        if not res.ok:
+            msgs = res.messages or []
+            print("[retry] 默认后端失败，改 SOLVER=SPOOLES 重试一次")
+            print("        " + " / ".join(m.strip() for m in msgs[-2:]))
+            inp, _frd2, summary = rerun_with_solver(inp, "SPOOLES", outdir, spec.name)
+            results_path = outdir / f"{spec.name}.results.json"
+            solver_note = "SPOOLES"
+        else:
+            summary = res.results
+            solver_note = "默认（PaStiX）"
 
     # ---- 数字：全部从 artifact 实读，一个都不手写 ---------------------- #
     gold_disp = float(truth["scalars"]["max_disp"])
@@ -474,54 +623,91 @@ def main() -> int:
     nodes, quads = read_deck_mesh(inp)
     if not nodes or not quads:
         raise SystemExit(f"[FAIL] 从 deck 里读不到网格：{inp}")
-    xy = {t: (v[0], v[1]) for t, v in nodes.items()}
 
     design = truth["topology"]["design"]
-    hx, hy = float(design["hole_center"][0]), float(design["hole_center"][1])
-    hole_d = float(design["hole_d"])
+    fam_key = truth.get("structure_family", "")
+    plan = view_plan(fam_key, design)
+    hole = None
+    if design.get("hole_center") and design.get("hole_d"):
+        hole = (float(design["hole_center"][0]), float(design["hole_center"][1]),
+                float(design["hole_d"]) / 2.0)
 
-    import time
-    t0 = time.time()
-    png_all = _render(nodes, quads, xy, (hx, hy), title="Full plate mesh")
-    zoom_r = hole_d * 1.5
-    png_zoom = _render(nodes, quads, xy, (hx, hy), zoom=(hx, hy, zoom_r),
-                       title="Hole region")
     # ---- 应力场（云图用；summary 里只有标量，场要从 frd 重新读）-------- #
     from feagpt import post as _post
     frd = results_path.with_name(results_path.name.replace(".results.json", ".frd"))
     if not frd.exists():
         raise SystemExit(f"[FAIL] 找不到场文件，画不了云图：{frd}")
     field = _post.load_any(frd)
-    stress = field["results"].get("STRESS") or field["results"].get("S") or {}
-    vm = {tag: _post.von_mises(v) for tag, v in stress.items()}
+    # ★ 云图口径 = STRESS_PEAK（外表面），与 headline 定义 D8 一致。
+    # 开孔板纯拉伸时中面 == 外表面（31.32 两边相同），所以用 STRESS 也看不出错；
+    # 柱壳有框/长桁局部弯曲，中面 128.5 vs 外表面 286.8 —— 差 2.2 倍。
+    # 拿中面画云图会系统性低估峰值，而且低估得"看起来很合理"。
+    peak = field["results"].get("STRESS_PEAK") or {}
+    mids = field["results"].get("STRESS") or field["results"].get("S") or {}
+    src_block, src_name = ((peak, "STRESS_PEAK") if peak else (mids, "STRESS"))
+    vm = {tag: _post.von_mises(v) for tag, v in src_block.items()}
     if not vm:
-        raise SystemExit("[FAIL] frd 里没有 STRESS 块，画不了云图")
+        raise SystemExit("[FAIL] frd 里没有应力块，画不了云图")
+    vm_mid = {tag: _post.von_mises(v) for tag, v in mids.items()} if mids else {}
 
-    png_c_all = _render_contour(nodes, quads, vm, (hx, hy),
-                                title="von Mises, full plate")
-    png_c_zoom = _render_contour(nodes, quads, vm, (hx, hy),
-                                 zoom=(hx, hy, zoom_r),
-                                 title="von Mises, hole region")
-    (outdir / "vm_contour_full.png").write_bytes(png_c_all)
-    (outdir / "vm_contour_hole.png").write_bytes(png_c_zoom)
-    print(f"[contour] 云图两张完成（场 {len(vm)} 节点，max {max(vm.values()):.2f} MPa）")
+    import time
+    t0 = time.time()
+    figs = []
+    for v in plan:
+        if v["keep"]:
+            n2, q2 = subset_mesh(nodes, quads, v["keep"])
+        else:
+            n2, q2 = nodes, quads
+        if not n2 or not q2:
+            print(f"[warn] 视图 {v['tag']} 过滤后为空，跳过")
+            continue
+        proj = project(n2, v["proj"])
+        mesh_png = _render(n2, q2, proj, hole, zoom=v["zoom"], title=v["title"])
 
-    (outdir / "mesh_overview.png").write_bytes(png_all)
-    (outdir / "mesh_hole_zoom.png").write_bytes(png_zoom)
-    print(f"[fig] 两张图渲染完成（{time.time() - t0:.1f}s）")
+        # 云图可能只取某个 elset（例如加筋板只画蒙皮，避免长桁投影遮挡）
+        cn, cq = n2, q2
+        if v.get("contour_elset"):
+            sel = _post.read_deck_elset_nodes(inp, v["contour_elset"])
+            if sel:
+                cn = {k: val for k, val in n2.items() if k in sel}
+                cq = [q for q in q2 if all(k in cn for k in q)]
+        cproj = project(cn, v["proj"]) if cn else proj
+        cont_png, cont_vmax = _render_contour(cproj, cq or q2, vm, zoom=v["zoom"],
+                                             title="von Mises, " + v["title"])
+        (outdir / f"mesh_{v['tag']}.png").write_bytes(mesh_png)
+        (outdir / f"vm_{v['tag']}.png").write_bytes(cont_png)
+        figs.append({"tag": v["tag"], "caption": v["caption"],
+                     "mesh": b64png(mesh_png), "contour": b64png(cont_png),
+                     "n_nodes": len(n2),
+                     "contour_nodes": len(cn) if v.get("contour_elset") else len(n2),
+                     "contour_vmax": cont_vmax,
+                     "elset": v.get("contour_elset")})
+        print(f"[fig] {v['tag']}: {len(n2)} 节点 / {len(q2)} 单元")
+    print(f"[fig] {len(figs)} 组图渲染完成（{time.time() - t0:.1f}s）")
+    print(f"[contour] 场来自 {src_name}，{len(vm)} 节点，max {max(vm.values()):.2f} MPa"
+          + (f"（中面口径 max {max(vm_mid.values()):.2f}）" if vm_mid else ""))
 
     # ---- 应力集中系数：本页两个数算出来的比值，不依赖 gold --------------- #
     # Kt = 峰值 von Mises / 净截面平均应力；净截面 = (板宽 - 孔径) × 厚度。
     # 单向拉伸下孔口主应力即周向应力、径向为零 ⇒ von Mises ≈ 该主应力，
     # 所以用 vM 峰值去除是合法的。这个比值能从页面上两个数自己复核。
+    mag = None
     try:
-        load_block = cand["spec"].get("load") or {}
-        mag = float(load_block.get("magnitude") or 0.0)
-        net_w = float(design["width"]) - float(design["hole_d"])
-        sig_net = mag / (net_w * float(design["thickness"])) if net_w > 0 else None
-    except (KeyError, TypeError, ValueError):
-        sig_net = None
-    kt = (max_vm / sig_net) if sig_net else None
+        mag = float((cand["spec"].get("load") or {}).get("magnitude") or 0.0)
+    except (TypeError, ValueError):
+        mag = None
+    sig_net = None
+    kt = None
+    # 净截面/应力集中系数只对「开孔板受面内拉伸」这种情形有意义；
+    # 加筋板受面外压力、柱壳受内压都不适用 —— 宁可不出这一行，也不要套错公式。
+    if (fam_key == "open_hole_panel" and design.get("hole_d") and mag):
+        try:
+            net_w = float(design["width"]) - float(design["hole_d"])
+            if net_w > 0:
+                sig_net = mag / (net_w * float(design["thickness"]))
+                kt = max_vm / sig_net
+        except (KeyError, TypeError, ValueError, ZeroDivisionError):
+            sig_net = kt = None
 
     fam = truth.get("structure_family", "")
     gold_spec = json.loads((MODELING / args.case / "spec.json").read_text(encoding="utf-8"))
@@ -538,33 +724,27 @@ def main() -> int:
         "results_path": str(results_path),
         "frd_path": str(frd),
         "truth_path": str(truth_path),
-        "spec_rows": [
-            ("板长 × 板宽", f"{design['length']:g} × {design['width']:g} mm"),
-            ("厚度", f"{design['thickness']:g} mm"),
-            ("孔直径", f"{design['hole_d']:g} mm"),
-            ("材料", cand["spec"].get("material", {}).get("name", "—")),
-            ("网格尺寸", f"{cand['spec'].get('mesh', {}).get('size_chord', '—')} mm"),
-        ],
-        "png_all": b64png(png_all),
-        "png_zoom": b64png(png_zoom),
-        "png_c_all": b64png(png_c_all),
-        "png_c_zoom": b64png(png_c_zoom),
+        "spec_rows": build_spec_rows(cand["spec"], design, fam_key),
+        "figs": figs,
         "vm_field_max": max(vm.values()),
+        "vm_src": src_name,
+        "vm_src_note": ("外表面峰值，与 headline 定义 D8 一致"
+                        if src_name == "STRESS_PEAK" else "只有中面场可用（该结果未输出峰值块）"),
         "sig_net": sig_net,
         "kt": kt,
         "load_mag": mag,
         "n_stress_nodes": len(vm),
-        "n_nodes": n_nodes, "n_elem": len(quads), "hole_d": hole_d,
-        "zoom_r": zoom_r,
-        "width": float(design["width"]),
-        "thickness": float(design["thickness"]),
+        "n_nodes": n_nodes, "n_elem": len(quads),
+        "hole_d": float(design.get("hole_d") or 0.0),
+        "width": float(design.get("width") or 0.0),
+        "thickness": float(design.get("thickness") or 0.0),
         "max_disp": max_disp, "gold_disp": gold_disp,
         "max_vm": max_vm, "gold_vm": gold_vm,
         "vm_err": pct(max_vm, gold_vm) if gold_vm else None,
         "gold_nodes": gold_nodes, "node_diff": n_nodes - gold_nodes,
         "disp_err": pct(max_disp, gold_disp),
         "tol": DISP_TOL.get(fam, 0.01),
-        "solver": (summary.get("solver_meta") or {}).get("name", "ccx"),
+        "solver": f"CalculiX ccx · 后端 {solver_note}",
     }
 
     out = Path(args.out) if args.out else RUNS / args.case / f"{args.case}.c5.html"
