@@ -129,7 +129,7 @@ def spec_diff(cand_spec: dict, gold_spec: dict) -> dict:
             "n_unrelated": sum(n for s, n in groups.items() if s in unrelated)}
 
 
-def _render(nodes, quads, xy_all, hole=None, zoom=None, title=""):
+def _render(nodes, quads, xy_all, hole=None, zoom=None, title="", ylabel="y [mm]"):
     """网格渲染成 PNG（bytes）。中文字体不可靠，图内一律英文标签。"""
     import matplotlib
     matplotlib.use("Agg")
@@ -166,7 +166,7 @@ def _render(nodes, quads, xy_all, hole=None, zoom=None, title=""):
         ax.plot([hx], [hy], "+", color="#c0392b", ms=6)
     ax.tick_params(labelsize=6)
     ax.set_xlabel("x [mm]", fontsize=7)
-    ax.set_ylabel("y [mm]", fontsize=7)
+    ax.set_ylabel(ylabel, fontsize=7)
     fig.tight_layout()
     buf = io.BytesIO()
     fig.savefig(buf, format="png")
@@ -182,7 +182,7 @@ def pct(a: float, b: float) -> float:
     return abs(a - b) / abs(b) * 100.0 if b else float("nan")
 
 
-def _render_contour(xy_map, quads, vm, zoom=None, title=""):
+def _render_contour(xy_map, quads, vm, zoom=None, title="", ylabel="y [mm]"):
     """von Mises 云图（PNG bytes）。
 
     三角剖分必须**显式给**（每个四边形拆两个三角形），不能交给 Delaunay：
@@ -243,7 +243,7 @@ def _render_contour(xy_map, quads, vm, zoom=None, title=""):
                 bbox=dict(boxstyle="round,pad=0.2", fc="black", alpha=.55, lw=0))
     ax.tick_params(labelsize=6)
     ax.set_xlabel("x [mm]", fontsize=7)
-    ax.set_ylabel("y [mm]", fontsize=7)
+    ax.set_ylabel(ylabel, fontsize=7)
     fig.colorbar(cs, ax=ax, shrink=.85, pad=.02).set_label("von Mises [MPa]", fontsize=7)
     fig.tight_layout()
     buf = io.BytesIO()
@@ -367,10 +367,40 @@ def build_spec_rows(spec: dict, design: dict, family: str) -> list:
 def build_html(ctx: dict) -> str:
     c = ctx
     rel = c["disp_err"]
-    ok = rel <= c["tol"] * 100.0
-    verdict = (f"位移相对误差 {rel:.3f}%，判据线 {c['tol'] * 100:.1f}% —— 通过"
-               if ok else
-               f"位移相对误差 {rel:.3f}%，已超判据线 {c['tol'] * 100:.1f}% —— 未通过")
+    cross = bool(c.get("cross_solver"))
+    # ★ 跨求解器数字只作 diagnostic：不套 ccx 判据线，不印"通过/未通过"。
+    ok = (not cross) and rel <= c["tol"] * 100.0
+    if cross:
+        verdict = (f"跨求解器诊断：位移差 {rel:.3f}%（Abaqus vs ccx 参考解）"
+                   f" —— 仅记录，不作为 C5 通过/失败判据")
+        accent = "var(--blue)"
+    else:
+        verdict = (f"位移相对误差 {rel:.3f}%，判据线 {c['tol'] * 100:.1f}% —— 通过"
+                   if ok else
+                   f"位移相对误差 {rel:.3f}%，已超判据线 {c['tol'] * 100:.1f}% —— 未通过")
+        accent = "var(--ok)" if ok else "var(--bad)"
+
+    if cross:
+        why_html = ("<b>这个差是哪来的？</b> 本页数值来自 Abaqus/Standard，参考解来自 "
+                    "CalculiX ccx。两者用同一套网格（节点数一致），但求解器、单元应力恢复"
+                    "与峰值定位不同，所以位移/应力差只作<b>跨求解器诊断</b>，"
+                    "不套用同一求解器的一致性判据线。")
+        can_html = ("从一句中文任务书出发，几何、网格、Abaqus 求解、ODB 提取与云图"
+                    "全链跑通，并与另一款求解器的参考解完成<b>同模型跨码对照</b>；"
+                    "差异按诊断记录，不在该页判定通过与否。")
+        footer_cmd = f"python make_c5_report.py --case {c['case']} --odb-json &lt;name&gt;.odb.json"
+    caveat_html = (f'<p style="margin:6px 0 0; font-size:12.5px; color:#8a6a1a">'
+                   f'<b>口径提醒</b>：{c["vm_caveat"]}</p>' if c.get("vm_caveat") else "")
+    if not cross:
+        why_html = (f"<b>为什么误差是 {rel:.3f}%？</b> 因为候选 spec 与标准答案在"
+                    f"<b>影响结果的字段上完全一致</b>（几何、材料、载荷、边界），差异只有"
+                    f"<b>{c['sdiff']['total']}</b> 处，且全部落在不改结果的段里"
+                    f"（{'、'.join(f'<code>{k}</code> {v} 处' for k, v in c['sdiff']['by_section'].items())}）。"
+                    f"这些是 schema 里<b>有默认值</b>的字段 —— 写不写，建出来是同一个模型。"
+                    f"{('另有 %d 处属于其他族的占位段（翼型等），本族不用。' % c['sdiff']['n_unrelated']) if c['sdiff']['n_unrelated'] else ''}")
+        can_html = (f"从一句中文任务书出发，几何、网格、求解、结果提取全链"
+                    f"自动跑通，且最大位移与标准答案的相对误差在 {c['tol'] * 100:.1f}% 判据线以内。")
+        footer_cmd = f"python make_c5_report.py --case {c['case']}"
 
     def src(name, path, field):
         return (f'<span class="src" title="{path} · {field}">'
@@ -391,7 +421,7 @@ def build_html(ctx: dict) -> str:
   h1 {{ margin:0 0 6px; font-size:25px; letter-spacing:-.3px; }}
   .sub {{ color:var(--mut); font-size:13px; }}
   .verdict {{ margin:24px 0 30px; padding:16px 20px; border-left:4px solid
-              {'var(--ok)' if ok else 'var(--bad)'}; background:#fff;
+              {accent}; background:#fff;
               border-radius:0 6px 6px 0; font-size:17px; }}
   section {{ background:#fff; border:1px solid var(--line); border-radius:8px;
              padding:20px 22px; margin-bottom:20px; }}
@@ -458,11 +488,12 @@ def build_html(ctx: dict) -> str:
   <h2><span class="n">3</span>算出来多少，跟标准答案差多少</h2>
   <table>
     <tr><th>指标</th><th style="text-align:right">本次求解</th>
-      <th style="text-align:right">标准答案</th><th style="text-align:right">相对误差</th></tr>
+      <th style="text-align:right">标准答案</th>
+      <th style="text-align:right">{'差异（诊断）' if cross else '相对误差'}</th></tr>
     <tr><td>最大位移 <span class="src">mm</span></td>
       <td class="num">{c['max_disp']:.5f}</td>
       <td class="num">{c['gold_disp']:.5f}</td>
-      <td class="num {'ok' if ok else 'bad'}">{rel:.3f}%</td></tr>
+      <td class="num {'' if cross else ('ok' if ok else 'bad')}">{rel:.3f}%</td></tr>
     <tr><td>最大 von Mises <span class="src">MPa · 外表面</span></td>
       <td class="num">{c['max_vm']:.3f}</td>
       <td class="num">{c['gold_vm'] if c['gold_vm'] is not None else '—'}</td>
@@ -473,12 +504,7 @@ def build_html(ctx: dict) -> str:
       <td class="num">{c['node_diff']:+d}</td></tr>
   </table>
   <p style="margin:12px 0 0; font-size:13.5px; color:#3a4a58">
-    <b>为什么误差是 {rel:.3f}%？</b> 因为候选 spec 与标准答案在
-    <b>影响结果的字段上完全一致</b>（几何、材料、载荷、边界），差异只有
-    <b>{c['sdiff']['total']}</b> 处，且全部落在不改结果的段里
-    （{ '、'.join(f'<code>{k}</code> {v} 处' for k, v in c['sdiff']['by_section'].items()) }）。
-    这些是 schema 里<b>有默认值</b>的字段 —— 写不写，建出来是同一个模型。
-    {('另有 %d 处属于其他族的占位段（翼型等），本族不用。' % c['sdiff']['n_unrelated']) if c['sdiff']['n_unrelated'] else ''}
+    {why_html}
   </p>
   {src('本次求解结果', c['results_path'], 'max_disp / max_von_mises / n_nodes')}
   {src('标准答案', c['truth_path'], 'scalars.max_disp / scalars.max_von_mises')}
@@ -494,7 +520,8 @@ def build_html(ctx: dict) -> str:
   <p style="margin:6px 0 0; font-size:12.5px; color:#5c6b7a">
     云图取 <b>{c['vm_src']}</b>（{c['vm_src_note']}）。
   </p>
-  {src('云图数据', c['frd_path'], 'STRESS 块 · 逐节点 6 分量 → von Mises')}
+  {caveat_html}
+  {src('云图数据', c['frd_path'], c['field_label'])}
   {"" if c['kt'] is None else f"""
   <p style="margin:12px 0 0; font-size:13.5px; color:#3a4a58">
     <b>顺带一个不依赖标准答案的自洽检查</b>：净截面平均应力 =
@@ -508,19 +535,18 @@ def build_html(ctx: dict) -> str:
 
 <section>
   <h2><span class="n">4</span>这一页能说明什么、不能说明什么</h2>
-  <p style="margin:0 0 8px"><b>能说明</b>：从一句中文任务书出发，几何、网格、求解、结果提取全链
-    自动跑通，且最大位移与标准答案的相对误差在 {c['tol'] * 100:.1f}% 判据线以内。</p>
+  <p style="margin:0 0 8px"><b>能说明</b>：{can_html}</p>
   <p style="margin:0 0 4px"><b>不能说明</b>：</p>
   <ul class="limits">
     <li>这不是工程校核。标准答案本身是同一套求解器算的参考解，属<b>一致性验证</b>，不是试验或解析解锚定。</li>
     <li>只覆盖 1 个族（{c['family']}）、1 个工况；换个几何、换个载荷都没验过。</li>
     <li>模型输入用的是仓库里<b>现成的候选产物</b>，不是这一页现场调模型生成的（换成实时生成要接 API）。</li>
-    <li>求解器：{c['solver']}。跨求解器的差异不在本页判定范围内。</li>
+    <li>求解器：{c['solver']}。{'本页数值即来自另一求解器，差异只作诊断，不进入任何通过/失败判定。' if cross else '跨求解器的差异不在本页判定范围内。'}</li>
   </ul>
 </section>
 
 <footer>
-  <div>C5 原型 V1 · 一条命令复现：<code>python make_c5_report.py --case {c['case']}</code></div>
+  <div>C5 原型 V1 · 一条命令复现：<code>{footer_cmd}</code></div>
   <div>命令里没有任何手写数字：所有数值由脚本从下面这些文件里读出来。</div>
   <div>任务书 <code>{PAPER.name}</code> · 候选 <code>{Path(c['cand_path']).name}</code>
        · deck <code>{Path(c['inp_path']).name}</code>
@@ -568,12 +594,18 @@ def main() -> int:
     ap.add_argument("--out", default=None)
     ap.add_argument("--reuse", action="store_true",
                     help="复用 _c5_runs/<case>/ 里已有的求解结果，不重跑")
+    ap.add_argument("--odb-json", default=None,
+                    help="直接读已提取的 Abaqus .odb.json（跨求解器，只出诊断，不进判据）")
     args = ap.parse_args()
 
-    # 延迟 import：这两个要在 venv 里（gmsh / numpy）
+    # 延迟 import：这些要在 venv 里（gmsh / numpy）
     sys.path.insert(0, str(HERE))
     from feagpt.spec import FEASpec
     from feagpt import pipeline
+    from feagpt import post as _post
+
+    odb_json = Path(args.odb_json) if args.odb_json else None
+    cross_solver = odb_json is not None
 
     task_id = f"L3_{args.case}"
     task = load_task(task_id)
@@ -592,7 +624,29 @@ def main() -> int:
     results_path = outdir / f"{spec.name}.results.json"
 
     solver_note = "复用已有结果"
-    if args.reuse and results_path.exists():
+    field = None
+    field_path = None
+    if cross_solver:
+        # ★ 跨求解器支路：ODB 已由外部 bat 提取成 .odb.json，这里只归纳+渲染。
+        # 全程不跑求解器，也不拿 ccx 判据线判 Abaqus 的数（只作 diagnostic）。
+        if not odb_json.exists():
+            raise SystemExit(f"[FAIL] 找不到 ODB JSON：{odb_json}")
+        print(f"[odb] 直接读 Abaqus ODB 提取结果：{odb_json.name}")
+        field = json.loads(odb_json.read_text(encoding="utf-8"))
+        # ★ Abaqus ODB reader 的节点 tag 是 str，deck mesh / ccx FRD reader 是 int。
+        # 不在入口归一，云图会拿到全 NaN（matplotlib 报 non-finite，看不出真因）。
+        field["nodes"] = {int(k): v for k, v in (field.get("nodes") or {}).items()}
+        for key, blk in list((field.get("results") or {}).items()):
+            if isinstance(blk, dict):
+                field["results"][key] = {int(k): v for k, v in blk.items()}
+        results_path = outdir / f"{spec.name}.abq.results.json"
+        summary = _post.dump_results_data(field, results_path)
+        field_path = odb_json
+        inp_abq = outdir / "abq" / f"{spec.name}.inp"
+        if inp_abq.exists():
+            inp = inp_abq
+        solver_note = "Abaqus/Standard（跨求解器，仅诊断）"
+    elif args.reuse and results_path.exists():
         print(f"[reuse] 复用已有求解结果：{results_path.name}")
         summary = json.loads(results_path.read_text(encoding="utf-8"))
     else:
@@ -632,12 +686,13 @@ def main() -> int:
         hole = (float(design["hole_center"][0]), float(design["hole_center"][1]),
                 float(design["hole_d"]) / 2.0)
 
-    # ---- 应力场（云图用；summary 里只有标量，场要从 frd 重新读）-------- #
-    from feagpt import post as _post
-    frd = results_path.with_name(results_path.name.replace(".results.json", ".frd"))
-    if not frd.exists():
-        raise SystemExit(f"[FAIL] 找不到场文件，画不了云图：{frd}")
-    field = _post.load_any(frd)
+    # ---- 应力场（云图用；summary 里只有标量，场要从 frd / odb.json 重新读）-- #
+    if not cross_solver:
+        frd = results_path.with_name(results_path.name.replace(".results.json", ".frd"))
+        if not frd.exists():
+            raise SystemExit(f"[FAIL] 找不到场文件，画不了云图：{frd}")
+        field_path = frd
+        field = _post.load_any(frd)
     # ★ 云图口径 = STRESS_PEAK（外表面），与 headline 定义 D8 一致。
     # 开孔板纯拉伸时中面 == 外表面（31.32 两边相同），所以用 STRESS 也看不出错；
     # 柱壳有框/长桁局部弯曲，中面 128.5 vs 外表面 286.8 —— 差 2.2 倍。
@@ -647,7 +702,13 @@ def main() -> int:
     src_block, src_name = ((peak, "STRESS_PEAK") if peak else (mids, "STRESS"))
     vm = {tag: _post.von_mises(v) for tag, v in src_block.items()}
     if not vm:
-        raise SystemExit("[FAIL] frd 里没有应力块，画不了云图")
+        raise SystemExit("[FAIL] 场文件里没有应力块，画不了云图")
+    # 覆盖率闸：key 类型不一致（int vs str）会让 z 全 NaN，matplotlib 只报
+    # "non-finite values"，看不出真因。这里在渲染前把错配钉死。
+    cov = len(set(nodes) & set(vm)) / len(nodes) if nodes else 0.0
+    if cov < 0.99:
+        raise SystemExit(f"[FAIL] 应力场只覆盖 {cov:.1%} 的 deck 节点"
+                         f"（场 key 与网格 tag 对不上？）")
     vm_mid = {tag: _post.von_mises(v) for tag, v in mids.items()} if mids else {}
 
     import time
@@ -662,7 +723,9 @@ def main() -> int:
             print(f"[warn] 视图 {v['tag']} 过滤后为空，跳过")
             continue
         proj = project(n2, v["proj"])
-        mesh_png = _render(n2, q2, proj, hole, zoom=v["zoom"], title=v["title"])
+        ylabel = "z [mm]" if v["proj"] == "xz" else "y [mm]"
+        mesh_png = _render(n2, q2, proj, hole, zoom=v["zoom"], title=v["title"],
+                           ylabel=ylabel)
 
         # 云图可能只取某个 elset（例如加筋板只画蒙皮，避免长桁投影遮挡）
         cn, cq = n2, q2
@@ -673,7 +736,8 @@ def main() -> int:
                 cq = [q for q in q2 if all(k in cn for k in q)]
         cproj = project(cn, v["proj"]) if cn else proj
         cont_png, cont_vmax = _render_contour(cproj, cq or q2, vm, zoom=v["zoom"],
-                                             title="von Mises, " + v["title"])
+                                             title="von Mises, " + v["title"],
+                                             ylabel=ylabel)
         (outdir / f"mesh_{v['tag']}.png").write_bytes(mesh_png)
         (outdir / f"vm_{v['tag']}.png").write_bytes(cont_png)
         figs.append({"tag": v["tag"], "caption": v["caption"],
@@ -722,7 +786,10 @@ def main() -> int:
         "cand_path": str(cand_path),
         "inp_path": str(inp),
         "results_path": str(results_path),
-        "frd_path": str(frd),
+        "frd_path": str(field_path),
+        "field_label": ("STRESS_PEAK / STRESS 块 · ODB 提取的逐节点 6 分量"
+                        if cross_solver else "STRESS 块 · FRD 逐节点 6 分量 → von Mises"),
+        "cross_solver": cross_solver,
         "truth_path": str(truth_path),
         "spec_rows": build_spec_rows(cand["spec"], design, fam_key),
         "figs": figs,
@@ -730,6 +797,8 @@ def main() -> int:
         "vm_src": src_name,
         "vm_src_note": ("外表面峰值，与 headline 定义 D8 一致"
                         if src_name == "STRESS_PEAK" else "只有中面场可用（该结果未输出峰值块）"),
+        "vm_caveat": (((field.get("meta") or {}).get("stress_reduction") or {}).get("STRESS_PEAK")
+                      if cross_solver else None),
         "sig_net": sig_net,
         "kt": kt,
         "load_mag": mag,
@@ -744,16 +813,24 @@ def main() -> int:
         "gold_nodes": gold_nodes, "node_diff": n_nodes - gold_nodes,
         "disp_err": pct(max_disp, gold_disp),
         "tol": DISP_TOL.get(fam, 0.01),
-        "solver": f"CalculiX ccx · 后端 {solver_note}",
+        "solver": (f"Abaqus/Standard · {solver_note}" if cross_solver
+                   else f"CalculiX ccx · 后端 {solver_note}"),
     }
 
     out = Path(args.out) if args.out else RUNS / args.case / f"{args.case}.c5.html"
     out.write_text(build_html(ctx), encoding="utf-8")
 
-    print(f"\n结论：位移 {max_disp:.5f} mm vs 标准答案 {gold_disp:.5f} mm "
-          f"= 相对误差 {ctx['disp_err']:.3f}%（判据线 {ctx['tol'] * 100:.1f}%）")
-    print(f"      最大 vM {max_vm:.2f} MPa"
-          + (f" vs {gold_vm:.2f} = {ctx['vm_err']:.2f}%" if gold_vm else "（标准答案无数值）"))
+    if cross_solver:
+        print(f"\n诊断（跨求解器，不判胜负）：位移 {max_disp:.5f} mm vs ccx 参考 "
+              f"{gold_disp:.5f} mm = 差 {ctx['disp_err']:.3f}%")
+        print(f"      最大 vM {max_vm:.2f} MPa"
+              + (f" vs ccx {gold_vm:.2f} = 差 {ctx['vm_err']:.2f}%" if gold_vm else ""))
+        print("      以上差异只作 diagnostic，不进 headline、不作 C5 判据。")
+    else:
+        print(f"\n结论：位移 {max_disp:.5f} mm vs 标准答案 {gold_disp:.5f} mm "
+              f"= 相对误差 {ctx['disp_err']:.3f}%（判据线 {ctx['tol'] * 100:.1f}%）")
+        print(f"      最大 vM {max_vm:.2f} MPa"
+              + (f" vs {gold_vm:.2f} = {ctx['vm_err']:.2f}%" if gold_vm else "（标准答案无数值）"))
     print(f"报告：{out}  ({out.stat().st_size / 1024:.0f} KB)")
     return 0
 

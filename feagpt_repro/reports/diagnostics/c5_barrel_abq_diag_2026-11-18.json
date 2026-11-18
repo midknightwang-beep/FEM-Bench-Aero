@@ -1,0 +1,74 @@
+{
+  "gate_ok": true,
+  "errors": [],
+  "n_nodes": 143402,
+  "max_disp_abq": 2.890731572718537,
+  "max_vm_abq_outer": 323.7578112745016,
+  "meta": {
+    "source": "abaqus-odb",
+    "odb": "F:\\AI FEA Modeling DataSets\\feagpt_repro\\_c5_runs\\fuselage_barrel_d1800_l2000_str8_frm3\\abq\\fuselage_barrel_1800_pressure_shear_moment.odb",
+    "step": "Step-1",
+    "frame": 1,
+    "frame_value": 1.0,
+    "n_instances": 1,
+    "n_elements": 142914,
+    "element_types": {
+      "S4": 142914
+    },
+    "available_fields": [
+      "E",
+      "RF",
+      "RM",
+      "S",
+      "U",
+      "UR"
+    ],
+    "blocks": {
+      "DISP": 143402,
+      "FORC": 143402,
+      "STRESS": 143402,
+      "STRESS_PEAK": 143402
+    },
+    "stress_components": [
+      "S11",
+      "S22",
+      "S33",
+      "S12"
+    ],
+    "stress_type": "TENSOR_3D_PLANAR",
+    "stress_candidates_max_vm": {
+      "membrane_node_averaged": 116.2797,
+      "outer_fibre_node_averaged": 322.7289,
+      "outer_fibre_elementwise_max": 323.7578,
+      "outer_fibre_elementwise_vm_then_node_averaged": 323.6555
+    },
+    "section_points": [
+      1,
+      5
+    ],
+    "stress_reduction": {
+      "STRESS": "membrane = mean of the outermost section points, averaged over the contributing elements at each node - verified (per node, 5074 nodes) to be the quantity CalculiX OUTPUT=2D reports: median 1.6% apart, correlation 0.992, vs 3.3% for either outer surface",
+      "STRESS_PEAK": "max von Mises over all available section points and elements (element-wise, not averaged) - the sizing number; NOT comparable with CalculiX OUTPUT=2D"
+    },
+    "extract_seconds": 49.469
+  },
+  "diagnostic": {
+    "gold_disp": 2.8015884244749887,
+    "gold_vm_outer": 286.7959532842231,
+    "disp_diff_pct": 3.181878803638109,
+    "vm_diff_pct": 12.887858969770122,
+    "note": "cross-solver difference (Abaqus vs ccx gold) -- diagnostic only, NOT a pass/fail criterion, NOT headline"
+  },
+  "source": {
+    "odb_json": "_c5_runs\\fuselage_barrel_d1800_l2000_str8_frm3\\abq\\fuselage_barrel_1800_pressure_shear_moment.odb.json",
+    "sha256": "747d6d572a2d8567b201228930d6aac4b7df8ea86b06b3ccc105ef58a7405517",
+    "truth": "F:\\AI FEA Modeling DataSets\\FEM-Bench-Aero\\modeling\\fuselage_barrel_d1800_l2000_str8_frm3\\truth.json"
+  },
+  "formulas": {
+    "max_disp": "max over DISP nodes of sqrt(ux^2+uy^2+uz^2)",
+    "max_vm_outer": "max over STRESS_PEAK nodes of von Mises(s11..s31)",
+    "disp_diff_pct": "abs(max_disp_abq - gold_disp) / gold_disp * 100 = abs(2.890732 - 2.801588) / 2.801588 * 100",
+    "vm_diff_pct": "abs(max_vm_abq - gold_vm_outer) / gold_vm_outer * 100 = abs(323.7578 - 286.7960) / 286.7960 * 100"
+  },
+  "classification": "cross-solver diagnostic; NOT a pass/fail criterion, NOT headline"
+}
