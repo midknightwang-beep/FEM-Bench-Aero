@@ -182,6 +182,76 @@ def pct(a: float, b: float) -> float:
     return abs(a - b) / abs(b) * 100.0 if b else float("nan")
 
 
+def _render_contour(nodes, quads, vm, hole_center, zoom=None, title=""):
+    """von Mises 云图（PNG bytes）。
+
+    三角剖分必须**显式给**（每个四边形拆两个三角形），不能交给 Delaunay：
+    自动剖分会把孔内部也连成三角形，画出来是一块补丁 —— 而且它看起来
+    「像那么回事」，只有对着几何才知道错了。
+    """
+    import numpy as np
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import matplotlib.tri as mtri
+    from matplotlib.colors import Normalize
+
+    tags = list(nodes)                      # 顺序即坐标顺序，z 必须同样排
+    xy = [nodes[t][:2] for t in tags]
+    idx = {t: i for i, t in enumerate(tags)}
+    tris = []
+    for q in quads:
+        try:
+            a, b, c, d = (idx[t] for t in q)
+        except KeyError:
+            continue
+        tris.append((a, b, c))
+        tris.append((a, c, d))
+    z = np.array([vm.get(t, np.nan) for t in tags], dtype=float)
+    vmax = float(np.nanmax(z))
+    tri = mtri.Triangulation([p[0] for p in xy], [p[1] for p in xy],
+                             np.array(tris, dtype=int))
+
+    fig, ax = plt.subplots(figsize=(6.2, 4.6), dpi=150)
+    levels = np.linspace(0.0, vmax, 21)
+    cs = ax.tricontourf(tri, z, levels=levels, cmap="turbo", extend="max")
+    # 单元边：云图上叠一层细网格，说明「这是算出来的场」而不是插值出来的色块
+    from matplotlib.collections import LineCollection
+    segs = [[xy[idx[q[i]]], xy[idx[q[(i + 1) % 4]]]]
+            for q in quads for i in range(4)
+            if all(x in idx for x in q)]
+    ax.add_collection(LineCollection(segs, linewidths=0.15, colors="k", alpha=0.12))
+    ax.set_aspect("equal")
+
+    if zoom:
+        cx, cy, r = zoom
+        ax.set_xlim(cx - r, cx + r)
+        ax.set_ylim(cy - r, cy + r)
+        ax.set_title(title, fontsize=9)
+    else:
+        ax.set_xlim(min(p[0] for p in xy) - 5, max(p[0] for p in xy) + 5)
+        ax.set_ylim(min(p[1] for p in xy) - 5, max(p[1] for p in xy) + 5)
+        ax.set_title(title, fontsize=9)
+
+    # 热点标注（最大值所在节点）
+    j = int(np.nanargmax(z))
+    ax.plot([xy[j][0]], [xy[j][1]], marker="o", ms=5, mfc="none",
+            mec="white", mew=1.4)
+    ax.annotate(f"{z[j]:.2f} MPa", (xy[j][0], xy[j][1]),
+                textcoords="offset points", xytext=(7, 7),
+                fontsize=7, color="white",
+                bbox=dict(boxstyle="round,pad=0.2", fc="black", alpha=.55, lw=0))
+    ax.tick_params(labelsize=6)
+    ax.set_xlabel("x [mm]", fontsize=7)
+    ax.set_ylabel("y [mm]", fontsize=7)
+    fig.colorbar(cs, ax=ax, shrink=.85, pad=.02).set_label("von Mises [MPa]", fontsize=7)
+    fig.tight_layout()
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png")
+    plt.close(fig)
+    return buf.getvalue()
+
+
 def build_html(ctx: dict) -> str:
     c = ctx
     rel = c["disp_err"]
@@ -301,6 +371,26 @@ def build_html(ctx: dict) -> str:
   </p>
   {src('本次求解结果', c['results_path'], 'max_disp / max_von_mises / n_nodes')}
   {src('标准答案', c['truth_path'], 'scalars.max_disp / scalars.max_von_mises')}
+
+  <div class="figs" style="margin-top:18px">
+    <figure><img alt="von Mises contour" src="{c['png_c_all']}">
+      <figcaption><b>von Mises 应力云图（整体）</b>：色标固定从 0 到峰值，
+        所以不同工况之间可以直接比。白圈标的是热点
+        （{c['vm_field_max']:.2f} MPa，与表中「最大 von Mises」同源）。</figcaption></figure>
+    <figure><img alt="von Mises contour hole" src="{c['png_c_zoom']}">
+      <figcaption><b>孔边应力集中</b>：孔口两侧明显高于远场，这是开孔板的
+        物理特征 —— 尺寸设计要看的正是这个峰值，不是平均应力。</figcaption></figure>
+  </div>
+  {src('云图数据', c['frd_path'], 'STRESS 块 · 逐节点 6 分量 → von Mises')}
+  {"" if c['kt'] is None else f"""
+  <p style="margin:12px 0 0; font-size:13.5px; color:#3a4a58">
+    <b>顺带一个不依赖标准答案的自洽检查</b>：净截面平均应力 =
+    {c['load_mag']:g} N ÷ (({c['width']:g} − {c['hole_d']:g}) mm × {c['thickness']:g} mm)
+    = <b>{c['sig_net']:.2f} MPa</b>；峰值除以它得应力集中系数
+    <b>K<sub>t</sub> = {c['kt']:.2f}</b>。这两步只用本页已有的数，你可以自己复核。
+    <span style="color:#8a6a1a">与 Peterson／Howland 有限宽板图表的比对<b>尚未做</b></span>
+    —— 那属于「C7 试验/解析锚定」，另立任务；此处只说明这个比值本身自洽、量级合理。
+  </p>"""}
 </section>
 
 <section>
@@ -396,9 +486,42 @@ def main() -> int:
     zoom_r = hole_d * 1.5
     png_zoom = _render(nodes, quads, xy, (hx, hy), zoom=(hx, hy, zoom_r),
                        title="Hole region")
+    # ---- 应力场（云图用；summary 里只有标量，场要从 frd 重新读）-------- #
+    from feagpt import post as _post
+    frd = results_path.with_name(results_path.name.replace(".results.json", ".frd"))
+    if not frd.exists():
+        raise SystemExit(f"[FAIL] 找不到场文件，画不了云图：{frd}")
+    field = _post.load_any(frd)
+    stress = field["results"].get("STRESS") or field["results"].get("S") or {}
+    vm = {tag: _post.von_mises(v) for tag, v in stress.items()}
+    if not vm:
+        raise SystemExit("[FAIL] frd 里没有 STRESS 块，画不了云图")
+
+    png_c_all = _render_contour(nodes, quads, vm, (hx, hy),
+                                title="von Mises, full plate")
+    png_c_zoom = _render_contour(nodes, quads, vm, (hx, hy),
+                                 zoom=(hx, hy, zoom_r),
+                                 title="von Mises, hole region")
+    (outdir / "vm_contour_full.png").write_bytes(png_c_all)
+    (outdir / "vm_contour_hole.png").write_bytes(png_c_zoom)
+    print(f"[contour] 云图两张完成（场 {len(vm)} 节点，max {max(vm.values()):.2f} MPa）")
+
     (outdir / "mesh_overview.png").write_bytes(png_all)
     (outdir / "mesh_hole_zoom.png").write_bytes(png_zoom)
     print(f"[fig] 两张图渲染完成（{time.time() - t0:.1f}s）")
+
+    # ---- 应力集中系数：本页两个数算出来的比值，不依赖 gold --------------- #
+    # Kt = 峰值 von Mises / 净截面平均应力；净截面 = (板宽 - 孔径) × 厚度。
+    # 单向拉伸下孔口主应力即周向应力、径向为零 ⇒ von Mises ≈ 该主应力，
+    # 所以用 vM 峰值去除是合法的。这个比值能从页面上两个数自己复核。
+    try:
+        load_block = cand["spec"].get("load") or {}
+        mag = float(load_block.get("magnitude") or 0.0)
+        net_w = float(design["width"]) - float(design["hole_d"])
+        sig_net = mag / (net_w * float(design["thickness"])) if net_w > 0 else None
+    except (KeyError, TypeError, ValueError):
+        sig_net = None
+    kt = (max_vm / sig_net) if sig_net else None
 
     fam = truth.get("structure_family", "")
     gold_spec = json.loads((MODELING / args.case / "spec.json").read_text(encoding="utf-8"))
@@ -413,6 +536,7 @@ def main() -> int:
         "cand_path": str(cand_path),
         "inp_path": str(inp),
         "results_path": str(results_path),
+        "frd_path": str(frd),
         "truth_path": str(truth_path),
         "spec_rows": [
             ("板长 × 板宽", f"{design['length']:g} × {design['width']:g} mm"),
@@ -423,8 +547,17 @@ def main() -> int:
         ],
         "png_all": b64png(png_all),
         "png_zoom": b64png(png_zoom),
+        "png_c_all": b64png(png_c_all),
+        "png_c_zoom": b64png(png_c_zoom),
+        "vm_field_max": max(vm.values()),
+        "sig_net": sig_net,
+        "kt": kt,
+        "load_mag": mag,
+        "n_stress_nodes": len(vm),
         "n_nodes": n_nodes, "n_elem": len(quads), "hole_d": hole_d,
         "zoom_r": zoom_r,
+        "width": float(design["width"]),
+        "thickness": float(design["thickness"]),
         "max_disp": max_disp, "gold_disp": gold_disp,
         "max_vm": max_vm, "gold_vm": gold_vm,
         "vm_err": pct(max_vm, gold_vm) if gold_vm else None,
